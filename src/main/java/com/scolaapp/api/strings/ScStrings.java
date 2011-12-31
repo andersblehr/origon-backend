@@ -12,7 +12,12 @@ public class ScStrings
     public String strInvalidInvitationCodeAlert;
     
     // Generic strings
+    public String strOK;
+    public String strCancel;
+    public String strContinue;
+    public String strLater;
     public String strPleaseWait;
+    public String strPleaseProvide;
     
     // Root view
     public String strMembershipPrompt;
@@ -28,7 +33,7 @@ public class ScStrings
     public String strInvitationCodePrompt;
     public String strNewPasswordPrompt;
     public String strPasswordPrompt;
-    public String strEmailSentPrompt;
+    public String strEmailSentPopUp;
     public String strRegistrationCodePrompt;
     public String strRepeatPasswordPrompt;
     public String strScolaDescription;
@@ -59,9 +64,14 @@ public class ScStrings
             strInvalidInvitationCodeAlert = "Invitasjonskoden er for kort, vennligst sjekk om du har skrevet den riktig";
             
             // Generic strings
+            strOK                         = "OK";
+            strCancel                     = "Avbryt";
+            strContinue                   = "Fortsett";     
+            strLater                      = "Senere";
             strPleaseWait                 = "Vennligst vent...";
+            strPleaseProvide              = "Vennligst oppgi:";
             
-            // Root view
+            // Root view UI strings
             strMembershipPrompt           = "Er du ny her? Invitert? Allerede medlem?";
             strIsNew                      = "Ny her";
             strIsInvited                  = "Invitert";
@@ -75,8 +85,8 @@ public class ScStrings
             strInvitationCodePrompt       = "Invitasjonskode din";
             strNewPasswordPrompt          = "Et fritt valgt passord";
             strPasswordPrompt             = "Passordet ditt";
-            strEmailSentPrompt            = "En epost er sendt til %@. Vennligst oppgi:";
-            strRegistrationCodePrompt     = "Registreringskoden som oppgitt i eposten";
+            strEmailSentPopUp             = "En epost med din personlige registreringskode er sendt til %@. Trykk \"Senere\" om du ikke har tilgang til eposten din akkurat nå.";
+            strRegistrationCodePrompt     = "Din personlige registreringskode";
             strRepeatPasswordPrompt       = "Samme passord som i sted";
             strScolaDescription           = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
             
@@ -96,7 +106,12 @@ public class ScStrings
             strInvalidInvitationCodeAlert = "The invitation code is too short, please verify that you have written it correctly";
             
             // Generic strings
+            strOK                         = "OK";
+            strCancel                     = "Cancel";
+            strContinue                   = "Continue";
+            strLater                      = "Later";
             strPleaseWait                 = "Please wait...";
+            strPleaseProvide              = "Please provide:";
             
             // Root view
             strMembershipPrompt           = "Are you new here? Invited? Already a member?";
@@ -112,9 +127,10 @@ public class ScStrings
             strInvitationCodePrompt       = "Your invitation code";
             strNewPasswordPrompt          = "A password of your choice";
             strPasswordPrompt             = "Your password";
-            strEmailSentPrompt            = "An email has been sent to %@. Please provide:";
-            strRegistrationCodePrompt     = "Your registration code as provided in the email";
-            strRepeatPasswordPrompt       = "The same password as previously";
+            strEmailSentPopUp             = "An email has been sent to %@. Please provide:";
+            strEmailSentPopUp             = "An email with your personal registration code has been sent to %@. Tap \"Later\" if you don't have access to your email right now.";
+            strRegistrationCodePrompt     = "Your personal registration code";
+            strRepeatPasswordPrompt       = "The same password as before";
             strScolaDescription           = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
             
             // Confirm new user
