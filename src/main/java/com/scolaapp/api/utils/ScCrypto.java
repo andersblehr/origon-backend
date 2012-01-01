@@ -10,20 +10,18 @@ public class ScCrypto
 {
     private static String diffStrings(String string1, String string2)
     {
-        if (string1.length() != string2.length()) {
-            ScAppEnv.getLog().severe(String.format("BROKEN: Cannot diff strings of different lengths. (%s vs. %s)", string1, string2));
-            throw new WebApplicationException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
+        String string1Hash = hashUsingSHA1(string1);
+        String string2Hash = hashUsingSHA1(string2);
         
-        int stringLength = string1.length();
+        int hashLength = string1Hash.length();
         
-        byte[] byteString1 = string1.getBytes();
-        byte[] byteString2 = string2.getBytes();
-        byte[] diffedBytes = new byte[stringLength];
+        byte[] byteString1 = string1Hash.getBytes();
+        byte[] byteString2 = string2Hash.getBytes();
+        byte[] diffedBytes = new byte[hashLength];
         
-        for (int i = 0; i < stringLength; i++) {
+        for (int i = 0; i < hashLength; i++) {
             byte char1 = byteString1[i];
-            byte char2 = byteString2[stringLength - (i + 1)];
+            byte char2 = byteString2[hashLength - (i + 1)];
             
             if (char1 >= char2) {
                 diffedBytes[i] = (byte)(char1 - char2 + 33); // ASCII 33 = '!'
@@ -60,9 +58,7 @@ public class ScCrypto
     
     public static String generatePasswordHash(String password, String UUID)
     {
-        String unsaltedPasswordHash = ScCrypto.hashUsingSHA1(password);
-        String unsaltedUUIDHash = ScCrypto.hashUsingSHA1(UUID);
-        String saltyDiff = ScCrypto.diffStrings(unsaltedPasswordHash, unsaltedUUIDHash);
+        String saltyDiff = ScCrypto.diffStrings(password, UUID);
         
         return ScCrypto.hashUsingSHA1(saltyDiff);
     }
