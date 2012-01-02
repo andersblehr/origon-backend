@@ -32,7 +32,7 @@ public class ScStrings
     public String strNamePrompt;
     public String strNameAsReceivedPrompt;
     public String strEmailPrompt;
-    public String strInvitationCodePrompt;
+    public String strScolaShortnamePrompt;
     public String strNewPasswordPrompt;
     public String strPasswordPrompt;
     public String strUserHelpCompleteRegistration;
@@ -84,7 +84,7 @@ public class ScStrings
             strNamePrompt                       = "Fullt navn som i signaturen din";
             strNameAsReceivedPrompt             = "Navnet ditt som skrevet i invitasjonen";
             strEmailPrompt                      = "Epost-adressen din";
-            strInvitationCodePrompt             = "Invitasjonskoden din";
+            strScolaShortnamePrompt             = "Scola-koden fra invitasjonen";
             strNewPasswordPrompt                = "Et fritt valgt passord";
             strPasswordPrompt                   = "Passordet ditt";
             strUserHelpCompleteRegistration     = "For å fullføre registreringen, vennligst oppgi:";
@@ -126,7 +126,7 @@ public class ScStrings
             strNamePrompt                       = "Your name as you sign it";
             strNameAsReceivedPrompt             = "Your name as written in the invitation";
             strEmailPrompt                      = "Your email address";
-            strInvitationCodePrompt             = "Your invitation code";
+            strScolaShortnamePrompt             = "The scola code from the invitation";
             strNewPasswordPrompt                = "A password of your choice";
             strPasswordPrompt                   = "Your password";
             strUserHelpCompleteRegistration     = "To complete your registration, please provide:";
