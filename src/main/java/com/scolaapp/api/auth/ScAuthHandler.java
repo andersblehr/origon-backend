@@ -15,8 +15,10 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
+import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
@@ -37,7 +39,8 @@ public class ScAuthHandler
     
     private ScAuthState authState;
     private Exception servletException;
-    private int servletResponse;
+    private int servletStatusCode;
+    private String servletReason;
 
     private InternetAddress userInternetAddress;
     
@@ -73,7 +76,7 @@ public class ScAuthHandler
             authState.deviceUUID = UUID;
         } else {
             ScAppEnv.getLog().severe(String.format("Invalid UUID: %s. Potential intruder, barring entry.", UUID));
-            servletResponse = HttpServletResponse.SC_FORBIDDEN;
+            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
         }
         
         return isValid;
@@ -88,7 +91,7 @@ public class ScAuthHandler
             authState.userFullName = name;
         } else {
             ScAppEnv.getLog().severe(String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
-            servletResponse = HttpServletResponse.SC_FORBIDDEN;
+            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
         }
         
         return isValid;
@@ -115,7 +118,8 @@ public class ScAuthHandler
         } catch (AddressException e) {
             ScAppEnv.getLog().info(String.format("'%s' is not a valid email address.", email));
             servletException = e;
-            servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
+            servletStatusCode = HttpServletResponse.SC_UNAUTHORIZED;
+            servletReason = "email";
             
             isValid = false;
         } 
@@ -147,23 +151,26 @@ public class ScAuthHandler
             try {
                 userInternetAddress = new InternetAddress(authState.userEmail);
             } catch (AddressException e) {
-                ScAppEnv.getLog().severe(String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. We should not be here.", authState.userEmail, authState.userFullName, scolaShortname));
+                ScAppEnv.getLog().severe(String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authState.userEmail, authState.userFullName, scolaShortname));
                 servletException = e;
-                servletResponse = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                servletStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                servletReason = "email";
                 
                 isValid = false;
             }
         } catch (NotFoundException e) {
             ScAppEnv.getLog().info(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
             servletException = e;
-            servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
+            servletStatusCode = HttpServletResponse.SC_NOT_FOUND;
+            servletReason = "scolaShortname";
             
             isValid = false;
         }
         
         if (isValid && !authState.isListed) {
             ScAppEnv.getLog().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authState.userFullName));
-            servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
+            servletStatusCode = HttpServletResponse.SC_NOT_FOUND;
+            servletReason = "name";
             
             isValid = false;
         }
@@ -180,7 +187,7 @@ public class ScAuthHandler
             authState.passwordHash = ScCrypto.generatePasswordHash(password, authState.userEmail);
         } else {
             ScAppEnv.getLog().severe(String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
-            servletResponse = HttpServletResponse.SC_FORBIDDEN;
+            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
         }
         
         return isValid;
@@ -196,7 +203,7 @@ public class ScAuthHandler
         
         if (!isValid) {
             ScAppEnv.getLog().severe(String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", HTTPHeaderAuth));
-            servletResponse = HttpServletResponse.SC_FORBIDDEN;
+            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
         }
 
         if (isValid) {
@@ -211,12 +218,13 @@ public class ScAuthHandler
             
                 if (!isValid) {
                     ScAppEnv.getLog().severe(String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", authString));
-                    servletResponse = HttpServletResponse.SC_FORBIDDEN;
+                    servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
                 }
             } catch (UnsupportedEncodingException e) {
                 ScAppEnv.getLog().severe("BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.");
                 servletException = e;
-                servletResponse = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                servletStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                servletReason = "auth";
                 
                 isValid = false;
             }
@@ -287,10 +295,19 @@ public class ScAuthHandler
             
             ScAppEnv.ofy().put(authState);
         } else {
+            ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
+            responseBuilder.status(servletStatusCode);
+            
+            if (servletReason != null) {
+                responseBuilder.header("reason", servletReason);
+            }
+            
+            Response response = responseBuilder.build();
+            
             if (servletException != null) {
-                throw new WebApplicationException(servletException, servletResponse);
+                throw new WebApplicationException(servletException, response);
             } else {
-                throw new WebApplicationException(servletResponse);
+                throw new WebApplicationException(response);
             }
         }
         
