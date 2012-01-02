@@ -7,6 +7,7 @@ import com.googlecode.objectify.*;
 import com.scolaapp.api.ScScolaApplication;
 import com.scolaapp.api.auth.ScAuthState;
 import com.scolaapp.api.model.ScPerson;
+import com.scolaapp.api.model.ScScola;
 
 public class ScAppEnv
 {
@@ -20,6 +21,7 @@ public class ScAppEnv
     {
         ObjectifyService.register(ScAuthState.class);
         ObjectifyService.register(ScPerson.class);
+        ObjectifyService.register(ScScola.class);
         
         objectify = ObjectifyService.begin();
     }

@@ -8,6 +8,28 @@ import javax.ws.rs.WebApplicationException;
 
 public class ScCrypto
 {
+    private static String hashUsingSHA1(String inputString)
+    {
+        String output = new String();
+        
+        try {
+            byte[] bytes = inputString.getBytes("UTF-8");
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            byte[] digestOutput = digest.digest(bytes);
+            
+            for (int i = 0; i < digest.getDigestLength(); i++) {
+                output = output.concat(String.format("%02x", digestOutput[i]));
+            }
+        } catch (Exception e) {
+            ScAppEnv.getLog().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
+            throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        
+        return output;
+    }
+    
+    
     private static String diffStrings(String string1, String string2)
     {
         String string1Hash = hashUsingSHA1(string1);
@@ -34,31 +56,9 @@ public class ScCrypto
     }
     
     
-    private static String hashUsingSHA1(String inputString)
+    public static String generatePasswordHash(String password, String email)
     {
-        String output = new String();
-        
-        try {
-            byte[] bytes = inputString.getBytes("UTF-8");
-
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            byte[] digestOutput = digest.digest(bytes);
-            
-            for (int i = 0; i < digest.getDigestLength(); i++) {
-                output = output.concat(String.format("%02x", digestOutput[i]));
-            }
-        } catch (Exception e) {
-            ScAppEnv.getLog().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
-            throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-        
-        return output;
-    }
-    
-    
-    public static String generatePasswordHash(String password, String UUID)
-    {
-        String saltyDiff = ScCrypto.diffStrings(password, UUID);
+        String saltyDiff = ScCrypto.diffStrings(password, email);
         
         return ScCrypto.hashUsingSHA1(saltyDiff);
     }

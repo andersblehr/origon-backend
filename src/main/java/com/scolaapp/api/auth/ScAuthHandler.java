@@ -32,7 +32,7 @@ public class ScAuthHandler
 {
     private static final char[] symbols = new char[36];
     
-    private final int registrationCodeLength = 8;
+    private final int registrationCodeLength = 6;
     private final int minimumPasswordLength  = 6;
     
     private ScAuthState authState;
@@ -113,7 +113,7 @@ public class ScAuthHandler
                 authState.isActive = false;
             }
         } catch (AddressException e) {
-            ScAppEnv.getLog().warning(String.format("'%s' is not a valid email address.", email));
+            ScAppEnv.getLog().info(String.format("'%s' is not a valid email address.", email));
             servletException = e;
             servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
             
@@ -154,7 +154,7 @@ public class ScAuthHandler
                 isValid = false;
             }
         } catch (NotFoundException e) {
-            ScAppEnv.getLog().warning(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
+            ScAppEnv.getLog().info(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
             servletException = e;
             servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
             
@@ -162,7 +162,7 @@ public class ScAuthHandler
         }
         
         if (isValid && !authState.isListed) {
-            ScAppEnv.getLog().warning(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authState.userFullName));
+            ScAppEnv.getLog().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authState.userFullName));
             servletResponse = HttpServletResponse.SC_UNAUTHORIZED;
             
             isValid = false;
@@ -177,7 +177,7 @@ public class ScAuthHandler
         boolean isValid = ((password != null) && (password.length() >= minimumPasswordLength));
         
         if (isValid) {
-            authState.passwordHash = ScCrypto.generatePasswordHash(password, authState.deviceUUID);
+            authState.passwordHash = ScCrypto.generatePasswordHash(password, authState.userEmail);
         } else {
             ScAppEnv.getLog().severe(String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
             servletResponse = HttpServletResponse.SC_FORBIDDEN;

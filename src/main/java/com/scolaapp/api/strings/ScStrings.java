@@ -84,7 +84,7 @@ public class ScStrings
             strNamePrompt                       = "Fullt navn som i signaturen din";
             strNameAsReceivedPrompt             = "Navnet ditt som skrevet i invitasjonen";
             strEmailPrompt                      = "Epost-adressen din";
-            strInvitationCodePrompt             = "Invitasjonskode din";
+            strInvitationCodePrompt             = "Invitasjonskoden din";
             strNewPasswordPrompt                = "Et fritt valgt passord";
             strPasswordPrompt                   = "Passordet ditt";
             strUserHelpCompleteRegistration     = "For å fullføre registreringen, vennligst oppgi:";
