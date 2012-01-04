@@ -9,9 +9,11 @@ public class ScStrings
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
     public String strInvalidPasswordAlert;
-    public String strInvalidInvitationCodeAlert;
+    public String strInvalidScolaShortnameAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
+    public String strNoScolaWithShortnameAlert;
+    public String strScolaHasNoListingForNameAlert;
     
     // Generic strings
     public String strOK;
@@ -61,9 +63,11 @@ public class ScStrings
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
-            strInvalidInvitationCodeAlert       = "Invitasjonskoden er for kort, vennligst sjekk om du har skrevet den riktig";
+            strInvalidScolaShortnameAlert       = "Scola-kortnavnet er for kort. Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
+            strNoScolaWithShortnameAlert        = "Det finnes ingen scola med kortnavn \"%@\". Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
+            strScolaHasNoListingForNameAlert    = "Det er ikke registrert en invitasjon for %@ til scola med kortnavn \"%@\". Vennligst oppgi navnet ditt nøyaktig slik det står i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
             
             // Generic strings
             strOK                               = "OK";
@@ -84,7 +88,7 @@ public class ScStrings
             strNamePrompt                       = "Fullt navn som i signaturen din";
             strNameAsReceivedPrompt             = "Navnet ditt som skrevet i invitasjonen";
             strEmailPrompt                      = "Epost-adressen din";
-            strScolaShortnamePrompt             = "Scola-koden fra invitasjonen";
+            strScolaShortnamePrompt             = "Scola-koden oppgitt i invitasjonen";
             strNewPasswordPrompt                = "Et fritt valgt passord";
             strPasswordPrompt                   = "Passordet ditt";
             strUserHelpCompleteRegistration     = "For å fullføre registreringen, vennligst oppgi:";
@@ -103,9 +107,11 @@ public class ScStrings
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
-            strInvalidInvitationCodeAlert       = "The invitation code is too short, please verify that you have written it correctly";
+            strInvalidScolaShortnameAlert       = "The scola shortname is too short. Please use the exact spelling as provided in the invitation.";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
+            strNoScolaWithShortnameAlert             = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
+            strScolaHasNoListingForNameAlert         = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
             
             // Generic strings
             strOK                               = "OK";
