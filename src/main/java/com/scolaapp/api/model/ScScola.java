@@ -19,7 +19,5 @@ public class ScScola
     public Key<ScPerson>[] members;
 
     
-    public ScScola()
-    {
-    }
+    public ScScola() {}
 }

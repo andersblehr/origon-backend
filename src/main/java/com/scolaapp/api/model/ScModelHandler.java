@@ -14,11 +14,6 @@ import com.scolaapp.api.utils.ScAppEnv;
 @Path("model")
 public class ScModelHandler
 {
-    public ScModelHandler()
-    {
-    }
-    
-    
     @GET
     @Path("person")
     @Produces({MediaType.APPLICATION_JSON})

@@ -21,11 +21,8 @@ public class ScPerson
     public Boolean isMinor;
     public String mobilePhone;
 	public String name;
-	public String passwordHash;
 	public String workPhone;
 
     
-    public ScPerson()
-    {
-    }
+    public ScPerson() {}
 }

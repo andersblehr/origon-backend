@@ -5,9 +5,10 @@ import java.util.logging.Logger;
 import com.googlecode.objectify.*;
 
 import com.scolaapp.api.ScScolaApplication;
-import com.scolaapp.api.auth.ScAuthState;
+import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
+import com.scolaapp.api.model.ScScolaMember;
 
 public class ScAppEnv
 {
@@ -19,17 +20,16 @@ public class ScAppEnv
     
     static
     {
-        ObjectifyService.register(ScAuthState.class);
+        ObjectifyService.register(ScAuthInfo.class);
         ObjectifyService.register(ScPerson.class);
         ObjectifyService.register(ScScola.class);
+        ObjectifyService.register(ScScolaMember.class);
         
         objectify = ObjectifyService.begin();
     }
     
     
-    protected ScAppEnv()
-    {
-    }
+    protected ScAppEnv() {}
     
     
     public static Logger getLog()
