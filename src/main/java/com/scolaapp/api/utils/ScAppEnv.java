@@ -32,14 +32,14 @@ public class ScAppEnv
     protected ScAppEnv() {}
     
     
-    public static Logger getLog()
+    public static Logger log()
     {
         return log;
     }
 
     
     
-    public static ScAppEnv getEnv()
+    public static ScAppEnv env()
     {
         if (null == env) {
             env = new ScAppEnv();

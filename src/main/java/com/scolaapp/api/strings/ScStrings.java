@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ScStrings
 {
     // Alert messages
+    public String strInternalServerError;
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
     public String strInvalidPasswordAlert;
@@ -60,6 +61,7 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             // Alert messages
+            strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
@@ -104,14 +106,15 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
         } else {
             // Alert messages
+            strInternalServerError              = "An error has occurred. Please try again later.";
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
             strInvalidScolaShortnameAlert       = "The scola shortname is too short. Please use the exact spelling as provided in the invitation.";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
-            strNoScolaWithShortnameAlert             = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
-            strScolaHasNoListingForNameAlert         = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
+            strNoScolaWithShortnameAlert        = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
+            strScolaHasNoListingForNameAlert    = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
             
             // Generic strings
             strOK                               = "OK";

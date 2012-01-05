@@ -24,5 +24,25 @@ public class ScPerson
 	public String workPhone;
 
     
+	public ScPerson(String email_, String name_)
+	{
+	    email = email_;
+	    name = name_;
+	}
+	
+	
+	public ScPerson(ScPerson clone)
+	{
+	    birthday = clone.birthday;
+	    email = clone.email;
+	    gender = clone.gender;
+	    isActive = clone.isActive;
+	    isMinor = clone.isMinor;
+	    mobilePhone = clone.mobilePhone;
+	    name = clone.name;
+	    workPhone = clone.workPhone;
+	}
+	
+	
     public ScPerson() {}
 }
