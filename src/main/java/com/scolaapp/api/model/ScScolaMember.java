@@ -6,8 +6,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 
+
+@Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
 @XmlRootElement(name="ScScolaMember")

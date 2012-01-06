@@ -62,7 +62,7 @@ public class ScUtil
     }
     
     
-    public static void throwWebApplictionException(int statusCode, String reason)
+    public static void throwWebApplicationException(int statusCode, String reason)
     {
         throwWebApplicationException(null, statusCode, reason);
     }

@@ -38,7 +38,7 @@ public class ScDAO extends DAOBase
             returnable = ofy().get(type, id);
         } catch (NotFoundException e) {
             ScUtil.log().severe(String.format("No persisted %s instance with id '%'.", type.getName(), id));
-            throw new WebApplicationException(e, HttpServletResponse.SC_NOT_FOUND);
+            throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
         return returnable;

@@ -155,7 +155,7 @@ public class ScAuthHandler
     
         if (isValid && !authInfo.isListed) {
             ScUtil.log().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authInfo.name));
-            ScUtil.throwWebApplictionException(HttpServletResponse.SC_NOT_FOUND, "name");
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND, "name");
         }
         
         return isValid;
@@ -245,7 +245,7 @@ public class ScAuthHandler
             
             ScUtil.log().fine(String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
         } catch (Exception e) {
-            throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ScUtil.throwWebApplictionException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     
