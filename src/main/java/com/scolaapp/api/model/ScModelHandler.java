@@ -8,12 +8,15 @@ import org.jboss.resteasy.annotations.Form;
 
 import com.googlecode.objectify.*;
 
-import com.scolaapp.api.utils.ScAppEnv;
+import com.scolaapp.api.utils.ScDAO;
 
 
 @Path("model")
 public class ScModelHandler
 {
+    private static final ScDAO DAO = new ScDAO();
+    
+    
     @GET
     @Path("person")
     @Produces({MediaType.APPLICATION_JSON})
@@ -22,7 +25,7 @@ public class ScModelHandler
     	ScPerson person = null;
     	
         try {
-            person = ScAppEnv.ofy().get(ScPerson.class, email);
+            person = DAO.ofy().get(ScPerson.class, email);
         } catch (NotFoundException e) {
             throw new WebApplicationException(e, HttpServletResponse.SC_NOT_FOUND);
         }

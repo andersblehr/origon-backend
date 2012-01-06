@@ -15,10 +15,8 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
-import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
@@ -26,8 +24,9 @@ import com.googlecode.objectify.NotFoundException;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
-import com.scolaapp.api.utils.ScAppEnv;
+import com.scolaapp.api.utils.ScUtil;
 import com.scolaapp.api.utils.ScCrypto;
+import com.scolaapp.api.utils.ScDAO;
 
 
 @Path("auth")
@@ -35,20 +34,16 @@ public class ScAuthHandler
 {
     private static final char[] symbols = new char[36];
     
+    private static final ScDAO DAO = new ScDAO();
+    
     private final int kRegistrationCodeLength = 6;
     private final int kMinimumPasswordLength = 6;
-    
-    private Exception servletException;
-    private int servletStatusCode;
-    private String servletReason;
-    
+
+    private InternetAddress email;
     private ScAuthInfo authInfo;
-    
     private String authIdent;
     private String authPassword;
 
-    private InternetAddress userInternetAddress;
-    
     
     static
     {
@@ -80,8 +75,8 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.deviceUUIDHash = ScCrypto.hashUsingSHA1(UUID);
         } else {
-            ScAppEnv.log().severe(String.format("Invalid UUID: %s. Potential intruder, barring entry.", UUID));
-            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
+            ScUtil.log().severe(String.format("Invalid UUID: %s. Potential intruder, barring entry.", UUID));
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return isValid;
@@ -95,24 +90,22 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.name = name;
         } else {
-            ScAppEnv.log().severe(String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
-            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
+            ScUtil.log().severe(String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return isValid;
     }
     
     
-    private boolean isEmailValid(String email)
+    private boolean isEmailValid(String email_)
     {
-        boolean isValid = true;
-        
         try {
-            userInternetAddress = new InternetAddress(email);
-            authInfo.email = email;
+            email = new InternetAddress(email_);
+            authInfo.email = email_;
             
             try {
-                ScPerson person = ScAppEnv.ofy().get(ScPerson.class, email);
+                ScPerson person = DAO.ofy().get(ScPerson.class, email_);
                 
                 authInfo.isListed = true;
                 authInfo.isActive = person.isActive;
@@ -121,15 +114,11 @@ public class ScAuthHandler
                 authInfo.isActive = false;
             }
         } catch (AddressException e) {
-            ScAppEnv.log().info(String.format("'%s' is not a valid email address.", email));
-            servletException = e;
-            servletStatusCode = HttpServletResponse.SC_UNAUTHORIZED;
-            servletReason = "email";
-            
-            isValid = false;
+            ScUtil.log().info(String.format("'%s' is not a valid email address.", email_));
+            ScUtil.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, "email");
         } 
         
-        return isValid;
+        return true;
     }
     
     
@@ -138,8 +127,8 @@ public class ScAuthHandler
         boolean isValid = true;
 
         try {
-            ScScola scola = ScAppEnv.ofy().get(ScScola.class, scolaShortname);
-            Map<Key<ScPerson>, ScPerson> scolaMembers = ScAppEnv.ofy().get(Arrays.asList(scola.members));
+            ScScola scola = DAO.ofy().get(ScScola.class, scolaShortname);
+            Map<Key<ScPerson>, ScPerson> scolaMembers = DAO.ofy().get(Arrays.asList(scola.members));
             
             for (Key<ScPerson> scolaMemberKey: scola.members) {
                 ScPerson person = scolaMembers.get(scolaMemberKey);
@@ -152,32 +141,21 @@ public class ScAuthHandler
                     break;
                 }
             }
-            
-            try {
-                userInternetAddress = new InternetAddress(authInfo.email);
-            } catch (AddressException e) {
-                ScAppEnv.log().severe(String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authInfo.email, authInfo.name, scolaShortname));
-                servletException = e;
-                servletStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                servletReason = "email";
-                
-                isValid = false;
-            }
         } catch (NotFoundException e) {
-            ScAppEnv.log().info(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
-            servletException = e;
-            servletStatusCode = HttpServletResponse.SC_NOT_FOUND;
-            servletReason = "scola";
-            
-            isValid = false;
+            ScUtil.log().info(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
+            ScUtil.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, "scola");
         }
-        
-        if (isValid && !authInfo.isListed) {
-            ScAppEnv.log().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authInfo.name));
-            servletStatusCode = HttpServletResponse.SC_NOT_FOUND;
-            servletReason = "name";
             
-            isValid = false;
+        try {
+            email = new InternetAddress(authInfo.email);
+        } catch (AddressException e) {
+            ScUtil.log().severe(String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authInfo.email, authInfo.name, scolaShortname));
+            ScUtil.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "email");
+        }
+    
+        if (isValid && !authInfo.isListed) {
+            ScUtil.log().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authInfo.name));
+            ScUtil.throwWebApplictionException(HttpServletResponse.SC_NOT_FOUND, "name");
         }
         
         return isValid;
@@ -191,8 +169,8 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.passwordHash = ScCrypto.generatePasswordHash(password, authInfo.email);
         } else {
-            ScAppEnv.log().severe(String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
-            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
+            ScUtil.log().severe(String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return isValid;
@@ -206,11 +184,6 @@ public class ScAuthHandler
         
         boolean isValid = ((HTTPHeaderAuth != null) && (HTTPHeaderAuth.indexOf("Basic ") == 0));
         
-        if (!isValid) {
-            ScAppEnv.log().severe(String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", HTTPHeaderAuth));
-            servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
-        }
-
         if (isValid) {
             String base64EncodedAuthString = HTTPHeaderAuth.split(" ")[1];
             
@@ -220,24 +193,21 @@ public class ScAuthHandler
                 
                 authElements = authString.split(":");
                 isValid = (authElements.length == 2);
-            
-                if (!isValid) {
-                    ScAppEnv.log().severe(String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", authString));
-                    servletStatusCode = HttpServletResponse.SC_FORBIDDEN;
-                }
             } catch (UnsupportedEncodingException e) {
-                ScAppEnv.log().severe("BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.");
-                servletException = e;
-                servletStatusCode = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-                servletReason = "auth";
-                
-                isValid = false;
+                ScUtil.log().severe("BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.");
+                ScUtil.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "auth");
             }
+        } else {
+            ScUtil.log().severe(String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", HTTPHeaderAuth));
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         if (isValid) {
             authIdent = authElements[0];
             authPassword = authElements[1];
+        } else {
+            ScUtil.log().severe(String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", authString));
+            ScUtil.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return isValid;
@@ -264,7 +234,7 @@ public class ScAuthHandler
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("ablehr@gmail.com"));
-            msg.addRecipient(Message.RecipientType.TO, userInternetAddress);
+            msg.addRecipient(Message.RecipientType.TO, email);
             
             // TODO: Localise message
             // TODO: Provide URL directly to app on device
@@ -273,32 +243,13 @@ public class ScAuthHandler
             
             Transport.send(msg);
             
-            ScAppEnv.log().fine(String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
+            ScUtil.log().fine(String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
         } catch (Exception e) {
             throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     
     
-    private void throwWebApplicationException()
-    {
-        ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
-        responseBuilder.status(servletStatusCode);
-        
-        if (servletReason != null) {
-            responseBuilder.header("reason", servletReason);
-        }
-        
-        Response response = responseBuilder.build();
-        
-        if (servletException != null) {
-            throw new WebApplicationException(servletException, response);
-        } else {
-            throw new WebApplicationException(response);
-        }
-    }
-    
-     
     @GET
     @Path("register")
     @Produces({MediaType.APPLICATION_JSON})
@@ -310,18 +261,16 @@ public class ScAuthHandler
         
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
-        isValid = isValid && isNameValid(name);
-        isValid = isValid && isUUIDValid(deviceUUID);
         isValid = isValid && ((authIdent.indexOf("@") > 0) ? isEmailValid(authIdent) : isScolaShortnameValid(authIdent));
         isValid = isValid && isPasswordValid(authPassword);
+        isValid = isValid && isNameValid(name);
+        isValid = isValid && isUUIDValid(deviceUUID);
         
         if (isValid) {
             authInfo.registrationCode = generateRegistrationCode();
-            sendRegistrationMessage();
+            DAO.ofy().put(authInfo);
             
-            ScAppEnv.ofy().put(authInfo);
-        } else {
-            throwWebApplicationException();
+            sendRegistrationMessage();
         }
         
         return authInfo;
@@ -338,19 +287,17 @@ public class ScAuthHandler
         ScScolaMember member = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            authInfo = ScAppEnv.ofy().get(ScAuthInfo.class, authIdent);
+            authInfo = DAO.getOrThrow(ScAuthInfo.class, authIdent);
             
             willConfirmUser = ScCrypto.generatePasswordHash(authPassword, authIdent).equals(authInfo.passwordHash);
             willConfirmUser = willConfirmUser && deviceUUIDHash.equals(authInfo.deviceUUIDHash);
-        } else {
-            throwWebApplicationException();
         }
         
         if (willConfirmUser) {
             ScPerson newUser;
             
             if (authInfo.isListed) {
-                newUser = ScAppEnv.ofy().get(ScPerson.class, authInfo.email);
+                newUser = DAO.getOrThrow(ScPerson.class, authInfo.email);
             } else {
                 newUser = new ScPerson(authInfo.email, authInfo.name);
             }
@@ -358,10 +305,11 @@ public class ScAuthHandler
             member = new ScScolaMember(newUser, authInfo.passwordHash);
             member.isActive = true;
             
-            ScAppEnv.ofy().put(member);
-            ScAppEnv.ofy().delete(authInfo);
+            DAO.ofy().put(member);
+            DAO.ofy().delete(authInfo);
         } else {
-            
+            ScUtil.log().severe(String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Potential intruder, barring entry.", HTTPHeaderAuth, authIdent, authPassword));
+            throw new WebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return member;

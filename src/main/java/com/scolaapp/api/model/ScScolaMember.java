@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
@@ -13,6 +14,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 public class ScScolaMember extends ScPerson {
     public Date memberSince;
     public String passwordHash;
+    public Key<ScScola>[] scolas;
     
     
     public ScScolaMember(ScPerson newMember, String passwordHash_)
