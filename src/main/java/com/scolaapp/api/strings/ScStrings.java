@@ -13,17 +13,23 @@ public class ScStrings
     public String strInvalidScolaShortnameAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
-    public String strNoScolaWithShortnameAlert;
-    public String strScolaHasNoListingForNameAlert;
+    public String strScolaNotFoundAlert;
+    public String strInvitationNotFoundAlert;
+    public String strUserExistsAlertTitle;
+    public String strUserExistsButNotLoggedInAlert;
+    public String strUserExistsAndLoggedInAlert;
     
-    // Generic strings
+    // Button titles
     public String strOK;
     public String strCancel;
+    public String strHaveAccess;
+    public String strHaveCode;
+    public String strLater;
     public String strTryAgain;
     public String strGoBack;
-    public String strPleaseWait;
+    public String strContinue;
     
-    // Root view
+    // Auth view
     public String strScolaDescription;
     public String strMembershipPrompt;
     public String strIsNew;
@@ -38,11 +44,10 @@ public class ScStrings
     public String strScolaShortnamePrompt;
     public String strNewPasswordPrompt;
     public String strPasswordPrompt;
+    public String strPleaseWait;
     public String strUserHelpCompleteRegistration;
     public String strEmailSentPopUpTitle;
     public String strEmailSentPopUpMessage;
-    public String strContinue;
-    public String strLater;
     public String strSeeYouLaterPopUpTitle;
     public String strSeeYouLaterPopUpMessage;
     public String strWelcomeBackPopUpTitle;
@@ -68,20 +73,26 @@ public class ScStrings
             strInvalidScolaShortnameAlert       = "Scola-kortnavnet er for kort. Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
-            strNoScolaWithShortnameAlert        = "Det finnes ingen scola med kortnavn \"%@\". Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
-            strScolaHasNoListingForNameAlert    = "Det er ikke registrert en invitasjon for %@ til scola med kortnavn \"%@\". Vennligst oppgi navnet ditt nøyaktig slik det står i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
+            strScolaNotFoundAlert        = "Det finnes ingen scola med kortnavn \"%@\". Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
+            strInvitationNotFoundAlert    = "Det er ikke registrert en invitasjon for %@ til scola med kortnavn \"%@\". Vennligst oppgi navnet ditt nøyaktig slik det står i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
+            strUserExistsAlertTitle             = "Allerede medlem";
+            strUserExistsButNotLoggedInAlert    = "Du er allerede Scola-medlem, men passordet du har oppgitt stemmer ikke med det som er registrert hos oss. Vennligst oppgi passordet på nytt.";
+            strUserExistsAndLoggedInAlert       = "Du er allerede Scola-medlem og er nå logget inn.";
             
-            // Generic strings
+            // Button titles
             strOK                               = "OK";
             strCancel                           = "Avbryt";
+            strHaveAccess                       = "Har tilgang";
+            strHaveCode                         = "Har kode";
+            strLater                            = "Nei, ikke nå";
             strTryAgain                         = "Prøv igjen";
             strGoBack                           = "Gå tilbake";
-            strPleaseWait                       = "Vennligst vent...";
+            strContinue                         = "Fortsett";
             
-            // Root view UI strings
+            // Auth view
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
-            strMembershipPrompt                 = "Er du ny her? Invitert? Allerede medlem?";
-            strIsNew                            = "Ny her";
+            strMembershipPrompt                 = "Allerede medlem? Første gang her? Invitert?";
+            strIsNew                            = "Første gang";
             strIsInvited                        = "Invitert";
             strIsMember                         = "Medlem";
             strUserHelpNew                      = "Om du vil bli Scola-medlem, vennligst oppgi:";
@@ -93,15 +104,14 @@ public class ScStrings
             strScolaShortnamePrompt             = "Scola-koden oppgitt i invitasjonen";
             strNewPasswordPrompt                = "Et fritt valgt passord";
             strPasswordPrompt                   = "Passordet ditt";
+            strPleaseWait                       = "Vennligst vent...";
             strUserHelpCompleteRegistration     = "For å fullføre registreringen, vennligst oppgi:";
             strEmailSentPopUpTitle              = "Registreringskode sendt";
             strEmailSentPopUpMessage            = "En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
-            strContinue                         = "Fortsett";     
-            strLater                            = "Nei, ikke nå";
             strSeeYouLaterPopUpTitle            = "Ser deg senere!";
             strSeeYouLaterPopUpMessage          = "Du kan trygt forlate Scola. Vi fortsetter neste gang du er innom.";
             strWelcomeBackPopUpTitle            = "Velkommen tilbake!";
-            strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen.";
+            strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
         } else {
@@ -113,20 +123,26 @@ public class ScStrings
             strInvalidScolaShortnameAlert       = "The scola shortname is too short. Please use the exact spelling as provided in the invitation.";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
-            strNoScolaWithShortnameAlert        = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
-            strScolaHasNoListingForNameAlert    = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
+            strScolaNotFoundAlert        = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
+            strInvitationNotFoundAlert    = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
+            strUserExistsAlertTitle             = "Already member";
+            strUserExistsButNotLoggedInAlert    = "You are already a Scola member, but the password you have provided does not match our records. Please enter your password again.";
+            strUserExistsAndLoggedInAlert       = "You are already a Scola member and are now logged in.";
             
-            // Generic strings
+            // Button titles
             strOK                               = "OK";
             strCancel                           = "Cancel";
+            strHaveAccess                       = "Have access";
+            strHaveCode                         = "Have code";
+            strLater                            = "No, not now";
             strTryAgain                         = "Try again";
             strGoBack                           = "Go back";
-            strPleaseWait                       = "Please wait...";
-            
-            // Root view
+            strContinue                         = "Continue";
+           
+            // Auth view
             strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
-            strMembershipPrompt                 = "Are you new here? Invited? Already a member?";
-            strIsNew                            = "New here";
+            strMembershipPrompt                 = "Already a member? First time here? Invited?";
+            strIsNew                            = "First time";
             strIsInvited                        = "Invited";
             strIsMember                         = "Member";
             strUserHelpNew                      = "To become a Scola member, please provide:";
@@ -138,15 +154,14 @@ public class ScStrings
             strScolaShortnamePrompt             = "The scola code from the invitation";
             strNewPasswordPrompt                = "A password of your choice";
             strPasswordPrompt                   = "Your password";
+            strPleaseWait                       = "Please wait...";
             strUserHelpCompleteRegistration     = "To complete your registration, please provide:";
             strEmailSentPopUpTitle              = "Registration code sent";
             strEmailSentPopUpMessage            = "An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
-            strContinue                         = "Continue";
-            strLater                            = "No, not now";
             strSeeYouLaterPopUpTitle            = "See you later!";
             strSeeYouLaterPopUpMessage          = "You can safely leave Scola. We'll continue next time your drop by.";
             strWelcomeBackPopUpTitle            = "Welcome back!";
-            strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration.";
+            strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, please go back and start over.";
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
         }

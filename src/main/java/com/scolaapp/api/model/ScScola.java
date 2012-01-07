@@ -13,7 +13,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Unindexed
 @Cached(expirationSeconds=600)
 @XmlRootElement(name="ScScola")
-public class ScScola
+public class ScScola extends ScCachedEntity
 {
     public @Id String shortname;
     public String name;
@@ -21,5 +21,17 @@ public class ScScola
     public Key<ScPerson>[] members;
 
     
-    public ScScola() {}
+    public ScScola()
+    {
+        super();
+    }
+    
+    
+    public ScScola(String shortname_, Key<ScPerson> memberKey)
+    {
+        super();
+        
+        shortname = shortname_;
+        members[0] = memberKey;
+    }
 }

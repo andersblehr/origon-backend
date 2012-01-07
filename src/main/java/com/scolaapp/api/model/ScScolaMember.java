@@ -20,6 +20,12 @@ public class ScScolaMember extends ScPerson {
     public Key<ScScola>[] scolas;
     
     
+    public ScScolaMember()
+    {
+        super();
+    }
+    
+    
     public ScScolaMember(ScPerson newMember, String passwordHash_)
     {
         super(newMember);
@@ -27,7 +33,4 @@ public class ScScolaMember extends ScPerson {
         memberSince = new Date();
         passwordHash = passwordHash_;
     }
-    
-    
-    public ScScolaMember() {}
 }

@@ -15,12 +15,14 @@ public class ScAuthInfo
     public @Id String email;
     public String name;
     public String passwordHash;
-    public String deviceUUIDHash;
+    public String deviceUUID;
     public String scolaShortname;
     public String registrationCode;
     
     public boolean isListed;
     public boolean isActive;
+    public boolean isAuthenticated;
+    public boolean isDeviceListed;
     
     
     public ScAuthInfo() {}

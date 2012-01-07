@@ -10,14 +10,14 @@ import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
 import com.scolaapp.api.ScScolaApplication;
 
 
-public class ScUtil
+public class ScLog
 {
     private static final Logger log = Logger.getLogger(ScScolaApplication.class.getName());
 
-    private static ScUtil env = null;
+    private static ScLog env = null;
     
     
-    protected ScUtil() {}
+    protected ScLog() {}
     
     
     public static Logger log()
@@ -27,10 +27,10 @@ public class ScUtil
 
     
     
-    public static ScUtil env()
+    public static ScLog env()
     {
         if (null == env) {
-            env = new ScUtil();
+            env = new ScLog();
         }
         
         return env;

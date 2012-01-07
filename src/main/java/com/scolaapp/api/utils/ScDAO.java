@@ -1,13 +1,13 @@
 package com.scolaapp.api.utils;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.WebApplicationException;
 
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
+import com.scolaapp.api.model.ScDevice;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
@@ -18,6 +18,7 @@ public class ScDAO extends DAOBase
     static
     {
         ObjectifyService.register(ScAuthInfo.class);
+        ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScPerson.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
@@ -37,8 +38,8 @@ public class ScDAO extends DAOBase
         try {
             returnable = ofy().get(type, id);
         } catch (NotFoundException e) {
-            ScUtil.log().severe(String.format("No persisted %s instance with id '%'.", type.getName(), id));
-            throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ScLog.log().severe(String.format("No persisted %s instance with id '%'.", type.getName(), id));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, type.getName());
         }
         
         return returnable;

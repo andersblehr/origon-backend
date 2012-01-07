@@ -48,7 +48,7 @@ public class ScCrypto
                 output = output.concat(String.format("%02x", digestOutput[i]));
             }
         } catch (Exception e) {
-            ScUtil.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
+            ScLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
             throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
