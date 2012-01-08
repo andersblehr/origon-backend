@@ -15,6 +15,9 @@ import com.scolaapp.api.model.ScScolaMember;
 
 public class ScDAO extends DAOBase
 {
+    private ScAppEnv env;
+    
+    
     static
     {
         ObjectifyService.register(ScAuthInfo.class);
@@ -25,9 +28,11 @@ public class ScDAO extends DAOBase
     }
     
     
-    public ScDAO()
+    public ScDAO(ScAppEnv env_)
     {
         super();
+        
+        env = env_;
     }
     
     
@@ -38,8 +43,8 @@ public class ScDAO extends DAOBase
         try {
             returnable = ofy().get(type, id);
         } catch (NotFoundException e) {
-            ScLog.log().severe(String.format("No persisted %s instance with id '%'.", type.getName(), id));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, type.getName());
+            ScLog.warning(env, String.format("No persisted %s instance with id '%s'.", type.getName(), id));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, type);
         }
         
         return returnable;

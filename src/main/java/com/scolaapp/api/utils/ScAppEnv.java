@@ -3,23 +3,21 @@ package com.scolaapp.api.utils;
 
 public class ScAppEnv
 {
-    private static ScAppEnv env = null;
-
-    private String sessionHash;
+    public String appVersion;
+    public String deviceType;
+    public String deviceUUID;
     
     
-    public static ScAppEnv env()
+    protected ScAppEnv(String appVersion_, String deviceType_, String deviceUUID_)
     {
-        if (null == env) {
-            env = new ScAppEnv();
-        }
-        
-        return env;
+        appVersion = appVersion_;
+        deviceType = deviceType_;
+        deviceUUID = deviceUUID_;
     }
     
     
-    public boolean isSessionValid(String sessionHash_)
+    public static ScAppEnv env(String appVersion, String deviceType, String deviceUUID)
     {
-        return sessionHash.equals(sessionHash_);
+        return new ScAppEnv(appVersion, deviceType, deviceUUID);
     }
 }

@@ -2,9 +2,15 @@ package com.scolaapp.api.strings;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+
 @XmlRootElement(name="ScStrings")
 public class ScStrings
 {
+    // Grammar snippets
+    public String strYourPhone;
+    public String strYour_iPod;
+    public String strYour_iPad;
+    
     // Alert messages
     public String strInternalServerError;
     public String strInvalidNameAlert;
@@ -13,11 +19,11 @@ public class ScStrings
     public String strInvalidScolaShortnameAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
-    public String strScolaNotFoundAlert;
-    public String strInvitationNotFoundAlert;
+    public String strScolaInvitationNotFoundAlert;
     public String strUserExistsAlertTitle;
     public String strUserExistsButNotLoggedInAlert;
     public String strUserExistsAndLoggedInAlert;
+    public String strNotLoggedInAlert;
     
     // Button titles
     public String strOK;
@@ -55,6 +61,14 @@ public class ScStrings
     public String strRegistrationCodePrompt;
     public String strRepeatPasswordPrompt;
 
+    // Household view
+    public String strDeviceNameUserHelp;
+    public String strDeviceNamePrompt;
+    public String strAddressUserHelp;
+    public String strStreetAddressPrompt;
+    public String strPostCodeAndCityPrompt;
+    public String strDateOfBirthUserHelp;
+    
     
     public ScStrings()
     {
@@ -65,6 +79,11 @@ public class ScStrings
     public ScStrings(String language)
     {
         if ("nb".equals(language)) {
+            // Grammer snippets
+            strYourPhone                        = "telefonen din";
+            strYour_iPod                        = "iPod'en din";
+            strYour_iPad                        = "iPad'en din";
+            
             // Alert messages
             strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
@@ -73,11 +92,11 @@ public class ScStrings
             strInvalidScolaShortnameAlert       = "Scola-kortnavnet er for kort. Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
-            strScolaNotFoundAlert        = "Det finnes ingen scola med kortnavn \"%@\". Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
-            strInvitationNotFoundAlert    = "Det er ikke registrert en invitasjon for %@ til scola med kortnavn \"%@\". Vennligst oppgi navnet ditt nøyaktig slik det står i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
+            strScolaInvitationNotFoundAlert     = "Det finnes ingen invitasjon til '%@'-scolaen for navnet du har oppgitt. Vennligst oppgi både ditt eget navn og scola-kortnavnet nøyaktig slik de står skrevet i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
             strUserExistsAlertTitle             = "Allerede medlem";
             strUserExistsButNotLoggedInAlert    = "Du er allerede Scola-medlem, men passordet du har oppgitt stemmer ikke med det som er registrert hos oss. Vennligst oppgi passordet på nytt.";
             strUserExistsAndLoggedInAlert       = "Du er allerede Scola-medlem og er nå logget inn.";
+            strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
             
             // Button titles
             strOK                               = "OK";
@@ -114,7 +133,20 @@ public class ScStrings
             strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
+            
+            // Household view
+            strDeviceNameUserHelp               = "Her kan du gi et passende navn til %@.";
+            strDeviceNamePrompt                 = "Et navn til %@";
+            strAddressUserHelp                  = "Vennligst oppgi/verifiser addressen din";
+            strStreetAddressPrompt              = "Gatenavn og nummer";
+            strPostCodeAndCityPrompt            = "Postnummer og poststed";
+            strDateOfBirthUserHelp              = "Ikke rør om du ikke vil oppgi fødselsdatoen din";
         } else {
+            // Grammer snippets
+            strYourPhone                        = "your phone";
+            strYour_iPod                        = "your iPod";
+            strYour_iPad                        = "your iPad";
+            
             // Alert messages
             strInternalServerError              = "An error has occurred. Please try again later.";
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
@@ -123,11 +155,11 @@ public class ScStrings
             strInvalidScolaShortnameAlert       = "The scola shortname is too short. Please use the exact spelling as provided in the invitation.";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
-            strScolaNotFoundAlert        = "There is no scola with shortname '%@'. Please try again and use the exact spelling as provided in the invitation.";
-            strInvitationNotFoundAlert    = "There is no invitation registered for %@ for the scola with shortname '%@'. Please provide your name exactly as it is written in the invitation. (You can correct your name later if it is misspelt.)";
+            strScolaInvitationNotFoundAlert     = "There is no invitation to the '%@' scola for the name you have entered. Please enter your own name and the scola shortname exactly as given in the invitation. (You can correct your name later if it is spelt incorrectly.)";
             strUserExistsAlertTitle             = "Already member";
             strUserExistsButNotLoggedInAlert    = "You are already a Scola member, but the password you have provided does not match our records. Please enter your password again.";
             strUserExistsAndLoggedInAlert       = "You are already a Scola member and are now logged in.";
+            strNotLoggedInAlert                 = "Wrong email or password. Please try again.";
             
             // Button titles
             strOK                               = "OK";
@@ -164,6 +196,15 @@ public class ScStrings
             strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, please go back and start over.";
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
+            
+            // Household view
+            strDeviceNameUserHelp               = "Here you can set a name for %@.";
+            strDeviceNamePrompt                 = "A name for %@";
+            strAddressUserHelp                  = "Please provide/verify your home address:";
+            strStreetAddressPrompt              = "Your street and housenumber";
+            strPostCodeAndCityPrompt            = "Postal code and city/town";
+            strDateOfBirthUserHelp              = "Skip if you do not want to provide your date of birth";
+            
         }
     }
 }

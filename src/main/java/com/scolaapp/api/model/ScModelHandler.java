@@ -14,7 +14,7 @@ import com.scolaapp.api.utils.ScDAO;
 @Path("model")
 public class ScModelHandler
 {
-    private static final ScDAO DAO = new ScDAO();
+    private static final ScDAO DAO = new ScDAO(null);
     
     
     @GET

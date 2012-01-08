@@ -25,6 +25,7 @@ import com.scolaapp.api.model.ScDevice;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
+import com.scolaapp.api.utils.ScAppEnv;
 import com.scolaapp.api.utils.ScLog;
 import com.scolaapp.api.utils.ScCrypto;
 import com.scolaapp.api.utils.ScDAO;
@@ -35,11 +36,12 @@ public class ScAuthHandler
 {
     private static final char[] symbols = new char[36];
     
-    private static final ScDAO DAO = new ScDAO();
-    
     private final int kRegistrationCodeLength = 6;
     private final int kMinimumPasswordLength = 6;
 
+    private ScAppEnv env;
+    private ScDAO DAO;
+    
     private InternetAddress email;
     private ScAuthInfo authInfo;
     private String authIdent;
@@ -75,11 +77,11 @@ public class ScAuthHandler
                 authElements = authString.split(":");
                 isValid = (authElements.length == 2);
             } catch (UnsupportedEncodingException e) {
-                ScLog.log().severe("BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.");
-                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "auth");
+                ScLog.severe(env, "BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.");
+                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, String.format("invalidAuthString(%s)", authString));
             }
         } else {
-            ScLog.log().severe(String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", HTTPHeaderAuth));
+            ScLog.severe(env, String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", HTTPHeaderAuth));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -87,7 +89,7 @@ public class ScAuthHandler
             authIdent = authElements[0];
             authPassword = authElements[1];
         } else {
-            ScLog.log().severe(String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", authString));
+            ScLog.severe(env, String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", authString));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -112,11 +114,14 @@ public class ScAuthHandler
             }
             
             if (authInfo.isActive) {
-                authInfo.passwordHash = DAO.getOrThrow(ScScolaMember.class, authInfo.email).passwordHash;
+                ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
+                
+                authInfo.passwordHash = member.passwordHash;
+                authInfo.member = member;
             }
         } catch (AddressException e) {
-            ScLog.log().info(String.format("'%s' is not a valid email address.", email_));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, "email");
+            ScLog.info(env, String.format("'%s' is not a valid email address.", email_));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, String.format("invalidEmail(%s)", email_));
         } 
         
         return true;
@@ -125,7 +130,7 @@ public class ScAuthHandler
     
     private boolean isScolaShortnameValid(String scolaShortname)
     {
-        boolean isValid = true;
+        boolean isValid = false;
 
         try {
             ScScola scola = DAO.ofy().get(ScScola.class, scolaShortname);
@@ -142,21 +147,23 @@ public class ScAuthHandler
                     break;
                 }
             }
-        } catch (NotFoundException e) {
-            ScLog.log().info(String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, "scola");
-        }
             
-        try {
-            email = new InternetAddress(authInfo.email);
-        } catch (AddressException e) {
-            ScLog.log().severe(String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authInfo.email, authInfo.name, scolaShortname));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "email");
+            if (authInfo.isListed) {
+                isValid = isEmailValid(authInfo.email);
+                    
+                if (!isValid) {
+                    ScLog.severe(env, String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authInfo.email, authInfo.name, scolaShortname));
+                    ScLog.throwWebApplicationException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.format("confirmedEmailInvalid(%s)", authInfo.email));
+                }
+            } else {
+                ScLog.warning(env, String.format("Scola with shortname '%s' has no invitation for name '%s', please check spelling of name.", scolaShortname, authInfo.name));
+            }
+        } catch (NotFoundException e) {
+            ScLog.warning(env, String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
         }
     
-        if (isValid && !authInfo.isListed) {
-            ScLog.log().info(String.format("Scola with shortname '%s' does not have an invitation for '%s', please check spelling of name.", scolaShortname, authInfo.name));
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND, "name");
+        if (!isValid) {
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND);
         }
         
         return isValid;
@@ -175,9 +182,13 @@ public class ScAuthHandler
                 authInfo.isAuthenticated = false;
             } else {
                 authInfo.isAuthenticated = passwordHash.equals(authInfo.passwordHash);
+                
+                if (!authInfo.isAuthenticated) {
+                    authInfo.member = null;
+                }
             }
         } else {
-            ScLog.log().severe(String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
+            ScLog.severe(env, String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -192,7 +203,7 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.name = name;
         } else {
-            ScLog.log().severe(String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
+            ScLog.severe(env, String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -223,7 +234,7 @@ public class ScAuthHandler
                 authInfo.isDeviceListed = true;
             }
         } else {
-            ScLog.log().severe(String.format("Invalid UUID: %s. Potential intruder, barring entry.", authInfo.deviceUUID));
+            ScLog.severe(env, String.format("Invalid UUID: %s. Potential intruder, barring entry.", authInfo.deviceUUID));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -260,9 +271,9 @@ public class ScAuthHandler
             
             Transport.send(msg);
             
-            ScLog.log().fine(String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
+            ScLog.fine(env, String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
         } catch (Exception e) {
-            ScLog.throwWebApplictionException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
     
@@ -271,11 +282,15 @@ public class ScAuthHandler
     @Path("register")
     @Produces({MediaType.APPLICATION_JSON})
     public ScAuthInfo registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                   @QueryParam ("name")          String name,
-                                   @QueryParam ("uuid")          String deviceUUID)
+                                   @QueryParam ("version")       String appVersion,
+                                   @QueryParam ("device")        String deviceType,
+                                   @QueryParam ("uuid")          String deviceUUID,
+                                   @QueryParam ("name")          String name)
     {
-        authInfo = new ScAuthInfo();
+        env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
+        DAO = new ScDAO(env);
         
+        authInfo = new ScAuthInfo();
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
         isValid = isValid && ((authIdent.indexOf("@") > 0) ? isEmailValid(authIdent) : isScolaShortnameValid(authIdent));
@@ -297,14 +312,19 @@ public class ScAuthHandler
     @GET
     @Path("confirm")
     @Produces({MediaType.APPLICATION_JSON})
-    public ScAuthInfo confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                  @QueryParam ("uuid")          String deviceUUID)
+    public ScScolaMember confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
+                                     @QueryParam ("version")       String appVersion,
+                                     @QueryParam ("device")        String deviceType,
+                                     @QueryParam ("uuid")          String deviceUUID)
     {
+        env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
+        DAO = new ScDAO(env);
+        
+        ScScolaMember member = null;
         boolean willConfirmUser = false;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
             authInfo = DAO.getOrThrow(ScAuthInfo.class, authIdent);
-            DAO.ofy().delete(authInfo);
             
             willConfirmUser = ScCrypto.generatePasswordHash(authPassword, authIdent).equals(authInfo.passwordHash);
             willConfirmUser = willConfirmUser && deviceUUID.equals(authInfo.deviceUUID);
@@ -319,42 +339,48 @@ public class ScAuthHandler
                 newUser = new ScPerson(authInfo.email, authInfo.name);
             }
             
-            ScScolaMember member = new ScScolaMember(newUser, authInfo.passwordHash);
+            member = new ScScolaMember(newUser, authInfo.passwordHash);
             member.isActive = true;
             
             DAO.ofy().put(member);
-            
-            authInfo.isListed = true;
-            authInfo.isActive = true;
-            authInfo.isAuthenticated = true;
+            DAO.ofy().delete(authInfo);
         } else {
-            ScLog.log().severe(String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Potential intruder, barring entry.", HTTPHeaderAuth, authIdent, authPassword));
+            ScLog.severe(env, String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Potential intruder, barring entry.", HTTPHeaderAuth, authIdent, authPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
-        return authInfo;
+        return member;
     }
     
     
     @GET
     @Path("login")
     @Produces({MediaType.APPLICATION_JSON})
-    public ScAuthInfo loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                @QueryParam ("uuid")          String deviceUUID,
-                                @QueryParam ("name")          String deviceName)
+    public ScScolaMember loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
+                                   @QueryParam ("version")       String appVersion,
+                                   @QueryParam ("device")        String deviceType,
+                                   @QueryParam ("uuid")          String deviceUUID,
+                                   @QueryParam ("name")          String deviceName)
     {
-        authInfo = new ScAuthInfo();
+        env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
+        DAO = new ScDAO(env);
         
+        ScScolaMember member = null;
         boolean isAuthenticated = false;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authIdent);
+            member = DAO.get(ScScolaMember.class, authIdent);
             
-            isAuthenticated = ScCrypto.generatePasswordHash(authPassword, authIdent).equals(member.passwordHash);
+            isAuthenticated = (member != null) && ScCrypto.generatePasswordHash(authPassword, authIdent).equals(member.passwordHash);
         }
         
-        authInfo.isAuthenticated = isAuthenticated;
+        if (isAuthenticated) {
+            ScLog.info(env, String.format("Authenticated user with id '%s'.", authIdent));
+        } else {
+            ScLog.warning(env, String.format("User with id '%s' failed to authenticate.", authIdent));
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
         
-        return authInfo;
+        return member;
     }
 }

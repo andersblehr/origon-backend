@@ -14,10 +14,41 @@ public class ScLog
 {
     private static final Logger log = Logger.getLogger(ScScolaApplication.class.getName());
 
-    private static ScLog env = null;
+    private static final int SEVERE = 0;
+    private static final int WARNING = 1;
+    private static final int INFO = 2;
+    private static final int FINE = 3;
+    private static final int FINER = 4;
+    private static final int FINEST = 5;
     
     
     protected ScLog() {}
+    
+    
+    protected static void log(ScAppEnv env, String message, int level)
+    {
+        String messageWithMetadata = String.format("[Version %s][%s][%s] %s", env.appVersion, env.deviceType, env.deviceUUID, message);
+        
+        switch (level) {
+            case SEVERE:
+                log.severe(messageWithMetadata);
+                break;
+            case WARNING:
+                log.warning(messageWithMetadata);
+                break;
+            case INFO:
+                log.info(messageWithMetadata);
+                break;
+            case FINE:
+                log.fine(messageWithMetadata);
+                break;
+            case FINER:
+                log.finer(messageWithMetadata);
+                break;
+            default:
+                break;
+        }
+    }
     
     
     public static Logger log()
@@ -26,14 +57,39 @@ public class ScLog
     }
 
     
-    
-    public static ScLog env()
+    public static void severe(ScAppEnv env, String message)
     {
-        if (null == env) {
-            env = new ScLog();
-        }
-        
-        return env;
+        log(env, message, SEVERE);
+    }
+    
+    
+    public static void warning(ScAppEnv env, String message)
+    {
+        log(env, message, WARNING);
+    }
+    
+    
+    public static void info(ScAppEnv env, String message)
+    {
+        log(env, message, INFO);
+    }
+    
+    
+    public static void fine(ScAppEnv env, String message)
+    {
+        log(env, message, FINE);
+    }
+    
+    
+    public static void finer(ScAppEnv env, String message)
+    {
+        log(env, message, FINER);
+    }
+    
+    
+    public static void finest(ScAppEnv env, String message)
+    {
+        log(env, message, FINEST);
     }
     
     
@@ -42,7 +98,7 @@ public class ScLog
         ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
         responseBuilder.status(statusCode);
         
-        if (reason != null) {
+        if (reason != "") {
             responseBuilder.header("reason", reason);
         }
         
@@ -56,9 +112,24 @@ public class ScLog
     }
     
     
-    public static void throwWebApplictionException(Exception exception, int statusCode)
+    public static void throwWebApplicationException(Exception exception, int statusCode, Class<?> clazz)
     {
-        throwWebApplicationException(exception, statusCode, null);
+        String[] pathElements = clazz.getName().split("\\.");
+        String className = pathElements[pathElements.length - 1];
+        
+        throwWebApplicationException(exception, statusCode, className);
+    }
+    
+    
+    public static void throwWebApplicationException(int statusCode, Class<?> clazz)
+    {
+        throwWebApplicationException(null, statusCode, clazz);
+    }
+    
+    
+    public static void throwWebApplicationException(Exception exception, int statusCode)
+    {
+        throwWebApplicationException(exception, statusCode, "");
     }
     
     
@@ -70,6 +141,6 @@ public class ScLog
     
     public static void throwWebApplicationException(int statusCode)
     {
-        throwWebApplicationException(null, statusCode, null);
+        throwWebApplicationException(null, statusCode, "");
     }
 }
