@@ -7,9 +7,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ScStrings
 {
     // Grammar snippets
-    public String strYourPhone;
-    public String strYour_iPod;
-    public String strYour_iPad;
+    public String strPhoneDeterminate;
+    public String str_iPodDeterminate;
+    public String str_iPadDeterminate;
+    public String strThisPhone;
+    public String strThis_iPod;
+    public String strThis_iPad;
     
     // Alert messages
     public String strInternalServerError;
@@ -62,12 +65,21 @@ public class ScStrings
     public String strRepeatPasswordPrompt;
 
     // Household view
+    public String strNameUserHelp;
     public String strDeviceNameUserHelp;
     public String strDeviceNamePrompt;
-    public String strAddressUserHelp;
+    public String strProvideAddressUserHelp;
+    public String strVerifyAddressUserHelp;
     public String strStreetAddressPrompt;
     public String strPostCodeAndCityPrompt;
+    
+    // Date of birth view
+    public String strGenderUserHelp;
+    public String strFemale;
+    public String strMale;
+    public String strNeutral;
     public String strDateOfBirthUserHelp;
+    public String strSkip;
     
     
     public ScStrings()
@@ -80,9 +92,12 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             // Grammer snippets
-            strYourPhone                        = "telefonen din";
-            strYour_iPod                        = "iPod'en din";
-            strYour_iPad                        = "iPad'en din";
+            strPhoneDeterminate                 = "telefonen";
+            str_iPodDeterminate                 = "iPod'en";
+            str_iPadDeterminate                 = "iPad'en";
+            strThisPhone                        = String.format("denne %s", strPhoneDeterminate);
+            strThis_iPod                        = String.format("denne %s", str_iPodDeterminate);
+            strThis_iPad                        = String.format("denne %s", str_iPadDeterminate);
             
             // Alert messages
             strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
@@ -135,17 +150,29 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             
             // Household view
-            strDeviceNameUserHelp               = "Her kan du gi et passende navn til %@.";
-            strDeviceNamePrompt                 = "Et navn til %@";
-            strAddressUserHelp                  = "Vennligst oppgi/verifiser addressen din";
-            strStreetAddressPrompt              = "Gatenavn og nummer";
+            strNameUserHelp                     = "Vennligst verifiser navnet ditt:";
+            strDeviceNameUserHelp               = "Alternativ beskrivelse av %@ (valgfritt):";
+            strDeviceNamePrompt                 = "Alternativ beskrivelse";
+            strProvideAddressUserHelp           = "Om du vil, kan du oppgi adressen din:";
+            strVerifyAddressUserHelp            = "Vennligst verifiser adressen din:";
+            strStreetAddressPrompt              = "Gatenavn og husnummer";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
-            strDateOfBirthUserHelp              = "Ikke rør om du ikke vil oppgi fødselsdatoen din";
+            
+            // Date of birth view
+            strGenderUserHelp                   = "Er du kvinner eller mann?";
+            strFemale                           = "Kvinne";
+            strMale                             = "Mann";
+            strNeutral                          = "Nøytral";
+            strDateOfBirthUserHelp              = "Om du vil, kan du oppgi fødselsdatoen din:";
+            strSkip                             = "Hopp over";
         } else {
             // Grammer snippets
-            strYourPhone                        = "your phone";
-            strYour_iPod                        = "your iPod";
-            strYour_iPad                        = "your iPad";
+            strPhoneDeterminate                 = "the phone";
+            str_iPodDeterminate                 = "the iPod";
+            str_iPadDeterminate                 = "the iPad";
+            strThisPhone                        = "this phone";
+            strThis_iPod                        = "this iPod";
+            strThis_iPad                        = "this iPad";
             
             // Alert messages
             strInternalServerError              = "An error has occurred. Please try again later.";
@@ -198,13 +225,21 @@ public class ScStrings
             strRepeatPasswordPrompt             = "The same password as before";
             
             // Household view
-            strDeviceNameUserHelp               = "Here you can set a name for %@.";
-            strDeviceNamePrompt                 = "A name for %@";
-            strAddressUserHelp                  = "Please provide/verify your home address:";
-            strStreetAddressPrompt              = "Your street and housenumber";
+            strNameUserHelp                     = "Please verify your name:";
+            strDeviceNameUserHelp               = "Alternative description for %@ (optional):";
+            strDeviceNamePrompt                 = "Alternative description";
+            strProvideAddressUserHelp           = "If you want, you can provide your home address:";
+            strVerifyAddressUserHelp            = "Please verify your home address:";
+            strStreetAddressPrompt              = "Street name and house number";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
-            strDateOfBirthUserHelp              = "Skip if you do not want to provide your date of birth";
             
+            // Date of birth view
+            strGenderUserHelp                   = "Are you female or male?";
+            strFemale                           = "Female";
+            strMale                             = "Male";
+            strNeutral                          = "Neutral";
+            strDateOfBirthUserHelp              = "If you want, you can provide your date of birth:";
+            strSkip                             = "Skip";
         }
     }
 }
