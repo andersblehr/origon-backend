@@ -10,6 +10,9 @@ public class ScStrings
     public String strPhoneDeterminate;
     public String str_iPodDeterminate;
     public String str_iPadDeterminate;
+    public String strPhonePossessive;
+    public String str_iPodPossessive;
+    public String str_iPadPossessive;
     public String strThisPhone;
     public String strThis_iPod;
     public String strThis_iPad;
@@ -27,6 +30,8 @@ public class ScStrings
     public String strUserExistsButNotLoggedInAlert;
     public String strUserExistsAndLoggedInAlert;
     public String strNotLoggedInAlert;
+    public String strNoAddressAlert;
+    public String strNoDeviceNameAlert;
     
     // Button titles
     public String strOK;
@@ -37,6 +42,11 @@ public class ScStrings
     public String strTryAgain;
     public String strGoBack;
     public String strContinue;
+    public String strSkipThis;
+    public String strNext;
+    public String strDone;
+    public String strUseBuiltIn;
+    public String strUseNew;
     
     // Auth view
     public String strScolaDescription;
@@ -64,22 +74,21 @@ public class ScStrings
     public String strRegistrationCodePrompt;
     public String strRepeatPasswordPrompt;
 
-    // Household view
-    public String strNameUserHelp;
-    public String strDeviceNameUserHelp;
-    public String strDeviceNamePrompt;
+    // Address view
     public String strProvideAddressUserHelp;
     public String strVerifyAddressUserHelp;
-    public String strStreetAddressPrompt;
+    public String strAddressLine1Prompt;
+    public String strAddressLine2Prompt;
     public String strPostCodeAndCityPrompt;
     
     // Date of birth view
+    public String strDeviceNameUserHelp;
+    public String strDeviceNamePrompt;
     public String strGenderUserHelp;
     public String strFemale;
     public String strMale;
     public String strNeutral;
     public String strDateOfBirthUserHelp;
-    public String strSkip;
     
     
     public ScStrings()
@@ -95,9 +104,12 @@ public class ScStrings
             strPhoneDeterminate                 = "telefonen";
             str_iPodDeterminate                 = "iPod'en";
             str_iPadDeterminate                 = "iPad'en";
-            strThisPhone                        = String.format("denne %s", strPhoneDeterminate);
-            strThis_iPod                        = String.format("denne %s", str_iPodDeterminate);
-            strThis_iPad                        = String.format("denne %s", str_iPadDeterminate);
+            strPhonePossessive                  = "telefonens";
+            str_iPodPossessive                  = "iPod'ens";
+            str_iPadPossessive                  = "iPad'ens";
+            strThisPhone                        = "denne telefonen";
+            strThis_iPod                        = "denne iPod'en";
+            strThis_iPad                        = "denne iPad'en";
             
             // Alert messages
             strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
@@ -112,6 +124,8 @@ public class ScStrings
             strUserExistsButNotLoggedInAlert    = "Du er allerede Scola-medlem, men passordet du har oppgitt stemmer ikke med det som er registrert hos oss. Vennligst oppgi passordet på nytt.";
             strUserExistsAndLoggedInAlert       = "Du er allerede Scola-medlem og er nå logget inn.";
             strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
+            strNoAddressAlert                   = "Vennligst oppgi en adresse. Det holder at ett av feltene er utfylt.";
+            strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ innebygde navn (\"%@\"), eller vil du oppgi et nytt?";
             
             // Button titles
             strOK                               = "OK";
@@ -122,6 +136,11 @@ public class ScStrings
             strTryAgain                         = "Prøv igjen";
             strGoBack                           = "Gå tilbake";
             strContinue                         = "Fortsett";
+            strSkipThis                         = "Hopp over";
+            strNext                             = "Neste";
+            strDone                             = "Ferdig";
+            strUseBuiltIn                       = "Bruk innebygd";
+            strUseNew                           = "Nytt navn";
             
             // Auth view
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
@@ -149,27 +168,29 @@ public class ScStrings
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             
-            // Household view
-            strNameUserHelp                     = "Vennligst verifiser navnet ditt:";
-            strDeviceNameUserHelp               = "Alternativ beskrivelse av %@ (valgfritt):";
-            strDeviceNamePrompt                 = "Alternativ beskrivelse";
-            strProvideAddressUserHelp           = "Om du vil, kan du oppgi adressen din:";
+            // Address view
+            strProvideAddressUserHelp           = "Vennligst oppgi adressen din (eller la den stå tom):";
             strVerifyAddressUserHelp            = "Vennligst verifiser adressen din:";
-            strStreetAddressPrompt              = "Gatenavn og husnummer";
+            strAddressLine1Prompt               = "Adresselinje 1";
+            strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
             
             // Date of birth view
-            strGenderUserHelp                   = "Er du kvinner eller mann?";
+            strDeviceNameUserHelp               = "Oppgi et navn til %@, f.eks:";
+            strDeviceNamePrompt                 = "Et beskrivende navn på %@";
+            strGenderUserHelp                   = "Er du kvinne eller mann?";
             strFemale                           = "Kvinne";
             strMale                             = "Mann";
             strNeutral                          = "Nøytral";
             strDateOfBirthUserHelp              = "Om du vil, kan du oppgi fødselsdatoen din:";
-            strSkip                             = "Hopp over";
         } else {
             // Grammer snippets
             strPhoneDeterminate                 = "the phone";
             str_iPodDeterminate                 = "the iPod";
             str_iPadDeterminate                 = "the iPad";
+            strPhonePossessive                  = "the phone's";
+            str_iPodPossessive                  = "the iPod's";
+            str_iPadPossessive                  = "the iPad's";
             strThisPhone                        = "this phone";
             strThis_iPod                        = "this iPod";
             strThis_iPad                        = "this iPad";
@@ -187,6 +208,8 @@ public class ScStrings
             strUserExistsButNotLoggedInAlert    = "You are already a Scola member, but the password you have provided does not match our records. Please enter your password again.";
             strUserExistsAndLoggedInAlert       = "You are already a Scola member and are now logged in.";
             strNotLoggedInAlert                 = "Wrong email or password. Please try again.";
+            strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
+            strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ built-in name ('%@'), or do you want to provide a new name?";
             
             // Button titles
             strOK                               = "OK";
@@ -197,6 +220,11 @@ public class ScStrings
             strTryAgain                         = "Try again";
             strGoBack                           = "Go back";
             strContinue                         = "Continue";
+            strSkipThis                         = "Skip this";
+            strNext                             = "Next";
+            strDone                             = "Done";
+            strUseBuiltIn                       = "Use built-in";
+            strUseNew                           = "New name";
            
             // Auth view
             strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
@@ -224,22 +252,21 @@ public class ScStrings
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
             
-            // Household view
-            strNameUserHelp                     = "Please verify your name:";
-            strDeviceNameUserHelp               = "Alternative description for %@ (optional):";
-            strDeviceNamePrompt                 = "Alternative description";
-            strProvideAddressUserHelp           = "If you want, you can provide your home address:";
+            // Address view
+            strProvideAddressUserHelp           = "Please provide your home address (or leave it empty):";
             strVerifyAddressUserHelp            = "Please verify your home address:";
-            strStreetAddressPrompt              = "Street name and house number";
+            strAddressLine1Prompt               = "Address line 1";
+            strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
             
             // Date of birth view
-            strGenderUserHelp                   = "Are you female or male?";
+            strDeviceNameUserHelp               = "Provide a name for %@, e.g:";
+            strDeviceNamePrompt                 = "A descriptive name for %@";
+            strGenderUserHelp                   = "Please provide your gender";
             strFemale                           = "Female";
             strMale                             = "Male";
-            strNeutral                          = "Neutral";
-            strDateOfBirthUserHelp              = "If you want, you can provide your date of birth:";
-            strSkip                             = "Skip";
+            strNeutral                          = "N/A";
+            strDateOfBirthUserHelp              = "Optionally provide your date of birth:";
         }
     }
 }
