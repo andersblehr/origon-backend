@@ -32,6 +32,8 @@ public class ScStrings
     public String strNotLoggedInAlert;
     public String strNoAddressAlert;
     public String strNoDeviceNameAlert;
+    public String strNotBornAlert;
+    public String strUnrealisticAgeAlert;
     
     // Button titles
     public String strOK;
@@ -45,7 +47,7 @@ public class ScStrings
     public String strSkipThis;
     public String strNext;
     public String strDone;
-    public String strUseBuiltIn;
+    public String strUseConfigured;
     public String strUseNew;
     
     // Auth view
@@ -89,6 +91,8 @@ public class ScStrings
     public String strMale;
     public String strNeutral;
     public String strDateOfBirthUserHelp;
+    public String strDateOfBirthPrompt;
+    public String strDateOfBirthClickHerePrompt;
     
     
     public ScStrings()
@@ -125,7 +129,9 @@ public class ScStrings
             strUserExistsAndLoggedInAlert       = "Du er allerede Scola-medlem og er nå logget inn.";
             strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
             strNoAddressAlert                   = "Vennligst oppgi en adresse. Det holder at ett av feltene er utfylt.";
-            strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ innebygde navn (\"%@\"), eller vil du oppgi et nytt?";
+            strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ lagrede navn (\"%@\"), eller vil du oppgi et nytt?";
+            strNotBornAlert                     = "Du har oppgitt en fødselsdato i framtiden. Vi beklager veldig, men du må nok være født for å kunne bruke Scola.";
+            strUnrealisticAgeAlert              = "Du har oppgitt at du er %d år gammel. Det er vanskelig å tro. Vennligst oppgi din virkelige fødselsdato.";
             
             // Button titles
             strOK                               = "OK";
@@ -139,7 +145,7 @@ public class ScStrings
             strSkipThis                         = "Hopp over";
             strNext                             = "Neste";
             strDone                             = "Ferdig";
-            strUseBuiltIn                       = "Bruk innebygd";
+            strUseConfigured                       = "Lagret navn";
             strUseNew                           = "Nytt navn";
             
             // Auth view
@@ -169,20 +175,22 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             
             // Address view
-            strProvideAddressUserHelp           = "Vennligst oppgi adressen din (eller la den stå tom):";
+            strProvideAddressUserHelp           = "Hva er adressen din?";
             strVerifyAddressUserHelp            = "Vennligst verifiser adressen din:";
             strAddressLine1Prompt               = "Adresselinje 1";
             strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
             
             // Date of birth view
-            strDeviceNameUserHelp               = "Oppgi et navn til %@, f.eks:";
+            strDeviceNameUserHelp               = "Scola vil referere til %@ som:";
             strDeviceNamePrompt                 = "Et beskrivende navn på %@";
             strGenderUserHelp                   = "Er du kvinne eller mann?";
             strFemale                           = "Kvinne";
             strMale                             = "Mann";
             strNeutral                          = "Nøytral";
-            strDateOfBirthUserHelp              = "Om du vil, kan du oppgi fødselsdatoen din:";
+            strDateOfBirthUserHelp              = "Når ble du født?";
+            strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
+            strDateOfBirthClickHerePrompt       = "Trykk her for å vise datohjulene";
         } else {
             // Grammer snippets
             strPhoneDeterminate                 = "the phone";
@@ -209,7 +217,9 @@ public class ScStrings
             strUserExistsAndLoggedInAlert       = "You are already a Scola member and are now logged in.";
             strNotLoggedInAlert                 = "Wrong email or password. Please try again.";
             strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
-            strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ built-in name ('%@'), or do you want to provide a new name?";
+            strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ configured name ('%@'), or do you want to provide a new name?";
+            strNotBornAlert                     = "You have provided a date of birth that's in the future. We are very sorry, but you must have been born in order to use Scola.";
+            strUnrealisticAgeAlert              = "According to the date your have provided for your birth, you are %d years old. That's hard to believe. Please provide your true date of birth.";
             
             // Button titles
             strOK                               = "OK";
@@ -223,7 +233,7 @@ public class ScStrings
             strSkipThis                         = "Skip this";
             strNext                             = "Next";
             strDone                             = "Done";
-            strUseBuiltIn                       = "Use built-in";
+            strUseConfigured                       = "Configured name";
             strUseNew                           = "New name";
            
             // Auth view
@@ -253,20 +263,22 @@ public class ScStrings
             strRepeatPasswordPrompt             = "The same password as before";
             
             // Address view
-            strProvideAddressUserHelp           = "Please provide your home address (or leave it empty):";
+            strProvideAddressUserHelp           = "What is your home address?";
             strVerifyAddressUserHelp            = "Please verify your home address:";
             strAddressLine1Prompt               = "Address line 1";
             strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
             
             // Date of birth view
-            strDeviceNameUserHelp               = "Provide a name for %@, e.g:";
+            strDeviceNameUserHelp               = "Scola will refer to %@ as:";
             strDeviceNamePrompt                 = "A descriptive name for %@";
             strGenderUserHelp                   = "Please provide your gender";
             strFemale                           = "Female";
             strMale                             = "Male";
             strNeutral                          = "N/A";
-            strDateOfBirthUserHelp              = "Optionally provide your date of birth:";
+            strDateOfBirthUserHelp              = "When were you born?";
+            strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
+            strDateOfBirthClickHerePrompt       = "Tap here to display the date wheels";
         }
     }
 }
