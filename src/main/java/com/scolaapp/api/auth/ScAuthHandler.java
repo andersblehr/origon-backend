@@ -55,7 +55,7 @@ public class ScAuthHandler
         }
         
         for (int i = 10; i < 36; i++) {
-            symbols[i] = (char)('A' + (i - 10));
+            symbols[i] = (char)('a' + (i - 10));
         }
     }
     

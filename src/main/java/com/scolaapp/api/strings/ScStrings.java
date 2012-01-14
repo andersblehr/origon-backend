@@ -18,6 +18,7 @@ public class ScStrings
     public String strThis_iPad;
     
     // Alert messages
+    public String strServerUnavailableAlert;
     public String strInternalServerError;
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
@@ -116,6 +117,7 @@ public class ScStrings
             strThis_iPad                        = "denne iPad'en";
             
             // Alert messages
+            strServerUnavailableAlert           = "Scola-tjenesten er dessverre utilgjengelig akkurat nå. Vennligst prøv igjen senere.";
             strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
@@ -204,6 +206,7 @@ public class ScStrings
             strThis_iPad                        = "this iPad";
             
             // Alert messages
+            strServerUnavailableAlert           = "We are very sorry, but the Scola service is unavailable at the moment. Please try again later.";
             strInternalServerError              = "An error has occurred. Please try again later.";
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";
@@ -219,7 +222,7 @@ public class ScStrings
             strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
             strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ configured name ('%@'), or do you want to provide a new name?";
             strNotBornAlert                     = "You have provided a date of birth that's in the future. We are very sorry, but you must have been born in order to use Scola.";
-            strUnrealisticAgeAlert              = "According to the date your have provided for your birth, you are %d years old. That's hard to believe. Please provide your true date of birth.";
+            strUnrealisticAgeAlert              = "According to the date of birth you have provided, you are %d years old. That's hard to believe. Please provide your true date of birth.";
             
             // Button titles
             strOK                               = "OK";
@@ -233,7 +236,7 @@ public class ScStrings
             strSkipThis                         = "Skip this";
             strNext                             = "Next";
             strDone                             = "Done";
-            strUseConfigured                       = "Configured name";
+            strUseConfigured                    = "Configured";
             strUseNew                           = "New name";
            
             // Auth view
