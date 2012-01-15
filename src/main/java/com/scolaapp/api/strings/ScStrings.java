@@ -24,6 +24,7 @@ public class ScStrings
     public String strInvalidEmailAlert;
     public String strInvalidPasswordAlert;
     public String strInvalidScolaShortnameAlert;
+    public String strEmailAlreadyRegisteredAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
     public String strScolaInvitationNotFoundAlert;
@@ -39,13 +40,14 @@ public class ScStrings
     // Button titles
     public String strOK;
     public String strCancel;
+    public String strLogIn;
+    public String strNewUser;
     public String strHaveAccess;
     public String strHaveCode;
     public String strLater;
     public String strTryAgain;
     public String strGoBack;
     public String strContinue;
-    public String strSkipThis;
     public String strNext;
     public String strDone;
     public String strUseConfigured;
@@ -123,6 +125,7 @@ public class ScStrings
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
             strInvalidScolaShortnameAlert       = "Scola-kortnavnet er for kort. Vennligst oppgi kortnavnet nøyaktig slik det står i invitasjonen.";
+            strEmailAlreadyRegisteredAlert      = "Du er allerede registrert med epost-adressen %@. Vil du logge inn med denne adressen, eller vil du registrere en ny bruker?";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strScolaInvitationNotFoundAlert     = "Det finnes ingen invitasjon til '%@'-scolaen for navnet du har oppgitt. Vennligst oppgi både ditt eget navn og scola-kortnavnet nøyaktig slik de står skrevet i invitasjonen. (Du kan korrigere navnet ditt senere om det er feilstavet.)";
@@ -138,16 +141,17 @@ public class ScStrings
             // Button titles
             strOK                               = "OK";
             strCancel                           = "Avbryt";
+            strLogIn                            = "Logg inn";
+            strNewUser                          = "Ny bruker";
             strHaveAccess                       = "Har tilgang";
             strHaveCode                         = "Har kode";
             strLater                            = "Nei, ikke nå";
             strTryAgain                         = "Prøv igjen";
             strGoBack                           = "Gå tilbake";
             strContinue                         = "Fortsett";
-            strSkipThis                         = "Hopp over";
             strNext                             = "Neste";
             strDone                             = "Ferdig";
-            strUseConfigured                       = "Lagret navn";
+            strUseConfigured                    = "Lagret navn";
             strUseNew                           = "Nytt navn";
             
             // Auth view
@@ -212,6 +216,7 @@ public class ScStrings
             strInvalidEmailAlert                = "Please provide a valid email address";
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
             strInvalidScolaShortnameAlert       = "The scola shortname is too short. Please use the exact spelling as provided in the invitation.";
+            strEmailAlreadyRegisteredAlert      = "You are already registered with the email address %@. Do you want to log in with this address, or do you want to register a new user?";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
             strScolaInvitationNotFoundAlert     = "There is no invitation to the '%@' scola for the name you have entered. Please enter your own name and the scola shortname exactly as given in the invitation. (You can correct your name later if it is spelt incorrectly.)";
@@ -227,13 +232,14 @@ public class ScStrings
             // Button titles
             strOK                               = "OK";
             strCancel                           = "Cancel";
+            strLogIn                            = "Log in";
+            strNewUser                          = "New user";
             strHaveAccess                       = "Have access";
             strHaveCode                         = "Have code";
             strLater                            = "No, not now";
             strTryAgain                         = "Try again";
             strGoBack                           = "Go back";
             strContinue                         = "Continue";
-            strSkipThis                         = "Skip this";
             strNext                             = "Next";
             strDone                             = "Done";
             strUseConfigured                    = "Configured";
