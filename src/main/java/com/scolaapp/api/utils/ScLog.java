@@ -27,7 +27,7 @@ public class ScLog
     
     protected static void log(ScAppEnv env, String message, int level)
     {
-        String messageWithMetadata = String.format("[Version %s][%s][%s] %s", env.appVersion, env.deviceType, env.deviceUUID, message);
+        String messageWithMetadata = String.format("[%s/%s][%s] %s", env.deviceType, env.appVersion, env.deviceUUID.substring(0, 7), message);
         
         switch (level) {
             case SEVERE:

@@ -290,6 +290,8 @@ public class ScAuthHandler
         env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
         DAO = new ScDAO(env);
         
+        ScLog.fine(env, "Registering new user.");
+        
         authInfo = new ScAuthInfo();
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
@@ -319,6 +321,8 @@ public class ScAuthHandler
     {
         env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
         DAO = new ScDAO(env);
+        
+        ScLog.fine(env, "Confirming and logging in new user.");
         
         ScScolaMember member = null;
         boolean willConfirmUser = false;
@@ -364,6 +368,8 @@ public class ScAuthHandler
     {
         env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
         DAO = new ScDAO(env);
+
+        ScLog.fine(env, "Attempting to log in user.");
         
         ScScolaMember member = null;
         boolean isAuthenticated = false;
