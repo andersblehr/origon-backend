@@ -97,6 +97,10 @@ public class ScStrings
     public String strDateOfBirthPrompt;
     public String strDateOfBirthClickHerePrompt;
     
+    // Main view
+    public String strMyPlaceSingle;
+    public String strMyPlaceLiveIns;
+    
     
     public ScStrings()
     {
@@ -197,6 +201,10 @@ public class ScStrings
             strDateOfBirthUserHelp              = "Når ble du født?";
             strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
             strDateOfBirthClickHerePrompt       = "Trykk her for å vise datohjulene";
+            
+            // Main view
+            strMyPlaceSingle                    = "Hjemme hos meg";
+            strMyPlaceLiveIns                   = "Hjemme hos oss";
         } else {
             // Grammer snippets
             strPhoneDeterminate                 = "the phone";
@@ -288,6 +296,10 @@ public class ScStrings
             strDateOfBirthUserHelp              = "When were you born?";
             strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
             strDateOfBirthClickHerePrompt       = "Tap here to display the date wheels";
+            
+            // Main view
+            strMyPlaceSingle                    = "My place";
+            strMyPlaceLiveIns                   = "Our place";
         }
     }
 }
