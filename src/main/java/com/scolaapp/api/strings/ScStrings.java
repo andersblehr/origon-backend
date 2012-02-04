@@ -79,23 +79,26 @@ public class ScStrings
     public String strRegistrationCodePrompt;
     public String strRepeatPasswordPrompt;
 
-    // Address view
+    // Registration view 1
     public String strProvideAddressUserHelp;
     public String strVerifyAddressUserHelp;
     public String strAddressLine1Prompt;
     public String strAddressLine2Prompt;
     public String strPostCodeAndCityPrompt;
-    
-    // Date of birth view
-    public String strDeviceNameUserHelp;
-    public String strDeviceNamePrompt;
-    public String strGenderUserHelp;
-    public String strFemale;
-    public String strMale;
-    public String strNeutral;
     public String strDateOfBirthUserHelp;
     public String strDateOfBirthPrompt;
     public String strDateOfBirthClickHerePrompt;
+    
+    // Registration view 2
+    public String strGenderUserHelp;
+    public String strMobileNumberUserHelp;
+    public String strMobileNumberPrompt;
+    public String strDeviceNameUserHelp;
+    public String strDeviceNamePrompt;
+    public String strFemaleAdult;
+    public String strFemaleMinor;
+    public String strMaleAdult;
+    public String strMaleMinor;
     
     // Main view
     public String strMyPlaceSingle;
@@ -139,7 +142,7 @@ public class ScStrings
             strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
             strNoAddressAlert                   = "Vennligst oppgi en adresse. Det holder at ett av feltene er utfylt.";
             strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ lagrede navn (\"%@\"), eller vil du oppgi et nytt?";
-            strNotBornAlert                     = "Du har oppgitt en fødselsdato i framtiden. Vi beklager veldig, men du må nok være født for å kunne bruke Scola.";
+            strNotBornAlert                     = "Du har oppgitt en fødselsdato i framtiden. Vi beklager veldig, men du må være født for å kunne bruke Scola.";
             strUnrealisticAgeAlert              = "Du har oppgitt at du er %d år gammel. Det er vanskelig å tro. Vennligst oppgi din virkelige fødselsdato.";
             
             // Button titles
@@ -184,23 +187,26 @@ public class ScStrings
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             
-            // Address view
+            // Registration view 1
             strProvideAddressUserHelp           = "Hva er adressen din?";
             strVerifyAddressUserHelp            = "Vennligst verifiser adressen din:";
             strAddressLine1Prompt               = "Adresselinje 1";
             strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
-            
-            // Date of birth view
-            strDeviceNameUserHelp               = "Scola vil referere til %@ som:";
-            strDeviceNamePrompt                 = "Et beskrivende navn på %@";
-            strGenderUserHelp                   = "Er du kvinne eller mann?";
-            strFemale                           = "Kvinne";
-            strMale                             = "Mann";
-            strNeutral                          = "Nøytral";
             strDateOfBirthUserHelp              = "Når ble du født?";
             strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
-            strDateOfBirthClickHerePrompt       = "Trykk her for å vise datohjulene";
+            strDateOfBirthClickHerePrompt       = "Fødselsdatoen din";
+            
+            // Registration view 2
+            strGenderUserHelp                   = "Er du %@ eller %@?";
+            strFemaleAdult                      = "Kvinne";
+            strFemaleMinor                      = "Jente";
+            strMaleAdult                        = "Mann";
+            strMaleMinor                        = "Gutt";
+            strMobileNumberUserHelp             = "Hva er mobilnummeret ditt?";
+            strMobileNumberPrompt               = "Mobilnummeret ditt";
+            strDeviceNameUserHelp               = "Scola vil referere til %@ som:";
+            strDeviceNamePrompt                 = "Et beskrivende navn på %@";
             
             // Main view
             strMyPlaceSingle                    = "Hjemme hos meg";
@@ -279,23 +285,26 @@ public class ScStrings
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
             
-            // Address view
+            // Registration view 1
             strProvideAddressUserHelp           = "What is your home address?";
             strVerifyAddressUserHelp            = "Please verify your home address:";
             strAddressLine1Prompt               = "Address line 1";
             strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
-            
-            // Date of birth view
-            strDeviceNameUserHelp               = "Scola will refer to %@ as:";
-            strDeviceNamePrompt                 = "A descriptive name for %@";
-            strGenderUserHelp                   = "Please provide your gender";
-            strFemale                           = "Female";
-            strMale                             = "Male";
-            strNeutral                          = "N/A";
             strDateOfBirthUserHelp              = "When were you born?";
             strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
-            strDateOfBirthClickHerePrompt       = "Tap here to display the date wheels";
+            strDateOfBirthClickHerePrompt       = "Your birth date";
+            
+            // Registration view 2
+            strGenderUserHelp                   = "Are you a %@ or a %@?";
+            strFemaleAdult                      = "Woman";
+            strFemaleMinor                      = "Girl";
+            strMaleAdult                        = "Man";
+            strMaleMinor                        = "Boy";
+            strMobileNumberUserHelp             = "What is your mobile number?";
+            strMobileNumberPrompt               = "Your mobile number";
+            strDeviceNameUserHelp               = "Scola will refer to %@ as:";
+            strDeviceNamePrompt                 = "A descriptive name for %@";
             
             // Main view
             strMyPlaceSingle                    = "My place";

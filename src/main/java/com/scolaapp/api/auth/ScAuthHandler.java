@@ -117,7 +117,6 @@ public class ScAuthHandler
                 ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
                 
                 authInfo.passwordHash = member.passwordHash;
-                authInfo.member = member;
             }
         } catch (AddressException e) {
             ScLog.info(env, String.format("'%s' is not a valid email address.", email_));
@@ -182,10 +181,6 @@ public class ScAuthHandler
                 authInfo.isAuthenticated = false;
             } else {
                 authInfo.isAuthenticated = passwordHash.equals(authInfo.passwordHash);
-                
-                if (!authInfo.isAuthenticated) {
-                    authInfo.member = null;
-                }
             }
         } else {
             ScLog.severe(env, String.format("Password '%s' is too short. Potential intruder, barring entry.", password));
@@ -313,7 +308,6 @@ public class ScAuthHandler
     
     @GET
     @Path("confirm")
-    //@Produces({MediaType.APPLICATION_JSON})
     public void confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
                             @QueryParam ("version")       String appVersion,
                             @QueryParam ("device")        String deviceType,
@@ -359,12 +353,10 @@ public class ScAuthHandler
     
     @GET
     @Path("login")
-    //@Produces({MediaType.APPLICATION_JSON})
     public void loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
                           @QueryParam ("version")       String appVersion,
                           @QueryParam ("device")        String deviceType,
-                          @QueryParam ("uuid")          String deviceUUID,
-                          @QueryParam ("name")          String deviceName)
+                          @QueryParam ("uuid")          String deviceUUID)
     {
         env = ScAppEnv.env(appVersion, deviceType, deviceUUID);
         DAO = new ScDAO(env);

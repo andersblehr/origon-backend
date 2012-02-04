@@ -5,7 +5,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
-import com.scolaapp.api.model.ScScolaMember;
 
 
 @Unindexed
@@ -17,15 +16,12 @@ public class ScAuthInfo
     public String name;
     public String passwordHash;
     public String deviceUUID;
-    public String scolaShortname;
     public String registrationCode;
     
     public boolean isListed;
     public boolean isActive;
     public boolean isAuthenticated;
     public boolean isDeviceListed;
-    
-    public ScScolaMember member;
     
     
     public ScAuthInfo() {}
