@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
@@ -14,8 +15,10 @@ import com.googlecode.objectify.annotation.Unindexed;
 @XmlRootElement(name="ScDevice")
 public class ScDevice extends ScCachedEntity
 {
-    public String deviceName;
-    public @Id String deviceUUID;
+    public String name;
+    public @Id String uuid;
+    
+    public Key<ScScolaMember>[] usedBy;
     
     
     public ScDevice()
@@ -24,11 +27,11 @@ public class ScDevice extends ScCachedEntity
     }
     
     
-    public ScDevice(String name, String UUID)
+    public ScDevice(String deviceName, String deviceUUID)
     {
         super();
         
-        deviceName = name;
-        deviceUUID = UUID;
+        name = deviceName;
+        uuid = deviceUUID;
     }
 }

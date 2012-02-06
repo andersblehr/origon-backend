@@ -5,7 +5,9 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.*;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
@@ -23,6 +25,11 @@ public class ScPerson extends ScCachedEntity
     public String mobilePhone;
 	public String name;
 	public String workPhone;
+	
+	public Key<ScHousehold> householdKey;
+	public Key<ScHousehold> partTimeHouseholdKey;
+    public @NotSaved ScHousehold household;
+    public @NotSaved ScHousehold partTimeHousehold;
 
 	
 	public ScPerson()

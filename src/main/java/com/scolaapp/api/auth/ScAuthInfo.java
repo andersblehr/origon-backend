@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
+import com.scolaapp.api.model.ScPerson;
+
 
 @Unindexed
 @Cached(expirationSeconds=600)
@@ -22,6 +24,8 @@ public class ScAuthInfo
     public boolean isActive;
     public boolean isAuthenticated;
     public boolean isDeviceListed;
+    
+    public ScPerson listedPerson;
     
     
     public ScAuthInfo() {}

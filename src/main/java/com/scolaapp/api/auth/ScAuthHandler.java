@@ -1,8 +1,6 @@
 package com.scolaapp.api.auth;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 
@@ -18,12 +16,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 
 import com.scolaapp.api.model.ScDevice;
+import com.scolaapp.api.model.ScDeviceListing;
 import com.scolaapp.api.model.ScPerson;
-import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScAppEnv;
 import com.scolaapp.api.utils.ScLog;
@@ -97,6 +94,37 @@ public class ScAuthHandler
     }
     
 
+    private boolean isUUIDValid(String deviceUUID)
+    {
+        boolean isValid = ((deviceUUID != null) && (deviceUUID.length() == 36));
+        
+        if (isValid) {
+            String[] UUIDElements = deviceUUID.split("-");
+            
+            isValid = (UUIDElements.length == 5);
+            isValid = isValid && (UUIDElements[0].length() ==  8);
+            isValid = isValid && (UUIDElements[1].length() ==  4);
+            isValid = isValid && (UUIDElements[2].length() ==  4);
+            isValid = isValid && (UUIDElements[3].length() ==  4);
+            isValid = isValid && (UUIDElements[4].length() == 12);
+        }
+        
+        if (isValid) {
+            authInfo.deviceUUID = deviceUUID;
+            ScDevice device = DAO.get(ScDevice.class, authInfo.deviceUUID);
+            
+            if (device != null) {
+                authInfo.isDeviceListed = true;
+            }
+        } else {
+            ScLog.severe(env, String.format("Invalid UUID: %s. Potential intruder, barring entry.", authInfo.deviceUUID));
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+        }
+        
+        return isValid;
+    }
+    
+    
     private boolean isEmailValid(String email_)
     {
         try {
@@ -105,9 +133,11 @@ public class ScAuthHandler
             
             try {
                 ScPerson person = DAO.ofy().get(ScPerson.class, email_);
+                person.household = DAO.ofy().get(person.householdKey);
                 
                 authInfo.isListed = true;
                 authInfo.isActive = person.isActive;
+                authInfo.listedPerson = person;
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
                 authInfo.isActive = false;
@@ -117,6 +147,17 @@ public class ScAuthHandler
                 ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
                 
                 authInfo.passwordHash = member.passwordHash;
+                
+                Iterable<ScDeviceListing> deviceListings = DAO.ofy().query(ScDeviceListing.class).filter("usedBy", member);
+                
+                for (ScDeviceListing deviceListing : deviceListings) {
+                    ScDevice device = DAO.ofy().get(deviceListing.device);
+                    
+                    if (device.uuid.equals(authInfo.deviceUUID)) {
+                        authInfo.isDeviceListed = true;
+                        break;
+                    }
+                }
             }
         } catch (AddressException e) {
             ScLog.info(env, String.format("'%s' is not a valid email address.", email_));
@@ -124,48 +165,6 @@ public class ScAuthHandler
         } 
         
         return true;
-    }
-    
-    
-    private boolean isScolaShortnameValid(String scolaShortname)
-    {
-        boolean isValid = false;
-
-        try {
-            ScScola scola = DAO.ofy().get(ScScola.class, scolaShortname);
-            Map<Key<ScPerson>, ScPerson> scolaMembers = DAO.ofy().get(Arrays.asList(scola.members));
-            
-            for (Key<ScPerson> scolaMemberKey: scola.members) {
-                ScPerson person = scolaMembers.get(scolaMemberKey);
-                
-                if (person.name.equals(authInfo.name)) {
-                    authInfo.isListed = true;
-                    authInfo.isActive = person.isActive;
-                    authInfo.email = person.email;
-                    
-                    break;
-                }
-            }
-            
-            if (authInfo.isListed) {
-                isValid = isEmailValid(authInfo.email);
-                    
-                if (!isValid) {
-                    ScLog.severe(env, String.format("BROKEN: Email '%s' registered for user '%' in scola with shortname '%s' is not valid. This should not happen.", authInfo.email, authInfo.name, scolaShortname));
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, String.format("confirmedEmailInvalid(%s)", authInfo.email));
-                }
-            } else {
-                ScLog.warning(env, String.format("Scola with shortname '%s' has no invitation for name '%s', please check spelling of name.", scolaShortname, authInfo.name));
-            }
-        } catch (NotFoundException e) {
-            ScLog.warning(env, String.format("Scola with shortname '%s' does not exist, please check spelling.", scolaShortname));
-        }
-    
-        if (!isValid) {
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND);
-        }
-        
-        return isValid;
     }
     
     
@@ -199,37 +198,6 @@ public class ScAuthHandler
             authInfo.name = name;
         } else {
             ScLog.severe(env, String.format("'%s' is not a full name. Potential intruder, barring entry.", name));
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
-        }
-        
-        return isValid;
-    }
-    
-    
-    private boolean isUUIDValid(String deviceUUID)
-    {
-        boolean isValid = ((deviceUUID != null) && (deviceUUID.length() == 36));
-        
-        if (isValid) {
-            String[] UUIDElements = deviceUUID.split("-");
-            
-            isValid = (UUIDElements.length == 5);
-            isValid = isValid && (UUIDElements[0].length() ==  8);
-            isValid = isValid && (UUIDElements[1].length() ==  4);
-            isValid = isValid && (UUIDElements[2].length() ==  4);
-            isValid = isValid && (UUIDElements[3].length() ==  4);
-            isValid = isValid && (UUIDElements[4].length() == 12);
-        }
-        
-        if (isValid) {
-            authInfo.deviceUUID = deviceUUID;
-            ScDevice device = DAO.get(ScDevice.class, authInfo.deviceUUID);
-            
-            if (device != null) {
-                authInfo.isDeviceListed = true;
-            }
-        } else {
-            ScLog.severe(env, String.format("Invalid UUID: %s. Potential intruder, barring entry.", authInfo.deviceUUID));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -290,10 +258,10 @@ public class ScAuthHandler
         authInfo = new ScAuthInfo();
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
-        isValid = isValid && ((authId.indexOf("@") > 0) ? isEmailValid(authId) : isScolaShortnameValid(authId));
+        isValid = isValid && isUUIDValid(deviceUUID);
+        isValid = isValid && isEmailValid(authId);
         isValid = isValid && isPasswordValid(authPassword);
         isValid = isValid && isNameValid(name);
-        isValid = isValid && isUUIDValid(deviceUUID);
         
         if (isValid && !authInfo.isAuthenticated && !authInfo.isActive) {
             authInfo.registrationCode = generateRegistrationCode();
