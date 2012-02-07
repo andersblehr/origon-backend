@@ -24,7 +24,6 @@ public class ScPerson extends ScCachedEntity
     public Boolean isMinor;
     public String mobilePhone;
 	public String name;
-	public String workPhone;
 	
 	public Key<ScHousehold> householdKey;
 	public Key<ScHousehold> partTimeHouseholdKey;
@@ -56,6 +55,5 @@ public class ScPerson extends ScCachedEntity
 	    isActive = clone.isActive;
 	    isMinor = clone.isMinor;
 	    mobilePhone = clone.mobilePhone;
-	    workPhone = clone.workPhone;
 	}
 }

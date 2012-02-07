@@ -145,19 +145,7 @@ public class ScAuthHandler
             
             if (authInfo.isActive) {
                 ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
-                
                 authInfo.passwordHash = member.passwordHash;
-                
-                Iterable<ScDeviceListing> deviceListings = DAO.ofy().query(ScDeviceListing.class).filter("usedBy", member);
-                
-                for (ScDeviceListing deviceListing : deviceListings) {
-                    ScDevice device = DAO.ofy().get(deviceListing.device);
-                    
-                    if (device.uuid.equals(authInfo.deviceUUID)) {
-                        authInfo.isDeviceListed = true;
-                        break;
-                    }
-                }
             }
         } catch (AddressException e) {
             ScLog.info(env, String.format("'%s' is not a valid email address.", email_));
