@@ -19,7 +19,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.googlecode.objectify.NotFoundException;
 
 import com.scolaapp.api.model.ScDevice;
-import com.scolaapp.api.model.ScDeviceListing;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScAppEnv;

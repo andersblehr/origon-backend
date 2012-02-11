@@ -97,9 +97,11 @@ public class ScStrings
     public String strMaleAdult;
     public String strMaleMinor;
     
-    // Main view
-    public String strMyPlaceSingle;
-    public String strMyPlaceLiveIns;
+    // Generic Scola strings
+    public String strMyPlace;
+    public String strOurPlace;
+    public String strMyMessageBoard;
+    public String strOurMessageBoard;
     
     
     private void setGrammarSnippets(String language)
@@ -290,8 +292,8 @@ public class ScStrings
             strFemaleMinor                      = "Jente";
             strMaleAdult                        = "Mann";
             strMaleMinor                        = "Gutt";
-            strMobilePhoneUserHelp             = "Hva er mobilnummeret ditt?";
-            strMobilePhonePrompt               = "Mobilnummeret ditt";
+            strMobilePhoneUserHelp              = "Hva er mobilnummeret ditt?";
+            strMobilePhonePrompt                = "Mobilnummeret ditt";
             strDeviceNameUserHelp               = "Scola vil referere til %@ som:";
             strDeviceNamePrompt                 = "Et beskrivende navn på %@";
         } else {
@@ -300,22 +302,26 @@ public class ScStrings
             strFemaleMinor                      = "Girl";
             strMaleAdult                        = "Man";
             strMaleMinor                        = "Boy";
-            strMobilePhoneUserHelp             = "What is your mobile number?";
-            strMobilePhonePrompt               = "Your mobile number";
+            strMobilePhoneUserHelp              = "What is your mobile number?";
+            strMobilePhonePrompt                = "Your mobile number";
             strDeviceNameUserHelp               = "Scola will refer to %@ as:";
             strDeviceNamePrompt                 = "A descriptive name for %@";
         }
     }
     
     
-    private void setMainViewStrings(String language)
+    private void setGenericScolaStrings(String language)
     {
         if ("nb".equals(language)) {
-            strMyPlaceSingle                    = "Hjemme hos meg";
-            strMyPlaceLiveIns                   = "Hjemme hos oss";
+            strMyPlace                          = "Hjemme hos meg";
+            strOurPlace                         = "Hjemme hos oss";
+            strMyMessageBoard                   = "Min oppslagstavle";
+            strOurMessageBoard                  = "Vår oppslagstavle";
         } else {
-            strMyPlaceSingle                    = "My place";
-            strMyPlaceLiveIns                   = "Our place";
+            strMyPlace                          = "My place";
+            strOurPlace                         = "Our place";
+            strMyMessageBoard                   = "My message board";
+            strOurMessageBoard                  = "Our message board";
         }
     }
     
@@ -335,6 +341,6 @@ public class ScStrings
         setAuthViewStrings(language);
         setRegistrationView1Strings(language);
         setRegistrationView2Strings(language);
-        setMainViewStrings(language);
+        setGenericScolaStrings(language);
     }
 }
