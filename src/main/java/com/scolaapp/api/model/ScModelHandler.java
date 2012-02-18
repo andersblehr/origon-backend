@@ -1,5 +1,7 @@
 package com.scolaapp.api.model;
 
+import java.util.ArrayList;
+
 import javax.servlet.http.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -9,6 +11,7 @@ import org.jboss.resteasy.annotations.Form;
 import com.googlecode.objectify.*;
 
 import com.scolaapp.api.utils.ScDAO;
+import com.scolaapp.api.utils.ScLog;
 
 
 @Path("model")
@@ -18,26 +21,36 @@ public class ScModelHandler
     
     
     @GET
-    @Path("person")
+    @Path("member")
     @Produces({MediaType.APPLICATION_JSON})
-    public ScPerson getPerson(@DefaultValue("none") @QueryParam("email") String email)
+    public ScScolaMember getMember(@DefaultValue("none") @QueryParam("email") String email)
     {
-    	ScPerson person = null;
+    	ScScolaMember member = null;
     	
         try {
-            person = DAO.ofy().get(ScPerson.class, email);
+            member = DAO.ofy().get(ScScolaMember.class, email);
         } catch (NotFoundException e) {
             throw new WebApplicationException(e, HttpServletResponse.SC_NOT_FOUND);
         }
         
-        return person;
+        return member;
     }
     
     
     @POST
-    @Path("person")
-    public void addPerson(@Form ScPerson person)
+    @Path("member")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public void addMember(@Form ScScolaMember member)
     {
-        
+        ScLog.log().fine(String.format("member: %s", member.toString()));
+    }
+    
+    
+    @POST
+    @Path("persist")
+    @Consumes({MediaType.APPLICATION_JSON})
+    public void persistEntities(@Form ArrayList<ScCachedEntity> dataArray)
+    {
+        ScLog.log().fine(String.format("Data: %s", dataArray.toString()));
     }
 }
