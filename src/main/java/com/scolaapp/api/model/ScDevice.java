@@ -12,7 +12,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScDevice")
 public class ScDevice extends ScCachedEntity
 {
     public String name;

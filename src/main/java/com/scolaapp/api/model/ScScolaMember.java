@@ -12,7 +12,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScScolaMember")
 public class ScScolaMember extends ScPerson
 {
     public Date memberSince;

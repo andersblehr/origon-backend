@@ -10,7 +10,6 @@ import com.googlecode.objectify.annotation.Entity;
 
 @Entity
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScHouseholdResident")
 public class ScHouseholdResident
 {
     public @Id Long id;

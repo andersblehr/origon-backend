@@ -1,15 +1,12 @@
 package com.scolaapp.api.strings;
 
-import javax.xml.bind.annotation.XmlRootElement;
 
-
-@XmlRootElement(name="ScStrings")
 public class ScStrings
 {
     // Grammar snippets
-    public String strPhoneDeterminate;
-    public String str_iPodDeterminate;
-    public String str_iPadDeterminate;
+    public String strPhoneDefinite;
+    public String str_iPodDefinite;
+    public String str_iPadDefinite;
     public String strPhonePossessive;
     public String str_iPodPossessive;
     public String str_iPadPossessive;
@@ -107,9 +104,9 @@ public class ScStrings
     private void setGrammarSnippets(String language)
     {
         if ("nb".equals(language)) {
-            strPhoneDeterminate                 = "telefonen";
-            str_iPodDeterminate                 = "iPod'en";
-            str_iPadDeterminate                 = "iPad'en";
+            strPhoneDefinite                    = "telefonen";
+            str_iPodDefinite                    = "iPod'en";
+            str_iPadDefinite                    = "iPad'en";
             strPhonePossessive                  = "telefonens";
             str_iPodPossessive                  = "iPod'ens";
             str_iPadPossessive                  = "iPad'ens";
@@ -117,9 +114,9 @@ public class ScStrings
             strThis_iPod                        = "denne iPod'en";
             strThis_iPad                        = "denne iPad'en";
         } else {
-            strPhoneDeterminate                 = "the phone";
-            str_iPodDeterminate                 = "the iPod";
-            str_iPadDeterminate                 = "the iPad";
+            strPhoneDefinite                    = "the phone";
+            str_iPodDefinite                    = "the iPod";
+            str_iPadDefinite                    = "the iPad";
             strPhonePossessive                  = "the phone's";
             str_iPodPossessive                  = "the iPod's";
             str_iPadPossessive                  = "the iPad's";
@@ -149,7 +146,7 @@ public class ScStrings
             strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ lagrede navn (\"%@\"), eller vil du oppgi et nytt?";
             strNotBornAlert                     = "Du har oppgitt en fødselsdato i framtiden. Vi beklager veldig, men du må være født for å kunne bruke Scola.";
             strUnrealisticAgeAlert              = "Du har oppgitt at du er %d år gammel. Det er vanskelig å tro. Vennligst oppgi din virkelige fødselsdato.";
-            strNoMobilePhoneAlert              = "Vennligst oppgi mobilnummeret ditt, evt. et annet telefonnummer om du ikke har mobiltelefon";
+            strNoMobilePhoneAlert               = "Vennligst oppgi mobilnummeret ditt, evt. et annet telefonnummer om du ikke har mobiltelefon";
         } else {
             strServerUnavailableAlert           = "We are very sorry, but the Scola service is unavailable at the moment. Please try again later.";
             strInternalServerError              = "An error has occurred. Please try again later.";
@@ -167,7 +164,7 @@ public class ScStrings
             strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ configured name ('%@'), or do you want to provide a new name?";
             strNotBornAlert                     = "You have provided a date of birth that's in the future. We are very sorry, but you must have been born in order to use Scola.";
             strUnrealisticAgeAlert              = "According to the date of birth you have provided, you are %d years old. That's hard to believe. Please provide your true date of birth.";
-            strNoMobilePhoneAlert              = "Please provide your mobile phone number, or an alternative phone number if you do not have a mobile phone";
+            strNoMobilePhoneAlert               = "Please provide your mobile phone number, or an alternative phone number if you do not have a mobile phone";
         }
     }
     

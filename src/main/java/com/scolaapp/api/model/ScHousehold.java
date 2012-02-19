@@ -11,7 +11,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScHousehold")
 public class ScHousehold extends ScCachedEntity
 {
     public @Id Long id;

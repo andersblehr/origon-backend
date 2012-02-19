@@ -11,7 +11,6 @@ import com.scolaapp.api.model.ScPerson;
 
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScAuthInfo")
 public class ScAuthInfo
 {
     public @Id String email;

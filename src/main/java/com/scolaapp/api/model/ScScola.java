@@ -12,7 +12,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScScola")
 public class ScScola extends ScCachedEntity
 {
     public @Id Long id;

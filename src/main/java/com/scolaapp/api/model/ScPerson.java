@@ -14,7 +14,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds=600)
-@XmlRootElement(name="ScPerson")
 public class ScPerson extends ScCachedEntity
 {
 	public Date dateOfBirth;
