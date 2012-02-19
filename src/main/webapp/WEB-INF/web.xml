@@ -9,9 +9,6 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
         <param-name>resteasy.providers</param-name>
         <param-value>com.scolaapp.api.ScWebApplicationExceptionMapper</param-value>
     </context-param>
-    <!-- listener>
-        <listener-class>org.jboss.resteasy.plugins.server.servlet.ResteasyBootstrap</listener-class>
-    </listener -->
     <servlet>
         <servlet-name>scolaapp-api</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>

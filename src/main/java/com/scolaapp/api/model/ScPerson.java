@@ -17,7 +17,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @XmlRootElement(name="ScPerson")
 public class ScPerson extends ScCachedEntity
 {
-	public Date birthday;
+	public Date dateOfBirth;
     public @Id String email;
     public String gender;
     public Boolean isActive;
@@ -26,9 +26,7 @@ public class ScPerson extends ScCachedEntity
 	public String name;
 	
 	public Key<ScHousehold> householdKey;
-	public Key<ScHousehold> partTimeHouseholdKey;
     public @NotSaved ScHousehold household;
-    public @NotSaved ScHousehold partTimeHousehold;
 
 	
 	public ScPerson()
@@ -50,7 +48,7 @@ public class ScPerson extends ScCachedEntity
 	{
 	    this(clone.email, clone.name);
 	    
-	    birthday = clone.birthday;
+	    dateOfBirth = clone.dateOfBirth;
 	    gender = clone.gender;
 	    isActive = clone.isActive;
 	    isMinor = clone.isMinor;

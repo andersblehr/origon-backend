@@ -17,15 +17,15 @@ public class ScScolaApplication extends Application
     
     public ScScolaApplication()
     {
-        this.singletons.add(new ScScolaHandler());
-        this.singletons.add(new ScStringHandler());
-        this.singletons.add(new ScAuthHandler());
-        this.singletons.add(new ScModelHandler());
+        singletons.add(new ScScolaHandler());
+        singletons.add(new ScStringHandler());
+        singletons.add(new ScAuthHandler());
+        singletons.add(new ScModelHandler());
     }
     
     
     public Set<Object> getSingletons()
     {
-        return this.singletons;
+        return singletons;
     }
 }

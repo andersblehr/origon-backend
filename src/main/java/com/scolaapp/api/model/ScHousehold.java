@@ -4,7 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
@@ -19,11 +18,7 @@ public class ScHousehold extends ScCachedEntity
     public String addressLine1;
     public String addressLine2;
     public String postCodeAndCity;
-    
-    //public Key<ScEvent>[] events;
-    public Key<ScPerson>[] residents;
-    public Key<ScPerson>[] partTimeResidents;
-    
+        
     
     public ScHousehold()
     {
