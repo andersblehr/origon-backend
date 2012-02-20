@@ -1,7 +1,6 @@
 package com.scolaapp.api.model;
 
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
