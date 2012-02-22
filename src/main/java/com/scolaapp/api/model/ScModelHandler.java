@@ -36,25 +36,18 @@ public class ScModelHandler
     
     
     @POST
-    @Path("member")
+    @Path("persist")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void addMember(ScScolaMember member)
+    public void persistEntities(List<ScCachedEntity> objects)
     {
-        ScLog.log().fine(String.format("member: %s", member.toString()));
+        ScLog.log().fine(String.format("Data: %s", objects.toString()));
+        
+        ScScolaMember member = (ScScolaMember)objects.get(0);
         
         ScLog.log().fine(String.format("name: %s", member.name));
         ScLog.log().fine(String.format("email: %s", member.email));
         ScLog.log().fine(String.format("date of birth: %s", member.dateOfBirth.toString()));
         ScLog.log().fine(String.format("gender: %s", member.gender));
         ScLog.log().fine(String.format("address: %s, %s", member.household.addressLine1, member.household.postCodeAndCity));
-    }
-    
-    
-    @POST
-    @Path("persist")
-    @Consumes({MediaType.APPLICATION_JSON})
-    public void persistEntities(List<ScCachedEntity> objects)
-    {
-        ScLog.log().fine(String.format("Data: %s", objects.toString()));
     }
 }

@@ -29,7 +29,9 @@ public abstract class ScCachedEntity
     
     public ScCachedEntity()
     {
-        dateCreated = new Date();
-        dateModified = dateCreated;
+        Date now = new Date();
+        
+        dateCreated = now;
+        dateModified = now;
     }
 }
