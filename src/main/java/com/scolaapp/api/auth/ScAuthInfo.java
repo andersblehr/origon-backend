@@ -1,7 +1,6 @@
 package com.scolaapp.api.auth;
 
 import javax.persistence.Id;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;

@@ -8,6 +8,7 @@ import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.model.ScDevice;
+import com.scolaapp.api.model.ScMessageBoard;
 import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
@@ -15,7 +16,7 @@ import com.scolaapp.api.model.ScScolaMember;
 
 public class ScDAO extends DAOBase
 {
-    private ScAppEnv env;
+    private String deviceId;
     
     
     static
@@ -23,16 +24,17 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScAuthInfo.class);
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScPerson.class);
+        ObjectifyService.register(ScMessageBoard.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
     }
     
     
-    public ScDAO(ScAppEnv env_)
+    public ScDAO(String deviceUUID)
     {
         super();
         
-        env = env_;
+        deviceId = deviceUUID;
     }
     
     
@@ -43,7 +45,7 @@ public class ScDAO extends DAOBase
         try {
             returnable = ofy().get(type, id);
         } catch (NotFoundException e) {
-            ScLog.warning(env, String.format("No persisted %s instance with id '%s'.", type.getName(), id));
+            ScLog.log().warning(String.format("%s No persisted %s instance with id '%s'.", ScLog.meta(deviceId), type.getName(), id));
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, type);
         }
         

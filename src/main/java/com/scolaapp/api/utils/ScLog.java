@@ -1,5 +1,6 @@
 package com.scolaapp.api.utils;
 
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -13,92 +14,41 @@ import com.scolaapp.api.ScScolaApplication;
 public class ScLog
 {
     private static final Logger log = Logger.getLogger(ScScolaApplication.class.getName());
+    private static final HashMap<String, ScLogMeta> metaMap = new HashMap<String, ScLogMeta>();
 
-    private static final int SEVERE = 0;
-    private static final int WARNING = 1;
-    private static final int INFO = 2;
-    private static final int FINE = 3;
-    private static final int FINER = 4;
-    private static final int FINEST = 5;
-    
     
     protected ScLog() {}
-    
-    
-    protected static void log(ScAppEnv env, String message, int level)
-    {
-        String messageWithMetadata = String.format("[%s/%s][%s] %s", env.deviceType, env.appVersion, env.deviceUUID.substring(0, 8), message);
-        
-        switch (level) {
-            case SEVERE:
-                log.severe(messageWithMetadata);
-                break;
-            case WARNING:
-                log.warning(messageWithMetadata);
-                break;
-            case INFO:
-                log.info(messageWithMetadata);
-                break;
-            case FINE:
-                log.fine(messageWithMetadata);
-                break;
-            case FINER:
-                log.finer(messageWithMetadata);
-                break;
-            default:
-                break;
-        }
-    }
     
     
     public static Logger log()
     {
         return log;
     }
+    
+    
+    public static void setMeta(String deviceUUID, String deviceType, String appVersion)
+    {
+        ScLogMeta meta = metaMap.get(deviceUUID);
+        
+        if (meta == null) {
+            meta = new ScLogMeta(deviceUUID, deviceType, appVersion);
+            metaMap.put(deviceUUID, meta);
+        }
+    }
+    
+    
+    public static String meta(String deviceUUID)
+    {
+        return metaMap.get(deviceUUID).meta();
+    }
 
-    
-    public static void severe(ScAppEnv env, String message)
-    {
-        log(env, message, SEVERE);
-    }
-    
-    
-    public static void warning(ScAppEnv env, String message)
-    {
-        log(env, message, WARNING);
-    }
-    
-    
-    public static void info(ScAppEnv env, String message)
-    {
-        log(env, message, INFO);
-    }
-    
-    
-    public static void fine(ScAppEnv env, String message)
-    {
-        log(env, message, FINE);
-    }
-    
-    
-    public static void finer(ScAppEnv env, String message)
-    {
-        log(env, message, FINER);
-    }
-    
-    
-    public static void finest(ScAppEnv env, String message)
-    {
-        log(env, message, FINEST);
-    }
-    
     
     public static void throwWebApplicationException(Exception exception, int statusCode, String reason)
     {
         ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
         responseBuilder.status(statusCode);
         
-        if (reason != "") {
+        if ((reason != null) && (reason != "")) {
             responseBuilder.header("reason", reason);
         }
         
@@ -142,5 +92,27 @@ public class ScLog
     public static void throwWebApplicationException(int statusCode)
     {
         throwWebApplicationException(null, statusCode, "");
+    }
+
+    
+    private static class ScLogMeta
+    {
+        private String appVersion;
+        private String deviceType;
+        private String deviceUUID;
+        
+        
+        public ScLogMeta(String UUID, String type, String version)
+        {
+            deviceUUID = UUID;
+            deviceType = type;
+            appVersion = version;
+        }
+        
+        
+        public String meta()
+        {
+            return String.format("%s/%s [%s]", deviceType, appVersion, deviceUUID.substring(0, 8));
+        }
     }
 }

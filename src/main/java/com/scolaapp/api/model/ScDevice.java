@@ -5,7 +5,6 @@ import javax.persistence.Id;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
@@ -18,8 +17,6 @@ public class ScDevice extends ScCachedEntity
 {
     public String name;
     public @Id String uuid;
-    
-    public Key<ScScolaMember>[] usedBy;
     
     
     public ScDevice()

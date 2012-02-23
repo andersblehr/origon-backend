@@ -13,7 +13,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @JsonTypeInfo (
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
-    property = "type")
+    property = "entityType")
 @JsonSubTypes({
     @Type(value = ScDevice.class, name = "ScDevice"),
     @Type(value = ScHousehold.class, name = "ScHousehold"),
@@ -27,11 +27,5 @@ public abstract class ScCachedEntity
     public Date dateModified;
     
     
-    public ScCachedEntity()
-    {
-        Date now = new Date();
-        
-        dateCreated = now;
-        dateModified = now;
-    }
+    public ScCachedEntity() {}
 }

@@ -27,6 +27,7 @@ public class ScPerson extends ScCachedEntity
 	public String name;
 	
 	public Key<ScHousehold> householdKey;
+	
     public @NotSaved ScHousehold household;
 
 	
