@@ -1,0 +1,31 @@
+package com.scolaapp.api.model;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.NotSaved;
+import com.googlecode.objectify.annotation.Unindexed;
+
+
+@Entity
+@Unindexed
+@Cached(expirationSeconds=600)
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class ScMessageBoard extends ScCachedEntity
+{
+    public @Id String entityId;
+    public String title;
+    
+    public Key<ScScola> scolaKey;
+    public @NotSaved ScScola scola;
+    
+    
+    public ScMessageBoard()
+    {
+        super();
+    }
+}
