@@ -112,7 +112,7 @@ public class ScLog
         
         public String meta()
         {
-            return String.format("%s/%s [%s]", deviceType, appVersion, deviceUUID.substring(0, 8));
+            return String.format("[%s] %s/%s:", deviceUUID.substring(0, 8), deviceType, appVersion);
         }
     }
 }

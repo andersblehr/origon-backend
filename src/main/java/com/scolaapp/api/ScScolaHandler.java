@@ -14,7 +14,7 @@ public class ScScolaHandler
     @Produces({MediaType.APPLICATION_JSON})
 	public String getStatus()
 	{
-        ScLog.log().info("Checking server availability...");
+        ScLog.log().fine("Verifying server availability to client.");
 		return "OK";
 	}
 }
