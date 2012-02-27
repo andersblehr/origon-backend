@@ -2,8 +2,6 @@ package com.scolaapp.api.model;
 
 import java.util.List;
 
-import javax.persistence.Id;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.googlecode.objectify.Key;
@@ -20,7 +18,6 @@ import com.googlecode.objectify.annotation.Unindexed;
 public class ScScola extends ScCachedEntity
 {
     public String descriptionText;
-    public @Id String entityId;
     public String name;
     
     public Key<ScMessageBoard> adminMessageBoardKey;
@@ -28,7 +25,7 @@ public class ScScola extends ScCachedEntity
     public Key<ScScola> guardianScolaKey;
     
     public @NotSaved ScMessageBoard adminMessageBoard;
-    public @NotSaved ScScola guardedScola;
+    public @NotSaved ScScola guardedScolaRef;
     public @NotSaved ScScola guardianScola;
     
     public @NotSaved List<ScScolaMember> admins;

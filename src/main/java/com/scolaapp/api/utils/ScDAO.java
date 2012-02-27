@@ -23,8 +23,8 @@ public class ScDAO extends DAOBase
     {
         ObjectifyService.register(ScAuthInfo.class);
         ObjectifyService.register(ScDevice.class);
-        ObjectifyService.register(ScPerson.class);
         ObjectifyService.register(ScMessageBoard.class);
+        ObjectifyService.register(ScPerson.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
     }

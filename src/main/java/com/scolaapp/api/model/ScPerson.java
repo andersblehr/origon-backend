@@ -2,12 +2,11 @@ package com.scolaapp.api.model;
 
 import java.util.Date;
 
-import javax.persistence.*;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
 
@@ -19,7 +18,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 public class ScPerson extends ScCachedEntity
 {
 	public Date dateOfBirth;
-    public @Id String email;
+    public String email;
     public String gender;
     public Boolean isActive;
     public Boolean isMinor;

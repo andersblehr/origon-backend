@@ -1,11 +1,9 @@
 package com.scolaapp.api.model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
@@ -16,7 +14,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 public class ScDevice extends ScCachedEntity
 {
     public String name;
-    public @Id String uuid;
+    public String uuid;
     
     
     public ScDevice()
