@@ -8,6 +8,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
@@ -26,9 +27,12 @@ import com.googlecode.objectify.annotation.Unindexed;
 public abstract class ScCachedEntity
 {
     public @Id String entityId;
+    
     public Date dateCreated;
     public Date dateExpires;
     public Date dateModified;
+    
+    public @NotSaved boolean isDirty;
     
     
     public ScCachedEntity() {}

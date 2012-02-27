@@ -38,15 +38,15 @@ public class ScDAO extends DAOBase
     }
     
     
-    public <T> T getOrThrow(Class<T> type, String id)
+    public <T> T getOrThrow(Class<T> clazz, String id)
     {
         T returnable = null;
         
         try {
-            returnable = ofy().get(type, id);
+            returnable = ofy().get(clazz, id);
         } catch (NotFoundException e) {
-            ScLog.log().warning(String.format("%s No persisted %s instance with id '%s'.", ScLog.meta(deviceId), type.getName(), id));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, type);
+            ScLog.log().warning(String.format("%s No persisted %s instance with id '%s'.", ScLog.meta(deviceId), clazz.getName(), id));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, clazz);
         }
         
         return returnable;

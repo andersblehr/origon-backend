@@ -14,6 +14,8 @@ import com.scolaapp.api.model.ScScolaMember;
 public class ScScolaMembership
 {
     public @Id Long id;
+    public boolean isAdmin;
+    
     public Key<ScScolaMember> member;
     public Key<ScScola> scola;
 
@@ -21,9 +23,11 @@ public class ScScolaMembership
     public ScScolaMembership() {}
     
     
-    public ScScolaMembership(Key<ScScolaMember> member_, Key<ScScola> scola_)
+    public ScScolaMembership(Key<ScScolaMember> memberKey, Key<ScScola> scolaKey, boolean isAdmin)
     {
-        member = member_;
-        scola = scola_;
+        member = memberKey;
+        scola = scolaKey;
+        
+        this.isAdmin = isAdmin;
     }
 }

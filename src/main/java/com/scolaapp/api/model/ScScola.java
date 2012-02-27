@@ -25,7 +25,7 @@ public class ScScola extends ScCachedEntity
     public Key<ScScola> guardianScolaKey;
     
     public @NotSaved ScMessageBoard adminMessageBoard;
-    public @NotSaved ScScola guardedScolaRef;
+    public @NotSaved ScScola guardedScola;
     public @NotSaved ScScola guardianScola;
     
     public @NotSaved List<ScScolaMember> admins;
