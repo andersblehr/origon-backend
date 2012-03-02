@@ -7,11 +7,15 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
+
 import com.scolaapp.api.model.ScDevice;
 import com.scolaapp.api.model.ScMessageBoard;
-import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
+import com.scolaapp.api.model.ScScolaMembership;
+
+import com.scolaapp.api.model.relationships.ScDeviceListing;
+
 
 
 public class ScDAO extends DAOBase
@@ -22,11 +26,14 @@ public class ScDAO extends DAOBase
     static
     {
         ObjectifyService.register(ScAuthInfo.class);
+        
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScMessageBoard.class);
-        ObjectifyService.register(ScPerson.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
+        ObjectifyService.register(ScScolaMembership.class);
+        
+        ObjectifyService.register(ScDeviceListing.class);
     }
     
     

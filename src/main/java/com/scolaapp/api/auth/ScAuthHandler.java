@@ -18,8 +18,6 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.googlecode.objectify.NotFoundException;
 
-import com.scolaapp.api.model.ScDevice;
-import com.scolaapp.api.model.ScPerson;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScLog;
 import com.scolaapp.api.utils.ScCrypto;
@@ -110,11 +108,6 @@ public class ScAuthHandler
         
         if (isValid) {
             authInfo.deviceUUID = deviceUUID;
-            ScDevice device = DAO.get(ScDevice.class, authInfo.deviceUUID);
-            
-            if (device != null) {
-                authInfo.isDeviceListed = true;
-            }
         } else {
             ScLog.log().severe(String.format("%s Invalid UUID: %s. Potential intruder, barring entry.", ScLog.meta(deviceId), authInfo.deviceUUID));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
@@ -124,31 +117,31 @@ public class ScAuthHandler
     }
     
     
-    private boolean isEmailValid(String email_)
+    private boolean isEmailValid(String emailAsEntered)
     {
         try {
-            email = new InternetAddress(email_);
-            authInfo.email = email_;
+            email = new InternetAddress(emailAsEntered);
+            authInfo.email = emailAsEntered;
             
             try {
-                ScPerson person = DAO.ofy().get(ScPerson.class, email_);
-                person.household = DAO.ofy().get(person.householdKey);
+                ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
+                member.household = DAO.ofy().get(member.householdKey);
                 
                 authInfo.isListed = true;
-                authInfo.isActive = person.isActive;
-                authInfo.listedPerson = person;
+                authInfo.isRegistered = member.isRegistered;
+                authInfo.listedPerson = member;
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
-                authInfo.isActive = false;
+                authInfo.isRegistered = false;
             }
             
-            if (authInfo.isActive) {
+            if (authInfo.isRegistered) {
                 ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
                 authInfo.passwordHash = member.passwordHash;
             }
         } catch (AddressException e) {
-            ScLog.log().info(String.format("%s '%s' is not a valid email address.", ScLog.meta(deviceId), email_));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, String.format("invalidEmail(%s)", email_));
+            ScLog.log().info(String.format("%s '%s' is not a valid email address.", ScLog.meta(deviceId), emailAsEntered));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, String.format("invalidEmail(%s)", emailAsEntered));
         } 
         
         return true;
@@ -162,7 +155,7 @@ public class ScAuthHandler
         if (isValid) {
             String passwordHash = ScCrypto.generatePasswordHash(password, authInfo.email);
             
-            if (!authInfo.isActive) {
+            if (!authInfo.isRegistered) {
                 authInfo.passwordHash = passwordHash;
                 authInfo.isAuthenticated = false;
             } else {
@@ -251,7 +244,7 @@ public class ScAuthHandler
         isValid = isValid && isPasswordValid(authPassword);
         isValid = isValid && isNameValid(name);
         
-        if (isValid && !authInfo.isAuthenticated && !authInfo.isActive) {
+        if (isValid && !authInfo.isAuthenticated && !authInfo.isRegistered) {
             authInfo.registrationCode = generateRegistrationCode();
             DAO.ofy().put(authInfo);
             

@@ -8,10 +8,9 @@ import javax.ws.rs.core.MediaType;
 
 import com.googlecode.objectify.Key;
 
+import com.scolaapp.api.model.relationships.ScDeviceListing;
 import com.scolaapp.api.utils.ScDAO;
 import com.scolaapp.api.utils.ScLog;
-import com.scolaapp.api.model.relationships.ScScolaListing;
-import com.scolaapp.api.model.relationships.ScScolaMembership;
 
 
 @Path("model")
@@ -23,7 +22,7 @@ public class ScModelHandler
     private HashMap<String, ScCachedEntity> entityLookupMap = new HashMap<String, ScCachedEntity>(); 
 
     
-    private <T extends ScCachedEntity> Key<T> keyForEntity(Class<T> clazz, T entityRef)
+    private <T extends ScCachedEntity> Key<T> persistEntity(Class<T> clazz, T entityRef)
     {
         Key<T> entityKey = null;
         
@@ -41,63 +40,62 @@ public class ScModelHandler
     }
     
     
-    private void persistPerson(ScPerson person)
+    private void persistDevice(ScDevice device)
     {
-        person.householdKey = keyForEntity(ScHousehold.class, person.household);
-        
-        DAO.ofy().put(person);
-        person.isDirty = false;
- 
-        Key<ScPerson> personKey = new Key<ScPerson>(ScPerson.class, person.entityId);
+        // TODO: Device name should be on ScDeviceListing. 
     }
     
     
     private void persistScola(ScScola scola)
     {
-        scola.guardedScolaKey = keyForEntity(ScScola.class, scola.guardedScola);
-        scola.guardianScolaKey = keyForEntity(ScScola.class, scola.guardianScola);
+        scola.guardedScolaKey = persistEntity(ScScola.class, scola.guardedScola);
+        scola.guardianScolaKey = persistEntity(ScScola.class, scola.guardianScola);
         
         DAO.ofy().put(scola);
         scola.isDirty = false;
+    }
+    
+    
+    private void persistScolaMember(ScScolaMember member)
+    {
+        member.householdKey = persistEntity(ScHousehold.class, member.household);
         
-        Key<ScScola> scolaKey = new Key<ScScola>(ScScola.class, scola.entityId);
+        DAO.ofy().put(member);
+        member.isDirty = false;
         
-        for (int i = 0; i < scola.admins.size(); i++) {
-            Key<ScScolaMember> adminKey = keyForEntity(ScScolaMember.class, scola.admins.get(i));
-            DAO.ofy().put(new ScScolaMembership(adminKey, scolaKey, true));
-        }
+        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, member.entityId);
         
-        for (int i = 0; i < scola.membersActive.size(); i++) {
-            Key<ScScolaMember> memberKey = keyForEntity(ScScolaMember.class, scola.membersActive.get(i));
-            DAO.ofy().put(new ScScolaMembership(memberKey, scolaKey, false));
-        }
-        
-        for (int i = 0; i < scola.membersInactive.size(); i++) {
-            Key<ScPerson> personKey = keyForEntity(ScPerson.class, scola.membersInactive.get(i));
-            DAO.ofy().put(new ScScolaListing(personKey, scolaKey));
+        for (ScDevice deviceRef: member.devices) {
+            Key<ScDevice> deviceKey = persistEntity(ScDevice.class, deviceRef);
+            DAO.ofy().put(new ScDeviceListing(deviceKey, memberKey));
         }
     }
     
     
-    private void persistScolaMember(ScScolaMember scolaMember)
+    private void persistScolaMembership(ScScolaMembership membership)
     {
-        DAO.ofy().put(scolaMember);
-        scolaMember.isDirty = false;
+        membership.memberKey = persistEntity(ScScolaMember.class, membership.member);
+        membership.scolaKey = persistEntity(ScScola.class, membership.scola);
         
-        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, scolaMember.entityId);
+        DAO.ofy().put(membership);
+        membership.isDirty = false;
     }
     
     
     private void persistEntity(ScCachedEntity entity)
     {
         if (entity.isDirty) {
-            if (entity.getClass().equals(ScPerson.class)) {
-                persistPerson((ScPerson)entity);
+            if (entity.getClass().equals(ScDevice.class)) {
+                persistDevice((ScDevice)entity);
             } else if (entity.getClass().equals(ScScola.class)) {
                 persistScola((ScScola)entity);
             } else if (entity.getClass().equals(ScScolaMember.class)) {
                 persistScolaMember((ScScolaMember)entity);
+            } else if (entity.getClass().equals(ScScolaMembership.class)) {
+                persistScolaMembership((ScScolaMembership)entity);
             }
+            
+            ScLog.log().fine(String.format("%s Persisted entity {%s} (%s)", ScLog.meta(deviceId), entity.entityId, entity.getClass().getName()));
         }
     }
     

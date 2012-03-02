@@ -5,8 +5,9 @@ import javax.persistence.Id;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Entity;
+
 import com.scolaapp.api.model.ScHousehold;
-import com.scolaapp.api.model.ScPerson;
+import com.scolaapp.api.model.ScScolaMember;
 
 
 @Entity
@@ -14,16 +15,17 @@ import com.scolaapp.api.model.ScPerson;
 public class ScHouseholdResident
 {
     public @Id Long id;
-    public Key<ScHousehold> household;
-    public Key<ScPerson> resident;
+    
+    public Key<ScHousehold> householdKey;
+    public Key<ScScolaMember> memberKey;
 
     
     public ScHouseholdResident() {}
     
     
-    public ScHouseholdResident(Key<ScHousehold> household_, Key<ScPerson> resident_)
+    public ScHouseholdResident(Key<ScHousehold> householdKey, Key<ScScolaMember> memberKey)
     {
-        household = household_;
-        resident = resident_;
+        this.householdKey = householdKey;
+        this.memberKey = memberKey;
     }
 }

@@ -28,10 +28,7 @@ public class ScScola extends ScCachedEntity
     public @NotSaved ScScola guardedScola;
     public @NotSaved ScScola guardianScola;
     
-    public @NotSaved List<ScScolaMember> admins;
-    public @NotSaved List<ScPerson> coaches;
-    public @NotSaved List<ScScolaMember> membersActive;
-    public @NotSaved List<ScPerson> membersInactive;
+    public @NotSaved List<ScScolaMembership> members;
     public @NotSaved List<ScMessageBoard> messageBoards;
     
     

@@ -5,7 +5,7 @@ import javax.persistence.Id;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
-import com.scolaapp.api.model.ScPerson;
+import com.scolaapp.api.model.ScScolaMember;
 
 
 @Unindexed
@@ -19,11 +19,10 @@ public class ScAuthInfo
     public String registrationCode;
     
     public boolean isListed;
-    public boolean isActive;
+    public boolean isRegistered;
     public boolean isAuthenticated;
-    public boolean isDeviceListed;
     
-    public ScPerson listedPerson;
+    public ScScolaMember listedPerson;
     
     
     public ScAuthInfo() {}

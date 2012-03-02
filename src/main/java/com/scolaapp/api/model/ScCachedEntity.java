@@ -12,6 +12,7 @@ import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
+
 @Unindexed
 @JsonTypeInfo (
     use = JsonTypeInfo.Id.NAME,
@@ -21,9 +22,9 @@ import com.googlecode.objectify.annotation.Unindexed;
     @Type(value = ScDevice.class, name = "ScDevice"),
     @Type(value = ScHousehold.class, name = "ScHousehold"),
     @Type(value = ScMessageBoard.class, name = "ScMessageBoard"),
-    @Type(value = ScPerson.class, name = "ScPerson"),
     @Type(value = ScScola.class, name = "ScScola"),
-    @Type(value = ScScolaMember.class, name = "ScScolaMember")})
+    @Type(value = ScScolaMember.class, name = "ScScolaMember"),
+    @Type(value = ScScolaMembership.class, name = "ScScolaMembership")})
 public abstract class ScCachedEntity
 {
     public @Id String entityId;

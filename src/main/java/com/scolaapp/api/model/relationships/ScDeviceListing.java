@@ -14,16 +14,18 @@ import com.scolaapp.api.model.ScScolaMember;
 public class ScDeviceListing
 {
     public @Id Long id;
-    public Key<ScDevice> device;
-    public Key<ScScolaMember> usedBy;
+    public String deviceDisplayName;
+    
+    public Key<ScDevice> deviceKey;
+    public Key<ScScolaMember> memberKey;
 
     
     public ScDeviceListing() {}
     
     
-    public ScDeviceListing(Key<ScDevice> device_, Key<ScScolaMember> usedBy_)
+    public ScDeviceListing(Key<ScDevice> deviceKey, Key<ScScolaMember> memberKey)
     {
-        device = device_;
-        usedBy = usedBy_;
+        this.deviceKey = deviceKey;
+        this.memberKey = memberKey;
     }
 }
