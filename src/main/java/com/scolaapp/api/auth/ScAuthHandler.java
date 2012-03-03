@@ -13,11 +13,14 @@ import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 
 import com.googlecode.objectify.NotFoundException;
 
+import com.scolaapp.api.model.ScHousehold;
+import com.scolaapp.api.model.ScHouseholdResidency;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScLog;
 import com.scolaapp.api.utils.ScCrypto;
@@ -125,11 +128,12 @@ public class ScAuthHandler
             
             try {
                 ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
-                member.household = DAO.ofy().get(member.householdKey);
+                ScHousehold household = DAO.ofy().query(ScHouseholdResidency.class).filter("residentKey", member).list().get(0).household;
                 
                 authInfo.isListed = true;
                 authInfo.isRegistered = member.isRegistered;
-                authInfo.listedPerson = member;
+                authInfo.member = member;
+                authInfo.household = household;
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
                 authInfo.isRegistered = false;
@@ -224,7 +228,7 @@ public class ScAuthHandler
     @GET
     @Path("register")
     @Produces({MediaType.APPLICATION_JSON})
-    public ScAuthInfo registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
+    public Response registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
                                    @QueryParam ("duid")          String deviceUUID,
                                    @QueryParam ("device")        String deviceType,
                                    @QueryParam ("version")       String appVersion,
@@ -251,7 +255,7 @@ public class ScAuthHandler
             sendRegistrationMessage();
         }
         
-        return authInfo;
+        return Response.status(200).entity(authInfo).build();
     }
     
     

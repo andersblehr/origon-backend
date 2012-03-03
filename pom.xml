@@ -298,7 +298,7 @@ warSrcDirIsOutput=true]]>
 		<maven.executable>mvn</maven.executable>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resteasy.version>2.3.0.GA</resteasy.version>
-		<gae.version>1.6.2</gae.version>
+		<gae.version>1.6.3</gae.version>
 		<jdo.version>2.3-eb</jdo.version>
 	</properties>
 </project>

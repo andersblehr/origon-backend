@@ -5,6 +5,7 @@ import javax.persistence.Id;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Unindexed;
 
+import com.scolaapp.api.model.ScHousehold;
 import com.scolaapp.api.model.ScScolaMember;
 
 
@@ -22,7 +23,8 @@ public class ScAuthInfo
     public boolean isRegistered;
     public boolean isAuthenticated;
     
-    public ScScolaMember listedPerson;
+    public ScScolaMember member;
+    public ScHousehold household;
     
     
     public ScAuthInfo() {}

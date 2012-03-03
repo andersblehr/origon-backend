@@ -1,14 +1,13 @@
 package com.scolaapp.api.model;
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.googlecode.objectify.Key;
 
-import com.scolaapp.api.model.relationships.ScDeviceListing;
 import com.scolaapp.api.utils.ScDAO;
 import com.scolaapp.api.utils.ScLog;
 
@@ -18,21 +17,13 @@ public class ScModelHandler
 {
     private String deviceId;
     private ScDAO DAO;
-    
-    private HashMap<String, ScCachedEntity> entityLookupMap = new HashMap<String, ScCachedEntity>(); 
 
     
-    private <T extends ScCachedEntity> Key<T> persistEntity(Class<T> clazz, T entityRef)
+    private <T extends ScCachedEntity> Key<T> keyForEntity(Class<T> clazz, T entityRef)
     {
         Key<T> entityKey = null;
         
         if (entityRef != null) {
-            T entity = clazz.cast(entityLookupMap.get(entityRef.entityId));
-            
-            if ((entity != null) && entity.isDirty) {
-                persistEntity(entity);
-            }
-            
             entityKey = new Key<T>(clazz, entityRef.entityId);
         }
         
@@ -40,70 +31,38 @@ public class ScModelHandler
     }
     
     
-    private void persistDevice(ScDevice device)
+    private void setRelationshipKeys(ScDeviceListing deviceListing)
     {
-        // TODO: Device name should be on ScDeviceListing. 
+        deviceListing.deviceKey = keyForEntity(ScDevice.class, deviceListing.device);
+        deviceListing.memberKey = keyForEntity(ScScolaMember.class, deviceListing.member);
     }
     
     
-    private void persistScola(ScScola scola)
+    private void setRelationshipKeys(ScHouseholdResidency residency)
     {
-        scola.guardedScolaKey = persistEntity(ScScola.class, scola.guardedScola);
-        scola.guardianScolaKey = persistEntity(ScScola.class, scola.guardianScola);
-        
-        DAO.ofy().put(scola);
-        scola.isDirty = false;
+        residency.householdKey = keyForEntity(ScHousehold.class, residency.household);
+        residency.residentKey = keyForEntity(ScScolaMember.class, residency.resident);
     }
     
     
-    private void persistScolaMember(ScScolaMember member)
+    private void setRelationshipKeys(ScScola scola)
     {
-        member.householdKey = persistEntity(ScHousehold.class, member.household);
-        
-        DAO.ofy().put(member);
-        member.isDirty = false;
-        
-        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, member.entityId);
-        
-        for (ScDevice deviceRef: member.devices) {
-            Key<ScDevice> deviceKey = persistEntity(ScDevice.class, deviceRef);
-            DAO.ofy().put(new ScDeviceListing(deviceKey, memberKey));
-        }
+        scola.guardedScolaKey = keyForEntity(ScScola.class, scola.guardedScola);
+        scola.guardianScolaKey = keyForEntity(ScScola.class, scola.guardianScola);
     }
     
     
-    private void persistScolaMembership(ScScolaMembership membership)
+    private void setRelationshipKeys(ScScolaMembership membership)
     {
-        membership.memberKey = persistEntity(ScScolaMember.class, membership.member);
-        membership.scolaKey = persistEntity(ScScola.class, membership.scola);
-        
-        DAO.ofy().put(membership);
-        membership.isDirty = false;
-    }
-    
-    
-    private void persistEntity(ScCachedEntity entity)
-    {
-        if (entity.isDirty) {
-            if (entity.getClass().equals(ScDevice.class)) {
-                persistDevice((ScDevice)entity);
-            } else if (entity.getClass().equals(ScScola.class)) {
-                persistScola((ScScola)entity);
-            } else if (entity.getClass().equals(ScScolaMember.class)) {
-                persistScolaMember((ScScolaMember)entity);
-            } else if (entity.getClass().equals(ScScolaMembership.class)) {
-                persistScolaMembership((ScScolaMembership)entity);
-            }
-            
-            ScLog.log().fine(String.format("%s Persisted entity {%s} (%s)", ScLog.meta(deviceId), entity.entityId, entity.getClass().getName()));
-        }
+        membership.memberKey = keyForEntity(ScScolaMember.class, membership.member);
+        membership.scolaKey = keyForEntity(ScScola.class, membership.scola);
     }
     
     
     @POST
     @Path("persist")
     @Consumes({MediaType.APPLICATION_JSON})
-    public void persistEntities(List<ScCachedEntity> entities,
+    public Response persistEntities(List<ScCachedEntity> entities,
                                 @QueryParam ("duid")    String deviceUUID,
                                 @QueryParam ("device")  String deviceType,
                                 @QueryParam ("version") String appVersion)
@@ -114,21 +73,22 @@ public class ScModelHandler
         
         ScLog.log().fine(String.format("%s Data: %s", ScLog.meta(deviceId), entities.toString()));
         
-        for (int i = 0; i < entities.size(); i++) {
-            ScCachedEntity entity = entities.get(i);
+        for (ScCachedEntity entity: entities) {
+            Class<?> entityClass = entity.getClass();
             
-            entity.isDirty = true;
-            entityLookupMap.put(entity.entityId, entity);
+            if (entityClass.equals(ScDeviceListing.class)) {
+                setRelationshipKeys((ScDeviceListing)entity);
+            } else if (entityClass.equals(ScHouseholdResidency.class)) {
+                setRelationshipKeys((ScHouseholdResidency)entity);
+            } else if (entityClass.equals(ScScola.class)) {
+                setRelationshipKeys((ScScola)entity);
+            } else if (entityClass.equals(ScScolaMembership.class)) {
+                setRelationshipKeys((ScScolaMembership)entity);
+            }
         }
         
-        for (int i = 0; i < entities.size(); i++) {
-            persistEntity(entities.get(i));
-        }
+        DAO.ofy().put(entities);
         
-        //ScLog.log().fine(String.format("name: %s", member.name));
-        //ScLog.log().fine(String.format("email: %s", member.email));
-        //ScLog.log().fine(String.format("date of birth: %s", member.dateOfBirth.toString()));
-        //ScLog.log().fine(String.format("gender: %s", member.gender));
-        //ScLog.log().fine(String.format("address: %s, %s", member.household.addressLine1, member.household.postCodeAndCity));
+        return Response.status(201).build();
     }
 }

@@ -4,28 +4,22 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
-import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.NotSaved;
+import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfFalse;;
 
 
-@Entity
+@Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ScScolaMembership extends ScCachedEntity
 {
-    public @Indexed @NotSaved(IfFalse.class) boolean isActive;
-    public @Indexed @NotSaved(IfFalse.class) boolean isAdmin;
-    public @Indexed @NotSaved(IfFalse.class) boolean isRole1;
-    public @Indexed @NotSaved(IfFalse.class) boolean isRole2;
-    public @Indexed @NotSaved(IfFalse.class) boolean isRole3;
-    
-    public String role1Label;
-    public String role2Label;
-    public String role3Label;
+    public @NotSaved(IfFalse.class) boolean isActive = false;
+    public @NotSaved(IfFalse.class) boolean isAdmin = false;
+    public @NotSaved(IfFalse.class) boolean isCoach = false;
+    public @NotSaved(IfFalse.class) boolean isTeacher = false;
     
     public Key<ScScolaMember> memberKey;
     public Key<ScScola> scolaKey;

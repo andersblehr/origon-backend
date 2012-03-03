@@ -9,12 +9,14 @@ import com.googlecode.objectify.util.DAOBase;
 import com.scolaapp.api.auth.ScAuthInfo;
 
 import com.scolaapp.api.model.ScDevice;
+import com.scolaapp.api.model.ScDeviceListing;
+import com.scolaapp.api.model.ScHousehold;
+import com.scolaapp.api.model.ScHouseholdResidency;
 import com.scolaapp.api.model.ScMessageBoard;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.model.ScScolaMembership;
 
-import com.scolaapp.api.model.relationships.ScDeviceListing;
 
 
 
@@ -28,20 +30,21 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScAuthInfo.class);
         
         ObjectifyService.register(ScDevice.class);
+        ObjectifyService.register(ScDeviceListing.class);
+        ObjectifyService.register(ScHousehold.class);
+        ObjectifyService.register(ScHouseholdResidency.class);
         ObjectifyService.register(ScMessageBoard.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
         ObjectifyService.register(ScScolaMembership.class);
-        
-        ObjectifyService.register(ScDeviceListing.class);
     }
     
     
-    public ScDAO(String deviceUUID)
+    public ScDAO(String deviceId)
     {
         super();
         
-        deviceId = deviceUUID;
+        this.deviceId = deviceId;
     }
     
     
