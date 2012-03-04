@@ -13,7 +13,7 @@ import com.googlecode.objectify.condition.IfFalse;;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(value={"memberKey", "scolaKey"}, ignoreUnknown=true)
 public class ScScolaMembership extends ScCachedEntity
 {
     public @NotSaved(IfFalse.class) boolean isActive = false;

@@ -14,7 +14,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(value={"guardedScolaKey", "guardianScolaKey"}, ignoreUnknown=true)
 public class ScScola extends ScCachedEntity
 {
     public @NotSaved({IfNull.class, IfEmptyString.class}) String descriptionText;

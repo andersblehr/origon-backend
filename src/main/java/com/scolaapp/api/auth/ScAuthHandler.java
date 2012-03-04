@@ -20,7 +20,6 @@ import org.apache.commons.codec.binary.Base64;
 import com.googlecode.objectify.NotFoundException;
 
 import com.scolaapp.api.model.ScHousehold;
-import com.scolaapp.api.model.ScHouseholdResidency;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScLog;
 import com.scolaapp.api.utils.ScCrypto;
@@ -128,20 +127,18 @@ public class ScAuthHandler
             
             try {
                 ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
-                ScHousehold household = DAO.ofy().query(ScHouseholdResidency.class).filter("residentKey", member).list().get(0).household;
+                ScHousehold household = DAO.ofy().get(member.primaryResidenceKey);
+                ScLog.log().fine(String.format("%s Date of birth: %s", ScLog.meta(deviceId), member.dateOfBirth.toString()));
                 
                 authInfo.isListed = true;
-                authInfo.isRegistered = member.isRegistered;
+                authInfo.isRegistered = member.didRegister;
+                authInfo.passwordHash = member.passwordHash;
+                
                 authInfo.member = member;
                 authInfo.household = household;
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
                 authInfo.isRegistered = false;
-            }
-            
-            if (authInfo.isRegistered) {
-                ScScolaMember member = DAO.getOrThrow(ScScolaMember.class, authInfo.email);
-                authInfo.passwordHash = member.passwordHash;
             }
         } catch (AddressException e) {
             ScLog.log().info(String.format("%s '%s' is not a valid email address.", ScLog.meta(deviceId), emailAsEntered));
@@ -152,12 +149,12 @@ public class ScAuthHandler
     }
     
     
-    private boolean isPasswordValid(String password)
+    private boolean isPasswordValid(String passwordAsEntered)
     {
-        boolean isValid = ((password != null) && (password.length() >= kMinimumPasswordLength));
+        boolean isValid = ((passwordAsEntered != null) && (passwordAsEntered.length() >= kMinimumPasswordLength));
         
         if (isValid) {
-            String passwordHash = ScCrypto.generatePasswordHash(password, authInfo.email);
+            String passwordHash = ScCrypto.generatePasswordHash(passwordAsEntered, authInfo.email);
             
             if (!authInfo.isRegistered) {
                 authInfo.passwordHash = passwordHash;
@@ -166,7 +163,7 @@ public class ScAuthHandler
                 authInfo.isAuthenticated = passwordHash.equals(authInfo.passwordHash);
             }
         } else {
-            ScLog.log().severe(String.format("%s Password '%s' is too short. Potential intruder, barring entry.", ScLog.meta(deviceId), password));
+            ScLog.log().severe(String.format("%s Password '%s' is too short. Potential intruder, barring entry.", ScLog.meta(deviceId), passwordAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -174,14 +171,14 @@ public class ScAuthHandler
     }
     
     
-    private boolean isNameValid(String name)
+    private boolean isNameValid(String nameAsEntered)
     {
-        boolean isValid = (name != null) && (name.length() > 0) && (name.indexOf(" ") > 0);
+        boolean isValid = (nameAsEntered != null) && (nameAsEntered.length() > 0) && (nameAsEntered.indexOf(" ") > 0);
         
         if (isValid) {
-            authInfo.name = name;
+            authInfo.name = nameAsEntered;
         } else {
-            ScLog.log().severe(String.format("%s '%s' is not a full name. Potential intruder, barring entry.", ScLog.meta(deviceId), name));
+            ScLog.log().severe(String.format("%s '%s' is not a full name. Potential intruder, barring entry.", ScLog.meta(deviceId), nameAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -229,10 +226,10 @@ public class ScAuthHandler
     @Path("register")
     @Produces({MediaType.APPLICATION_JSON})
     public Response registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                   @QueryParam ("duid")          String deviceUUID,
-                                   @QueryParam ("device")        String deviceType,
-                                   @QueryParam ("version")       String appVersion,
-                                   @QueryParam ("name")          String name)
+                                 @QueryParam ("duid")          String deviceUUID,
+                                 @QueryParam ("device")        String deviceType,
+                                 @QueryParam ("version")       String appVersion,
+                                 @QueryParam ("name")          String name)
     {
         deviceId = deviceUUID;
         ScLog.setMeta(deviceId, deviceType, appVersion);
@@ -248,23 +245,23 @@ public class ScAuthHandler
         isValid = isValid && isPasswordValid(authPassword);
         isValid = isValid && isNameValid(name);
         
-        if (isValid && !authInfo.isAuthenticated && !authInfo.isRegistered) {
+        if (isValid && !authInfo.isRegistered) {
             authInfo.registrationCode = generateRegistrationCode();
             DAO.ofy().put(authInfo);
             
             sendRegistrationMessage();
         }
         
-        return Response.status(200).entity(authInfo).build();
+        return Response.status(HttpServletResponse.SC_OK).entity(authInfo).build();
     }
     
     
     @GET
     @Path("confirm")
-    public void confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                            @QueryParam ("duid")          String deviceUUID,
-                            @QueryParam ("device")        String deviceType,
-                            @QueryParam ("version")       String appVersion)
+    public Response confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
+                                @QueryParam ("duid")          String deviceUUID,
+                                @QueryParam ("device")        String deviceType,
+                                @QueryParam ("version")       String appVersion)
     {
         deviceId = deviceUUID;
         ScLog.setMeta(deviceId, deviceType, appVersion);
@@ -287,15 +284,17 @@ public class ScAuthHandler
             ScLog.log().severe(String.format("%s Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Potential intruder, barring entry.", ScLog.meta(deviceId), HTTPHeaderAuth, authId, authPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
+        
+        return Response.status(HttpServletResponse.SC_NO_CONTENT).build();
     }
     
     
     @GET
     @Path("login")
-    public void loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                          @QueryParam ("duid")          String deviceUUID,
-                          @QueryParam ("device")        String deviceType,
-                          @QueryParam ("version")       String appVersion)
+    public Response loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
+                              @QueryParam ("duid")          String deviceUUID,
+                              @QueryParam ("device")        String deviceType,
+                              @QueryParam ("version")       String appVersion)
     {
         deviceId = deviceUUID;
         ScLog.setMeta(deviceId, deviceType, appVersion);
@@ -318,5 +317,7 @@ public class ScAuthHandler
             ScLog.log().warning(String.format("%s User with id '%s' failed to authenticate.", ScLog.meta(deviceId), authId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
+        
+        return Response.status(HttpServletResponse.SC_NO_CONTENT).build();
     }
 }

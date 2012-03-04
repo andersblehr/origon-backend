@@ -279,7 +279,7 @@ warSrcDirIsOutput=true]]>
         <dependency>
 			<groupId>com.googlecode.objectify</groupId>
 			<artifactId>objectify</artifactId>
-			<version>3.0.1</version>
+			<version>3.1</version>
 		</dependency>
 		<dependency>
 		    <groupId>commons-codec</groupId>

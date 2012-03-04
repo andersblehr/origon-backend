@@ -16,6 +16,7 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ScHousehold extends ScCachedEntity
 {
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String name;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String addressLine1;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String addressLine2;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String postCodeAndCity;

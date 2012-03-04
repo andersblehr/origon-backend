@@ -15,7 +15,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(value={"scolaKey"}, ignoreUnknown=true)
 public class ScMessageBoard extends ScCachedEntity
 {
     public @NotSaved(IfFalse.class) boolean isAdmin = false;

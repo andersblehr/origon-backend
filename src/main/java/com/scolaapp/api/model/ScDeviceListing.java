@@ -12,7 +12,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(value={"deviceKey", "memberKey"}, ignoreUnknown=true)
 public class ScDeviceListing extends ScCachedEntity
 {
     public String displayName;
