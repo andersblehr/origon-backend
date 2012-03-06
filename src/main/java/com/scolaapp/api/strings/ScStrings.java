@@ -15,7 +15,8 @@ public class ScStrings
     public String strThis_iPad;
     
     // Alert messages
-    public String strServerUnavailableAlert;
+    public String strNoInternetAlertTitle;
+    public String strNoInternetAlert;
     public String strInternalServerError;
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
@@ -130,7 +131,8 @@ public class ScStrings
     private void setAlertMessages(String language) 
     {
         if ("nb".equals(language)) {
-            strServerUnavailableAlert           = "Scola-tjenesten er dessverre utilgjengelig akkurat nå. Vennligst prøv igjen senere.";
+            strNoInternetAlertTitle             = "Ingen forbindelse";
+            strNoInternetAlert                  = "Du er uten internettforbindelse for øyeblikket. Du kan fortsette å bruke Scola, men du vil ikke motta oppdateringer før du har forbindelse igjen.";
             strInternalServerError              = "Det har oppstått en feil. Vennligst prøv igjen senere.";
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
@@ -148,7 +150,8 @@ public class ScStrings
             strUnrealisticAgeAlert              = "Du har oppgitt at du er %d år gammel. Det er vanskelig å tro. Vennligst oppgi din virkelige fødselsdato.";
             strNoMobilePhoneAlert               = "Vennligst oppgi mobilnummeret ditt, evt. et annet telefonnummer om du ikke har mobiltelefon";
         } else {
-            strServerUnavailableAlert           = "We are very sorry, but the Scola service is unavailable at the moment. Please try again later.";
+            strNoInternetAlertTitle             = "No internet";
+            strNoInternetAlert                  = "You have no internet connection at the moment. You can continue to use Scola, but you will not receive any updates until you are online again.";
             strInternalServerError              = "An error has occurred. Please try again later.";
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";

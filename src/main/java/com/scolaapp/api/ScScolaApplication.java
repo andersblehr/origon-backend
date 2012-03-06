@@ -17,7 +17,6 @@ public class ScScolaApplication extends Application
     
     public ScScolaApplication()
     {
-        singletons.add(new ScScolaHandler());
         singletons.add(new ScStringHandler());
         singletons.add(new ScAuthHandler());
         singletons.add(new ScModelHandler());

@@ -128,7 +128,6 @@ public class ScAuthHandler
             try {
                 ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
                 ScHousehold household = DAO.ofy().get(member.primaryResidenceKey);
-                ScLog.log().fine(String.format("%s Date of birth: %s", ScLog.meta(deviceId), member.dateOfBirth.toString()));
                 
                 authInfo.isListed = true;
                 authInfo.isRegistered = member.didRegister;

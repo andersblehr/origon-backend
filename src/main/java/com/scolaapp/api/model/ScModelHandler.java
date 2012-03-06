@@ -49,16 +49,25 @@ public class ScModelHandler
         for (ScCachedEntity entity: entities) {
             Class<?> entityClass = entity.getClass();
             
-            if (entityClass.equals(ScDeviceListing.class)) {
+            if (entityClass.equals(ScDevice.class)) {
+                ScDevice device = (ScDevice)entity;
+                
+            } else if (entityClass.equals(ScDeviceListing.class)) {
                 ScDeviceListing deviceListing = (ScDeviceListing)entity;
                 
                 deviceListing.deviceKey = keyForEntity(ScDevice.class, deviceListing.device);
                 deviceListing.memberKey = keyForEntity(ScScolaMember.class, deviceListing.member);
+            } else if (entityClass.equals(ScHousehold.class)) {
+                ScHousehold household = (ScHousehold)entity;
+                
             } else if (entityClass.equals(ScHouseholdResidency.class)) {
                 ScHouseholdResidency residency = (ScHouseholdResidency)entity;
                 
                 residency.householdKey = keyForEntity(ScHousehold.class, residency.household);
                 residency.residentKey = keyForEntity(ScScolaMember.class, residency.resident);
+            } else if (entityClass.equals(ScMessageBoard.class)) {
+                ScMessageBoard messageBoard = (ScMessageBoard)entity;
+                
             } else if (entityClass.equals(ScScola.class)) {
                 ScScola scola = (ScScola)entity;
                 
@@ -67,7 +76,6 @@ public class ScModelHandler
             } else if (entityClass.equals(ScScolaMember.class)) {
                 ScScolaMember member = (ScScolaMember)entity;
                 
-                ScLog.log().fine(String.format("%s Date of birth: %s", ScLog.meta(deviceId), member.dateOfBirth.toString()));
                 member.primaryResidenceKey = keyForEntity(ScHousehold.class, member.primaryResidence);
             } else if (entityClass.equals(ScScolaMembership.class)) {
                 ScScolaMembership membership = (ScScolaMembership)entity;
