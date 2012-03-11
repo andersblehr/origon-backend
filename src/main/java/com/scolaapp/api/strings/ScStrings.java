@@ -230,7 +230,7 @@ public class ScStrings
             strSeeYouLaterPopUpTitle            = "Ser deg senere!";
             strSeeYouLaterPopUpMessage          = "Du kan trygt forlate Scola. Vi fortsetter neste gang du er innom.";
             strWelcomeBackPopUpTitle            = "Velkommen tilbake!";
-            strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
+            strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
         } else {
@@ -253,7 +253,7 @@ public class ScStrings
             strSeeYouLaterPopUpTitle            = "See you later!";
             strSeeYouLaterPopUpMessage          = "You can safely leave Scola. We'll continue next time your drop by.";
             strWelcomeBackPopUpTitle            = "Welcome back!";
-            strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, please go back and start over.";
+            strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
         }
