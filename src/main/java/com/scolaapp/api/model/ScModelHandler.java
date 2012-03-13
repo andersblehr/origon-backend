@@ -1,5 +1,6 @@
 package com.scolaapp.api.model;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -20,15 +21,27 @@ public class ScModelHandler
     private ScDAO DAO;
 
     
-    private <T extends ScCachedEntity> Key<T> keyForEntity(Class<T> clazz, T entityRef)
+    @SuppressWarnings("unchecked")
+    private <T extends ScCachedEntity> void setRelationshipKeys(T entity)
     {
-        Key<T> entityKey = null;
-        
-        if (entityRef != null) {
-            entityKey = new Key<T>(clazz, entityRef.entityId);
+        try {
+            Field[] fields = entity.getClass().getFields();
+            
+            for (Field field : fields) {
+                Class<?> classOfField = field.getType();
+                
+                if (classOfField.getSuperclass() == ScCachedEntity.class) {
+                    ScCachedEntity referencedEntity = (ScCachedEntity)field.get(entity);
+                    
+                    if (referencedEntity != null) {
+                        Field keyField = entity.getClass().getField(field.getName() + "Key");
+                        keyField.set(entity, new Key<T>((Class<T>)classOfField, referencedEntity.entityId));
+                    }
+                }
+            }
         }
-        
-        return entityKey;
+        catch (IllegalAccessException e) { throw new RuntimeException(e); }
+        catch (NoSuchFieldException e) { throw new RuntimeException(e); }
     }
     
     
@@ -46,43 +59,8 @@ public class ScModelHandler
         
         ScLog.log().fine(String.format("%s Data: %s", ScLog.meta(deviceId), entities.toString()));
         
-        for (ScCachedEntity entity: entities) {
-            Class<?> entityClass = entity.getClass();
-            
-            if (entityClass.equals(ScDevice.class)) {
-                ScDevice device = (ScDevice)entity;
-                
-            } else if (entityClass.equals(ScDeviceListing.class)) {
-                ScDeviceListing deviceListing = (ScDeviceListing)entity;
-                
-                deviceListing.deviceKey = keyForEntity(ScDevice.class, deviceListing.device);
-                deviceListing.memberKey = keyForEntity(ScScolaMember.class, deviceListing.member);
-            } else if (entityClass.equals(ScHousehold.class)) {
-                ScHousehold household = (ScHousehold)entity;
-                
-            } else if (entityClass.equals(ScHouseholdResidency.class)) {
-                ScHouseholdResidency residency = (ScHouseholdResidency)entity;
-                
-                residency.householdKey = keyForEntity(ScHousehold.class, residency.household);
-                residency.residentKey = keyForEntity(ScScolaMember.class, residency.resident);
-            } else if (entityClass.equals(ScMessageBoard.class)) {
-                ScMessageBoard messageBoard = (ScMessageBoard)entity;
-                
-            } else if (entityClass.equals(ScScola.class)) {
-                ScScola scola = (ScScola)entity;
-                
-                scola.guardedScolaKey = keyForEntity(ScScola.class, scola.guardedScola);
-                scola.guardianScolaKey = keyForEntity(ScScola.class, scola.guardianScola);
-            } else if (entityClass.equals(ScScolaMember.class)) {
-                ScScolaMember member = (ScScolaMember)entity;
-                
-                member.primaryResidenceKey = keyForEntity(ScHousehold.class, member.primaryResidence);
-            } else if (entityClass.equals(ScScolaMembership.class)) {
-                ScScolaMembership membership = (ScScolaMembership)entity;
-                
-                membership.memberKey = keyForEntity(ScScolaMember.class, membership.member);
-                membership.scolaKey = keyForEntity(ScScola.class, membership.scola);
-            }
+        for (ScCachedEntity entity : entities) {
+            setRelationshipKeys(entity);
         }
         
         DAO.ofy().put(entities);
