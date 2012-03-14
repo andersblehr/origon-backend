@@ -1,5 +1,6 @@
 package com.scolaapp.api.model;
 
+import java.lang.reflect.Field;
 import java.util.Date;
 
 import javax.persistence.Id;
@@ -8,6 +9,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.NotSaved;
@@ -40,4 +42,30 @@ public abstract class ScCachedEntity
     
     
     public ScCachedEntity() {}
+
+
+    @SuppressWarnings("unchecked")
+    public <T extends ScCachedEntity> void mapRelationshipKeys()
+    {
+        try {
+            Field[] fields = this.getClass().getFields();
+            
+            for (Field field : fields) {
+                Class<?> classOfField = field.getType();
+                
+                if (classOfField.getSuperclass() == ScCachedEntity.class) {
+                    ScCachedEntity referencedEntity = (ScCachedEntity)field.get(this);
+                    
+                    if (referencedEntity != null) {
+                        Field keyField = this.getClass().getField(field.getName() + "Key");
+                        keyField.set(this, new Key<T>((Class<T>)classOfField, referencedEntity.entityId));
+                    }
+                }
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchFieldException e){
+            throw new RuntimeException(e);
+        }
+    }
 }
