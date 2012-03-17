@@ -1,6 +1,5 @@
 package com.scolaapp.api.utils;
 
-import java.util.HashMap;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -14,7 +13,6 @@ import com.scolaapp.api.ScScolaApplication;
 public class ScLog
 {
     private static final Logger log = Logger.getLogger(ScScolaApplication.class.getName());
-    private static final HashMap<String, ScLogMeta> metaMap = new HashMap<String, ScLogMeta>();
 
     
     protected ScLog() {}
@@ -25,23 +23,6 @@ public class ScLog
         return log;
     }
     
-    
-    public static void setMeta(String deviceUUID, String deviceType, String appVersion)
-    {
-        ScLogMeta meta = metaMap.get(deviceUUID);
-        
-        if (meta == null) {
-            meta = new ScLogMeta(deviceUUID, deviceType, appVersion);
-            metaMap.put(deviceUUID, meta);
-        }
-    }
-    
-    
-    public static String meta(String deviceUUID)
-    {
-        return metaMap.get(deviceUUID).meta();
-    }
-
     
     public static void throwWebApplicationException(Exception exception, int statusCode, String reason)
     {
@@ -92,27 +73,5 @@ public class ScLog
     public static void throwWebApplicationException(int statusCode)
     {
         throwWebApplicationException(null, statusCode, "");
-    }
-
-    
-    private static class ScLogMeta
-    {
-        private String appVersion;
-        private String deviceType;
-        private String deviceUUID;
-        
-        
-        public ScLogMeta(String UUID, String type, String version)
-        {
-            deviceUUID = UUID;
-            deviceType = type;
-            appVersion = version;
-        }
-        
-        
-        public String meta()
-        {
-            return String.format("[%s] %s/%s:", deviceUUID.substring(0, 8), deviceType, appVersion);
-        }
     }
 }

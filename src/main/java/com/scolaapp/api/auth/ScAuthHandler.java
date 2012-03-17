@@ -41,8 +41,6 @@ public class ScAuthHandler
     private String authId;
     private String authPassword;
     
-    private String deviceId;
-
     
     static
     {
@@ -73,11 +71,10 @@ public class ScAuthHandler
                 authElements = authString.split(":");
                 isValid = (authElements.length == 2);
             } catch (UnsupportedEncodingException e) {
-                ScLog.log().severe(String.format("%s BROKEN: Caught UnsupportedEncodingException when decoding auth string, bailing out.", ScLog.meta(deviceId)));
-                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, String.format("invalidAuthString(%s)", authString));
+                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } else {
-            ScLog.log().severe(String.format("%s Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Potential intruder, barring entry.", ScLog.meta(deviceId), HTTPHeaderAuth));
+            ScLog.log().severe(DAO.meta() + String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Barring entry for potential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -85,7 +82,7 @@ public class ScAuthHandler
             authId = authElements[0];
             authPassword = authElements[1];
         } else {
-            ScLog.log().severe(String.format("%s Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Potential intruder, barring entry.", ScLog.meta(deviceId), authString));
+            ScLog.log().severe(DAO.meta() + String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Barring entry for potential intruder, raising FORBIDDEN (403).", authString));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -93,12 +90,12 @@ public class ScAuthHandler
     }
     
 
-    private boolean isUUIDValid(String deviceUUID)
+    private boolean isDeviceIdValid(String deviceId)
     {
-        boolean isValid = ((deviceUUID != null) && (deviceUUID.length() == 36));
+        boolean isValid = ((deviceId != null) && (deviceId.length() == 36));
         
         if (isValid) {
-            String[] UUIDElements = deviceUUID.split("-");
+            String[] UUIDElements = deviceId.split("-");
             
             isValid = (UUIDElements.length == 5);
             isValid = isValid && (UUIDElements[0].length() ==  8);
@@ -109,9 +106,9 @@ public class ScAuthHandler
         }
         
         if (isValid) {
-            authInfo.deviceUUID = deviceUUID;
+            authInfo.deviceId = deviceId;
         } else {
-            ScLog.log().severe(String.format("%s Invalid UUID: %s. Potential intruder, barring entry.", ScLog.meta(deviceId), authInfo.deviceUUID));
+            ScLog.log().severe(DAO.meta() + String.format("Invalid device ID: %s. Barring entry for potential intruder, raising FORBIDDEN (403).", deviceId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -140,7 +137,7 @@ public class ScAuthHandler
                 authInfo.isRegistered = false;
             }
         } catch (AddressException e) {
-            ScLog.log().info(String.format("%s '%s' is not a valid email address.", ScLog.meta(deviceId), emailAsEntered));
+            ScLog.log().info(DAO.meta() + String.format("'%s' is not a valid email address, raising UNAUTHORIZED (403).", emailAsEntered));
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, String.format("invalidEmail(%s)", emailAsEntered));
         } 
         
@@ -162,7 +159,7 @@ public class ScAuthHandler
                 authInfo.isAuthenticated = passwordHash.equals(authInfo.passwordHash);
             }
         } else {
-            ScLog.log().severe(String.format("%s Password '%s' is too short. Potential intruder, barring entry.", ScLog.meta(deviceId), passwordAsEntered));
+            ScLog.log().severe(DAO.meta() + String.format("Password '%s' is too short. Barring entry for potential intruder, raising FORBIDDEN (403).", passwordAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -177,7 +174,7 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.name = nameAsEntered;
         } else {
-            ScLog.log().severe(String.format("%s '%s' is not a full name. Potential intruder, barring entry.", ScLog.meta(deviceId), nameAsEntered));
+            ScLog.log().severe(DAO.meta() + String.format("'%s' is not a full name. Barring entry for potential intruder, raising FORBIDDEN (403).", nameAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -214,7 +211,7 @@ public class ScAuthHandler
             
             Transport.send(msg);
             
-            ScLog.log().fine(String.format("%s Sent registration code %s to new Scola user %s.", ScLog.meta(deviceId), authInfo.registrationCode, authInfo.email));
+            ScLog.log().fine(DAO.meta() + String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
         } catch (Exception e) {
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -225,21 +222,18 @@ public class ScAuthHandler
     @Path("register")
     @Produces({MediaType.APPLICATION_JSON})
     public Response registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                 @QueryParam ("duid")          String deviceUUID,
+                                 @QueryParam ("duid")          String deviceId,
                                  @QueryParam ("device")        String deviceType,
                                  @QueryParam ("version")       String appVersion,
                                  @QueryParam ("name")          String name)
     {
-        deviceId = deviceUUID;
-        ScLog.setMeta(deviceId, deviceType, appVersion);
-        DAO = new ScDAO(deviceId);
-        
-        ScLog.log().fine(String.format("%s Registering new user.", ScLog.meta(deviceId)));
+        DAO = new ScDAO(deviceId, deviceType, appVersion, false);
         
         authInfo = new ScAuthInfo();
+        
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
-        isValid = isValid && isUUIDValid(deviceUUID);
+        isValid = isValid && isDeviceIdValid(deviceId);
         isValid = isValid && isEmailValid(authId);
         isValid = isValid && isPasswordValid(authPassword);
         isValid = isValid && isNameValid(name);
@@ -258,29 +252,22 @@ public class ScAuthHandler
     @GET
     @Path("confirm")
     public Response confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                @QueryParam ("duid")          String deviceUUID,
+                                @QueryParam ("duid")          String deviceId,
                                 @QueryParam ("device")        String deviceType,
                                 @QueryParam ("version")       String appVersion)
     {
-        deviceId = deviceUUID;
-        ScLog.setMeta(deviceId, deviceType, appVersion);
-        DAO = new ScDAO(deviceId);
-        
-        ScLog.log().fine(String.format("%s Confirming and logging in new user.", ScLog.meta(deviceId)));
+        DAO = new ScDAO(deviceId, deviceType, appVersion, false);
         
         boolean willConfirmUser = false;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            authInfo = DAO.getOrThrow(ScAuthInfo.class, authId);
+            authInfo = DAO.getOrThrow(ScAuthInfo.class, deviceId);
             
             willConfirmUser = ScCrypto.generatePasswordHash(authPassword, authId).equals(authInfo.passwordHash);
-            willConfirmUser = willConfirmUser && deviceUUID.equals(authInfo.deviceUUID);
         }
         
-        if (willConfirmUser) {
-            DAO.ofy().delete(authInfo);
-        } else {
-            ScLog.log().severe(String.format("%s Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Potential intruder, barring entry.", ScLog.meta(deviceId), HTTPHeaderAuth, authId, authPassword));
+        if (!willConfirmUser) {
+            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, authId, authPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -291,16 +278,12 @@ public class ScAuthHandler
     @GET
     @Path("login")
     public Response loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                              @QueryParam ("duid")          String deviceUUID,
+                              @QueryParam ("duid")          String deviceId,
                               @QueryParam ("device")        String deviceType,
                               @QueryParam ("version")       String appVersion)
     {
-        deviceId = deviceUUID;
-        ScLog.setMeta(deviceId, deviceType, appVersion);
-        DAO = new ScDAO(deviceId);
+        DAO = new ScDAO(deviceId, deviceType, appVersion);
 
-        ScLog.log().fine(String.format("%s Attempting to log in user.", ScLog.meta(deviceId)));
-        
         ScScolaMember member = null;
         boolean isAuthenticated = false;
         
@@ -311,9 +294,9 @@ public class ScAuthHandler
         }
         
         if (isAuthenticated) {
-            ScLog.log().info(String.format("%s Authenticated user with id '%s'.", ScLog.meta(deviceId), authId));
+            ScLog.log().info(DAO.meta() + String.format("Authenticated user %s.", authId));
         } else {
-            ScLog.log().warning(String.format("%s User with id '%s' failed to authenticate.", ScLog.meta(deviceId), authId));
+            ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", authId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         

@@ -14,7 +14,6 @@ import com.scolaapp.api.utils.ScLog;
 @Path("model")
 public class ScModelHandler
 {
-    private String deviceId;
     private ScDAO DAO;
 
     
@@ -22,15 +21,13 @@ public class ScModelHandler
     @Path("persist")
     @Consumes({MediaType.APPLICATION_JSON})
     public Response persistEntities(List<ScCachedEntity> entities,
-                                    @QueryParam("duid")    String deviceUUID,
+                                    @QueryParam("duid")    String deviceId,
                                     @QueryParam("device")  String deviceType,
                                     @QueryParam("version") String appVersion)
     {
-        deviceId = deviceUUID;
-        ScLog.setMeta(deviceId, deviceType, appVersion);
-        DAO = new ScDAO(deviceId);
+        DAO = new ScDAO(deviceId, deviceType, appVersion);
         
-        ScLog.log().fine(String.format("%s Data: %s", ScLog.meta(deviceId), entities.toString()));
+        ScLog.log().fine(DAO.meta() + String.format("Data: %s", entities.toString()));
         
         for (ScCachedEntity entity : entities) {
             entity.mapRelationshipKeys();

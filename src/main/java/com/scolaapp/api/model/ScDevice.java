@@ -16,14 +16,12 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class ScDevice extends ScCachedEntity
 {
-    public @NotSaved String uuid;
+    public @NotSaved String deviceId;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String type;
     
     
     public ScDevice()
     {
         super();
-        
-        uuid = entityId;
     }
 }

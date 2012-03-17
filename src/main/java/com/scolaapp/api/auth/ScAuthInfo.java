@@ -16,11 +16,11 @@ import com.scolaapp.api.model.ScScolaMember;
 @Cached(expirationSeconds=600)
 public class ScAuthInfo
 {
-    public @Id String email;
+    public @Id String deviceId;
     
     public String name;
+    public String email;
     public String passwordHash;
-    public String deviceUUID;
     public String registrationCode;
     
     public boolean isListed;
