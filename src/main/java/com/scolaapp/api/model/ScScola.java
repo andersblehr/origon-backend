@@ -8,6 +8,7 @@ import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfEmptyString;
+import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -19,9 +20,10 @@ public class ScScola extends ScCachedEntity
 {
     public @NotSaved({IfNull.class, IfEmptyString.class}) String descriptionText;
     public String name;
+    public @NotSaved(IfFalse.class) boolean isHomeScola;
     
-    public Key<ScScola> guardedScolaKey;
-    public Key<ScScola> guardianScolaKey;
+    public @NotSaved(IfNull.class) Key<ScScola> guardedScolaKey;
+    public @NotSaved(IfNull.class) Key<ScScola> guardianScolaKey;
     
     public @NotSaved ScScola guardedScola;
     public @NotSaved ScScola guardianScola;

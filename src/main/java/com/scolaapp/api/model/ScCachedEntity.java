@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Id;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -14,6 +15,7 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.condition.IfNotNull;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -32,13 +34,17 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = ScScola.class, name = "ScScola"),
     @Type(value = ScScolaMember.class, name = "ScScolaMember"),
     @Type(value = ScScolaMembership.class, name = "ScScolaMembership")})
+@JsonIgnoreProperties(value="scolaKey")
 public abstract class ScCachedEntity
 {
     public @Id String entityId;
     
     public Date dateCreated;
+    public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Date dateModified;
     public @NotSaved(IfNull.class) Date dateExpires;
-    public @Indexed Date dateModified;
+    
+    public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Key<ScScola> scolaKey;
+    public @NotSaved String scolaId;
     
     
     public ScCachedEntity() {}
