@@ -17,13 +17,15 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 
-import com.scolaapp.api.model.ScHousehold;
-import com.scolaapp.api.model.ScScolaMember;
-import com.scolaapp.api.utils.ScLog;
 import com.scolaapp.api.utils.ScCrypto;
 import com.scolaapp.api.utils.ScDAO;
+import com.scolaapp.api.model.ScHousehold;
+import com.scolaapp.api.utils.ScLog;
+import com.scolaapp.api.model.ScScola;
+import com.scolaapp.api.model.ScScolaMember;
 
 
 @Path("auth")
@@ -132,6 +134,10 @@ public class ScAuthHandler
                 
                 authInfo.member = member;
                 authInfo.household = household;
+                
+                if (household.scolaId != null) {
+                    authInfo.homeScola = DAO.ofy().get(new Key<ScScola>(ScScola.class, household.scolaId));
+                }
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
                 authInfo.isRegistered = false;

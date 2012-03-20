@@ -44,7 +44,7 @@ public abstract class ScCachedEntity
     public @NotSaved(IfNull.class) Date dateExpires;
     
     public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Key<ScScola> scolaKey;
-    public @NotSaved String scolaId;
+    public @NotSaved(IfNull.class) String scolaId;
     
     
     public ScCachedEntity() {}
@@ -73,5 +73,24 @@ public abstract class ScCachedEntity
         } catch (NoSuchFieldException e){
             throw new RuntimeException(e);
         }
+    }
+    
+    
+    public boolean isSharedEntity()
+    {
+        boolean isSharedEntity = false;
+        
+        isSharedEntity = isSharedEntity || this.getClass().equals(ScDevice.class);
+        isSharedEntity = isSharedEntity || this.getClass().equals(ScDeviceListing.class);
+        isSharedEntity = isSharedEntity || this.getClass().equals(ScHousehold.class);
+        isSharedEntity = isSharedEntity || this.getClass().equals(ScScolaMember.class);
+        
+        return isSharedEntity;
+    }
+    
+    
+    public boolean isReferenceToSharedEntity()
+    {
+        return this.getClass().equals(ScSharedEntityRef.class);
     }
 }

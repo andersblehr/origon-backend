@@ -34,7 +34,7 @@ public class ScModelHandler
         for (ScCachedEntity entity : entities) {
             entity.mapRelationshipKeys();
             
-            if (!entity.isReferenceToSharedEntity) {
+            if (!entity.isReferenceToSharedEntity()) {
                 entity.dateModified = now;
             }
         }
@@ -66,8 +66,9 @@ public class ScModelHandler
                 List<Key<ScCachedEntity>> sharedEntityKeys = new ArrayList<Key<ScCachedEntity>>(); 
                 
                 for (ScCachedEntity entity : updatedEntitiesInScola) {
-                    if (entity.isReferenceToSharedEntity) {
-                        sharedEntityKeys.add(entity.sharedEntityKey);
+                    if (entity.isReferenceToSharedEntity()) {
+                        ScSharedEntityRef entityRef = (ScSharedEntityRef)entity;
+                        sharedEntityKeys.add(entityRef.sharedEntityKey);
                     } else {
                         updatedEntities.add(entity);
                     }
