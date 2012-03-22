@@ -17,7 +17,7 @@ import com.googlecode.objectify.condition.IfZero;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value={"householdKey", "residentKey"}, ignoreUnknown=true)
+@JsonIgnoreProperties(value={"scolaKey", "householdKey", "residentKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
 public class ScHouseholdResidency extends ScCachedEntity
 {
     public @NotSaved(IfZero.class) int daysAtATime = 0;

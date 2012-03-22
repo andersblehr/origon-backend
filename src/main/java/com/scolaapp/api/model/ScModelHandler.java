@@ -1,16 +1,13 @@
 package com.scolaapp.api.model;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.googlecode.objectify.Key;
 import com.scolaapp.api.utils.ScDAO;
 import com.scolaapp.api.utils.ScLog;
 
@@ -48,41 +45,14 @@ public class ScModelHandler
     @GET
     @Path("fetch")
     @Produces({MediaType.APPLICATION_JSON})
-    public Response fetchEntities(@QueryParam("duid")    String deviceId,
-                                  @QueryParam("device")  String deviceType,
-                                  @QueryParam("version") String appVersion,
-                                  @QueryParam("uid")     String userId)
+    public Response fetchEntities(@QueryParam("duid")      String deviceId,
+                                  @QueryParam("device")    String deviceType,
+                                  @QueryParam("version")   String appVersion,
+                                  @QueryParam("token")     String authToken,
+                                  @QueryParam("lastFetch") Date lastFetchDate)
     {
         ScDAO DAO = new ScDAO(deviceId, deviceType, appVersion);
-        
-        List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
-        
-        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, userId);
-        List<ScScolaMembership> memberships = DAO.ofy().query(ScScolaMembership.class).filter("memberKey", memberKey).list();
-        
-        for (ScScolaMembership membership : memberships) {
-            if (membership.isActive) {
-                List<ScCachedEntity> updatedEntitiesInScola = DAO.ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).filter("dateModified", "> lastFetchDate").list();
-                List<Key<ScCachedEntity>> sharedEntityKeys = new ArrayList<Key<ScCachedEntity>>(); 
-                
-                for (ScCachedEntity entity : updatedEntitiesInScola) {
-                    if (entity.isReferenceToSharedEntity()) {
-                        ScSharedEntityRef entityRef = (ScSharedEntityRef)entity;
-                        sharedEntityKeys.add(entityRef.sharedEntityKey);
-                    } else {
-                        updatedEntities.add(entity);
-                    }
-                }
-                
-                if (sharedEntityKeys.size() > 0) {
-                    Map<Key<ScCachedEntity>, ScCachedEntity> sharedEntitiesMap = DAO.ofy().get(sharedEntityKeys);
-                    
-                    for (Map.Entry<Key<ScCachedEntity>, ScCachedEntity> sharedEntityEntry : sharedEntitiesMap.entrySet()) {
-                        updatedEntities.add(sharedEntityEntry.getValue());
-                    }
-                }
-            }
-        }
+        List<ScCachedEntity> updatedEntities = DAO.fetchEntities(authToken, deviceId, lastFetchDate);
         
         return Response.status(HttpServletResponse.SC_OK).entity(updatedEntities).build();
     }

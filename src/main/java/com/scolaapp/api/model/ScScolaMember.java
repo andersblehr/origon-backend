@@ -16,21 +16,22 @@ import com.googlecode.objectify.condition.IfFalse;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value={"primaryResidenceKey"}, ignoreUnknown=true)
+@JsonIgnoreProperties(value={"scolaKey", "primaryResidenceKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
 public class ScScolaMember extends ScCachedEntity
 {
-    public Date activeSince;
-    public Date dateOfBirth;
-    public @NotSaved(IfFalse.class) boolean didRegister = false;
-    public String email;
-    public String gender;
-    public @NotSaved(IfFalse.class) boolean isMinor = false;
-    public String mobilePhone;
     public String name;
+    public String email;
+    public String mobilePhone;
+    public String gender;
+    public Date dateOfBirth;
+    
     public String passwordHash;
+    public Date activeSince;
+    
+    public @NotSaved(IfFalse.class) boolean didRegister;
+    public @NotSaved(IfFalse.class) boolean isMinor;
     
     public Key<ScHousehold> primaryResidenceKey;
-    
     public @NotSaved ScHousehold primaryResidence;
     
     

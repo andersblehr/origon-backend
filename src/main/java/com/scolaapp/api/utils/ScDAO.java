@@ -1,15 +1,22 @@
 package com.scolaapp.api.utils;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
+import com.scolaapp.api.auth.ScAuthTokenInfo;
 
+import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScDevice;
 import com.scolaapp.api.model.ScDeviceListing;
 import com.scolaapp.api.model.ScHousehold;
@@ -18,6 +25,7 @@ import com.scolaapp.api.model.ScMessageBoard;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.model.ScScolaMembership;
+import com.scolaapp.api.model.ScSharedEntityRef;
 
 
 
@@ -32,6 +40,7 @@ public class ScDAO extends DAOBase
     static
     {
         ObjectifyService.register(ScAuthInfo.class);
+        ObjectifyService.register(ScAuthTokenInfo.class);
         
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScDeviceListing.class);
@@ -41,6 +50,7 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScScolaMember.class);
         ObjectifyService.register(ScScolaMembership.class);
+        ObjectifyService.register(ScSharedEntityRef.class);
     }
     
     
@@ -97,6 +107,89 @@ public class ScDAO extends DAOBase
         } catch (NotFoundException e) {
             return null;
         }
+    }
+    
+    
+    public void putAuthToken(String authToken, String deviceId, String userId)
+    {
+        List<ScAuthTokenInfo> tokensForThisDevice = ofy().query(ScAuthTokenInfo.class).filter("deviceId", deviceId).list();
+        ScLog.log().fine(this.meta() + String.format("Found %d auth tokens for this device.", tokensForThisDevice.size()));
+        
+        for (ScAuthTokenInfo token : tokensForThisDevice) {
+            if (token.userId.equals(userId)) {
+                ScLog.log().fine(this.meta() + String.format("Deleting old auth token {%s}.", token.authToken));
+                ofy().delete(token);
+            }
+        }
+        
+        ScLog.log().fine(this.meta() + String.format("Persisting new auth token {%s}.", authToken));
+        ofy().put(new ScAuthTokenInfo(authToken, deviceId, userId));
+    }
+    
+    
+    public String lookUpUserId(String authToken, String deviceId)
+    {
+        String userId = null;
+
+        try {
+            Date now = new Date();
+            ScAuthTokenInfo tokenInfo = ofy().get(ScAuthTokenInfo.class, authToken); 
+            
+            if (now.before(tokenInfo.dateExpires)) {
+                userId = tokenInfo.userId;
+            } else {
+                ScLog.log().severe(this.meta() + String.format("Expired auth token {%s}. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "auth");
+            }
+        } catch (NotFoundException e) {
+            ScLog.log().severe(this.meta() + String.format("Unknown auth token {%s}. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "auth");
+        }
+        
+        return userId;
+    }
+    
+    
+    public List<ScCachedEntity> fetchEntities(String authToken, String deviceId, Date lastFetchDate)
+    {
+        List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
+
+        String userId = lookUpUserId(authToken, deviceId);
+        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, userId);
+        List<ScScolaMembership> memberships = ofy().query(ScScolaMembership.class).filter("memberKey", memberKey).list();
+        
+        for (ScScolaMembership membership : memberships) {
+            if (membership.isActive) {
+                List<ScCachedEntity> updatedEntitiesInScola = null;
+                
+                if (lastFetchDate != null) {
+                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).filter("dateModified", "> lastFetchDate").list();
+                } else {
+                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).list();
+                }
+                
+                List<Key<ScCachedEntity>> sharedEntityKeys = new ArrayList<Key<ScCachedEntity>>(); 
+                
+                for (ScCachedEntity entity : updatedEntitiesInScola) {
+                    if (entity.isReferenceToSharedEntity()) {
+                        ScSharedEntityRef entityRef = (ScSharedEntityRef)entity;
+                        sharedEntityKeys.add(entityRef.sharedEntityKey);
+                    } else {
+                        updatedEntities.add(entity);
+                    }
+                }
+                
+                if (sharedEntityKeys.size() > 0) {
+                    Map<Key<ScCachedEntity>, ScCachedEntity> sharedEntitiesMap = ofy().get(sharedEntityKeys);
+                    
+                    for (Map.Entry<Key<ScCachedEntity>, ScCachedEntity> sharedEntityEntry : sharedEntitiesMap.entrySet()) {
+                        updatedEntities.add(sharedEntityEntry.getValue());
+                    }
+                }
+            }
+        }
+        
+        return updatedEntities;
     }
 
     

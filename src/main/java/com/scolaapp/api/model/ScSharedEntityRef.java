@@ -12,7 +12,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value="sharedEntityKey", ignoreUnknown=true)
+@JsonIgnoreProperties(value={"scolaKey", "sharedEntityKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
 public class ScSharedEntityRef extends ScCachedEntity
 {
     public Key<ScCachedEntity> sharedEntityKey;
@@ -20,4 +20,11 @@ public class ScSharedEntityRef extends ScCachedEntity
 
     
     public ScSharedEntityRef() {}
+    
+    
+    @Override
+    public void setSharedEntityKey()
+    {
+        sharedEntityKey = new Key<ScCachedEntity>(ScCachedEntity.class, sharedEntityId);
+    }
 }

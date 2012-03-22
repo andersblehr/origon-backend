@@ -1,6 +1,8 @@
 package com.scolaapp.api.auth;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
@@ -17,15 +19,13 @@ import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 
+import com.scolaapp.api.model.ScCachedEntity;
+import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScCrypto;
 import com.scolaapp.api.utils.ScDAO;
-import com.scolaapp.api.model.ScHousehold;
 import com.scolaapp.api.utils.ScLog;
-import com.scolaapp.api.model.ScScola;
-import com.scolaapp.api.model.ScScolaMember;
 
 
 @Path("auth")
@@ -51,7 +51,7 @@ public class ScAuthHandler
         }
         
         for (int i = 10; i < 36; i++) {
-            symbols[i] = (char)('a' + (i - 10));
+            symbols[i] = (char)('A' + (i - 10));
         }
     }
     
@@ -126,18 +126,9 @@ public class ScAuthHandler
             
             try {
                 ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
-                ScHousehold household = DAO.ofy().get(member.primaryResidenceKey);
                 
                 authInfo.isListed = true;
                 authInfo.isRegistered = member.didRegister;
-                authInfo.passwordHash = member.passwordHash;
-                
-                authInfo.member = member;
-                authInfo.household = household;
-                
-                if (household.scolaId != null) {
-                    authInfo.homeScola = DAO.ofy().get(new Key<ScScola>(ScScola.class, household.scolaId));
-                }
             } catch (NotFoundException e) {
                 authInfo.isListed = false;
                 authInfo.isRegistered = false;
@@ -260,11 +251,13 @@ public class ScAuthHandler
     public Response confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
                                 @QueryParam ("duid")          String deviceId,
                                 @QueryParam ("device")        String deviceType,
-                                @QueryParam ("version")       String appVersion)
+                                @QueryParam ("version")       String appVersion,
+                                @QueryParam ("token")         String authToken)
     {
         DAO = new ScDAO(deviceId, deviceType, appVersion, false);
         
         boolean willConfirmUser = false;
+        List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
             authInfo = DAO.getOrThrow(ScAuthInfo.class, deviceId);
@@ -272,12 +265,16 @@ public class ScAuthHandler
             willConfirmUser = ScCrypto.generatePasswordHash(authPassword, authId).equals(authInfo.passwordHash);
         }
         
-        if (!willConfirmUser) {
+        if (willConfirmUser) {
+            DAO.putAuthToken(authToken, deviceId, authId);
+            scolaEntities = DAO.fetchEntities(authToken, deviceId, null);
+        } else {
             ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, authId, authPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
-        return Response.status(HttpServletResponse.SC_NO_CONTENT).build();
+        ScLog.log().fine(DAO.meta() + "Returning entities: " + scolaEntities.toString());
+        return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).build();
     }
     
     
@@ -286,12 +283,15 @@ public class ScAuthHandler
     public Response loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
                               @QueryParam ("duid")          String deviceId,
                               @QueryParam ("device")        String deviceType,
-                              @QueryParam ("version")       String appVersion)
+                              @QueryParam ("version")       String appVersion,
+                              @QueryParam ("token")         String authToken,
+                              @QueryParam ("lastFetch")     Date lastFetchDate)
     {
         DAO = new ScDAO(deviceId, deviceType, appVersion);
 
-        ScScolaMember member = null;
         boolean isAuthenticated = false;
+        ScScolaMember member = null;
+        List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
             member = DAO.get(ScScolaMember.class, authId);
@@ -300,12 +300,13 @@ public class ScAuthHandler
         }
         
         if (isAuthenticated) {
-            ScLog.log().info(DAO.meta() + String.format("Authenticated user %s.", authId));
+            DAO.putAuthToken(authToken, deviceId, authId);
+            scolaEntities = DAO.fetchEntities(authToken, deviceId, lastFetchDate);
         } else {
             ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", authId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        return Response.status(HttpServletResponse.SC_NO_CONTENT).build();
+        return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).build();
     }
 }

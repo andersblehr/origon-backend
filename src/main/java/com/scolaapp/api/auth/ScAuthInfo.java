@@ -4,12 +4,7 @@ import javax.persistence.Id;
 
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
-
-import com.scolaapp.api.model.ScHousehold;
-import com.scolaapp.api.model.ScScola;
-import com.scolaapp.api.model.ScScolaMember;
 
 
 @Entity
@@ -27,10 +22,6 @@ public class ScAuthInfo
     public boolean isListed;
     public boolean isRegistered;
     public boolean isAuthenticated;
-    
-    public @NotSaved ScScolaMember member;
-    public @NotSaved ScHousehold household;
-    public @NotSaved ScScola homeScola;
     
     
     public ScAuthInfo() {}

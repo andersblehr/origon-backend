@@ -5,7 +5,6 @@ import java.util.Date;
 
 import javax.persistence.Id;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -33,8 +32,8 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = ScMessageBoard.class, name = "ScMessageBoard"),
     @Type(value = ScScola.class, name = "ScScola"),
     @Type(value = ScScolaMember.class, name = "ScScolaMember"),
-    @Type(value = ScScolaMembership.class, name = "ScScolaMembership")})
-@JsonIgnoreProperties(value="scolaKey")
+    @Type(value = ScScolaMembership.class, name = "ScScolaMembership"),
+    @Type(value = ScSharedEntityRef.class, name = "ScSharedEntityRef")})
 public abstract class ScCachedEntity
 {
     public @Id String entityId;
@@ -45,15 +44,27 @@ public abstract class ScCachedEntity
     
     public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Key<ScScola> scolaKey;
     public @NotSaved(IfNull.class) String scolaId;
+
+    
+    private void setScolaKey()
+    {
+        if (!isSharedEntity()) {
+            scolaKey = new Key<ScScola>(ScScola.class, scolaId);
+        }
+    }
     
     
     public ScCachedEntity() {}
+    public void setSharedEntityKey() {}
 
 
     @SuppressWarnings("unchecked")
     public <T extends ScCachedEntity> void mapRelationshipKeys()
     {
         try {
+            setScolaKey();
+            setSharedEntityKey();
+            
             Field[] fields = this.getClass().getFields();
             
             for (Field field : fields) {

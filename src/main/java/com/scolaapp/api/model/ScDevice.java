@@ -13,7 +13,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@JsonIgnoreProperties(value = {"scolaKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
 public class ScDevice extends ScCachedEntity
 {
     public @NotSaved String deviceId;

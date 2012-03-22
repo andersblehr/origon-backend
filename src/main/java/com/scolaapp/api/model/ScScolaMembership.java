@@ -4,6 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
@@ -13,7 +14,7 @@ import com.googlecode.objectify.condition.IfFalse;;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value="memberKey", ignoreUnknown=true)
+@JsonIgnoreProperties(value={"scolaKey", "memberKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
 public class ScScolaMembership extends ScCachedEntity
 {
     public @NotSaved(IfFalse.class) boolean isActive = false;
@@ -21,7 +22,7 @@ public class ScScolaMembership extends ScCachedEntity
     public @NotSaved(IfFalse.class) boolean isCoach = false;
     public @NotSaved(IfFalse.class) boolean isTeacher = false;
     
-    public Key<ScScolaMember> memberKey;
+    public @Indexed Key<ScScolaMember> memberKey;
     public @NotSaved ScScolaMember member;
 
     
