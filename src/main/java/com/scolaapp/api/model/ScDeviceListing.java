@@ -1,6 +1,10 @@
 package com.scolaapp.api.model;
 
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
@@ -12,24 +16,20 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value={"scolaKey", "deviceKey", "memberKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
+@JsonSerialize(include=Inclusion.NON_NULL)
+@JsonIgnoreProperties(value={"scolaKey", "deviceKey", "memberKey"}, ignoreUnknown=true)
 public class ScDeviceListing extends ScCachedEntity
 {
     public String displayName;
     
-    public Key<ScDevice> deviceKey;
-    public Key<ScScolaMember> memberKey;
-
     public @NotSaved ScDevice device;
+    public @NotSaved Map<String, String> deviceRef;
+    public Key<ScDevice> deviceKey;
+    
     public @NotSaved ScScolaMember member;
+    public @NotSaved Map<String, String> memberRef;
+    public Key<ScScolaMember> memberKey;
     
     
     public ScDeviceListing() {}
-    
-    
-    public ScDeviceListing(Key<ScDevice> deviceKey, Key<ScScolaMember> memberKey)
-    {
-        this.deviceKey = deviceKey;
-        this.memberKey = memberKey;
-    }
 }

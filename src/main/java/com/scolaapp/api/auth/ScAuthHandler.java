@@ -40,8 +40,8 @@ public class ScAuthHandler
     
     private InternetAddress email;
     private ScAuthInfo authInfo;
-    private String authId;
-    private String authPassword;
+    private String userId;
+    private String userPassword;
     
     
     static
@@ -81,8 +81,8 @@ public class ScAuthHandler
         }
         
         if (isValid) {
-            authId = authElements[0];
-            authPassword = authElements[1];
+            userId = authElements[0];
+            userPassword = authElements[1];
         } else {
             ScLog.log().severe(DAO.meta() + String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Barring entry for potential intruder, raising FORBIDDEN (403).", authString));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
@@ -198,7 +198,7 @@ public class ScAuthHandler
 
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("ablehr@gmail.com"));
+            msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email adress!
             msg.addRecipient(Message.RecipientType.TO, email);
             
             // TODO: Localise message
@@ -231,8 +231,8 @@ public class ScAuthHandler
         boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
         
         isValid = isValid && isDeviceIdValid(deviceId);
-        isValid = isValid && isEmailValid(authId);
-        isValid = isValid && isPasswordValid(authPassword);
+        isValid = isValid && isEmailValid(userId);
+        isValid = isValid && isPasswordValid(userPassword);
         isValid = isValid && isNameValid(name);
         
         if (isValid && !authInfo.isRegistered) {
@@ -262,18 +262,17 @@ public class ScAuthHandler
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
             authInfo = DAO.getOrThrow(ScAuthInfo.class, deviceId);
             
-            willConfirmUser = ScCrypto.generatePasswordHash(authPassword, authId).equals(authInfo.passwordHash);
+            willConfirmUser = ScCrypto.generatePasswordHash(userPassword, userId).equals(authInfo.passwordHash);
         }
         
         if (willConfirmUser) {
-            DAO.putAuthToken(authToken, deviceId, authId);
-            scolaEntities = DAO.fetchEntities(authToken, deviceId, null);
+            DAO.putAuthToken(authToken, deviceId, userId);
+            scolaEntities = DAO.fetchEntities(userId, null);
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, authId, authPassword));
+            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
-        ScLog.log().fine(DAO.meta() + "Returning entities: " + scolaEntities.toString());
         return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).build();
     }
     
@@ -294,16 +293,16 @@ public class ScAuthHandler
         List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            member = DAO.get(ScScolaMember.class, authId);
+            member = DAO.get(ScScolaMember.class, userId);
             
-            isAuthenticated = (member != null) && ScCrypto.generatePasswordHash(authPassword, authId).equals(member.passwordHash);
+            isAuthenticated = (member != null) && ScCrypto.generatePasswordHash(userPassword, userId).equals(member.passwordHash);
         }
         
         if (isAuthenticated) {
-            DAO.putAuthToken(authToken, deviceId, authId);
-            scolaEntities = DAO.fetchEntities(authToken, deviceId, lastFetchDate);
+            DAO.putAuthToken(authToken, deviceId, userId);
+            scolaEntities = DAO.fetchEntities(userId, lastFetchDate);
         } else {
-            ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", authId));
+            ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", userId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         

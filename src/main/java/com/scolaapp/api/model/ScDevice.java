@@ -1,6 +1,8 @@
 package com.scolaapp.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.NotSaved;
@@ -13,10 +15,10 @@ import com.googlecode.objectify.condition.IfNull;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value = {"scolaKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
+@JsonSerialize(include=Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown=true)
 public class ScDevice extends ScCachedEntity
 {
-    public @NotSaved String deviceId;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String type;
     
     

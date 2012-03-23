@@ -2,9 +2,12 @@ package com.scolaapp.api.model;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.persistence.Id;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -37,6 +40,7 @@ import com.googlecode.objectify.condition.IfNull;
 public abstract class ScCachedEntity
 {
     public @Id String entityId;
+    public @NotSaved String entityClass;
     
     public Date dateCreated;
     public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Date dateModified;
@@ -46,24 +50,27 @@ public abstract class ScCachedEntity
     public @NotSaved(IfNull.class) String scolaId;
 
     
-    private void setScolaKey()
+    public ScCachedEntity() {}
+    
+    
+    private Map<String, String> createEntityRef(String entityClass, String entityId)
     {
-        if (!isSharedEntity()) {
-            scolaKey = new Key<ScScola>(ScScola.class, scolaId);
-        }
+        Map<String, String> entityRef = new HashMap<String, String>();
+        
+        entityRef.put("entityClass", entityClass);
+        entityRef.put("entityId", entityId);
+        
+        return entityRef;
     }
     
     
-    public ScCachedEntity() {}
-    public void setSharedEntityKey() {}
-
-
     @SuppressWarnings("unchecked")
-    public <T extends ScCachedEntity> void mapRelationshipKeys()
+    public <T extends ScCachedEntity> void internaliseRelationshipKeys()
     {
         try {
-            setScolaKey();
-            setSharedEntityKey();
+            if (scolaId != null) {
+                scolaKey = new Key<ScScola>(ScScola.class, scolaId);
+            }
             
             Field[] fields = this.getClass().getFields();
             
@@ -87,6 +94,44 @@ public abstract class ScCachedEntity
     }
     
     
+    @SuppressWarnings("unchecked")
+    public <T extends ScCachedEntity> void externaliseRelationshipKeys()
+    {
+        try {
+            if (scolaKey != null) {
+                scolaId = scolaKey.getRaw().getName();
+            }
+            
+            Field[] fields = this.getClass().getFields();
+            
+            for (Field field : fields) {
+                Class<?> classOfField = field.getType();
+                
+                if (classOfField.getSuperclass() == ScCachedEntity.class) {
+                    Field keyField = this.getClass().getField(field.getName() + "Key");
+                    Key<T> referencedEntityKey = (Key<T>)keyField.get(this);
+                    
+                    if (referencedEntityKey != null) {
+                        String referencedEntityClassName = classOfField.getSimpleName();
+                        String referencedEntityId = referencedEntityKey.getRaw().getName();
+                        
+                        Field refField = this.getClass().getField(field.getName() + "Ref");
+                        refField.set(this, createEntityRef(referencedEntityClassName, referencedEntityId));
+                    }
+                }
+            }
+            
+            Field entityClassField = this.getClass().getField("entityClass");
+            entityClassField.set(this, this.getClass().getSimpleName());
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    
+    @JsonIgnore
     public boolean isSharedEntity()
     {
         boolean isSharedEntity = false;
@@ -100,6 +145,7 @@ public abstract class ScCachedEntity
     }
     
     
+    @JsonIgnore
     public boolean isReferenceToSharedEntity()
     {
         return this.getClass().equals(ScSharedEntityRef.class);

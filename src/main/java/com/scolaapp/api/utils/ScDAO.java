@@ -117,12 +117,12 @@ public class ScDAO extends DAOBase
         
         for (ScAuthTokenInfo token : tokensForThisDevice) {
             if (token.userId.equals(userId)) {
-                ScLog.log().fine(this.meta() + String.format("Deleting old auth token {%s}.", token.authToken));
+                ScLog.log().fine(this.meta() + String.format("Deleting old auth token [%s].", token.authToken));
                 ofy().delete(token);
             }
         }
         
-        ScLog.log().fine(this.meta() + String.format("Persisting new auth token {%s}.", authToken));
+        ScLog.log().fine(this.meta() + String.format("Persisting new auth token [%s].", authToken));
         ofy().put(new ScAuthTokenInfo(authToken, deviceId, userId));
     }
     
@@ -132,29 +132,52 @@ public class ScDAO extends DAOBase
         String userId = null;
 
         try {
-            Date now = new Date();
             ScAuthTokenInfo tokenInfo = ofy().get(ScAuthTokenInfo.class, authToken); 
-            
-            if (now.before(tokenInfo.dateExpires)) {
-                userId = tokenInfo.userId;
+
+            if (tokenInfo.deviceId.equals(deviceId)) {
+                Date now = new Date();
+                
+                if (now.before(tokenInfo.dateExpires)) {
+                    userId = tokenInfo.userId;
+                } else {
+                    ScLog.log().severe(this.meta() + String.format("Expired auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+                    ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authExpired");
+                }
             } else {
-                ScLog.log().severe(this.meta() + String.format("Expired auth token {%s}. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "auth");
+                ScLog.log().severe(this.meta() + String.format("Auth token [%s] not valid for device [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken, deviceId));
+                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authStolen");
             }
         } catch (NotFoundException e) {
-            ScLog.log().severe(this.meta() + String.format("Unknown auth token {%s}. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "auth");
+            ScLog.log().severe(this.meta() + String.format("Unknown auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "authUnknown");
         }
         
         return userId;
     }
     
     
-    public List<ScCachedEntity> fetchEntities(String authToken, String deviceId, Date lastFetchDate)
+    public void persistEntities(List<ScCachedEntity> entities)
+    {
+        Date now = new Date();
+        
+        for (ScCachedEntity entity : entities) {
+            entity.internaliseRelationshipKeys();
+            
+            if (!entity.isReferenceToSharedEntity()) {
+                entity.dateModified = now;
+            }
+        }
+        
+        ofy().put(entities);
+        
+        ScLog.log().fine(meta() + "Persisted entities: " + entities.toString());
+    }
+    
+    
+    public List<ScCachedEntity> fetchEntities(String userId, Date lastFetchDate)
     {
         List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
 
-        String userId = lookUpUserId(authToken, deviceId);
         Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, userId);
         List<ScScolaMembership> memberships = ofy().query(ScScolaMembership.class).filter("memberKey", memberKey).list();
         
@@ -175,7 +198,7 @@ public class ScDAO extends DAOBase
                         ScSharedEntityRef entityRef = (ScSharedEntityRef)entity;
                         sharedEntityKeys.add(entityRef.sharedEntityKey);
                     } else {
-                        updatedEntities.add(entity);
+                        updatedEntities.add(entity.getClass().cast(entity));
                     }
                 }
                 
@@ -188,6 +211,12 @@ public class ScDAO extends DAOBase
                 }
             }
         }
+        
+        for (ScCachedEntity entity : updatedEntities) {
+            entity.externaliseRelationshipKeys();
+        }
+        
+        ScLog.log().fine(meta() + "Fetched entities: " + updatedEntities.toString());
         
         return updatedEntities;
     }

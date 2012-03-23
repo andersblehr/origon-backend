@@ -9,7 +9,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.scolaapp.api.utils.ScDAO;
-import com.scolaapp.api.utils.ScLog;
 
 
 @Path("model")
@@ -21,22 +20,14 @@ public class ScModelHandler
     public Response persistEntities(List<ScCachedEntity> entities,
                                     @QueryParam("duid")    String deviceId,
                                     @QueryParam("device")  String deviceType,
-                                    @QueryParam("version") String appVersion)
+                                    @QueryParam("version") String appVersion,
+                                    @QueryParam("token")   String authToken)
     {
         ScDAO DAO = new ScDAO(deviceId, deviceType, appVersion);
         
-        ScLog.log().fine(DAO.meta() + String.format("Data: %s", entities.toString()));
-        Date now = new Date();
-        
-        for (ScCachedEntity entity : entities) {
-            entity.mapRelationshipKeys();
-            
-            if (!entity.isReferenceToSharedEntity()) {
-                entity.dateModified = now;
-            }
+        if (DAO.lookUpUserId(authToken, deviceId) != null) {
+            DAO.persistEntities(entities);
         }
-        
-        DAO.ofy().put(entities);
         
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -52,7 +43,13 @@ public class ScModelHandler
                                   @QueryParam("lastFetch") Date lastFetchDate)
     {
         ScDAO DAO = new ScDAO(deviceId, deviceType, appVersion);
-        List<ScCachedEntity> updatedEntities = DAO.fetchEntities(authToken, deviceId, lastFetchDate);
+        
+        List<ScCachedEntity> updatedEntities = null;
+        String userId = DAO.lookUpUserId(authToken, deviceId);
+        
+        if (userId != null) {
+            updatedEntities = DAO.fetchEntities(userId, lastFetchDate);
+        }
         
         return Response.status(HttpServletResponse.SC_OK).entity(updatedEntities).build();
     }

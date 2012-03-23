@@ -1,6 +1,8 @@
 package com.scolaapp.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.map.annotate.JsonSerialize;
+import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
@@ -12,7 +14,8 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Subclass
 @Unindexed
 @Cached(expirationSeconds=600)
-@JsonIgnoreProperties(value={"scolaKey", "sharedEntityKey", "sharedEntity", "referenceToSharedEntity"}, ignoreUnknown=true)
+@JsonSerialize(include=Inclusion.NON_NULL)
+@JsonIgnoreProperties(value={"scolaKey", "sharedEntityKey"}, ignoreUnknown=true)
 public class ScSharedEntityRef extends ScCachedEntity
 {
     public Key<ScCachedEntity> sharedEntityKey;
@@ -23,8 +26,19 @@ public class ScSharedEntityRef extends ScCachedEntity
     
     
     @Override
-    public void setSharedEntityKey()
+    public void internaliseRelationshipKeys()
     {
         sharedEntityKey = new Key<ScCachedEntity>(ScCachedEntity.class, sharedEntityId);
+        
+        super.internaliseRelationshipKeys();
+    }
+    
+    
+    @Override
+    public void externaliseRelationshipKeys()
+    {
+        sharedEntityId = sharedEntityKey.getRaw().getName();
+        
+        super.externaliseRelationshipKeys();
     }
 }
