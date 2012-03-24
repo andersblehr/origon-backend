@@ -35,6 +35,7 @@ public class ScDAO extends DAOBase
     private static final HashMap<String, ScSessionMetadata> sessionMetadataMap = new HashMap<String, ScSessionMetadata>();
     
     private String deviceId;
+    private String userId;
     
     
     static
@@ -58,30 +59,65 @@ public class ScDAO extends DAOBase
     {
         super();
         
-        this.deviceId = deviceId;
-        
-        if (deviceMustExist) {
-            ScDevice device = get(ScDevice.class, deviceId);
+        if ((deviceId != null) && (deviceType != null) && (appVersion != null)) {
+            this.deviceId = deviceId;
             
-            if (device == null) {
-                ScAuthInfo authInfo = get(ScAuthInfo.class, deviceId);
+            sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
+            
+            if (deviceMustExist) {
+                ScDevice device = get(ScDevice.class, deviceId);
                 
-                if (authInfo != null) {
-                    ofy().delete(authInfo);
-                } else {
-                    ScLog.log().severe(this.meta() + "Unknown device. Barring entry for potential intruder, raising UNAUTHORIZED (401).");
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                if (device == null) {
+                    ScAuthInfo authInfo = get(ScAuthInfo.class, deviceId);
+                    
+                    if (authInfo != null) {
+                        ofy().delete(authInfo);
+                    } else {
+                        ScLog.log().severe(this.meta() + "Unknown device. Barring entry for potential intruder, raising UNAUTHORIZED (401).");
+                        ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                    }
                 }
             }
+        } else {
+            ScLog.log().severe(this.meta() + String.format("Bad request [deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
-        
-        sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
     }
     
     
-    public ScDAO(String deviceId, String deviceType, String appVersion)
+    public ScDAO(String authToken, String deviceId, String deviceType, String appVersion)
     {
-        this(deviceId, deviceType, appVersion, true);
+        super();
+        
+        if ((authToken != null) && (deviceId != null) && (deviceType != null) && (appVersion != null)) {
+            this.deviceId = deviceId;
+
+            sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
+            
+            try {
+                ScAuthTokenInfo tokenInfo = ofy().get(ScAuthTokenInfo.class, authToken); 
+
+                if (tokenInfo.deviceId.equals(deviceId)) {
+                    Date now = new Date();
+                    
+                    if (now.before(tokenInfo.dateExpires)) {
+                        userId = tokenInfo.userId;
+                    } else {
+                        ScLog.log().severe(this.meta() + String.format("Expired auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+                        ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authExpired");
+                    }
+                } else {
+                    ScLog.log().severe(this.meta() + String.format("Auth token [%s] not valid for device [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken, deviceId));
+                    ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authStolen");
+                }
+            } catch (NotFoundException e) {
+                ScLog.log().severe(this.meta() + String.format("Unknown auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
+                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "authUnknown");
+            }
+        } else {
+            ScLog.log().severe(this.meta() + String.format("Bad request [authToken = %s, deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", authToken, deviceId, deviceType, appVersion));
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+        }
     }
     
     
@@ -124,35 +160,8 @@ public class ScDAO extends DAOBase
         
         ScLog.log().fine(this.meta() + String.format("Persisting new auth token [%s].", authToken));
         ofy().put(new ScAuthTokenInfo(authToken, deviceId, userId));
-    }
-    
-    
-    public String lookUpUserId(String authToken, String deviceId)
-    {
-        String userId = null;
-
-        try {
-            ScAuthTokenInfo tokenInfo = ofy().get(ScAuthTokenInfo.class, authToken); 
-
-            if (tokenInfo.deviceId.equals(deviceId)) {
-                Date now = new Date();
-                
-                if (now.before(tokenInfo.dateExpires)) {
-                    userId = tokenInfo.userId;
-                } else {
-                    ScLog.log().severe(this.meta() + String.format("Expired auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authExpired");
-                }
-            } else {
-                ScLog.log().severe(this.meta() + String.format("Auth token [%s] not valid for device [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken, deviceId));
-                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authStolen");
-            }
-        } catch (NotFoundException e) {
-            ScLog.log().severe(this.meta() + String.format("Unknown auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "authUnknown");
-        }
         
-        return userId;
+        this.userId = userId;
     }
     
     
@@ -174,7 +183,7 @@ public class ScDAO extends DAOBase
     }
     
     
-    public List<ScCachedEntity> fetchEntities(String userId, Date lastFetchDate)
+    public List<ScCachedEntity> fetchEntities(Date lastFetchDate)
     {
         List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
 
@@ -186,7 +195,7 @@ public class ScDAO extends DAOBase
                 List<ScCachedEntity> updatedEntitiesInScola = null;
                 
                 if (lastFetchDate != null) {
-                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).filter("dateModified", "> lastFetchDate").list();
+                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).filter("dateModified >", lastFetchDate).list();
                 } else {
                     updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).list();
                 }

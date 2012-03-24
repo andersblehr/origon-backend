@@ -14,6 +14,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -26,6 +27,7 @@ import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScCrypto;
 import com.scolaapp.api.utils.ScDAO;
 import com.scolaapp.api.utils.ScLog;
+import com.scolaapp.api.utils.ScURLParams;
 
 
 @Path("auth")
@@ -217,12 +219,12 @@ public class ScAuthHandler
     
     @GET
     @Path("register")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response registerUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                 @QueryParam ("duid")          String deviceId,
-                                 @QueryParam ("device")        String deviceType,
-                                 @QueryParam ("version")       String appVersion,
-                                 @QueryParam ("name")          String name)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response registerUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String HTTPHeaderAuth,
+                                 @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
+                                 @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
+                                 @QueryParam (ScURLParams.APP_VERSION)   String appVersion,
+                                 @QueryParam (ScURLParams.NAME)          String name)
     {
         DAO = new ScDAO(deviceId, deviceType, appVersion, false);
         
@@ -248,13 +250,13 @@ public class ScAuthHandler
     
     @GET
     @Path("confirm")
-    public Response confirmUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                                @QueryParam ("duid")          String deviceId,
-                                @QueryParam ("device")        String deviceType,
-                                @QueryParam ("version")       String appVersion,
-                                @QueryParam ("token")         String authToken)
+    public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String HTTPHeaderAuth,
+                                @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
+                                @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
+                                @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
+                                @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
     {
-        DAO = new ScDAO(deviceId, deviceType, appVersion, false);
+        DAO = new ScDAO(deviceId, deviceType, appVersion, true);
         
         boolean willConfirmUser = false;
         List<ScCachedEntity> scolaEntities = null;
@@ -265,28 +267,34 @@ public class ScAuthHandler
             willConfirmUser = ScCrypto.generatePasswordHash(userPassword, userId).equals(authInfo.passwordHash);
         }
         
+        Date now = new Date();
+        
         if (willConfirmUser) {
             DAO.putAuthToken(authToken, deviceId, userId);
-            scolaEntities = DAO.fetchEntities(userId, null);
+            scolaEntities = DAO.fetchEntities(null);
         } else {
             ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
-        return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).build();
+        if (scolaEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+        } else {
+            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(now).build();
+        }
     }
     
     
     @GET
     @Path("login")
-    public Response loginUser(@HeaderParam("Authorization") String HTTPHeaderAuth,
-                              @QueryParam ("duid")          String deviceId,
-                              @QueryParam ("device")        String deviceType,
-                              @QueryParam ("version")       String appVersion,
-                              @QueryParam ("token")         String authToken,
-                              @QueryParam ("lastFetch")     Date lastFetchDate)
+    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String HTTPHeaderAuth,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
+                              @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
+                              @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
+                              @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
+                              @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
     {
-        DAO = new ScDAO(deviceId, deviceType, appVersion);
+        DAO = new ScDAO(deviceId, deviceType, appVersion, true);
 
         boolean isAuthenticated = false;
         ScScolaMember member = null;
@@ -298,14 +306,21 @@ public class ScAuthHandler
             isAuthenticated = (member != null) && ScCrypto.generatePasswordHash(userPassword, userId).equals(member.passwordHash);
         }
         
+        Date now = new Date(); 
+        
         if (isAuthenticated) {
             DAO.putAuthToken(authToken, deviceId, userId);
-            scolaEntities = DAO.fetchEntities(userId, lastFetchDate);
+            //scolaEntities = DAO.fetchEntities(lastFetchDate);
+            scolaEntities = DAO.fetchEntities(null); // TODO: Remove and comment back in line above
         } else {
             ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", userId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).build();
+        if (scolaEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+        } else {
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
+        }
     }
 }

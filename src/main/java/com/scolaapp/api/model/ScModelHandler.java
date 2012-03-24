@@ -5,10 +5,12 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.scolaapp.api.utils.ScDAO;
+import com.scolaapp.api.utils.ScURLParams;
 
 
 @Path("model")
@@ -16,18 +18,16 @@ public class ScModelHandler
 {
     @POST
     @Path("persist")
-    @Consumes({MediaType.APPLICATION_JSON})
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response persistEntities(List<ScCachedEntity> entities,
-                                    @QueryParam("duid")    String deviceId,
-                                    @QueryParam("device")  String deviceType,
-                                    @QueryParam("version") String appVersion,
-                                    @QueryParam("token")   String authToken)
+                                    @QueryParam (ScURLParams.AUTH_TOKEN)  String authToken,
+                                    @QueryParam (ScURLParams.DEVICE_ID)   String deviceId,
+                                    @QueryParam (ScURLParams.DEVICE_TYPE) String deviceType,
+                                    @QueryParam (ScURLParams.APP_VERSION) String appVersion)
     {
-        ScDAO DAO = new ScDAO(deviceId, deviceType, appVersion);
+        ScDAO DAO = new ScDAO(authToken, deviceId, deviceType, appVersion);
         
-        if (DAO.lookUpUserId(authToken, deviceId) != null) {
-            DAO.persistEntities(entities);
-        }
+        DAO.persistEntities(entities);
         
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -35,22 +35,24 @@ public class ScModelHandler
     
     @GET
     @Path("fetch")
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response fetchEntities(@QueryParam("duid")      String deviceId,
-                                  @QueryParam("device")    String deviceType,
-                                  @QueryParam("version")   String appVersion,
-                                  @QueryParam("token")     String authToken,
-                                  @QueryParam("lastFetch") Date lastFetchDate)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date   lastFetchDate,
+                                  @QueryParam (ScURLParams.AUTH_TOKEN)        String authToken,
+                                  @QueryParam (ScURLParams.DEVICE_ID)         String deviceId,
+                                  @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
+                                  @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
     {
-        ScDAO DAO = new ScDAO(deviceId, deviceType, appVersion);
+        ScDAO DAO = new ScDAO(authToken, deviceId, deviceType, appVersion);
         
         List<ScCachedEntity> updatedEntities = null;
-        String userId = DAO.lookUpUserId(authToken, deviceId);
+        Date now = new Date();
         
-        if (userId != null) {
-            updatedEntities = DAO.fetchEntities(userId, lastFetchDate);
+        updatedEntities = DAO.fetchEntities(lastFetchDate);
+        
+        if (updatedEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(updatedEntities).lastModified(now).build();
+        } else {
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).build();
         }
-        
-        return Response.status(HttpServletResponse.SC_OK).entity(updatedEntities).build();
     }
 }
