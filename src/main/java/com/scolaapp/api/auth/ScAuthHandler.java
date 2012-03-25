@@ -271,10 +271,11 @@ public class ScAuthHandler
         Date now = new Date();
         
         if (willConfirmUser) {
+            DAO.ofy().delete(authInfo);
             DAO.putAuthToken(authToken, userId, deviceId);
             scolaEntities = DAO.fetchEntities(null);
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
+            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for potential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
