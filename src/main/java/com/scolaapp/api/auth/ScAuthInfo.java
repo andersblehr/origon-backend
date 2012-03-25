@@ -12,10 +12,10 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Cached(expirationSeconds=600)
 public class ScAuthInfo
 {
-    public @Id String deviceId;
+    public @Id String userId;
     
     public String name;
-    public String email;
+    public String deviceId;
     public String passwordHash;
     public String registrationCode;
     

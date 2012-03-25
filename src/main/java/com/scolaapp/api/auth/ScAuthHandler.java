@@ -75,19 +75,13 @@ public class ScAuthHandler
                 authElements = authString.split(":");
                 isValid = (authElements.length == 2);
             } catch (UnsupportedEncodingException e) {
-                ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                throw new RuntimeException(e);
             }
-        } else {
-            ScLog.log().severe(DAO.meta() + String.format("Auth field 'Authorization: %s' from HTTP header does not conform with HTTP Basic Auth, expected 'Authorization: Basic <base64 encoded auth data>'. Barring entry for potential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth));
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         if (isValid) {
             userId = authElements[0];
             userPassword = authElements[1];
-        } else {
-            ScLog.log().severe(DAO.meta() + String.format("Decoded auth string '%s' does not conform with HTTP Basic Auth, expected '<id>:<password>'. Barring entry for potential intruder, raising FORBIDDEN (403).", authString));
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         return isValid;
@@ -124,7 +118,7 @@ public class ScAuthHandler
     {
         try {
             email = new InternetAddress(emailAsEntered);
-            authInfo.email = emailAsEntered;
+            authInfo.userId = emailAsEntered;
             
             try {
                 ScScolaMember member = DAO.ofy().get(ScScolaMember.class, emailAsEntered);
@@ -149,7 +143,7 @@ public class ScAuthHandler
         boolean isValid = ((passwordAsEntered != null) && (passwordAsEntered.length() >= kMinimumPasswordLength));
         
         if (isValid) {
-            String passwordHash = ScCrypto.generatePasswordHash(passwordAsEntered, authInfo.email);
+            String passwordHash = ScCrypto.generatePasswordHash(passwordAsEntered, authInfo.userId);
             
             if (!authInfo.isRegistered) {
                 authInfo.passwordHash = passwordHash;
@@ -210,7 +204,7 @@ public class ScAuthHandler
             
             Transport.send(msg);
             
-            ScLog.log().fine(DAO.meta() + String.format("Sent registration code %s to new Scola user %s.", authInfo.registrationCode, authInfo.email));
+            ScLog.log().fine(DAO.meta() + "Sent registration code to new Scola user.");
         } catch (Exception e) {
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -226,16 +220,21 @@ public class ScAuthHandler
                                  @QueryParam (ScURLParams.APP_VERSION)   String appVersion,
                                  @QueryParam (ScURLParams.NAME)          String name)
     {
-        DAO = new ScDAO(deviceId, deviceType, appVersion, false);
-        
         authInfo = new ScAuthInfo();
         
-        boolean isValid = isHTTPHeaderAuthValid(HTTPHeaderAuth);
+        boolean isValid = true;
         
-        isValid = isValid && isDeviceIdValid(deviceId);
-        isValid = isValid && isEmailValid(userId);
-        isValid = isValid && isPasswordValid(userPassword);
-        isValid = isValid && isNameValid(name);
+        if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
+            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.REGISTRATION);
+            
+            isValid = isValid && isDeviceIdValid(deviceId);
+            isValid = isValid && isEmailValid(userId);
+            isValid = isValid && isPasswordValid(userPassword);
+            isValid = isValid && isNameValid(name);
+        } else {
+            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+        }
         
         if (isValid && !authInfo.isRegistered) {
             authInfo.registrationCode = generateRegistrationCode();
@@ -256,21 +255,23 @@ public class ScAuthHandler
                                 @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
                                 @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
     {
-        DAO = new ScDAO(deviceId, deviceType, appVersion, true);
-        
         boolean willConfirmUser = false;
         List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            authInfo = DAO.getOrThrow(ScAuthInfo.class, deviceId);
+            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.CONFIRMATION);
+            authInfo = DAO.authInfo;
             
             willConfirmUser = ScCrypto.generatePasswordHash(userPassword, userId).equals(authInfo.passwordHash);
+        } else {
+            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         Date now = new Date();
         
         if (willConfirmUser) {
-            DAO.putAuthToken(authToken, deviceId, userId);
+            DAO.putAuthToken(authToken, userId, deviceId);
             scolaEntities = DAO.fetchEntities(null);
         } else {
             ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for otential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
@@ -287,29 +288,31 @@ public class ScAuthHandler
     
     @GET
     @Path("login")
-    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String HTTPHeaderAuth,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
-                              @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
-                              @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
-                              @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
-                              @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
+    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION)     String HTTPHeaderAuth,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date   lastFetchDate,
+                              @QueryParam (ScURLParams.AUTH_TOKEN)        String authToken,
+                              @QueryParam (ScURLParams.DEVICE_ID)         String deviceId,
+                              @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
+                              @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
     {
-        DAO = new ScDAO(deviceId, deviceType, appVersion, true);
-
         boolean isAuthenticated = false;
-        ScScolaMember member = null;
+        ScScolaMember scolaMember = null;
         List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            member = DAO.get(ScScolaMember.class, userId);
+            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.LOGIN);
+            scolaMember = DAO.scolaMember;
             
-            isAuthenticated = (member != null) && ScCrypto.generatePasswordHash(userPassword, userId).equals(member.passwordHash);
+            isAuthenticated = (scolaMember != null) && ScCrypto.generatePasswordHash(userPassword, userId).equals(scolaMember.passwordHash);
+        } else {
+            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         Date now = new Date(); 
         
         if (isAuthenticated) {
-            DAO.putAuthToken(authToken, deviceId, userId);
+            DAO.putAuthToken(authToken, userId, deviceId);
             //scolaEntities = DAO.fetchEntities(lastFetchDate);
             scolaEntities = DAO.fetchEntities(null); // TODO: Remove and comment back in line above
         } else {

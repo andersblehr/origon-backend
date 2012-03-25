@@ -14,7 +14,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds=600)
-public class ScAuthTokenInfo
+public class ScAuthToken
 {
     public @Id String authToken;
     
@@ -23,10 +23,10 @@ public class ScAuthTokenInfo
     public Date dateExpires;
     
     
-    public ScAuthTokenInfo() {}
+    public ScAuthToken() {}
     
     
-    public ScAuthTokenInfo(String authToken, String deviceId, String userId)
+    public ScAuthToken(String authToken, String deviceId, String userId)
     {
         this.authToken = authToken;
         this.deviceId = deviceId;

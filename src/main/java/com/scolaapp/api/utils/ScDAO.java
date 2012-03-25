@@ -14,7 +14,8 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
-import com.scolaapp.api.auth.ScAuthTokenInfo;
+import com.scolaapp.api.auth.ScAuthPhase;
+import com.scolaapp.api.auth.ScAuthToken;
 
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScDevice;
@@ -32,6 +33,9 @@ import com.scolaapp.api.model.ScSharedEntityRef;
 
 public class ScDAO extends DAOBase
 {
+    public ScAuthInfo authInfo = null;
+    public ScScolaMember scolaMember = null;
+    
     private static final HashMap<String, ScSessionMetadata> sessionMetadataMap = new HashMap<String, ScSessionMetadata>();
     
     private String deviceId;
@@ -41,7 +45,7 @@ public class ScDAO extends DAOBase
     static
     {
         ObjectifyService.register(ScAuthInfo.class);
-        ObjectifyService.register(ScAuthTokenInfo.class);
+        ObjectifyService.register(ScAuthToken.class);
         
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScDeviceListing.class);
@@ -55,31 +59,28 @@ public class ScDAO extends DAOBase
     }
     
     
-    public ScDAO(String deviceId, String deviceType, String appVersion, boolean deviceMustExist)
+    public ScDAO(String userId, String deviceId, String deviceType, String appVersion, ScAuthPhase authPhase)
     {
         super();
         
-        if ((deviceId != null) && (deviceType != null) && (appVersion != null)) {
+        sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
+        
+        if ((userId != null) && (deviceId != null) && (deviceType != null) && (appVersion != null)) {
+            this.userId = userId;
             this.deviceId = deviceId;
             
-            sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
+            if (authPhase == ScAuthPhase.LOGIN) {
+                scolaMember = get(ScScolaMember.class, userId);
+            } else if (authPhase == ScAuthPhase.CONFIRMATION) {
+                authInfo = get(ScAuthInfo.class, userId);
+            }
             
-            if (deviceMustExist) {
-                ScDevice device = get(ScDevice.class, deviceId);
-                
-                if (device == null) {
-                    ScAuthInfo authInfo = get(ScAuthInfo.class, deviceId);
-                    
-                    if (authInfo != null) {
-                        ofy().delete(authInfo);
-                    } else {
-                        ScLog.log().severe(this.meta() + "Unknown device. Barring entry for potential intruder, raising UNAUTHORIZED (401).");
-                        ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-                    }
-                }
+            if (((authPhase == ScAuthPhase.LOGIN) && (scolaMember == null)) || ((authPhase == ScAuthPhase.CONFIRMATION) && (authInfo == null))) {
+                ScLog.log().severe(this.meta() + "Unknown user. Barring entry for potential intruder, raising FORBIDDEN (403).");
+                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
             }
         } else {
-            ScLog.log().severe(this.meta() + String.format("Bad request [deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
+            ScLog.log().severe(this.meta() + String.format("Incomplete request [userId = %s, deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", userId, deviceId, deviceType, appVersion));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
@@ -89,13 +90,13 @@ public class ScDAO extends DAOBase
     {
         super();
         
+        sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
+        
         if ((authToken != null) && (deviceId != null) && (deviceType != null) && (appVersion != null)) {
             this.deviceId = deviceId;
 
-            sessionMetadataMap.put(deviceId, new ScSessionMetadata(deviceType, appVersion));
-            
             try {
-                ScAuthTokenInfo tokenInfo = ofy().get(ScAuthTokenInfo.class, authToken); 
+                ScAuthToken tokenInfo = ofy().get(ScAuthToken.class, authToken); 
 
                 if (tokenInfo.deviceId.equals(deviceId)) {
                     Date now = new Date();
@@ -115,24 +116,9 @@ public class ScDAO extends DAOBase
                 ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "authUnknown");
             }
         } else {
-            ScLog.log().severe(this.meta() + String.format("Bad request [authToken = %s, deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", authToken, deviceId, deviceType, appVersion));
+            ScLog.log().severe(this.meta() + String.format("Incomplete request [authToken = %s, deviceId = %s, deviceType = %s, appVersion = %s], raising BAD_REQUEST (400).", authToken, deviceId, deviceType, appVersion));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
-    }
-    
-    
-    public <T> T getOrThrow(Class<T> clazz, String id)
-    {
-        T returnable = null;
-        
-        try {
-            returnable = ofy().get(clazz, id);
-        } catch (NotFoundException e) {
-            ScLog.log().warning(this.meta() + String.format("No persisted %s instance with id '%s', raising NOT_FOUND (404).", clazz.getName(), id));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_NOT_FOUND, clazz);
-        }
-        
-        return returnable;
     }
     
     
@@ -146,12 +132,12 @@ public class ScDAO extends DAOBase
     }
     
     
-    public void putAuthToken(String authToken, String deviceId, String userId)
+    public void putAuthToken(String authToken, String userId, String deviceId)
     {
-        List<ScAuthTokenInfo> tokensForThisDevice = ofy().query(ScAuthTokenInfo.class).filter("deviceId", deviceId).list();
+        List<ScAuthToken> tokensForThisDevice = ofy().query(ScAuthToken.class).filter("deviceId", deviceId).list();
         ScLog.log().fine(this.meta() + String.format("Found %d auth tokens for this device.", tokensForThisDevice.size()));
         
-        for (ScAuthTokenInfo token : tokensForThisDevice) {
+        for (ScAuthToken token : tokensForThisDevice) {
             if (token.userId.equals(userId)) {
                 ScLog.log().fine(this.meta() + String.format("Deleting old auth token [%s].", token.authToken));
                 ofy().delete(token);
@@ -159,7 +145,7 @@ public class ScDAO extends DAOBase
         }
         
         ScLog.log().fine(this.meta() + String.format("Persisting new auth token [%s].", authToken));
-        ofy().put(new ScAuthTokenInfo(authToken, deviceId, userId));
+        ofy().put(new ScAuthToken(authToken, deviceId, userId));
         
         this.userId = userId;
     }
