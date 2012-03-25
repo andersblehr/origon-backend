@@ -33,8 +33,8 @@ import com.scolaapp.api.model.ScSharedEntityRef;
 
 public class ScDAO extends DAOBase
 {
-    public ScAuthInfo authInfo = null;
     public ScScolaMember scolaMember = null;
+    public ScAuthInfo authInfo = null;
     
     private static final HashMap<String, ScSessionMetadata> sessionMetadataMap = new HashMap<String, ScSessionMetadata>();
     

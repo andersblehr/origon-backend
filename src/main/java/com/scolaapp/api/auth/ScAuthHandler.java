@@ -314,7 +314,7 @@ public class ScAuthHandler
         if (isAuthenticated) {
             DAO.putAuthToken(authToken, userId, deviceId);
             //scolaEntities = DAO.fetchEntities(lastFetchDate);
-            scolaEntities = DAO.fetchEntities(null); // TODO: Remove and comment back in line above
+            scolaEntities = DAO.fetchEntities(null); // TODO: Remove this line and comment back in line above
         } else {
             ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", userId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
