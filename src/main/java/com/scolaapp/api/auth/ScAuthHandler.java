@@ -27,6 +27,7 @@ import com.scolaapp.api.model.ScScolaMember;
 import com.scolaapp.api.utils.ScCrypto;
 import com.scolaapp.api.utils.ScDAO;
 import com.scolaapp.api.utils.ScLog;
+import com.scolaapp.api.utils.ScMeta;
 import com.scolaapp.api.utils.ScURLParams;
 
 
@@ -39,10 +40,10 @@ public class ScAuthHandler
     private final int kMinimumPasswordLength = 6;
 
     private ScDAO DAO;
+    private ScMeta m;
     
     private InternetAddress email;
     private ScAuthInfo authInfo;
-    private String userId;
     private String userPassword;
     
     
@@ -80,7 +81,7 @@ public class ScAuthHandler
         }
         
         if (isValid) {
-            userId = authElements[0];
+            m.userId = authElements[0];
             userPassword = authElements[1];
         }
         
@@ -106,7 +107,7 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.deviceId = deviceId;
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("Invalid device ID: %s. Barring entry for potential intruder, raising FORBIDDEN (403).", deviceId));
+            ScLog.log().severe(m.meta() + String.format("Invalid device ID: %s. Barring entry for potential intruder, raising FORBIDDEN (403).", deviceId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -130,7 +131,7 @@ public class ScAuthHandler
                 authInfo.isRegistered = false;
             }
         } catch (AddressException e) {
-            ScLog.log().info(DAO.meta() + String.format("'%s' is not a valid email address, raising UNAUTHORIZED (403).", emailAsEntered));
+            ScLog.log().info(m.meta() + String.format("'%s' is not a valid email address, raising UNAUTHORIZED (403).", emailAsEntered));
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_UNAUTHORIZED, String.format("invalidEmail(%s)", emailAsEntered));
         } 
         
@@ -152,7 +153,7 @@ public class ScAuthHandler
                 authInfo.isAuthenticated = passwordHash.equals(authInfo.passwordHash);
             }
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("Password '%s' is too short. Barring entry for potential intruder, raising FORBIDDEN (403).", passwordAsEntered));
+            ScLog.log().severe(m.meta() + String.format("Password '%s' is too short. Barring entry for potential intruder, raising FORBIDDEN (403).", passwordAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -167,7 +168,7 @@ public class ScAuthHandler
         if (isValid) {
             authInfo.name = nameAsEntered;
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("'%s' is not a full name. Barring entry for potential intruder, raising FORBIDDEN (403).", nameAsEntered));
+            ScLog.log().severe(m.meta() + String.format("'%s' is not a full name. Barring entry for potential intruder, raising FORBIDDEN (403).", nameAsEntered));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -204,7 +205,7 @@ public class ScAuthHandler
             
             Transport.send(msg);
             
-            ScLog.log().fine(DAO.meta() + "Sent registration code to new Scola user.");
+            ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
         } catch (Exception e) {
             ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
@@ -220,19 +221,20 @@ public class ScAuthHandler
                                  @QueryParam (ScURLParams.APP_VERSION)   String appVersion,
                                  @QueryParam (ScURLParams.NAME)          String name)
     {
-        authInfo = new ScAuthInfo();
+        m = new ScMeta(deviceId, deviceType, appVersion);
         
+        authInfo = new ScAuthInfo();
         boolean isValid = true;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.REGISTRATION);
+            DAO = new ScDAO(ScAuthPhase.REGISTRATION, m);
             
             isValid = isValid && isDeviceIdValid(deviceId);
-            isValid = isValid && isEmailValid(userId);
+            isValid = isValid && isEmailValid(m.userId);
             isValid = isValid && isPasswordValid(userPassword);
             isValid = isValid && isNameValid(name);
         } else {
-            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().severe(m.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -255,16 +257,18 @@ public class ScAuthHandler
                                 @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
                                 @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
     {
+        m = new ScMeta(deviceId, deviceType, appVersion);
+        
         boolean willConfirmUser = false;
         List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.CONFIRMATION);
+            DAO = new ScDAO(ScAuthPhase.CONFIRMATION, m);
             authInfo = DAO.authInfo;
             
-            willConfirmUser = ScCrypto.generatePasswordHash(userPassword, userId).equals(authInfo.passwordHash);
+            willConfirmUser = ScCrypto.generatePasswordHash(userPassword, m.userId).equals(authInfo.passwordHash);
         } else {
-            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().severe(m.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -272,10 +276,10 @@ public class ScAuthHandler
         
         if (willConfirmUser) {
             DAO.ofy().delete(authInfo);
-            DAO.putAuthToken(authToken, userId, deviceId);
+            DAO.putAuthToken(authToken, m.userId, deviceId);
             scolaEntities = DAO.fetchEntities(null);
         } else {
-            ScLog.log().severe(DAO.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for potential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, userId, userPassword));
+            ScLog.log().severe(m.meta() + String.format("Cannot authenticate user from auth header '%s' (id: %s; pwd: %s). Barring entry for potential intruder, raising FORBIDDEN (403).", HTTPHeaderAuth, m.userId, userPassword));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -296,28 +300,29 @@ public class ScAuthHandler
                               @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
                               @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
     {
+        m = new ScMeta(deviceId, deviceType, appVersion);
+        
         boolean isAuthenticated = false;
-        ScScolaMember scolaMember = null;
         List<ScCachedEntity> scolaEntities = null;
         
         if (isHTTPHeaderAuthValid(HTTPHeaderAuth)) {
-            DAO = new ScDAO(userId, deviceId, deviceType, appVersion, ScAuthPhase.LOGIN);
-            scolaMember = DAO.scolaMember;
+            DAO = new ScDAO(ScAuthPhase.LOGIN, m);
+            ScScolaMember scolaMember = DAO.scolaMember;
             
-            isAuthenticated = (scolaMember != null) && ScCrypto.generatePasswordHash(userPassword, userId).equals(scolaMember.passwordHash);
+            isAuthenticated = (scolaMember != null) && ScCrypto.generatePasswordHash(userPassword, m.userId).equals(scolaMember.passwordHash);
         } else {
-            ScLog.log().severe(DAO.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().severe(m.meta() + "'Authorization' header cannot be parsed or decoded. Barring entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
         Date now = new Date(); 
         
         if (isAuthenticated) {
-            DAO.putAuthToken(authToken, userId, deviceId);
+            DAO.putAuthToken(authToken, m.userId, deviceId);
             //scolaEntities = DAO.fetchEntities(lastFetchDate);
             scolaEntities = DAO.fetchEntities(null); // TODO: Remove this line and comment back in line above
         } else {
-            ScLog.log().warning(DAO.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", userId));
+            ScLog.log().warning(m.meta() + String.format("User %s failed to authenticate, raising UNAUTHORIZED (401).", m.userId));
             ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         

@@ -18,19 +18,19 @@ public class ScAuthToken
 {
     public @Id String authToken;
     
-    public @Indexed String deviceId;
     public String userId;
+    public @Indexed String deviceId;
     public Date dateExpires;
     
     
     public ScAuthToken() {}
     
     
-    public ScAuthToken(String authToken, String deviceId, String userId)
+    public ScAuthToken(String authToken, String userId, String deviceId)
     {
         this.authToken = authToken;
-        this.deviceId = deviceId;
         this.userId = userId;
+        this.deviceId = deviceId;
         
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());

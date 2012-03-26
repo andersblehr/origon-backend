@@ -5,8 +5,6 @@ import java.util.logging.Logger;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import org.jboss.resteasy.specimpl.ResponseBuilderImpl;
-
 import com.scolaapp.api.ScScolaApplication;
 
 
@@ -26,8 +24,7 @@ public class ScLog
     
     public static void throwWebApplicationException(Exception exception, int statusCode, String reason)
     {
-        ResponseBuilderImpl responseBuilder = new ResponseBuilderImpl();
-        responseBuilder.status(statusCode);
+        Response.ResponseBuilder responseBuilder = Response.status(statusCode);
         
         if ((reason != null) && (reason != "")) {
             responseBuilder.header("reason", reason);
