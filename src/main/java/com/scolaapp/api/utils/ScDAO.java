@@ -5,15 +5,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletResponse;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
-import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthToken;
 
 import com.scolaapp.api.model.ScCachedEntity;
@@ -33,9 +30,6 @@ import com.scolaapp.api.model.ScSharedEntityRef;
 public class ScDAO extends DAOBase
 {
     public ScMeta m;
-    
-    public ScScolaMember scolaMember = null;
-    public ScAuthInfo authInfo = null;
 
     
     static
@@ -55,57 +49,11 @@ public class ScDAO extends DAOBase
     }
     
     
-    public ScDAO(ScAuthPhase authPhase, ScMeta meta)
+    public ScDAO(ScMeta meta)
     {
         super();
         
         m = meta;
-        
-        if (authPhase == ScAuthPhase.LOGIN) {
-            scolaMember = get(ScScolaMember.class, m.userId);
-        } else if (authPhase == ScAuthPhase.CONFIRMATION) {
-            authInfo = get(ScAuthInfo.class, m.userId);
-        }
-        
-        if (((authPhase == ScAuthPhase.LOGIN) && (scolaMember == null)) || ((authPhase == ScAuthPhase.CONFIRMATION) && (authInfo == null))) {
-            ScLog.log().severe(m.meta() + "Unknown user. Barring entry for potential intruder, raising FORBIDDEN (403).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
-        }
-    }
-    
-    
-    public ScDAO(String authToken, ScMeta meta)
-    {
-        super();
-        
-        m = meta;
-        
-        try {
-            ScAuthToken tokenInfo = ofy().get(ScAuthToken.class, authToken); 
-
-            if (tokenInfo.deviceId.equals(m.deviceId)) {
-                Date now = new Date();
-                
-                if (now.before(tokenInfo.dateExpires)) {
-                    m.userId = tokenInfo.userId;
-                } else {
-                    ScLog.log().severe(m.meta() + String.format("Expired auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authExpired");
-                }
-            } else {
-                ScLog.log().severe(m.meta() + String.format("Auth token [%s] not valid for device [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken, m.deviceId));
-                ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN, "authStolen");
-            }
-        } catch (NotFoundException e) {
-            ScLog.log().severe(m.meta() + String.format("Unknown auth token [%s]. Barring entry for potential intruder, raising FORBIDDEN (403).", authToken));
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_FORBIDDEN, "authUnknown");
-        }
-    }
-    
-    
-    public ScDAO(String authToken, String deviceId, String deviceType, String appVersion)
-    {
-        this(authToken, new ScMeta(deviceId, deviceType, appVersion));
     }
     
     
@@ -199,5 +147,11 @@ public class ScDAO extends DAOBase
         ScLog.log().fine(m.meta() + "Fetched entities: " + updatedEntities.toString());
         
         return updatedEntities;
+    }
+    
+    
+    public List<ScCachedEntity> fetchEntities()
+    {
+        return fetchEntities(null);
     }
 }

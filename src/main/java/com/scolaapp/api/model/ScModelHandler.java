@@ -9,7 +9,8 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.scolaapp.api.utils.ScDAO;
+import com.scolaapp.api.utils.ScLog;
+import com.scolaapp.api.utils.ScMeta;
 import com.scolaapp.api.utils.ScURLParams;
 
 
@@ -25,9 +26,16 @@ public class ScModelHandler
                                     @QueryParam (ScURLParams.DEVICE_TYPE) String deviceType,
                                     @QueryParam (ScURLParams.APP_VERSION) String appVersion)
     {
-        ScDAO DAO = new ScDAO(authToken, deviceId, deviceType, appVersion);
+        ScMeta m = new ScMeta(deviceId, deviceType, appVersion);
         
-        DAO.persistEntities(entities);
+        m.validateAuthToken(authToken);
+        
+        if (m.isValid) {
+            m.DAO.persistEntities(entities);
+        } else {
+            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+        }
         
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -42,12 +50,19 @@ public class ScModelHandler
                                   @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
                                   @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
     {
-        ScDAO DAO = new ScDAO(authToken, deviceId, deviceType, appVersion);
+        ScMeta m = new ScMeta(deviceId, deviceType, appVersion);
         
-        List<ScCachedEntity> updatedEntities = null;
         Date now = new Date();
+        List<ScCachedEntity> updatedEntities = null;
         
-        updatedEntities = DAO.fetchEntities(lastFetchDate);
+        m.validateAuthToken(authToken);
+        
+        if (m.isValid) {
+            updatedEntities = m.DAO.fetchEntities(lastFetchDate);
+        } else {
+            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+        }
         
         if (updatedEntities.size() > 0) {
             return Response.status(HttpServletResponse.SC_OK).entity(updatedEntities).lastModified(now).build();

@@ -58,8 +58,13 @@ public class ScCrypto
     
     public static String generatePasswordHash(String password, String email)
     {
-        String saltyDiff = ScCrypto.diffStrings(password, email);
+        String passwordHash = null;
         
-        return ScCrypto.hashUsingSHA1(saltyDiff);
+        if ((password != null) && (email != null)) {
+            String saltyDiff = ScCrypto.diffStrings(password, email);
+            passwordHash = ScCrypto.hashUsingSHA1(saltyDiff); 
+        }
+        
+        return passwordHash; 
     }
 }
