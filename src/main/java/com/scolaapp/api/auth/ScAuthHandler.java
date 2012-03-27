@@ -68,7 +68,7 @@ public class ScAuthHandler
         m.validateName(name);
         
         if (m.isValid) {
-            authInfo = m.authInfo(ScAuthPhase.REGISTRATION);
+            authInfo = m.getAuthInfo(ScAuthPhase.REGISTRATION);
             
             if (!authInfo.isRegistered) {
                 m.DAO.ofy().put(authInfo);
@@ -100,7 +100,7 @@ public class ScAuthHandler
         m.validateAuthorizationHeader(authorizationHeader);
         
         if (m.isValid) {
-            ScAuthInfo authInfo = m.authInfo(ScAuthPhase.CONFIRMATION);
+            ScAuthInfo authInfo = m.getAuthInfo(ScAuthPhase.CONFIRMATION);
             
             if (authInfo.passwordHash.equals(m.passwordHash)) {
                 m.DAO.ofy().delete(authInfo);
@@ -143,12 +143,17 @@ public class ScAuthHandler
         if (m.isValid) {
             ScScolaMember scolaMember = m.DAO.get(ScScolaMember.class, m.userId);
             
-            if ((scolaMember != null) && scolaMember.passwordHash.equals(m.passwordHash)) {
-                m.DAO.putAuthToken(authToken, m.userId, m.deviceId);
-                //scolaEntities = m.DAO.fetchEntities(lastFetchDate);
-                scolaEntities = m.DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
+            if ((scolaMember != null) && scolaMember.didRegister) {
+                if (scolaMember.passwordHash.equals(m.passwordHash)) {
+                    m.DAO.putAuthToken(authToken, m.userId, m.deviceId);
+                    //scolaEntities = m.DAO.fetchEntities(lastFetchDate);
+                    scolaEntities = m.DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
+                } else {
+                    ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                    ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                }
             } else {
-                ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                ScLog.log().warning(m.meta() + String.format("User does not exist (%s), raising UNAUTHORIZED (401).", m.userId));
                 ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {

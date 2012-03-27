@@ -59,7 +59,7 @@ public class ScMeta
             this.deviceType = deviceType;
             this.appVersion = appVersion;            
         } else {
-            ScLog.log().warning(this.meta(false) + String.format("Incomplete request [deviceId: %s; deviceType: %s; appVersion: %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
+            ScLog.log().warning(meta(false) + String.format("Incomplete request [deviceId: %s; deviceType: %s; appVersion: %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
         }
     }
 
@@ -87,23 +87,13 @@ public class ScMeta
                         DAO = new ScDAO(this);
                     }
                 } else {
-                    ScLog.log().warning(this.meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
+                    ScLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
                 }
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            ScLog.log().warning(this.meta(false) + String.format("Authorization header '%s' is not a valid basic auth header.", authorizationHeader));
-        }
-    }
-    
-    
-    public void validateName(String name)
-    {
-        if ((name != null) && (name.length() > 0) && (name.indexOf(" ") > 0)) {
-            this.name = name;
-        } else {
-            ScLog.log().warning(this.meta(false) + String.format("'%s' is not a full name.", name));
+            ScLog.log().warning(meta(false) + String.format("Authorization header '%s' is not a valid basic auth header.", authorizationHeader));
         }
     }
     
@@ -121,18 +111,28 @@ public class ScMeta
                 if (now.before(tokenInfo.dateExpires)) {
                     userId = tokenInfo.userId;
                 } else {
-                    ScLog.log().warning(this.meta(false) + String.format("Expired auth token: %s.", authToken));
+                    ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
                 }
             } else {
-                ScLog.log().warning(this.meta() + String.format("Auth token (%s) not tied to this device (%s).", authToken, deviceId));
+                ScLog.log().warning(meta(false) + String.format("Auth token (%s) not tied to this device (%s).", authToken, deviceId));
             }
         } catch (NotFoundException e) {
-            ScLog.log().warning(this.meta() + String.format("Unknown auth token: %s.", authToken));
+            ScLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
         }
     }
     
     
-    public ScAuthInfo authInfo(ScAuthPhase authPhase)
+    public void validateName(String name)
+    {
+        if ((name != null) && (name.length() > 0) && (name.indexOf(" ") > 0)) {
+            this.name = name;
+        } else {
+            ScLog.log().warning(meta(false) + String.format("'%s' is not a full name.", name));
+        }
+    }
+    
+    
+    public ScAuthInfo getAuthInfo(ScAuthPhase authPhase)
     {
         ScAuthInfo authInfo = null;
         
@@ -194,7 +194,7 @@ public class ScMeta
         if (isValid) {
             this.deviceId = deviceId;
         } else {
-            ScLog.log().warning(this.meta(false) + String.format("Device id %s is not a valid UUID.", deviceId));
+            ScLog.log().warning(meta(false) + String.format("Device id %s is not a valid UUID.", deviceId));
         }
     }
     
@@ -206,7 +206,7 @@ public class ScMeta
                 this.emailAddress = new InternetAddress(userId);
                 this.userId = userId;
             } catch (AddressException e) {
-                ScLog.log().warning(this.meta(false) + String.format("User id %s is not a valid email address.", userId));
+                ScLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
             }
         }
     }
@@ -218,9 +218,9 @@ public class ScMeta
             this.passwordHash = ScCrypto.generatePasswordHash(password, userId);
         } else {
             if (password == null) {
-                ScLog.log().warning(this.meta(false) + String.format("User password is null."));
+                ScLog.log().warning(meta(false) + String.format("User password is null."));
             } else {
-                ScLog.log().warning(this.meta(false) + String.format("User password is too short (minmum length: %d; actual length: %d).", kMinimumPasswordLength, password.length()));
+                ScLog.log().warning(meta(false) + String.format("User password is too short (minmum length: %d; actual length: %d).", kMinimumPasswordLength, password.length()));
             }
         }
     }
