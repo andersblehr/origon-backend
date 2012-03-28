@@ -9,9 +9,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.scolaapp.api.utils.ScLog;
-import com.scolaapp.api.utils.ScMeta;
-import com.scolaapp.api.utils.ScURLParams;
+import com.scolaapp.api.aux.ScLog;
+import com.scolaapp.api.aux.ScMeta;
+import com.scolaapp.api.aux.ScURLParams;
 
 
 @Path("model")
@@ -30,10 +30,10 @@ public class ScModelHandler
         
         m.validateAuthToken(authToken);
         
-        if (m.isValid) {
-            m.DAO.persistEntities(entities);
+        if (m.isValid()) {
+            m.getDAO().persistEntities(entities);
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -57,10 +57,10 @@ public class ScModelHandler
         
         m.validateAuthToken(authToken);
         
-        if (m.isValid) {
-            updatedEntities = m.DAO.fetchEntities(lastFetchDate);
+        if (m.isValid()) {
+            updatedEntities = m.getDAO().fetchEntities(lastFetchDate);
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         

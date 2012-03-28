@@ -1,4 +1,4 @@
-package com.scolaapp.api.utils;
+package com.scolaapp.api.aux;
 
 import java.util.logging.Logger;
 

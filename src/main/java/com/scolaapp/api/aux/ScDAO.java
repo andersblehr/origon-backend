@@ -1,4 +1,4 @@
-package com.scolaapp.api.utils;
+package com.scolaapp.api.aux;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -106,7 +106,7 @@ public class ScDAO extends DAOBase
     {
         List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
 
-        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, m.userId);
+        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, m.getUserId());
         List<ScScolaMembership> memberships = ofy().query(ScScolaMembership.class).filter("memberKey", memberKey).list();
         
         for (ScScolaMembership membership : memberships) {

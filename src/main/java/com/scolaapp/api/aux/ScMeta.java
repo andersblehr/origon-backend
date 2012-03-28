@@ -1,4 +1,4 @@
-package com.scolaapp.api.utils;
+package com.scolaapp.api.aux;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -18,25 +18,24 @@ import com.scolaapp.api.model.ScScolaMember;
 
 public class ScMeta
 {
-    private final static char[] symbols = new char[36];
+    private static final char[] symbols = new char[36];
     
-    private final static int kMinimumPasswordLength = 6;
-    private final static int kRegistrationCodeLength = 6;
+    private static final int kMinimumPasswordLength = 6;
+    private static final int kRegistrationCodeLength = 6;
     
-    public ScDAO DAO;
+    private ScDAO DAO;
     
-    public boolean isValid = true;
+    private boolean isValid = true;
     
-    public String name = null;
-    public String userId = null;
-    public String passwordHash = null;
-    public String deviceId = null;
-    public String registrationCode = null;
-    
-    public InternetAddress emailAddress = null;
-    
+    private String name = null;
+    private String userId = null;
+    private String passwordHash = null;
+    private String deviceId = null;
     private String deviceType = null;
     private String appVersion = null;
+    private String registrationCode = null;
+
+    private InternetAddress emailAddress = null;
     
     
     static
@@ -62,11 +61,83 @@ public class ScMeta
             ScLog.log().warning(meta(false) + String.format("Incomplete request [deviceId: %s; deviceType: %s; appVersion: %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
         }
     }
+    
+    
+    public ScDAO getDAO()
+    {
+        return DAO;
+    }
+    
+    
+    public boolean isValid()
+    {
+        return isValid;
+    }
 
     
-    public String meta()
+    public String getUserId()
     {
-        return String.format("[%s] %s/%s: ", deviceId.substring(0, 8), deviceType, appVersion);
+        return userId;
+    }
+    
+    
+    public String getPasswordHash()
+    {
+        return passwordHash;
+    }
+    
+    
+    public String getDeviceId()
+    {
+        return deviceId;
+    }
+    
+    
+    public String getRegistrationCode()
+    {
+        return registrationCode;
+    }
+    
+    
+    public InternetAddress getEmailAddress()
+    {
+        return emailAddress;
+    }
+    
+    
+    public ScAuthInfo getAuthInfo(ScAuthPhase authPhase)
+    {
+        ScAuthInfo authInfo = null;
+        
+        if (isValid) {
+            if (authPhase == ScAuthPhase.REGISTRATION) {
+                registrationCode = generateRegistrationCode();
+                
+                authInfo = new ScAuthInfo();
+                
+                authInfo.userId = userId;
+                authInfo.name = name;
+                authInfo.deviceId = deviceId;
+                authInfo.passwordHash = passwordHash;
+                authInfo.registrationCode = registrationCode;
+                
+                try {
+                    ScScolaMember member = DAO.ofy().get(ScScolaMember.class, userId);
+                    
+                    authInfo.isListed = true;
+                    authInfo.isRegistered = member.didRegister;
+                    authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
+                } catch (NotFoundException e) {
+                    authInfo.isListed = false;
+                    authInfo.isRegistered = false;
+                    authInfo.isAuthenticated = false;
+                }
+            } else if (authPhase == ScAuthPhase.CONFIRMATION) {
+                authInfo = DAO.get(ScAuthInfo.class, userId);
+            }
+        }
+        
+        return authInfo; 
     }
     
     
@@ -132,39 +203,9 @@ public class ScMeta
     }
     
     
-    public ScAuthInfo getAuthInfo(ScAuthPhase authPhase)
+    public String meta()
     {
-        ScAuthInfo authInfo = null;
-        
-        if (isValid) {
-            if (authPhase == ScAuthPhase.REGISTRATION) {
-                registrationCode = generateRegistrationCode();
-                
-                authInfo = new ScAuthInfo();
-                
-                authInfo.userId = userId;
-                authInfo.name = name;
-                authInfo.deviceId = deviceId;
-                authInfo.passwordHash = passwordHash;
-                authInfo.registrationCode = registrationCode;
-                
-                try {
-                    ScScolaMember member = DAO.ofy().get(ScScolaMember.class, userId);
-                    
-                    authInfo.isListed = true;
-                    authInfo.isRegistered = member.didRegister;
-                    authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
-                } catch (NotFoundException e) {
-                    authInfo.isListed = false;
-                    authInfo.isRegistered = false;
-                    authInfo.isAuthenticated = false;
-                }
-            } else if (authPhase == ScAuthPhase.CONFIRMATION) {
-                authInfo = DAO.get(ScAuthInfo.class, userId);
-            }
-        }
-        
-        return authInfo; 
+        return String.format("[%s] %s/%s: ", deviceId.substring(0, 8), deviceType, appVersion);
     }
     
     

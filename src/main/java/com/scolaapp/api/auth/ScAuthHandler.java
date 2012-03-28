@@ -15,11 +15,12 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.scolaapp.api.aux.ScDAO;
+import com.scolaapp.api.aux.ScLog;
+import com.scolaapp.api.aux.ScMeta;
+import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScScolaMember;
-import com.scolaapp.api.utils.ScLog;
-import com.scolaapp.api.utils.ScMeta;
-import com.scolaapp.api.utils.ScURLParams;
 
 
 @Path("auth")
@@ -35,12 +36,12 @@ public class ScAuthHandler
         try {
             Message msg = new MimeMessage(session);
             msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email adress!
-            msg.addRecipient(Message.RecipientType.TO, m.emailAddress);
+            msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
             
             // TODO: Localise message
             // TODO: Provide URL directly to app on device
             msg.setSubject("Complete your registration with Scola");
-            msg.setText(String.format("Registration code: %s", m.registrationCode));
+            msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
             
             Transport.send(msg);
             
@@ -67,16 +68,16 @@ public class ScAuthHandler
         m.validateAuthorizationHeader(authorizationHeader);
         m.validateName(name);
         
-        if (m.isValid) {
+        if (m.isValid()) {
             authInfo = m.getAuthInfo(ScAuthPhase.REGISTRATION);
             
             if (!authInfo.isRegistered) {
-                m.DAO.ofy().put(authInfo);
+                m.getDAO().ofy().put(authInfo);
                 
                 sendRegistrationMessage();
             }
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -86,6 +87,7 @@ public class ScAuthHandler
     
     @GET
     @Path("confirm")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                 @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
                                 @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
@@ -99,20 +101,22 @@ public class ScAuthHandler
         
         m.validateAuthorizationHeader(authorizationHeader);
         
-        if (m.isValid) {
+        if (m.isValid()) {
             ScAuthInfo authInfo = m.getAuthInfo(ScAuthPhase.CONFIRMATION);
             
-            if (authInfo.passwordHash.equals(m.passwordHash)) {
-                m.DAO.ofy().delete(authInfo);
-                m.DAO.putAuthToken(authToken, m.userId, m.deviceId);
+            if (authInfo.passwordHash.equals(m.getPasswordHash())) {
+                ScDAO DAO = m.getDAO();
                 
-                scolaEntities = m.DAO.fetchEntities();
+                DAO.ofy().delete(authInfo);
+                DAO.putAuthToken(authToken, m.getUserId(), m.getDeviceId());
+                
+                scolaEntities = DAO.fetchEntities();
             } else {
                 ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                 ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
@@ -126,6 +130,7 @@ public class ScAuthHandler
     
     @GET
     @Path("login")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION)     String authorizationHeader,
                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date   lastFetchDate,
                               @QueryParam (ScURLParams.AUTH_TOKEN)        String authToken,
@@ -140,24 +145,26 @@ public class ScAuthHandler
         
         m.validateAuthorizationHeader(authorizationHeader);
         
-        if (m.isValid) {
-            ScScolaMember scolaMember = m.DAO.get(ScScolaMember.class, m.userId);
+        if (m.isValid()) {
+            ScDAO DAO = m.getDAO();
+            
+            ScScolaMember scolaMember = DAO.get(ScScolaMember.class, m.getUserId());
             
             if ((scolaMember != null) && scolaMember.didRegister) {
-                if (scolaMember.passwordHash.equals(m.passwordHash)) {
-                    m.DAO.putAuthToken(authToken, m.userId, m.deviceId);
-                    //scolaEntities = m.DAO.fetchEntities(lastFetchDate);
-                    scolaEntities = m.DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
+                if (scolaMember.passwordHash.equals(m.getPasswordHash())) {
+                    DAO.putAuthToken(authToken, m.getUserId(), m.getDeviceId());
+                    //scolaEntities = DAO.fetchEntities(lastFetchDate);
+                    scolaEntities = DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
                 } else {
                     ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                     ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             } else {
-                ScLog.log().warning(m.meta() + String.format("User does not exist (%s), raising UNAUTHORIZED (401).", m.userId));
+                ScLog.log().warning(m.meta() + String.format("User does not exist (%s), raising UNAUTHORIZED (401).", m.getUserId()));
                 ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (se preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
         }
         
