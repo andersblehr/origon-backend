@@ -26,19 +26,19 @@ public class ScSharedEntityRef extends ScCachedEntity
     
     
     @Override
-    public void internaliseRelationshipKeys()
+    public void internaliseRelationships()
     {
         sharedEntityKey = new Key<ScCachedEntity>(ScCachedEntity.class, sharedEntityId);
         
-        super.internaliseRelationshipKeys();
+        super.internaliseRelationships();
     }
     
     
     @Override
-    public void externaliseRelationshipKeys()
+    public void externaliseRelationships()
     {
         sharedEntityId = sharedEntityKey.getRaw().getName();
         
-        super.externaliseRelationshipKeys();
+        super.externaliseRelationships();
     }
 }

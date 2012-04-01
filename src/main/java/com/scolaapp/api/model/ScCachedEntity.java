@@ -65,7 +65,7 @@ public abstract class ScCachedEntity
     
     
     @SuppressWarnings("unchecked")
-    public <T extends ScCachedEntity> void internaliseRelationshipKeys()
+    public <T extends ScCachedEntity> void internaliseRelationships()
     {
         try {
             if (scolaId != null) {
@@ -95,7 +95,7 @@ public abstract class ScCachedEntity
     
     
     @SuppressWarnings("unchecked")
-    public <T extends ScCachedEntity> void externaliseRelationshipKeys()
+    public <T extends ScCachedEntity> void externaliseRelationships()
     {
         try {
             if (scolaKey != null) {

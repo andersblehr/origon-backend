@@ -89,7 +89,7 @@ public class ScDAO extends DAOBase
         Date now = new Date();
         
         for (ScCachedEntity entity : entities) {
-            entity.internaliseRelationshipKeys();
+            entity.internaliseRelationships();
             
             if (!entity.isReferenceToSharedEntity()) {
                 entity.dateModified = now;
@@ -141,7 +141,7 @@ public class ScDAO extends DAOBase
         }
         
         for (ScCachedEntity entity : updatedEntities) {
-            entity.externaliseRelationshipKeys();
+            entity.externaliseRelationships();
         }
         
         ScLog.log().fine(m.meta() + "Fetched entities: " + updatedEntities.toString());

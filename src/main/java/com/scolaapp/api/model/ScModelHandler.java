@@ -33,8 +33,8 @@ public class ScModelHandler
         if (m.isValid()) {
             m.getDAO().persistEntities(entities);
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         return Response.status(HttpServletResponse.SC_CREATED).build();
@@ -60,8 +60,8 @@ public class ScModelHandler
         if (m.isValid()) {
             updatedEntities = m.getDAO().fetchEntities(lastFetchDate);
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising FORBIDDEN (403).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_FORBIDDEN);
+            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         if (updatedEntities.size() > 0) {
