@@ -22,8 +22,13 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(value={"scolaKey", "parentScolaKey"}, ignoreUnknown=true)
 public class ScScola extends ScCachedEntity
 {
-    public @NotSaved({IfNull.class, IfEmptyString.class}) String descriptionText;
     public String name;
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String descriptionText;
+    
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String addressLine1;
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String addressLine2;
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String postCodeAndCity;
+    public @NotSaved({IfNull.class, IfEmptyString.class}) String phoneNumber;
     
     public @NotSaved ScScola parentScola;
     public @NotSaved Map<String, String> parentScolaRef;

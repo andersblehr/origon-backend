@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.persistence.Id;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -29,13 +28,11 @@ import com.googlecode.objectify.condition.IfNull;
     property = "entityClass")
 @JsonSubTypes({
     @Type(value = ScDevice.class, name = "ScDevice"),
-    @Type(value = ScDeviceListing.class, name = "ScDeviceListing"),
-    @Type(value = ScHousehold.class, name = "ScHousehold"),
-    @Type(value = ScHouseholdResidency.class, name = "ScHouseholdResidency"),
+    @Type(value = ScMember.class, name = "ScMember"),
+    @Type(value = ScMemberResidency.class, name = "ScMemberResidency"),
+    @Type(value = ScMembership.class, name = "ScMembership"),
     @Type(value = ScMessageBoard.class, name = "ScMessageBoard"),
     @Type(value = ScScola.class, name = "ScScola"),
-    @Type(value = ScScolaMember.class, name = "ScScolaMember"),
-    @Type(value = ScScolaMembership.class, name = "ScScolaMembership"),
     @Type(value = ScSharedEntityRef.class, name = "ScSharedEntityRef")})
 public abstract class ScCachedEntity
 {
@@ -118,6 +115,8 @@ public abstract class ScCachedEntity
                         Field refField = this.getClass().getField(field.getName() + "Ref");
                         refField.set(this, createEntityRef(referencedEntityClassName, referencedEntityId));
                     }
+                } else if (field.getName().equals("scolaRef")) {
+                    field.set(this, createEntityRef("ScScola", scolaId));
                 }
             }
             
@@ -128,26 +127,5 @@ public abstract class ScCachedEntity
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
-    }
-    
-    
-    @JsonIgnore
-    public boolean isSharedEntity()
-    {
-        boolean isSharedEntity = false;
-        
-        isSharedEntity = isSharedEntity || this.getClass().equals(ScDevice.class);
-        isSharedEntity = isSharedEntity || this.getClass().equals(ScDeviceListing.class);
-        isSharedEntity = isSharedEntity || this.getClass().equals(ScHousehold.class);
-        isSharedEntity = isSharedEntity || this.getClass().equals(ScScolaMember.class);
-        
-        return isSharedEntity;
-    }
-    
-    
-    @JsonIgnore
-    public boolean isReferenceToSharedEntity()
-    {
-        return this.getClass().equals(ScSharedEntityRef.class);
     }
 }

@@ -20,7 +20,7 @@ import com.scolaapp.api.aux.ScLog;
 import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
-import com.scolaapp.api.model.ScScolaMember;
+import com.scolaapp.api.model.ScMember;
 
 
 @Path("auth")
@@ -148,7 +148,7 @@ public class ScAuthHandler
         if (m.isValid()) {
             ScDAO DAO = m.getDAO();
             
-            ScScolaMember scolaMember = DAO.get(ScScolaMember.class, m.getUserId());
+            ScMember scolaMember = DAO.get(ScMember.class, m.getUserId());
             
             if ((scolaMember != null) && scolaMember.didRegister) {
                 if (scolaMember.passwordHash.equals(m.getPasswordHash())) {

@@ -13,7 +13,7 @@ import com.googlecode.objectify.NotFoundException;
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthToken;
-import com.scolaapp.api.model.ScScolaMember;
+import com.scolaapp.api.model.ScMember;
 
 
 public class ScMeta
@@ -122,7 +122,7 @@ public class ScMeta
                 authInfo.registrationCode = registrationCode;
                 
                 try {
-                    ScScolaMember member = DAO.ofy().get(ScScolaMember.class, userId);
+                    ScMember member = DAO.ofy().get(ScMember.class, userId);
                     
                     authInfo.isListed = true;
                     authInfo.isRegistered = member.didRegister;

@@ -1,5 +1,7 @@
 package com.scolaapp.api.model;
 
+import java.util.Map;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -23,6 +25,8 @@ public class ScMessageBoard extends ScCachedEntity
     public @NotSaved(IfDefault.class) boolean isAdmin = false;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String roleRestriction;
     public String title;
+    
+    public @NotSaved Map<String, String> scolaRef;
     
     
     public ScMessageBoard()

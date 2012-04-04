@@ -2,8 +2,9 @@ package com.scolaapp.api.aux;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
@@ -12,16 +13,13 @@ import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthToken;
-
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScDevice;
-import com.scolaapp.api.model.ScDeviceListing;
-import com.scolaapp.api.model.ScHousehold;
-import com.scolaapp.api.model.ScHouseholdResidency;
+import com.scolaapp.api.model.ScMemberResidency;
 import com.scolaapp.api.model.ScMessageBoard;
 import com.scolaapp.api.model.ScScola;
-import com.scolaapp.api.model.ScScolaMember;
-import com.scolaapp.api.model.ScScolaMembership;
+import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScMembership;
 import com.scolaapp.api.model.ScSharedEntityRef;
 
 
@@ -38,13 +36,11 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScAuthToken.class);
         
         ObjectifyService.register(ScDevice.class);
-        ObjectifyService.register(ScDeviceListing.class);
-        ObjectifyService.register(ScHousehold.class);
-        ObjectifyService.register(ScHouseholdResidency.class);
         ObjectifyService.register(ScMessageBoard.class);
         ObjectifyService.register(ScScola.class);
-        ObjectifyService.register(ScScolaMember.class);
-        ObjectifyService.register(ScScolaMembership.class);
+        ObjectifyService.register(ScMember.class);
+        ObjectifyService.register(ScMemberResidency.class);
+        ObjectifyService.register(ScMembership.class);
         ObjectifyService.register(ScSharedEntityRef.class);
     }
     
@@ -89,11 +85,8 @@ public class ScDAO extends DAOBase
         Date now = new Date();
         
         for (ScCachedEntity entity : entities) {
+            entity.dateModified = now;
             entity.internaliseRelationships();
-            
-            if (!entity.isReferenceToSharedEntity()) {
-                entity.dateModified = now;
-            }
         }
         
         ofy().put(entities);
@@ -104,40 +97,38 @@ public class ScDAO extends DAOBase
     
     public List<ScCachedEntity> fetchEntities(Date lastFetchDate)
     {
-        List<ScCachedEntity> updatedEntities = new ArrayList<ScCachedEntity>();
-
-        Key<ScScolaMember> memberKey = new Key<ScScolaMember>(ScScolaMember.class, m.getUserId());
-        List<ScScolaMembership> memberships = ofy().query(ScScolaMembership.class).filter("memberKey", memberKey).list();
+        ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));
         
-        for (ScScolaMembership membership : memberships) {
-            if (membership.isActive) {
-                List<ScCachedEntity> updatedEntitiesInScola = null;
-                
+        Set<ScCachedEntity> updatedEntities = new HashSet<ScCachedEntity>();
+        
+        Set<ScCachedEntity> scolaEntities = new HashSet<ScCachedEntity>();
+        Set<Key<ScCachedEntity>> additionalEntityKeys = new HashSet<Key<ScCachedEntity>>();
+        
+        Key<ScMember> userMemberKey = new Key<ScMember>(ScMember.class, m.getUserId());
+        List<ScMembership> userMemberships = ofy().query(ScMembership.class).filter("memberKey", userMemberKey).list();
+        
+        for (ScMembership userMembership : userMemberships) {
+            if (userMembership.isActive) {
                 if (lastFetchDate != null) {
-                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).filter("dateModified >", lastFetchDate).list();
+                    scolaEntities.addAll(ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).filter("dateModified >", lastFetchDate).list());
                 } else {
-                    updatedEntitiesInScola = ofy().query(ScCachedEntity.class).filter("scolaKey", membership.scolaKey).list();
+                    scolaEntities.addAll(ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).list());
                 }
                 
-                List<Key<ScCachedEntity>> sharedEntityKeys = new ArrayList<Key<ScCachedEntity>>(); 
-                
-                for (ScCachedEntity entity : updatedEntitiesInScola) {
-                    if (entity.isReferenceToSharedEntity()) {
-                        ScSharedEntityRef entityRef = (ScSharedEntityRef)entity;
-                        sharedEntityKeys.add(entityRef.sharedEntityKey);
-                    } else {
-                        updatedEntities.add(entity.getClass().cast(entity));
+                for (ScCachedEntity entity : scolaEntities) {
+                    if (entity.getClass().equals(ScSharedEntityRef.class)) {
+                        additionalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, ((ScSharedEntityRef)entity).entityRefId));
                     }
-                }
-                
-                if (sharedEntityKeys.size() > 0) {
-                    Map<Key<ScCachedEntity>, ScCachedEntity> sharedEntitiesMap = ofy().get(sharedEntityKeys);
                     
-                    for (Map.Entry<Key<ScCachedEntity>, ScCachedEntity> sharedEntityEntry : sharedEntitiesMap.entrySet()) {
-                        updatedEntities.add(sharedEntityEntry.getValue());
-                    }
+                    updatedEntities.add(entity);
                 }
+            } else {
+                additionalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, userMembership.scolaKey.getRaw().getName()));
             }
+        }
+        
+        if (additionalEntityKeys.size() > 0) {
+            updatedEntities.addAll(ofy().get(additionalEntityKeys).values());
         }
         
         for (ScCachedEntity entity : updatedEntities) {
@@ -146,7 +137,7 @@ public class ScDAO extends DAOBase
         
         ScLog.log().fine(m.meta() + "Fetched entities: " + updatedEntities.toString());
         
-        return updatedEntities;
+        return new ArrayList<ScCachedEntity>(updatedEntities);
     }
     
     
