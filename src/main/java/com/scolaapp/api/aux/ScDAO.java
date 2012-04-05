@@ -82,10 +82,13 @@ public class ScDAO extends DAOBase
     
     public void persistEntities(List<ScCachedEntity> entities)
     {
-        Date now = new Date();
+        Set<Key<ScCachedEntity>> sharedEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
         for (ScCachedEntity entity : entities) {
-            entity.dateModified = now;
+            if (entity.isShared) {
+                sharedEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, entity.entityId));
+            }
+            
             entity.internaliseRelationships();
         }
         
@@ -99,10 +102,10 @@ public class ScDAO extends DAOBase
     {
         ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));
         
-        Set<ScCachedEntity> updatedEntities = new HashSet<ScCachedEntity>();
+        Set<ScCachedEntity> modifiedEntities = new HashSet<ScCachedEntity>();
         
-        Set<ScCachedEntity> scolaEntities = new HashSet<ScCachedEntity>();
-        Set<Key<ScCachedEntity>> additionalEntityKeys = new HashSet<Key<ScCachedEntity>>();
+        List<ScCachedEntity> scolaEntities = null;
+        Set<Key<ScCachedEntity>> externalEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
         Key<ScMember> userMemberKey = new Key<ScMember>(ScMember.class, m.getUserId());
         List<ScMembership> userMemberships = ofy().query(ScMembership.class).filter("memberKey", userMemberKey).list();
@@ -110,34 +113,34 @@ public class ScDAO extends DAOBase
         for (ScMembership userMembership : userMemberships) {
             if (userMembership.isActive) {
                 if (lastFetchDate != null) {
-                    scolaEntities.addAll(ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).filter("dateModified >", lastFetchDate).list());
+                    scolaEntities = ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).filter("dateModified >", lastFetchDate).list();
                 } else {
-                    scolaEntities.addAll(ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).list());
+                    scolaEntities = ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).list();
                 }
                 
                 for (ScCachedEntity entity : scolaEntities) {
                     if (entity.getClass().equals(ScSharedEntityRef.class)) {
-                        additionalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, ((ScSharedEntityRef)entity).entityRefId));
+                        externalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, ((ScSharedEntityRef)entity).entityRefId));
                     }
                     
-                    updatedEntities.add(entity);
+                    modifiedEntities.add(entity);
                 }
             } else {
-                additionalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, userMembership.scolaKey.getRaw().getName()));
+                externalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, userMembership.scolaKey.getRaw().getName()));
             }
         }
         
-        if (additionalEntityKeys.size() > 0) {
-            updatedEntities.addAll(ofy().get(additionalEntityKeys).values());
+        if (externalEntityKeys.size() > 0) {
+            modifiedEntities.addAll(ofy().get(externalEntityKeys).values());
         }
         
-        for (ScCachedEntity entity : updatedEntities) {
+        for (ScCachedEntity entity : modifiedEntities) {
             entity.externaliseRelationships();
         }
         
-        ScLog.log().fine(m.meta() + "Fetched entities: " + updatedEntities.toString());
+        ScLog.log().fine(m.meta() + "Fetched entities: " + modifiedEntities.toString());
         
-        return new ArrayList<ScCachedEntity>(updatedEntities);
+        return new ArrayList<ScCachedEntity>(modifiedEntities);
     }
     
     
