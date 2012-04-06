@@ -15,6 +15,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.googlecode.objectify.Key;
 import com.scolaapp.api.aux.ScDAO;
 import com.scolaapp.api.aux.ScLog;
 import com.scolaapp.api.aux.ScMeta;
@@ -65,7 +66,7 @@ public class ScAuthHandler
         
         ScAuthInfo authInfo = null;
         
-        m.validateAuthorizationHeader(authorizationHeader);
+        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.REGISTRATION);
         m.validateName(name);
         
         if (m.isValid()) {
@@ -90,16 +91,17 @@ public class ScAuthHandler
     @Produces(MediaType.APPLICATION_JSON)
     public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                 @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
+                                @QueryParam (ScURLParams.SCOLA)         String scolaId,
                                 @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
                                 @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
                                 @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
     {
-        m = new ScMeta(deviceId, deviceType, appVersion);
+        m = new ScMeta(scolaId, deviceId, deviceType, appVersion);
         
         Date now = new Date();
         List<ScCachedEntity> scolaEntities = null;
         
-        m.validateAuthorizationHeader(authorizationHeader);
+        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.CONFIRMATION);
         
         if (m.isValid()) {
             ScAuthInfo authInfo = m.getAuthInfo(ScAuthPhase.CONFIRMATION);
@@ -108,7 +110,7 @@ public class ScAuthHandler
                 ScDAO DAO = m.getDAO();
                 
                 DAO.ofy().delete(authInfo);
-                DAO.putAuthToken(authToken, m.getUserId(), m.getDeviceId());
+                DAO.putAuthToken(authToken, ScAuthPhase.CONFIRMATION);
                 
                 scolaEntities = DAO.fetchEntities();
             } else {
@@ -143,16 +145,16 @@ public class ScAuthHandler
         Date now = new Date(); 
         List<ScCachedEntity> scolaEntities = null;
         
-        m.validateAuthorizationHeader(authorizationHeader);
+        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
         
         if (m.isValid()) {
             ScDAO DAO = m.getDAO();
             
-            ScMember scolaMember = DAO.get(ScMember.class, m.getUserId());
+            ScMember scolaMember = DAO.get(new Key<ScMember>(m.getScolaKey(), ScMember.class, m.getUserId()));
             
             if ((scolaMember != null) && scolaMember.didRegister) {
                 if (scolaMember.passwordHash.equals(m.getPasswordHash())) {
-                    DAO.putAuthToken(authToken, m.getUserId(), m.getDeviceId());
+                    DAO.putAuthToken(authToken, ScAuthPhase.LOGIN);
                     //scolaEntities = DAO.fetchEntities(lastFetchDate);
                     scolaEntities = DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
                 } else {

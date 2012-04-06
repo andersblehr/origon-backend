@@ -16,26 +16,38 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Cached(expirationSeconds=600)
 public class ScAuthToken
 {
-    public @Id String authToken;
+    public @Id String token;
     
-    public String userId;
-    public @Indexed String deviceId;
+    public @Indexed String userId;
+    public String scolaId;
+    public String deviceId;
+    public String deviceType;
+    
     public Date dateExpires;
     
     
     public ScAuthToken() {}
     
     
-    public ScAuthToken(String authToken, String userId, String deviceId)
+    public ScAuthToken(String token, String userId, String scolaId, String deviceId, String deviceType)
     {
-        this.authToken = authToken;
+        this.token = token;
+        
         this.userId = userId;
+        this.scolaId = scolaId;
         this.deviceId = deviceId;
+        this.deviceType = deviceType;
         
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
         calendar.add(Calendar.DATE, 14);
         
         dateExpires = calendar.getTime();
+    }
+    
+    
+    public ScAuthToken(String token, ScAuthToken oldAuthToken)
+    {
+        this(token, oldAuthToken.userId, oldAuthToken.scolaId, oldAuthToken.deviceId, oldAuthToken.deviceType);
     }
 }

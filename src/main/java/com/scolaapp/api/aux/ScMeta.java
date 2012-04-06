@@ -9,11 +9,13 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.codec.binary.Base64;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthToken;
 import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScScola;
 
 
 public class ScMeta
@@ -29,6 +31,7 @@ public class ScMeta
     
     private String name = null;
     private String userId = null;
+    private String scolaId = null;
     private String passwordHash = null;
     private String deviceId = null;
     private String deviceType = null;
@@ -57,8 +60,28 @@ public class ScMeta
         if ((deviceType != null) && (appVersion != null)) {
             this.deviceType = deviceType;
             this.appVersion = appVersion;            
+        } else if (deviceType == null) {
+            ScLog.log().warning(meta(false) + "Device type is missing.");
         } else {
-            ScLog.log().warning(meta(false) + String.format("Incomplete request [deviceId: %s; deviceType: %s; appVersion: %s], raising BAD_REQUEST (400).", deviceId, deviceType, appVersion));
+            ScLog.log().warning(meta(false) + "App version is missing.");
+        }
+    }
+    
+    
+    public ScMeta(String scolaId, String deviceId, String deviceType, String appVersion)
+    {
+        this(deviceId, deviceType, appVersion);
+        
+        validateScolaId(scolaId);
+    }
+    
+    
+    public ScMeta(String authToken, String appVersion)
+    {
+        validateAuthToken(authToken);
+        
+        if (isValid) {
+            this.appVersion = appVersion;
         }
     }
     
@@ -66,6 +89,12 @@ public class ScMeta
     public ScDAO getDAO()
     {
         return DAO;
+    }
+    
+    
+    public Key<ScScola> getScolaKey()
+    {
+        return new Key<ScScola>(ScScola.class, scolaId);
     }
     
     
@@ -81,6 +110,12 @@ public class ScMeta
     }
     
     
+    public String getScolaId()
+    {
+        return scolaId;
+    }
+    
+    
     public String getPasswordHash()
     {
         return passwordHash;
@@ -90,6 +125,12 @@ public class ScMeta
     public String getDeviceId()
     {
         return deviceId;
+    }
+    
+    
+    public String getDeviceType()
+    {
+        return deviceType;
     }
     
     
@@ -133,7 +174,7 @@ public class ScMeta
                     authInfo.isAuthenticated = false;
                 }
             } else if (authPhase == ScAuthPhase.CONFIRMATION) {
-                authInfo = DAO.get(ScAuthInfo.class, userId);
+                authInfo = DAO.get(new Key<ScAuthInfo>(ScAuthInfo.class, userId));
             }
         }
         
@@ -141,7 +182,7 @@ public class ScMeta
     }
     
     
-    public void validateAuthorizationHeader(String authorizationHeader)
+    public void validateAuthorizationHeader(String authorizationHeader, ScAuthPhase authPhase)
     {
         if ((authorizationHeader != null) && (authorizationHeader.indexOf("Basic ") == 0)) {
             String base64EncodedAuthString = authorizationHeader.split(" ")[1];
@@ -156,6 +197,11 @@ public class ScMeta
                     
                     if (isValid) {
                         DAO = new ScDAO(this);
+                        
+                        if (authPhase == ScAuthPhase.LOGIN) {
+                            ScAuthToken authToken = DAO.ofy().query(ScAuthToken.class).filter("userId", userId).list().get(0);
+                            scolaId = authToken.scolaId;
+                        }
                     }
                 } else {
                     ScLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
@@ -174,18 +220,16 @@ public class ScMeta
         DAO = new ScDAO(this);
         
         try {
+            Date now = new Date();
             ScAuthToken tokenInfo = DAO.ofy().get(ScAuthToken.class, authToken); 
 
-            if (tokenInfo.deviceId.equals(deviceId)) {
-                Date now = new Date();
-                
-                if (now.before(tokenInfo.dateExpires)) {
-                    userId = tokenInfo.userId;
-                } else {
-                    ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
-                }
+            if (now.before(tokenInfo.dateExpires)) {
+                userId = tokenInfo.userId;
+                scolaId = tokenInfo.scolaId;
+                deviceId = tokenInfo.deviceId;
+                deviceType = tokenInfo.deviceType;
             } else {
-                ScLog.log().warning(meta(false) + String.format("Auth token (%s) not tied to this device (%s).", authToken, deviceId));
+                ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
             }
         } catch (NotFoundException e) {
             ScLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
@@ -217,12 +261,12 @@ public class ScMeta
     }
     
     
-    private void validateDeviceId(String deviceId)
+    private boolean isValidUUID(String UUID)
     {
         boolean isValid = false;
         
-        if ((deviceId != null) && (deviceId.length() == 36)) {
-            String[] UUIDElements = deviceId.split("-");
+        if ((UUID != null) && (UUID.length() == 36)) {
+            String[] UUIDElements = UUID.split("-");
             
             isValid = (UUIDElements.length == 5);
             isValid = isValid && (UUIDElements[0].length() ==  8);
@@ -231,8 +275,14 @@ public class ScMeta
             isValid = isValid && (UUIDElements[3].length() ==  4);
             isValid = isValid && (UUIDElements[4].length() == 12);
         }
-        
-        if (isValid) {
+
+        return isValid;
+    }
+    
+    
+    private void validateDeviceId(String deviceId)
+    {
+        if (isValidUUID(deviceId)) {
             this.deviceId = deviceId;
         } else {
             ScLog.log().warning(meta(false) + String.format("Device id %s is not a valid UUID.", deviceId));
@@ -249,6 +299,16 @@ public class ScMeta
             } catch (AddressException e) {
                 ScLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
             }
+        }
+    }
+    
+    
+    private void validateScolaId(String scolaId)
+    {
+        if (isValidUUID(scolaId)) {
+            this.scolaId = scolaId;
+        } else {
+            ScLog.log().warning(meta(false) + String.format("User home scola id %s is not a valid UUID.", scolaId));
         }
     }
     

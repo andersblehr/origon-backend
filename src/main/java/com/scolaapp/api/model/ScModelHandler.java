@@ -22,13 +22,9 @@ public class ScModelHandler
     @Consumes(MediaType.APPLICATION_JSON)
     public Response persistEntities(List<ScCachedEntity> entities,
                                     @QueryParam (ScURLParams.AUTH_TOKEN)  String authToken,
-                                    @QueryParam (ScURLParams.DEVICE_ID)   String deviceId,
-                                    @QueryParam (ScURLParams.DEVICE_TYPE) String deviceType,
                                     @QueryParam (ScURLParams.APP_VERSION) String appVersion)
     {
-        ScMeta m = new ScMeta(deviceId, deviceType, appVersion);
-        
-        m.validateAuthToken(authToken);
+        ScMeta m = new ScMeta(authToken, appVersion);
         
         if (m.isValid()) {
             m.getDAO().persistEntities(entities);
@@ -46,16 +42,12 @@ public class ScModelHandler
     @Produces(MediaType.APPLICATION_JSON)
     public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date   lastFetchDate,
                                   @QueryParam (ScURLParams.AUTH_TOKEN)        String authToken,
-                                  @QueryParam (ScURLParams.DEVICE_ID)         String deviceId,
-                                  @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
                                   @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
     {
-        ScMeta m = new ScMeta(deviceId, deviceType, appVersion);
+        ScMeta m = new ScMeta(authToken, appVersion);
         
         Date now = new Date();
         List<ScCachedEntity> updatedEntities = null;
-        
-        m.validateAuthToken(authToken);
         
         if (m.isValid()) {
             updatedEntities = m.getDAO().fetchEntities(lastFetchDate);

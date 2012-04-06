@@ -13,7 +13,7 @@ import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
-@Subclass
+@Subclass(unindexed=true)
 @Unindexed
 @Cached(expirationSeconds=600)
 @JsonSerialize(include=Inclusion.NON_NULL)

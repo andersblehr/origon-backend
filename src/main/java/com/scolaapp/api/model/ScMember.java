@@ -10,10 +10,10 @@ import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
-import com.googlecode.objectify.condition.IfDefault;
+import com.googlecode.objectify.condition.IfFalse;
 
 
-@Subclass
+@Subclass(unindexed=true)
 @Unindexed
 @Cached(expirationSeconds=600)
 @JsonSerialize(include=Inclusion.NON_NULL)
@@ -28,8 +28,8 @@ public class ScMember extends ScCachedEntity
     public Date activeSince;
     public String passwordHash;
     
-    public @NotSaved(IfDefault.class) boolean isMinor = false;
-    public @NotSaved(IfDefault.class) boolean didRegister = false;
+    public @NotSaved(IfFalse.class) boolean isMinor = false;
+    public @NotSaved(IfFalse.class) boolean didRegister = false;
     
     
     public ScMember()

@@ -9,9 +9,11 @@ import java.util.Set;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Query;
 import com.googlecode.objectify.util.DAOBase;
 
 import com.scolaapp.api.auth.ScAuthInfo;
+import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthToken;
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScDevice;
@@ -21,8 +23,6 @@ import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScMember;
 import com.scolaapp.api.model.ScMembership;
 import com.scolaapp.api.model.ScSharedEntityRef;
-
-
 
 
 public class ScDAO extends DAOBase
@@ -53,30 +53,31 @@ public class ScDAO extends DAOBase
     }
     
     
-    public <T> T get(Class<T> clazz, String id)
+    public <T> T get(Key<T> key)
     {
         try {
-            return ofy().get(clazz, id);
+            return ofy().get(key);
         } catch (NotFoundException e) {
             return null;
         }
     }
     
     
-    public void putAuthToken(String authToken, String userId, String deviceId)
+    public void putAuthToken(String authToken, ScAuthPhase authPhase)
     {
-        List<ScAuthToken> tokensForThisDevice = ofy().query(ScAuthToken.class).filter("deviceId", deviceId).list();
-        ScLog.log().fine(m.meta() + String.format("Found %d auth tokens for this device.", tokensForThisDevice.size()));
-        
-        for (ScAuthToken token : tokensForThisDevice) {
-            if (token.userId.equals(userId)) {
-                ScLog.log().fine(m.meta() + String.format("Deleting old auth token [%s].", token.authToken));
-                ofy().delete(token);
+        if (authPhase == ScAuthPhase.LOGIN) {
+            Query<ScAuthToken> existingTokens = ofy().query(ScAuthToken.class).filter("userId", m.getUserId());
+            
+            for (ScAuthToken existingToken : existingTokens) {
+                if (existingToken.deviceId.equals(m.getDeviceId())) {
+                    ofy().delete(existingToken);
+                    ScLog.log().fine(m.meta() + String.format("Deleted old auth token (token: %s; user: %s).", existingToken.token, m.getUserId()));
+                }
             }
         }
         
-        ScLog.log().fine(m.meta() + String.format("Persisting new auth token [%s].", authToken));
-        ofy().put(new ScAuthToken(authToken, userId, deviceId));
+        ofy().put(new ScAuthToken(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType()));
+        ScLog.log().fine(m.meta() + String.format("Persisted new auth token (token: %s; user: %s).", authToken, m.getUserId()));
     }
     
     
@@ -86,7 +87,7 @@ public class ScDAO extends DAOBase
         
         for (ScCachedEntity entity : entities) {
             if (entity.isShared) {
-                sharedEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, entity.entityId));
+                sharedEntityKeys.add(new Key<ScCachedEntity>(entity.scolaKey, ScCachedEntity.class, entity.entityId));
             }
             
             entity.internaliseRelationships();
@@ -103,30 +104,32 @@ public class ScDAO extends DAOBase
         ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));
         
         Set<ScCachedEntity> modifiedEntities = new HashSet<ScCachedEntity>();
-        
-        List<ScCachedEntity> scolaEntities = null;
         Set<Key<ScCachedEntity>> externalEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
-        Key<ScMember> userMemberKey = new Key<ScMember>(ScMember.class, m.getUserId());
-        List<ScMembership> userMemberships = ofy().query(ScMembership.class).filter("memberKey", userMemberKey).list();
+        Key<ScMember> memberKey = new Key<ScMember>(m.getScolaKey(), ScMember.class, m.getUserId());
+        Query<ScMembership> memberships = ofy().query(ScMembership.class).filter("memberKey", memberKey);
         
-        for (ScMembership userMembership : userMemberships) {
-            if (userMembership.isActive) {
+        for (ScMembership membership : memberships) {
+            if (membership.isActive) {
+                Query<ScCachedEntity> scolaEntities = null;
+                
                 if (lastFetchDate != null) {
-                    scolaEntities = ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).filter("dateModified >", lastFetchDate).list();
+                    scolaEntities = ofy().query(ScCachedEntity.class).ancestor(membership.scolaKey).filter("dateModified >", lastFetchDate);
                 } else {
-                    scolaEntities = ofy().query(ScCachedEntity.class).filter("scolaKey", userMembership.scolaKey).list();
+                    scolaEntities = ofy().query(ScCachedEntity.class).ancestor(membership.scolaKey);
                 }
                 
                 for (ScCachedEntity entity : scolaEntities) {
-                    if (entity.getClass().equals(ScSharedEntityRef.class)) {
-                        externalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, ((ScSharedEntityRef)entity).entityRefId));
+                    if (entity.isSharedEntityRef()) {
+                        ScSharedEntityRef sharedEntityRef = (ScSharedEntityRef)entity;
+                        
+                        externalEntityKeys.add(new Key<ScCachedEntity>(sharedEntityRef.scolaKey, ScCachedEntity.class, sharedEntityRef.entityId));
                     }
                     
                     modifiedEntities.add(entity);
                 }
             } else {
-                externalEntityKeys.add(new Key<ScCachedEntity>(ScCachedEntity.class, userMembership.scolaKey.getRaw().getName()));
+                externalEntityKeys.add(new Key<ScCachedEntity>(membership.scolaKey, ScCachedEntity.class, membership.scolaKey.getRaw().getName()));
             }
         }
         

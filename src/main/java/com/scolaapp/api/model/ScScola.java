@@ -15,7 +15,7 @@ import com.googlecode.objectify.condition.IfEmptyString;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@Subclass
+@Subclass(unindexed=true)
 @Unindexed
 @Cached(expirationSeconds=600)
 @JsonSerialize(include=Inclusion.NON_NULL)
@@ -33,8 +33,8 @@ public class ScScola extends ScCachedEntity
     public @NotSaved ScScola parentScola;
     public @NotSaved Map<String, String> parentScolaRef;
     public @NotSaved(IfNull.class) Key<ScScola> parentScolaKey;
-    
-    
+
+
     public ScScola()
     {
         super();
