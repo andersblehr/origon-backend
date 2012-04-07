@@ -17,6 +17,7 @@ import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthToken;
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScDevice;
+import com.scolaapp.api.model.ScMemberProxy;
 import com.scolaapp.api.model.ScMemberResidency;
 import com.scolaapp.api.model.ScMessageBoard;
 import com.scolaapp.api.model.ScScola;
@@ -83,11 +84,28 @@ public class ScDAO extends DAOBase
     
     public void persistEntities(List<ScCachedEntity> entities)
     {
+        ScMemberProxy memberProxy = get(new Key<ScMemberProxy>(ScMemberProxy.class, m.getUserId()));
+        
+        if (memberProxy != null) {
+            memberProxy.externaliseSets();
+        } else {
+            Iterable<Key<ScAuthToken>> tokenKeyIterable = ofy().query(ScAuthToken.class).filter("userId", m.getUserId()).fetchKeys();
+            memberProxy = new ScMemberProxy(m.getUserId(), m.getScolaKey(), tokenKeyIterable);
+        }
+        
         Set<Key<ScCachedEntity>> sharedEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
         for (ScCachedEntity entity : entities) {
             if (entity.isShared) {
                 sharedEntityKeys.add(new Key<ScCachedEntity>(entity.scolaKey, ScCachedEntity.class, entity.entityId));
+            }
+            
+            Class<?> entityClass = entity.getClass();
+            
+            if (entityClass.equals(ScMemberResidency.class)) {
+                memberProxy.residenceKeySet.add(((ScMemberResidency)entity).scolaKey);
+            } else if (entityClass.equals(ScMembership.class)) {
+                memberProxy.membershipKeySet.add(entity.getKey());
             }
             
             entity.internaliseRelationships();

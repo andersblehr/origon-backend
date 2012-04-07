@@ -32,6 +32,7 @@ public class ScMeta
     private String name = null;
     private String userId = null;
     private String scolaId = null;
+    private String authToken = null;
     private String passwordHash = null;
     private String deviceId = null;
     private String deviceType = null;
@@ -113,6 +114,12 @@ public class ScMeta
     public String getScolaId()
     {
         return scolaId;
+    }
+    
+    
+    public String getAuthToken()
+    {
+        return authToken;
     }
     
     
@@ -224,6 +231,8 @@ public class ScMeta
             ScAuthToken tokenInfo = DAO.ofy().get(ScAuthToken.class, authToken); 
 
             if (now.before(tokenInfo.dateExpires)) {
+                this.authToken = authToken;
+                
                 userId = tokenInfo.userId;
                 scolaId = tokenInfo.scolaId;
                 deviceId = tokenInfo.deviceId;

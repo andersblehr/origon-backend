@@ -40,7 +40,7 @@ import com.googlecode.objectify.condition.IfNull;
 public abstract class ScCachedEntity
 {
     public @NotSaved String scolaId;
-    public @Parent Key<ScScola> scolaKey;
+    public @Parent Key<ScCachedEntity> scolaKey;
     
     public @Id String entityId;
     public @NotSaved String entityClass;
@@ -80,6 +80,13 @@ public abstract class ScCachedEntity
     public boolean isSharedEntityRef()
     {
         return this.getClass().equals(ScSharedEntityRef.class);
+    }
+    
+    
+    @JsonIgnore
+    public Key<ScCachedEntity> getKey()
+    {
+        return new Key<ScCachedEntity>(scolaKey, ScCachedEntity.class, entityId);
     }
     
     
