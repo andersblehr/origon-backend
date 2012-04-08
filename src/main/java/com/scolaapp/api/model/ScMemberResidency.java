@@ -2,6 +2,8 @@ package com.scolaapp.api.model;
 
 import java.util.Map;
 
+import javax.persistence.PostLoad;
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -36,6 +38,7 @@ public class ScMemberResidency extends ScMembership
     }
 
     
+    @PostLoad
     @Override
     public void externaliseRelationships()
     {

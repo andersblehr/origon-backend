@@ -1,20 +1,17 @@
 package com.scolaapp.api.model;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Id;
+import javax.persistence.PostLoad;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
 
-import com.scolaapp.api.auth.ScAuthToken;
+import com.scolaapp.api.auth.ScAuthTokenMeta;
 
 
 @Entity
@@ -23,49 +20,36 @@ import com.scolaapp.api.auth.ScAuthToken;
 public class ScMemberProxy
 {
     public @Id String userId;
-    public Key<ScCachedEntity> memberKey;
+    public String scolaId;
     
-    public Key<ScCachedEntity>[] residenceKeys;
-    public Key<ScCachedEntity>[] membershipKeys;
-    public Key<ScAuthToken>[] authTokenKeys;
+    public Key<ScMember> memberKey;
+    public Key<ScScola> scolaKey;
     
-    public @NotSaved Set<Key<ScCachedEntity>> residenceKeySet;
-    public @NotSaved Set<Key<ScCachedEntity>> membershipKeySet;
-    public @NotSaved Set<Key<ScAuthToken>> authTokenKeySet;
+    public Set<Key<ScMembership>> membershipKeySet;
+    public Set<Key<ScAuthTokenMeta>> authMetaKeySet;
     
     
     public ScMemberProxy() {}
     
     
-    public ScMemberProxy(String userId, Key<ScScola> scolaKey, Iterable<Key<ScAuthToken>> tokenKeyIterable)
+    public ScMemberProxy(String userId, String scolaId)
     {
         this.userId = userId;
-        this.memberKey = new Key<ScCachedEntity>(scolaKey, ScCachedEntity.class, userId);
+        this.scolaId = scolaId;
         
-        residenceKeySet = new HashSet<Key<ScCachedEntity>>();
-        membershipKeySet = new HashSet<Key<ScCachedEntity>>();
-        authTokenKeySet = new HashSet<Key<ScAuthToken>>();
+        scolaKey = new Key<ScScola>(ScScola.class, scolaId);
+        memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
         
-        Iterator<Key<ScAuthToken>> tokenKeyIterator = tokenKeyIterable.iterator();
-        
-        while (tokenKeyIterator.hasNext()) {
-            authTokenKeySet.add(tokenKeyIterator.next());
+        membershipKeySet = new HashSet<Key<ScMembership>>();
+        authMetaKeySet = new HashSet<Key<ScAuthTokenMeta>>();
+    }
+    
+    
+    @PostLoad
+    public void instantiateNullKeySets()
+    {
+        if (membershipKeySet == null) {
+            membershipKeySet = new HashSet<Key<ScMembership>>();
         }
-    }
-    
-    
-    public void internaliseKeySets()
-    {
-        residenceKeys = residenceKeySet.toArray(residenceKeys);
-        membershipKeys = membershipKeySet.toArray(membershipKeys);
-        authTokenKeys = authTokenKeySet.toArray(authTokenKeys);
-    }
-    
-    
-    public void externaliseKeySets()
-    {
-        residenceKeySet = new HashSet<Key<ScCachedEntity>>(Arrays.asList(residenceKeys));
-        membershipKeySet = new HashSet<Key<ScCachedEntity>>(Arrays.asList(membershipKeys));
-        authTokenKeySet = new HashSet<Key<ScAuthToken>>(Arrays.asList(authTokenKeys));
     }
 }

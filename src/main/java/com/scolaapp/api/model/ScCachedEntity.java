@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Id;
+import javax.persistence.PostLoad;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -39,10 +40,10 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = ScSharedEntityRef.class, name = "ScSharedEntityRef")})
 public abstract class ScCachedEntity
 {
-    public @NotSaved String scolaId;
-    public @Parent Key<ScCachedEntity> scolaKey;
-    
+    public @Parent Key<ScScola> scolaKey;
     public @Id String entityId;
+    
+    public @NotSaved String scolaId;
     public @NotSaved String entityClass;
     
     public Date dateCreated;
@@ -50,27 +51,6 @@ public abstract class ScCachedEntity
     public @NotSaved(IfNull.class) Date dateExpires;
     
     public @NotSaved(IfFalse.class) boolean isShared = false;
-
-    
-    private Field getScolaRefField()
-    {
-        try {
-            return this.getClass().getField("scolaRef");
-        } catch (NoSuchFieldException e) {
-            return null;
-        }
-    }
-    
-    
-    private Map<String, String> createEntityRef(String entityClass, String entityId)
-    {
-        Map<String, String> entityRef = new HashMap<String, String>();
-        
-        entityRef.put("entityClass", entityClass);
-        entityRef.put("entityId", entityId);
-        
-        return entityRef;
-    }
     
     
     public ScCachedEntity() {}
@@ -83,13 +63,7 @@ public abstract class ScCachedEntity
     }
     
     
-    @JsonIgnore
-    public Key<ScCachedEntity> getKey()
-    {
-        return new Key<ScCachedEntity>(scolaKey, ScCachedEntity.class, entityId);
-    }
-    
-    
+    // Cannot use @PrePersist, as we're setting the parent key (scolaKey) here.
     @SuppressWarnings("unchecked")
     public <T extends ScCachedEntity> void internaliseRelationships()
     {
@@ -118,6 +92,7 @@ public abstract class ScCachedEntity
     }
     
     
+    @PostLoad
     @SuppressWarnings("unchecked")
     public <T extends ScCachedEntity> void externaliseRelationships()
     {
@@ -156,5 +131,26 @@ public abstract class ScCachedEntity
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    
+    private Field getScolaRefField()
+    {
+        try {
+            return this.getClass().getField("scolaRef");
+        } catch (NoSuchFieldException e) {
+            return null;
+        }
+    }
+    
+    
+    private Map<String, String> createEntityRef(String entityClass, String entityId)
+    {
+        Map<String, String> entityRef = new HashMap<String, String>();
+        
+        entityRef.put("entityClass", entityClass);
+        entityRef.put("entityId", entityId);
+        
+        return entityRef;
     }
 }

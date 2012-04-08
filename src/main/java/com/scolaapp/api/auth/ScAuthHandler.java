@@ -15,13 +15,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.googlecode.objectify.Key;
 import com.scolaapp.api.aux.ScDAO;
 import com.scolaapp.api.aux.ScLog;
 import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScMemberProxy;
 
 
 @Path("auth")
@@ -36,11 +36,11 @@ public class ScAuthHandler
 
         try {
             Message msg = new MimeMessage(session);
-            msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email adress!
-            msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
             
             // TODO: Localise message
             // TODO: Provide URL directly to app on device
+            msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
+            msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
             msg.setSubject("Complete your registration with Scola");
             msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
             
@@ -70,7 +70,7 @@ public class ScAuthHandler
         m.validateName(name);
         
         if (m.isValid()) {
-            authInfo = m.getAuthInfo(ScAuthPhase.REGISTRATION);
+            authInfo = m.getAuthInfo();
             
             if (!authInfo.isRegistered) {
                 m.getDAO().ofy().put(authInfo);
@@ -104,13 +104,13 @@ public class ScAuthHandler
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.CONFIRMATION);
         
         if (m.isValid()) {
-            ScAuthInfo authInfo = m.getAuthInfo(ScAuthPhase.CONFIRMATION);
+            ScAuthInfo authInfo = m.getAuthInfo();
             
             if (authInfo.passwordHash.equals(m.getPasswordHash())) {
                 ScDAO DAO = m.getDAO();
                 
                 DAO.ofy().delete(authInfo);
-                DAO.putAuthToken(authToken, ScAuthPhase.CONFIRMATION);
+                DAO.putAuthToken(authToken);
                 
                 scolaEntities = DAO.fetchEntities();
             } else {
@@ -148,13 +148,14 @@ public class ScAuthHandler
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
         
         if (m.isValid()) {
-            ScDAO DAO = m.getDAO();
+            ScMemberProxy memberProxy = m.getMemberProxy();
             
-            ScMember scolaMember = DAO.get(new Key<ScMember>(m.getScolaKey(), ScMember.class, m.getUserId()));
-            
-            if ((scolaMember != null) && scolaMember.didRegister) {
+            if (memberProxy != null) {
+                ScDAO DAO = m.getDAO();
+                ScMember scolaMember = DAO.get(memberProxy.memberKey);
+                
                 if (scolaMember.passwordHash.equals(m.getPasswordHash())) {
-                    DAO.putAuthToken(authToken, ScAuthPhase.LOGIN);
+                    DAO.putAuthToken(authToken);
                     //scolaEntities = DAO.fetchEntities(lastFetchDate);
                     scolaEntities = DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
                 } else {

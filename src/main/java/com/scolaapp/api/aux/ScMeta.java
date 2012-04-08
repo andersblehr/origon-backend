@@ -13,8 +13,9 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
-import com.scolaapp.api.auth.ScAuthToken;
+import com.scolaapp.api.auth.ScAuthTokenMeta;
 import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScMemberProxy;
 import com.scolaapp.api.model.ScScola;
 
 
@@ -25,7 +26,10 @@ public class ScMeta
     private static final int kMinimumPasswordLength = 6;
     private static final int kRegistrationCodeLength = 6;
     
+    private ScAuthPhase authPhase = ScAuthPhase.NONE;
+    
     private ScDAO DAO;
+    private ScMemberProxy memberProxy;
     
     private boolean isValid = true;
     
@@ -87,18 +91,6 @@ public class ScMeta
     }
     
     
-    public ScDAO getDAO()
-    {
-        return DAO;
-    }
-    
-    
-    public Key<ScScola> getScolaKey()
-    {
-        return new Key<ScScola>(ScScola.class, scolaId);
-    }
-    
-    
     public boolean isValid()
     {
         return isValid;
@@ -153,7 +145,33 @@ public class ScMeta
     }
     
     
-    public ScAuthInfo getAuthInfo(ScAuthPhase authPhase)
+    public ScDAO getDAO()
+    {
+        return DAO;
+    }
+    
+    
+    public Key<ScScola> getScolaKey()
+    {
+        return new Key<ScScola>(ScScola.class, scolaId);
+    }
+    
+    
+    public ScMemberProxy getMemberProxy()
+    {
+        if (memberProxy == null) {
+            if (authPhase == ScAuthPhase.CONFIRMATION) {
+                memberProxy = new ScMemberProxy(userId, scolaId);
+            } else {
+                memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
+            }
+        }
+        
+        return memberProxy;
+    }
+    
+    
+    public ScAuthInfo getAuthInfo()
     {
         ScAuthInfo authInfo = null;
         
@@ -169,13 +187,15 @@ public class ScMeta
                 authInfo.passwordHash = passwordHash;
                 authInfo.registrationCode = registrationCode;
                 
-                try {
-                    ScMember member = DAO.ofy().get(ScMember.class, userId);
+                ScMemberProxy memberProxy = getMemberProxy();
+                
+                if (memberProxy != null) {
+                    ScMember member = DAO.get(memberProxy.memberKey);
                     
                     authInfo.isListed = true;
                     authInfo.isRegistered = member.didRegister;
                     authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
-                } catch (NotFoundException e) {
+                } else {
                     authInfo.isListed = false;
                     authInfo.isRegistered = false;
                     authInfo.isAuthenticated = false;
@@ -203,12 +223,8 @@ public class ScMeta
                     validatePassword(authElements[1]);
                     
                     if (isValid) {
-                        DAO = new ScDAO(this);
-                        
-                        if (authPhase == ScAuthPhase.LOGIN) {
-                            ScAuthToken authToken = DAO.ofy().query(ScAuthToken.class).filter("userId", userId).list().get(0);
-                            scolaId = authToken.scolaId;
-                        }
+                        this.authPhase = authPhase;
+                        this.DAO = new ScDAO(this);
                     }
                 } else {
                     ScLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
@@ -228,15 +244,15 @@ public class ScMeta
         
         try {
             Date now = new Date();
-            ScAuthToken tokenInfo = DAO.ofy().get(ScAuthToken.class, authToken); 
+            ScAuthTokenMeta tokenMeta = DAO.ofy().get(ScAuthTokenMeta.class, authToken); 
 
-            if (now.before(tokenInfo.dateExpires)) {
+            if (now.before(tokenMeta.dateExpires)) {
                 this.authToken = authToken;
                 
-                userId = tokenInfo.userId;
-                scolaId = tokenInfo.scolaId;
-                deviceId = tokenInfo.deviceId;
-                deviceType = tokenInfo.deviceType;
+                userId = tokenMeta.userId;
+                scolaId = tokenMeta.scolaId;
+                deviceId = tokenMeta.deviceId;
+                deviceType = tokenMeta.deviceType;
             } else {
                 ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
             }
