@@ -93,31 +93,29 @@ public class ScDAO extends DAOBase
     {
         ScMemberProxy memberProxy = m.getMemberProxy();
         
-        Set<Key<ScCachedEntity>> sharedEntityKeys = new HashSet<Key<ScCachedEntity>>();
         boolean memberProxyDidChange = false;
+        boolean membershipKeySetDidChange = false;
+        
+        Set<Key<ScCachedEntity>> sharedEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
         for (ScCachedEntity entity : entities) {
+            entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
+            
             if (entity.isShared) {  // TODO: This if block is only half-baked
                 sharedEntityKeys.add(new Key<ScCachedEntity>(entity.scolaKey, ScCachedEntity.class, entity.entityId));
             }
             
-            boolean residenceKeySetDidChange = false;
-            boolean membershipKeySetDidChange = false;
-            
-            if (entity.scolaId.equals(m.getScolaId())) {
-                if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
-                    Key<ScScola> scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
-                    Key<ScMembership> membershipKey = new Key<ScMembership>(scolaKey, ScMembership.class, entity.entityId);
+            if (entity.isMembership()) {
+                if (((ScMembership)entity).member.entityId.equals(memberProxy.userId)) {
+                    Key<ScMembership> membershipKey = new Key<ScMembership>(entity.scolaKey, ScMembership.class, entity.entityId);
                     
                     membershipKeySetDidChange = memberProxy.membershipKeySet.add(membershipKey);
+                    
+                    if (!memberProxyDidChange) {
+                        memberProxyDidChange = membershipKeySetDidChange;
+                    }
                 }
             }
-            
-            if (!memberProxyDidChange) {
-                memberProxyDidChange = residenceKeySetDidChange || membershipKeySetDidChange;
-            }
-            
-            entity.internaliseRelationships();
         }
         
         if (memberProxyDidChange) {

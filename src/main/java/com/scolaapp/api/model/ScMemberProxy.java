@@ -20,10 +20,10 @@ import com.scolaapp.api.auth.ScAuthTokenMeta;
 public class ScMemberProxy
 {
     public @Id String userId;
-    public String scolaId;
+    public String homeScolaId;
     
     public Key<ScMember> memberKey;
-    public Key<ScScola> scolaKey;
+    public Key<ScScola> homeScolaKey;
     
     public Set<Key<ScMembership>> membershipKeySet;
     public Set<Key<ScAuthTokenMeta>> authMetaKeySet;
@@ -32,13 +32,13 @@ public class ScMemberProxy
     public ScMemberProxy() {}
     
     
-    public ScMemberProxy(String userId, String scolaId)
+    public ScMemberProxy(String userId, String homeScolaId)
     {
         this.userId = userId;
-        this.scolaId = scolaId;
+        this.homeScolaId = homeScolaId;
         
-        scolaKey = new Key<ScScola>(ScScola.class, scolaId);
-        memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
+        homeScolaKey = new Key<ScScola>(ScScola.class, homeScolaId);
+        memberKey = new Key<ScMember>(homeScolaKey, ScMember.class, userId);
         
         membershipKeySet = new HashSet<Key<ScMembership>>();
         authMetaKeySet = new HashSet<Key<ScAuthTokenMeta>>();

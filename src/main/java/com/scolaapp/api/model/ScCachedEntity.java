@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.persistence.Id;
 import javax.persistence.PostLoad;
+import javax.persistence.PrePersist;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
@@ -63,13 +64,18 @@ public abstract class ScCachedEntity
     }
     
     
-    // Cannot use @PrePersist, as we're setting the parent key (scolaKey) here.
+    @JsonIgnore
+    public boolean isMembership()
+    {
+        return (this.getClass().equals(ScMembership.class) || this.getClass().equals(ScMemberResidency.class));
+    }
+    
+    
+    @PrePersist
     @SuppressWarnings("unchecked")
     public <T extends ScCachedEntity> void internaliseRelationships()
     {
         try {
-            scolaKey = new Key<ScScola>(ScScola.class, scolaId);
-            
             Field[] fields = this.getClass().getFields();
             
             for (Field field : fields) {
