@@ -9,7 +9,6 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
-import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
@@ -24,7 +23,7 @@ public class ScSharedEntityRef extends ScCachedEntity
 {
     public @NotSaved String sharedEntityId;
     public @NotSaved String sharedEntityScolaId;
-    public @Indexed Key<ScCachedEntity> sharedEntityKey;
+    public Key<ScCachedEntity> sharedEntityKey;
 
 
     public ScSharedEntityRef()

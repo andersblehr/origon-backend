@@ -15,8 +15,8 @@ import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthTokenMeta;
 import com.scolaapp.api.model.ScMember;
-import com.scolaapp.api.model.ScMemberProxy;
 import com.scolaapp.api.model.ScScola;
+import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
 public class ScMeta

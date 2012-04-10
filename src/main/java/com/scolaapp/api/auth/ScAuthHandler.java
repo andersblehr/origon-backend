@@ -21,7 +21,7 @@ import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
 import com.scolaapp.api.model.ScMember;
-import com.scolaapp.api.model.ScMemberProxy;
+import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
 @Path("auth")

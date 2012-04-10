@@ -65,9 +65,13 @@ public abstract class ScCachedEntity
     
     
     @JsonIgnore
-    public boolean isMembership()
+    public boolean isMembershipForUser(String userId)
     {
-        return (this.getClass().equals(ScMembership.class) || this.getClass().equals(ScMemberResidency.class));
+        if (this.getClass().equals(ScMembership.class) || this.getClass().equals(ScMemberResidency.class)) {
+            return ((ScMembership)this).member.entityId.equals(userId); 
+        } else {
+            return false;
+        }
     }
     
     

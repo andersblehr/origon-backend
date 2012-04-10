@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.scolaapp.api.model.proxy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +12,9 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Unindexed;
 
 import com.scolaapp.api.auth.ScAuthTokenMeta;
+import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScMembership;
+import com.scolaapp.api.model.ScScola;
 
 
 @Entity
