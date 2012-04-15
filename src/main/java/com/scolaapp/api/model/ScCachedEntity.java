@@ -48,7 +48,7 @@ public abstract class ScCachedEntity
     public @NotSaved String entityClass;
     
     public Date dateCreated;
-    public @NotSaved(IfNull.class) @Indexed(IfNotNull.class) Date dateModified;
+    public @Indexed(IfNotNull.class) @NotSaved(IfNull.class) Date dateModified;
     public @NotSaved(IfNull.class) Date dateExpires;
     
     public @NotSaved(IfFalse.class) boolean isShared = false;

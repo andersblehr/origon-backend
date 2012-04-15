@@ -23,7 +23,6 @@ import com.scolaapp.api.model.ScMember;
 import com.scolaapp.api.model.ScMembership;
 import com.scolaapp.api.model.ScSharedEntityRef;
 import com.scolaapp.api.model.proxy.ScMemberProxy;
-import com.scolaapp.api.model.proxy.ScSharedEntityProxy;
 
 
 public class ScDAO extends DAOBase
@@ -39,11 +38,12 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScMessageBoard.class);
         ObjectifyService.register(ScMember.class);
-        ObjectifyService.register(ScMemberProxy.class);
         ObjectifyService.register(ScMemberResidency.class);
         ObjectifyService.register(ScMembership.class);
         ObjectifyService.register(ScScola.class);
         ObjectifyService.register(ScSharedEntityRef.class);
+        
+        ObjectifyService.register(ScMemberProxy.class);
     }
     
     
@@ -67,7 +67,7 @@ public class ScDAO extends DAOBase
     
     public void putAuthToken(String authToken)
     {
-        ScAuthTokenMeta newAuthTokenMeta = new ScAuthTokenMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
+        ScAuthTokenMeta newAuthTokenMeta = new ScAuthTokenMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId());
         
         ScMemberProxy memberProxy = m.getMemberProxy();
         Collection<ScAuthTokenMeta> authTokenMetaItems = ofy().get(memberProxy.authMetaKeySet).values();
@@ -94,17 +94,15 @@ public class ScDAO extends DAOBase
         ScMemberProxy memberProxy = m.getMemberProxy();
         
         Set<ScCachedEntity> entities = new HashSet<ScCachedEntity>(entityList);
-        Set<Key<ScSharedEntityProxy>> sharedEntityProxyKeys = new HashSet<Key<ScSharedEntityProxy>>();
         
         boolean memberProxyDidChange = false;
         boolean keySetDidChange = false;
         
+        Date now = new Date();
+        
         for (ScCachedEntity entity : entities) {
             entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
-            
-            if (entity.isShared) {
-                sharedEntityProxyKeys.add(new Key<ScSharedEntityProxy>(ScSharedEntityProxy.class, entity.entityId));
-            }
+            entity.dateModified = now;
             
             if (entity.isMembershipForUser(memberProxy.userId)) {
                 keySetDidChange = memberProxy.membershipKeySet.add(new Key<ScMembership>(entity.scolaKey, ScMembership.class, entity.entityId));
@@ -117,14 +115,6 @@ public class ScDAO extends DAOBase
         
         if (memberProxyDidChange) {
             ofy().put(memberProxy);
-        }
-        
-        entities.addAll(getSharedEntityRefs(sharedEntityProxyKeys));
-        
-        Date now = new Date();
-        
-        for (ScCachedEntity entity : entities) {
-            entity.dateModified = now;
         }
         
         ofy().put(entities);
@@ -176,17 +166,5 @@ public class ScDAO extends DAOBase
         ScLog.log().fine(m.meta() + "Fetched entities: " + memberEntities.toString());
         
         return new ArrayList<ScCachedEntity>(memberEntities);
-    }
-    
-    
-    private Collection<ScSharedEntityRef> getSharedEntityRefs(Collection<Key<ScSharedEntityProxy>> sharedEntityProxyKeys)
-    {
-        Set<Key<ScSharedEntityRef>> sharedEntityRefKeys = new HashSet<Key<ScSharedEntityRef>>();
-        
-        for (ScSharedEntityProxy sharedEntityProxy : ofy().get(sharedEntityProxyKeys).values()) {
-            sharedEntityRefKeys.addAll(sharedEntityProxy.sharedEntityRefKeys);
-        }
-        
-        return ofy().get(sharedEntityRefKeys).values();
     }
 }

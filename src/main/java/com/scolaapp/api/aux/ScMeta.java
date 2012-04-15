@@ -195,6 +195,7 @@ public class ScMeta
                     authInfo.isListed = true;
                     authInfo.isRegistered = member.didRegister;
                     authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
+                    authInfo.homeScolaId = member.scolaId;
                 } else {
                     authInfo.isListed = false;
                     authInfo.isRegistered = false;
@@ -252,7 +253,6 @@ public class ScMeta
                 userId = tokenMeta.userId;
                 scolaId = tokenMeta.scolaId;
                 deviceId = tokenMeta.deviceId;
-                deviceType = tokenMeta.deviceType;
             } else {
                 ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
             }
