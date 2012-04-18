@@ -209,11 +209,11 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
-            strMembershipPrompt                 = "Er du medlem? Om ikke, ønsker du å bli medlem?";
-            strIsMember                         = "Er medlem";
-            strIsNew                            = "Vil bli medlem";
-            strUserHelpNew                      = "Om du vil bli Scola-medlem, vennligst oppgi:";
-            strUserHelpMember                   = "Logg på om du allerede er Scola-medlem:";
+            strMembershipPrompt                 = "Hva vil du?";
+            strIsMember                         = "Jeg vil logge inn";
+            strIsNew                            = "Jeg vil bli medlem";
+            strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
+            strUserHelpMember                   = "Logg inn om du allerede er Scola-medlem:";
             strNamePrompt                       = "Fullt navn som i signaturen din";
             strEmailPrompt                      = "Epost-adressen din";
             strNewPasswordPrompt                = "Et fritt valgt passord";
@@ -232,8 +232,8 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
         } else {
             strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
-            strMembershipPrompt                 = "Are you a member? If not, would you like to register?";
-            strIsMember                         = "I am a member";
+            strMembershipPrompt                 = "What do you want?";
+            strIsMember                         = "I want to log in";
             strIsNew                            = "I want to register";
             strUserHelpNew                      = "To become a Scola member, please provide:";
             strUserHelpMember                   = "Log in if you are already a Scola member:";

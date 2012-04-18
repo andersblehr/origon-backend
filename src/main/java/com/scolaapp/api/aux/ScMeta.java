@@ -21,7 +21,7 @@ import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 public class ScMeta
 {
-    private static final char[] symbols = new char[36];
+    private static final char[] symbols = new char[16];
     
     private static final int kMinimumPasswordLength = 6;
     private static final int kRegistrationCodeLength = 6;
@@ -52,8 +52,8 @@ public class ScMeta
             symbols[i] = (char)('0' + i);
         }
         
-        for (int i = 10; i < 36; i++) {
-            symbols[i] = (char)('A' + (i - 10));
+        for (int i = 10; i < 16; i++) {
+            symbols[i] = (char)('a' + (i - 10));
         }
     }
     
