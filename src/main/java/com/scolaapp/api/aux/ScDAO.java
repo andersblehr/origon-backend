@@ -67,7 +67,7 @@ public class ScDAO extends DAOBase
     
     public void putAuthToken(String authToken)
     {
-        ScAuthTokenMeta newAuthTokenMeta = new ScAuthTokenMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId());
+        ScAuthTokenMeta newAuthTokenMeta = new ScAuthTokenMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
         
         ScMemberProxy memberProxy = m.getMemberProxy();
         Collection<ScAuthTokenMeta> authTokenMetaItems = ofy().get(memberProxy.authMetaKeySet).values();

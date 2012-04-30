@@ -253,6 +253,7 @@ public class ScMeta
                 userId = tokenMeta.userId;
                 scolaId = tokenMeta.scolaId;
                 deviceId = tokenMeta.deviceId;
+                deviceType = tokenMeta.deviceType;
             } else {
                 ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
             }
@@ -274,7 +275,7 @@ public class ScMeta
     
     public String meta()
     {
-        return String.format("[%s] %s/%s: ", deviceId.substring(0, 8), deviceType, appVersion);
+        return String.format("[%s] %s/%s: ", deviceId, deviceType, appVersion);
     }
     
     

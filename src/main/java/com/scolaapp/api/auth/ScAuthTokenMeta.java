@@ -20,6 +20,7 @@ public class ScAuthTokenMeta
     public String userId;
     public String scolaId;
     public String deviceId;
+    public String deviceType;
     
     public Date dateExpires;
     
@@ -27,13 +28,14 @@ public class ScAuthTokenMeta
     public ScAuthTokenMeta() {}
     
     
-    public ScAuthTokenMeta(String authToken, String userId, String scolaId, String deviceId)
+    public ScAuthTokenMeta(String authToken, String userId, String scolaId, String deviceId, String deviceType)
     {
         this.authToken = authToken;
         
         this.userId = userId;
         this.scolaId = scolaId;
         this.deviceId = deviceId;
+        this.deviceType = deviceType;
         
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
