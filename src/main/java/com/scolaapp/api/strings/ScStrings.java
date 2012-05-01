@@ -50,10 +50,9 @@ public class ScStrings
     public String strUseNew;
     
     // Auth view
-    public String strScolaDescription;
-    public String strMembershipPrompt;
-    public String strIsMember;
-    public String strIsNew;
+    public String strUserIntentionPrompt;
+    public String strUserIntentionLogin;
+    public String strUserIntentionRegistration;
     public String strUserHelpNew;
     public String strUserHelpMember;
     public String strNamePrompt;
@@ -72,6 +71,7 @@ public class ScStrings
     public String strWelcomeBackPopUpMessage;
     public String strRegistrationCodePrompt;
     public String strRepeatPasswordPrompt;
+    public String strScolaDescription;
 
     // Registration view 1
     public String strProvideAddressUserHelp;
@@ -208,10 +208,9 @@ public class ScStrings
     private void setAuthViewStrings(String language)
     {
         if ("nb".equals(language)) {
-            strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
-            strMembershipPrompt                 = "Hva vil du?";
-            strIsMember                         = "Jeg vil logge inn";
-            strIsNew                            = "Jeg vil bli medlem";
+            strUserIntentionPrompt              = "Hva vil du?";
+            strUserIntentionLogin               = "Jeg vil logge inn";
+            strUserIntentionRegistration        = "Jeg vil bli medlem";
             strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
             strUserHelpMember                   = "Logg inn om du allerede er Scola-medlem:";
             strNamePrompt                       = "Fullt navn som i signaturen din";
@@ -230,11 +229,11 @@ public class ScStrings
             strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
             strRegistrationCodePrompt           = "Din personlige registreringskode";
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
+            strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
         } else {
-            strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
-            strMembershipPrompt                 = "What do you want?";
-            strIsMember                         = "I want to log in";
-            strIsNew                            = "I want to register";
+            strUserIntentionPrompt              = "What do you want?";
+            strUserIntentionLogin               = "I want to log in";
+            strUserIntentionRegistration        = "I want to register";
             strUserHelpNew                      = "To become a Scola member, please provide:";
             strUserHelpMember                   = "Log in if you are already a Scola member:";
             strNamePrompt                       = "Your name as you sign it";
@@ -253,6 +252,7 @@ public class ScStrings
             strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
             strRegistrationCodePrompt           = "Your personal registration code";
             strRepeatPasswordPrompt             = "The same password as before";
+            strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
         }
     }
     
