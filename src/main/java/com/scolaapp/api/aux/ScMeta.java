@@ -13,7 +13,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
-import com.scolaapp.api.auth.ScAuthTokenMeta;
+import com.scolaapp.api.auth.ScAuthMeta;
 import com.scolaapp.api.model.ScMember;
 import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.proxy.ScMemberProxy;
@@ -160,10 +160,14 @@ public class ScMeta
     public ScMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            if (authPhase == ScAuthPhase.CONFIRMATION) {
+            memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
+            
+            if ((memberProxy == null) && (authPhase == ScAuthPhase.CONFIRMATION)) {
                 memberProxy = new ScMemberProxy(userId, scolaId);
-            } else {
-                memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
+            }
+            
+            if (memberProxy != null) {
+                scolaId = memberProxy.homeScolaId;
             }
         }
         
@@ -188,10 +192,13 @@ public class ScMeta
                 authInfo.registrationCode = registrationCode;
                 
                 ScMemberProxy memberProxy = getMemberProxy();
+                ScMember member = null;
                 
                 if (memberProxy != null) {
-                    ScMember member = DAO.get(memberProxy.memberKey);
-                    
+                    member = DAO.get(memberProxy.memberKey);
+                }
+                
+                if (member != null) {    
                     authInfo.isListed = true;
                     authInfo.isRegistered = member.didRegister;
                     authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
@@ -245,7 +252,7 @@ public class ScMeta
         
         try {
             Date now = new Date();
-            ScAuthTokenMeta tokenMeta = DAO.ofy().get(ScAuthTokenMeta.class, authToken); 
+            ScAuthMeta tokenMeta = DAO.ofy().get(ScAuthMeta.class, authToken); 
 
             if (now.before(tokenMeta.dateExpires)) {
                 this.authToken = authToken;

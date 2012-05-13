@@ -13,11 +13,11 @@ import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey", "memberKey"}, ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey", "memberKey"}, ignoreUnknown = true)
 public class ScDevice extends ScCachedEntity
 {
     public String type;

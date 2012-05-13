@@ -15,11 +15,11 @@ import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(value={"scolaKey"}, ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
 public class ScMessageBoard extends ScCachedEntity
 {
     public @NotSaved Map<String, String> scolaRef;

@@ -9,7 +9,6 @@ import javax.persistence.Id;
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
@@ -55,24 +54,6 @@ public abstract class ScCachedEntity
     
     
     public ScCachedEntity() {}
-    
-    
-    @JsonIgnore
-    public boolean isSharedEntityRef()
-    {
-        return this.getClass().equals(ScSharedEntityRef.class);
-    }
-    
-    
-    @JsonIgnore
-    public boolean isMembershipForUser(String userId)
-    {
-        if (this.getClass().equals(ScMembership.class) || this.getClass().equals(ScMemberResidency.class)) {
-            return ((ScMembership)this).member.entityId.equals(userId); 
-        } else {
-            return false;
-        }
-    }
     
     
     @PrePersist

@@ -20,7 +20,6 @@ public class ScStrings
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
     public String strInvalidPasswordAlert;
-    public String strEmailAlreadyRegisteredAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
     public String strUserExistsAlertTitle;
@@ -135,7 +134,6 @@ public class ScStrings
             strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
             strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
-            strEmailAlreadyRegisteredAlert      = "Du er allerede registrert med epost-adressen %@. Vil du logge inn med denne adressen, eller vil du registrere en ny bruker?";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strUserExistsAlertTitle             = "Allerede medlem";
@@ -153,7 +151,6 @@ public class ScStrings
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
-            strEmailAlreadyRegisteredAlert      = "You are already registered with the email address %@. Do you want to log in with this address, or do you want to register a new user?";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
             strUserExistsAlertTitle             = "Already member";

@@ -14,11 +14,11 @@ import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(value={"scolaKey"}, ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
 public class ScSharedEntityRef extends ScCachedEntity
 {
     public @NotSaved String sharedEntityId;

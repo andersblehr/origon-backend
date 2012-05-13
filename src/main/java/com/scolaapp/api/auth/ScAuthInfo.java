@@ -9,7 +9,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 
 @Entity
 @Unindexed
-@Cached(expirationSeconds=600)
+@Cached(expirationSeconds = 600)
 public class ScAuthInfo
 {
     public @Id String userId;

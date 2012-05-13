@@ -14,11 +14,11 @@ import com.googlecode.objectify.condition.IfDefault;
 import com.googlecode.objectify.condition.IfFalse;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(value={"scolaKey", "memberKey"}, ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey", "memberKey"}, ignoreUnknown = true)
 public class ScMemberResidency extends ScMembership
 {
     public @NotSaved(IfFalse.class) boolean presentOn01Jan = true;

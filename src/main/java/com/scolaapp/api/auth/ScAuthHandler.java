@@ -82,6 +82,7 @@ public class ScAuthHandler
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        //return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(authInfo).build();
         return Response.status(HttpServletResponse.SC_OK).entity(authInfo).build();
     }
     
@@ -172,9 +173,11 @@ public class ScAuthHandler
         }
         
         if (scolaEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(scolaEntities).lastModified(now).build();
+            //return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_BAD_REQUEST).lastModified(now).build();
+            //return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
         }
     }
 }

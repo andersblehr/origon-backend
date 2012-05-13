@@ -14,19 +14,19 @@ import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfFalse;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ScMembership extends ScCachedEntity
 {
-    public @NotSaved Map<String, String> scolaRef;
-    
     public @NotSaved(IfFalse.class) boolean isActive = false;
     public @NotSaved(IfFalse.class) boolean isAdmin = false;
     public @NotSaved(IfFalse.class) boolean isCoach = false;
     public @NotSaved(IfFalse.class) boolean isTeacher = false;
+    
+    public @NotSaved Map<String, String> scolaRef;
     
     public @NotSaved ScMember member;
     public @NotSaved Map<String, String> memberRef;

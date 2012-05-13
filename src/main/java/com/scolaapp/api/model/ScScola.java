@@ -15,11 +15,11 @@ import com.googlecode.objectify.condition.IfEmptyString;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@Subclass(unindexed=true)
+@Subclass(unindexed = true)
 @Unindexed
-@Cached(expirationSeconds=600)
-@JsonSerialize(include=Inclusion.NON_NULL)
-@JsonIgnoreProperties(value={"scolaKey", "parentScolaKey"}, ignoreUnknown=true)
+@Cached(expirationSeconds = 600)
+@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonIgnoreProperties(value = {"scolaKey", "parentScolaKey"}, ignoreUnknown = true)
 public class ScScola extends ScCachedEntity
 {
     public String name;
