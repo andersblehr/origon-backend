@@ -108,6 +108,9 @@ public class ScDAO extends DAOBase
                 memberIds.add(entity.entityId);
                 
                 if (entity.entityId.equals(m.getUserId())) {
+                    ScMemberProxy memberProxy = m.getMemberProxy();
+                    
+                    memberProxy.didRegister = true;
                     memberProxies.add(m.getMemberProxy());
                 } else {
                     memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Properties;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -20,7 +21,6 @@ import com.scolaapp.api.aux.ScLog;
 import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
-import com.scolaapp.api.model.ScMember;
 import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
@@ -28,29 +28,6 @@ import com.scolaapp.api.model.proxy.ScMemberProxy;
 public class ScAuthHandler
 {
     private ScMeta m;
-    
-    
-    private void sendRegistrationMessage()
-    {
-        Session session = Session.getInstance(new Properties());
-
-        try {
-            Message msg = new MimeMessage(session);
-            
-            // TODO: Localise message
-            // TODO: Provide URL directly to app on device
-            msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
-            msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-            msg.setSubject("Complete your registration with Scola");
-            msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
-            
-            Transport.send(msg);
-            
-            ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
-        } catch (Exception e) {
-            ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
-    }
     
     
     @GET
@@ -75,14 +52,30 @@ public class ScAuthHandler
             if (!authInfo.isRegistered) {
                 m.getDAO().ofy().put(authInfo);
                 
-                sendRegistrationMessage();
+                Session session = Session.getInstance(new Properties());
+
+                try {
+                    Message msg = new MimeMessage(session);
+                    
+                    // TODO: Localise message
+                    // TODO: Provide URL directly to app on device
+                    msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
+                    msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
+                    msg.setSubject("Complete your registration with Scola");
+                    msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
+                    
+                    Transport.send(msg);
+                    
+                    ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
+                } catch (MessagingException e) {
+                    ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                }
             }
         } else {
             ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        //return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(authInfo).build();
         return Response.status(HttpServletResponse.SC_OK).entity(authInfo).build();
     }
     
@@ -151,11 +144,10 @@ public class ScAuthHandler
         if (m.isValid()) {
             ScMemberProxy memberProxy = m.getMemberProxy();
             
-            if (memberProxy != null) {
-                ScDAO DAO = m.getDAO();
-                ScMember scolaMember = DAO.get(memberProxy.memberKey);
-                
-                if (scolaMember.passwordHash.equals(m.getPasswordHash())) {
+            if ((memberProxy != null) && memberProxy.didRegister) {
+                if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
+                    ScDAO DAO = m.getDAO();
+                    
                     DAO.putAuthToken(authToken);
                     //scolaEntities = DAO.fetchEntities(lastFetchDate);
                     scolaEntities = DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
@@ -164,7 +156,7 @@ public class ScAuthHandler
                     ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             } else {
-                ScLog.log().warning(m.meta() + String.format("User does not exist (%s), raising UNAUTHORIZED (401).", m.getUserId()));
+                ScLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
                 ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
@@ -173,11 +165,9 @@ public class ScAuthHandler
         }
         
         if (scolaEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_BAD_REQUEST).entity(scolaEntities).lastModified(now).build();
-            //return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
         } else {
-            return Response.status(HttpServletResponse.SC_BAD_REQUEST).lastModified(now).build();
-            //return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
         }
     }
 }

@@ -22,7 +22,6 @@ public class ScAuthInfo
     
     public boolean isListed;
     public boolean isRegistered;
-    public boolean isAuthenticated;
     
     
     public ScAuthInfo() {}

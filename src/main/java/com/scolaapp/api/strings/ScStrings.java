@@ -22,9 +22,7 @@ public class ScStrings
     public String strInvalidPasswordAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
-    public String strUserExistsAlertTitle;
-    public String strUserExistsButNotLoggedInAlert;
-    public String strUserExistsAndLoggedInAlert;
+    public String strUserExistsMustLogIn;
     public String strNotLoggedInAlert;
     public String strNoAddressAlert;
     public String strNoDeviceNameAlert;
@@ -136,9 +134,7 @@ public class ScStrings
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
             strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
             strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
-            strUserExistsAlertTitle             = "Allerede medlem";
-            strUserExistsButNotLoggedInAlert    = "Du er allerede Scola-medlem, men passordet du har oppgitt stemmer ikke med det som er registrert hos oss. Vennligst oppgi passordet på nytt.";
-            strUserExistsAndLoggedInAlert       = "Du er allerede Scola-medlem og er nå logget inn.";
+            strUserExistsMustLogIn              = "Det ser ut som du prøver å logge inn. Du blir nå tatt til innloggingsdialogen.";
             strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
             strNoAddressAlert                   = "Vennligst oppgi en adresse. Det holder at ett av feltene er utfylt.";
             strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ lagrede navn (\"%@\"), eller vil du oppgi et nytt?";
@@ -153,9 +149,7 @@ public class ScStrings
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
             strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
             strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
-            strUserExistsAlertTitle             = "Already member";
-            strUserExistsButNotLoggedInAlert    = "You are already a Scola member, but the password you have provided does not match our records. Please enter your password again.";
-            strUserExistsAndLoggedInAlert       = "You are already a Scola member and are now logged in.";
+            strUserExistsMustLogIn              = "It looks like you are trying to log in. You will now be taken to the login dialog.";
             strNotLoggedInAlert                 = "Wrong email or password. Please try again.";
             strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
             strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ configured name ('%@'), or do you want to provide a new name?";

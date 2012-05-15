@@ -9,7 +9,11 @@ import javax.persistence.PostLoad;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.condition.IfDefault;
+import com.googlecode.objectify.condition.IfEmpty;
+import com.googlecode.objectify.condition.IfNull;
 
 import com.scolaapp.api.auth.ScAuthMeta;
 import com.scolaapp.api.model.ScMember;
@@ -23,25 +27,28 @@ import com.scolaapp.api.model.ScScola;
 public class ScMemberProxy
 {
     public @Id String userId;
-    public String homeScolaId;
+    public String scolaId;
     
-    public Key<ScMember> memberKey;
-    public Key<ScScola> homeScolaKey;
+    public @NotSaved(IfDefault.class) boolean didRegister = false;
+    public @NotSaved(IfNull.class) String passwordHash;
     
-    public Set<Key<ScMembership>> membershipKeys;
-    public Set<Key<ScAuthMeta>> authMetaKeys;
+    public @NotSaved Key<ScScola> scolaKey;
+    public @NotSaved Key<ScMember> memberKey;
+    
+    public @NotSaved(IfEmpty.class) Set<Key<ScMembership>> membershipKeys;
+    public @NotSaved(IfEmpty.class) Set<Key<ScAuthMeta>> authMetaKeys;
     
     
     public ScMemberProxy() {}
     
     
-    public ScMemberProxy(String userId, String homeScolaId)
+    public ScMemberProxy(String userId, String scolaId)
     {
         this.userId = userId;
-        this.homeScolaId = homeScolaId;
+        this.scolaId = scolaId;
         
-        homeScolaKey = new Key<ScScola>(ScScola.class, homeScolaId);
-        memberKey = new Key<ScMember>(homeScolaKey, ScMember.class, userId);
+        scolaKey = new Key<ScScola>(ScScola.class, scolaId);
+        memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
         
         membershipKeys = new HashSet<Key<ScMembership>>();
         authMetaKeys = new HashSet<Key<ScAuthMeta>>();
@@ -49,8 +56,11 @@ public class ScMemberProxy
     
     
     @PostLoad
-    public void instantiateNullKeySets()
+    public void populateNonSavedValues()
     {
+        scolaKey = new Key<ScScola>(ScScola.class, scolaId);
+        memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
+        
         if (membershipKeys == null) {
             membershipKeys = new HashSet<Key<ScMembership>>();
         }

@@ -162,12 +162,12 @@ public class ScMeta
         if (memberProxy == null) {
             memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
             
-            if ((memberProxy == null) && (authPhase == ScAuthPhase.CONFIRMATION)) {
-                memberProxy = new ScMemberProxy(userId, scolaId);
-            }
-            
-            if (memberProxy != null) {
-                scolaId = memberProxy.homeScolaId;
+            if (authPhase == ScAuthPhase.CONFIRMATION) {
+                if (memberProxy == null) {
+                    memberProxy = new ScMemberProxy(userId, scolaId);
+                }
+                
+                memberProxy.passwordHash = passwordHash;
             }
         }
         
@@ -198,15 +198,13 @@ public class ScMeta
                     member = DAO.get(memberProxy.memberKey);
                 }
                 
-                if (member != null) {    
+                if (member != null) {
                     authInfo.isListed = true;
                     authInfo.isRegistered = member.didRegister;
-                    authInfo.isAuthenticated = member.passwordHash.equals(authInfo.passwordHash);
                     authInfo.homeScolaId = member.scolaId;
                 } else {
                     authInfo.isListed = false;
                     authInfo.isRegistered = false;
-                    authInfo.isAuthenticated = false;
                 }
             } else if (authPhase == ScAuthPhase.CONFIRMATION) {
                 authInfo = DAO.get(new Key<ScAuthInfo>(ScAuthInfo.class, userId));
