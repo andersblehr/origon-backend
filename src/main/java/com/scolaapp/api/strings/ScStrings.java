@@ -20,15 +20,17 @@ public class ScStrings
     public String strInvalidNameAlert;
     public String strInvalidEmailAlert;
     public String strInvalidPasswordAlert;
+    public String strEmailSentAlertTitle;
+    public String strEmailSentAlert;
+    public String strEmailSentToInviteeAlertTitle;
+    public String strEmailSentToInviteeAlert;
     public String strPasswordsDoNotMatchAlert;
     public String strRegistrationCodesDoNotMatchAlert;
-    public String strUserExistsMustLogIn;
+    public String strUserExistsMustLogInAlert;
     public String strNotLoggedInAlert;
     public String strNoAddressAlert;
-    public String strNoDeviceNameAlert;
-    public String strNotBornAlert;
-    public String strUnrealisticAgeAlert;
-    public String strNoMobilePhoneAlert;
+    public String strInvalidDateOfBirthAlert;
+    public String strNoPhoneNumberAlert;
     
     // Button titles
     public String strOK;
@@ -58,10 +60,6 @@ public class ScStrings
     public String strPasswordPrompt;
     public String strPleaseWait;
     public String strUserHelpCompleteRegistration;
-    public String strEmailSentPopUpTitle;
-    public String strEmailSentPopUpMessage;
-    public String strEmailSentToInviteePopUpTitle;
-    public String strEmailSentToInviteePopUpMessage;
     public String strSeeYouLaterPopUpTitle;
     public String strSeeYouLaterPopUpMessage;
     public String strWelcomeBackPopUpTitle;
@@ -84,8 +82,8 @@ public class ScStrings
     public String strGenderUserHelp;
     public String strMobilePhoneUserHelp;
     public String strMobilePhonePrompt;
-    public String strDeviceNameUserHelp;
-    public String strDeviceNamePrompt;
+    public String strLandlineUserHelp;
+    public String strLandlinePrompt;
     public String strFemaleAdult;
     public String strFemaleMinor;
     public String strMaleAdult;
@@ -128,34 +126,38 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             strNoInternetError                  = "Ingen internettforbindelse.";
-            strServerErrorAlert                 = "Det har oppstått en feil. Vennligst prøv igjen senere. [%d: \"%@\"]";
-            strInvalidNameAlert                 = "Vennligst oppgi fullt navn som i signaturen din";
-            strInvalidEmailAlert                = "Vennligst oppgi en gyldig epost-adresse";
+            strServerErrorAlert                 = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
+            strInvalidNameAlert                 = "Du må oppgi fullt navn som i signaturen din";
+            strInvalidEmailAlert                = "Du må oppgi en gyldig epost-adresse";
             strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
-            strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
-            strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Vennligst prøv igjen - eller gå tilbake og start på nytt.";
-            strUserExistsMustLogIn              = "Det ser ut som du prøver å logge inn. Du blir nå tatt til innloggingsdialogen.";
+            strEmailSentAlertTitle              = "Registreringskode sendt";
+            strEmailSentAlert                   = "En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
+            strEmailSentToInviteeAlertTitle     = "Velkommen til Scola!";
+            strEmailSentToInviteeAlert          = "Takk for at du tar imot scola-invitasjonen(e) du har mottatt. En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
+            strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
+            strRegistrationCodesDoNotMatchAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
+            strUserExistsMustLogInAlert         = "Det ser ut som du prøver å logge inn. Du blir nå tatt til innloggingsdialogen.";
             strNotLoggedInAlert                 = "Feil epost-adresse eller passord. Vennligst prøv igjen.";
-            strNoAddressAlert                   = "Vennligst oppgi en adresse. Det holder at ett av feltene er utfylt.";
-            strNoDeviceNameAlert                = "Du har ikke oppgitt et beskrivende navn til %@. Vil du bruke %@ lagrede navn (\"%@\"), eller vil du oppgi et nytt?";
-            strNotBornAlert                     = "Du har oppgitt en fødselsdato i framtiden. Vi beklager veldig, men du må være født for å kunne bruke Scola.";
-            strUnrealisticAgeAlert              = "Du har oppgitt at du er %d år gammel. Det er vanskelig å tro. Vennligst oppgi din virkelige fødselsdato.";
-            strNoMobilePhoneAlert               = "Vennligst oppgi mobilnummeret ditt, evt. et annet telefonnummer om du ikke har mobiltelefon";
+            strNoAddressAlert                   = "Du må oppgi en adresse. Det holder at ett av feltene er utfylt.";
+            strNoPhoneNumberAlert               = "Du må oppgi minst ett telefonnummer.";
+            strInvalidDateOfBirthAlert          = "Du har oppgitt en ugyldig fødselsdato. Du må angi en dato som gjør deg mellom 5 og 110 år gammel.";
         } else {
             strNoInternetError                  = "No internet connection.";
             strServerErrorAlert                 = "An error has occurred. Please try again later. [%d: \"%@\"]";
             strInvalidNameAlert                 = "Please provide your full name, as in your signature";
             strInvalidEmailAlert                = "Please provide a valid email address";
             strInvalidPasswordAlert             = "The password must contain minimum %d characters";
-            strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before, please try again - or go back and start over.";
-            strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email, please try again - or go back and start over.";
-            strUserExistsMustLogIn              = "It looks like you are trying to log in. You will now be taken to the login dialog.";
-            strNotLoggedInAlert                 = "Wrong email or password. Please try again.";
+            strEmailSentAlertTitle              = "Registration code sent";
+            strEmailSentAlert                   = "An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
+            strEmailSentToInviteeAlertTitle     = "Welcome to Scola!";
+            strEmailSentToInviteeAlert          = "Thank you for accepting the scola invitation(s) you have received. An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
+            strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before. You can try again, or you can go back and start over.";
+            strRegistrationCodesDoNotMatchAlert = "The registration code does not match the one you have received by email. You can try again, or you can go back and start over.";
+            strUserExistsMustLogInAlert         = "It looks like you are trying to log in. You will now be taken to the login dialog.";
+            strNotLoggedInAlert                 = "Incorrent email or password. Please try again.";
             strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
-            strNoDeviceNameAlert                = "You have not provided a descriptive name for %@. Do you want to use %@ configured name ('%@'), or do you want to provide a new name?";
-            strNotBornAlert                     = "You have provided a date of birth that's in the future. We are very sorry, but you must have been born in order to use Scola.";
-            strUnrealisticAgeAlert              = "According to the date of birth you have provided, you are %d years old. That's hard to believe. Please provide your true date of birth.";
-            strNoMobilePhoneAlert               = "Please provide your mobile phone number, or an alternative phone number if you do not have a mobile phone";
+            strNoPhoneNumberAlert               = "You must provide at least one phone number.";
+            strInvalidDateOfBirthAlert          = "You have provided an invalid date of birth. Please provide a date that puts your age between 5 and 110 years.";
         }
     }
     
@@ -199,7 +201,7 @@ public class ScStrings
     private void setAuthViewStrings(String language)
     {
         if ("nb".equals(language)) {
-            strUserIntentionPrompt              = "Hva vil du?";
+            strUserIntentionPrompt              = "Velkommen til Scola!";
             strUserIntentionLogin               = "Jeg vil logge inn";
             strUserIntentionRegistration        = "Jeg vil bli medlem";
             strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
@@ -208,12 +210,8 @@ public class ScStrings
             strEmailPrompt                      = "Epost-adressen din";
             strNewPasswordPrompt                = "Et fritt valgt passord";
             strPasswordPrompt                   = "Passordet ditt";
-            strPleaseWait                       = "Vennligst vent...";
-            strUserHelpCompleteRegistration     = "For å fullføre registreringen, vennligst oppgi:";
-            strEmailSentPopUpTitle              = "Registreringskode sendt";
-            strEmailSentPopUpMessage            = "En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
-            strEmailSentToInviteePopUpTitle     = "Velkommen til Scola!";
-            strEmailSentToInviteePopUpMessage   = "Takk for at du tar imot scola-invitasjonen(e) du har mottatt. En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
+            strPleaseWait                       = "Vent litt...";
+            strUserHelpCompleteRegistration     = "For å fullføre registreringen må du oppgi:";
             strSeeYouLaterPopUpTitle            = "Ser deg senere!";
             strSeeYouLaterPopUpMessage          = "Du kan trygt forlate Scola. Vi fortsetter neste gang du er innom.";
             strWelcomeBackPopUpTitle            = "Velkommen tilbake!";
@@ -222,7 +220,7 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
         } else {
-            strUserIntentionPrompt              = "What do you want?";
+            strUserIntentionPrompt              = "Welcome to Scola!";
             strUserIntentionLogin               = "I want to log in";
             strUserIntentionRegistration        = "I want to register";
             strUserHelpNew                      = "To become a Scola member, please provide:";
@@ -233,10 +231,6 @@ public class ScStrings
             strPasswordPrompt                   = "Your password";
             strPleaseWait                       = "Please wait...";
             strUserHelpCompleteRegistration     = "To complete your registration, please provide:";
-            strEmailSentPopUpTitle              = "Registration code sent";
-            strEmailSentPopUpMessage            = "An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
-            strEmailSentToInviteePopUpTitle     = "Welcome to Scola!";
-            strEmailSentToInviteePopUpMessage   = "Thank you for accepting the scola invitation(s) you have received. An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
             strSeeYouLaterPopUpTitle            = "See you later!";
             strSeeYouLaterPopUpMessage          = "You can safely leave Scola. We'll continue next time your drop by.";
             strWelcomeBackPopUpTitle            = "Welcome back!";
@@ -252,7 +246,7 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             strProvideAddressUserHelp           = "Hva er adressen din?";
-            strVerifyAddressUserHelp            = "Vennligst verifiser adressen din:";
+            strVerifyAddressUserHelp            = "Verifiser adressen din:";
             strAddressLine1Prompt               = "Adresselinje 1";
             strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
@@ -261,7 +255,7 @@ public class ScStrings
             strDateOfBirthClickHerePrompt       = "Fødselsdatoen din";
         } else {
             strProvideAddressUserHelp           = "What is your home address?";
-            strVerifyAddressUserHelp            = "Please verify your home address:";
+            strVerifyAddressUserHelp            = "Verify your home address:";
             strAddressLine1Prompt               = "Address line 1";
             strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
@@ -282,8 +276,8 @@ public class ScStrings
             strMaleMinor                        = "Gutt";
             strMobilePhoneUserHelp              = "Hva er mobilnummeret ditt?";
             strMobilePhonePrompt                = "Mobilnummeret ditt";
-            strDeviceNameUserHelp               = "Scola vil referere til %@ som:";
-            strDeviceNamePrompt                 = "Et beskrivende navn på %@";
+            strLandlineUserHelp                 = "Har du fasttelefon?";
+            strLandlinePrompt                   = "Fasttelefonnummeret ditt";
         } else {
             strGenderUserHelp                   = "Are you a %@ or a %@?";
             strFemaleAdult                      = "Woman";
@@ -292,8 +286,8 @@ public class ScStrings
             strMaleMinor                        = "Boy";
             strMobilePhoneUserHelp              = "What is your mobile number?";
             strMobilePhonePrompt                = "Your mobile number";
-            strDeviceNameUserHelp               = "Scola will refer to %@ as:";
-            strDeviceNamePrompt                 = "A descriptive name for %@";
+            strLandlineUserHelp                 = "Have you got a landline?";
+            strLandlinePrompt                   = "Your landline number";
         }
     }
     
