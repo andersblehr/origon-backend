@@ -69,25 +69,28 @@ public class ScStrings
     public String strScolaDescription;
 
     // Registration view 1
-    public String strProvideAddressUserHelp;
-    public String strVerifyAddressUserHelp;
+    public String strAddressUserHelp;
+    public String strAddressListedUserHelp;
     public String strAddressLine1Prompt;
     public String strAddressLine2Prompt;
     public String strPostCodeAndCityPrompt;
     public String strDateOfBirthUserHelp;
+    public String strDateOfBirthListedUserHelp;
     public String strDateOfBirthPrompt;
     public String strDateOfBirthClickHerePrompt;
     
     // Registration view 2
+    public String strFemale;
+    public String strFemaleMinor;
+    public String strMale;
+    public String strMaleMinor;
     public String strGenderUserHelp;
     public String strMobilePhoneUserHelp;
+    public String strMobilePhoneListedUserHelp;
     public String strMobilePhonePrompt;
     public String strLandlineUserHelp;
+    public String strLandlineListedUserHelp;
     public String strLandlinePrompt;
-    public String strFemaleAdult;
-    public String strFemaleMinor;
-    public String strMaleAdult;
-    public String strMaleMinor;
     
     // Generic Scola strings
     public String strMyPlace;
@@ -245,21 +248,23 @@ public class ScStrings
     private void setRegistrationView1Strings(String language)
     {
         if ("nb".equals(language)) {
-            strProvideAddressUserHelp           = "Hva er adressen din?";
-            strVerifyAddressUserHelp            = "Verifiser adressen din:";
+            strAddressUserHelp                  = "Hva er adressen din?";
+            strAddressListedUserHelp            = "Verifiser adressen din:";
             strAddressLine1Prompt               = "Adresselinje 1";
             strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
             strDateOfBirthUserHelp              = "Når ble du født?";
+            strDateOfBirthListedUserHelp        = "Verifiser fødselsdatoen din:";
             strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
             strDateOfBirthClickHerePrompt       = "Fødselsdatoen din";
         } else {
-            strProvideAddressUserHelp           = "What is your home address?";
-            strVerifyAddressUserHelp            = "Verify your home address:";
+            strAddressUserHelp                  = "What is your home address?";
+            strAddressListedUserHelp            = "Verify your home address:";
             strAddressLine1Prompt               = "Address line 1";
             strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
             strDateOfBirthUserHelp              = "When were you born?";
+            strDateOfBirthListedUserHelp        = "Verify your birth date:";
             strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
             strDateOfBirthClickHerePrompt       = "Your birth date";
         }
@@ -269,25 +274,29 @@ public class ScStrings
     private void setRegistrationView2Strings(String language)
     {
         if ("nb".equals(language)) {
-            strGenderUserHelp                   = "Er du %@ eller %@?";
-            strFemaleAdult                      = "Kvinne";
+            strFemale                           = "Kvinne";
             strFemaleMinor                      = "Jente";
-            strMaleAdult                        = "Mann";
+            strMale                             = "Mann";
             strMaleMinor                        = "Gutt";
+            strGenderUserHelp                   = "Er du %@ eller %@?";
             strMobilePhoneUserHelp              = "Hva er mobilnummeret ditt?";
+            strMobilePhoneListedUserHelp        = "Verifiser mobilnummeret ditt:";
             strMobilePhonePrompt                = "Mobilnummeret ditt";
             strLandlineUserHelp                 = "Har du fasttelefon?";
+            strLandlineListedUserHelp           = "Verifiser fasttelefonnummeret ditt:";
             strLandlinePrompt                   = "Fasttelefonnummeret ditt";
         } else {
-            strGenderUserHelp                   = "Are you a %@ or a %@?";
-            strFemaleAdult                      = "Woman";
+            strFemale                           = "Woman";
             strFemaleMinor                      = "Girl";
-            strMaleAdult                        = "Man";
+            strMale                             = "Man";
             strMaleMinor                        = "Boy";
-            strMobilePhoneUserHelp              = "What is your mobile number?";
-            strMobilePhonePrompt                = "Your mobile number";
-            strLandlineUserHelp                 = "Have you got a landline?";
-            strLandlinePrompt                   = "Your landline number";
+            strGenderUserHelp                   = "Are you a %@ or a %@?";
+            strMobilePhoneUserHelp              = "What is your mobile phone number?";
+            strMobilePhoneListedUserHelp        = "Verify your mobile phone number:";
+            strMobilePhonePrompt                = "Your mobile phone number";
+            strLandlineUserHelp                 = "Have you got a landline phone?";
+            strLandlineListedUserHelp           = "Verify your landline phone number:";
+            strLandlinePrompt                   = "Your landline phone number";
         }
     }
     
