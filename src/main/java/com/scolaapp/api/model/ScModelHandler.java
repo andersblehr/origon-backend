@@ -49,6 +49,8 @@ public class ScModelHandler
         Date now = new Date();
         List<ScCachedEntity> updatedEntities = null;
         
+        m.validateLastFetchDate(lastFetchDate);
+        
         if (m.isValid()) {
             updatedEntities = m.getDAO().fetchEntities(lastFetchDate);
         } else {

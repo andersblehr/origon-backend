@@ -96,6 +96,7 @@ public class ScAuthHandler
         List<ScCachedEntity> scolaEntities = null;
         
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.CONFIRMATION);
+        m.validateAuthToken(authToken);
         
         if (m.isValid()) {
             ScAuthInfo authInfo = m.getAuthInfo();
@@ -140,6 +141,7 @@ public class ScAuthHandler
         List<ScCachedEntity> scolaEntities = null;
         
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
+        m.validateAuthToken(authToken);
         
         if (m.isValid()) {
             ScMemberProxy memberProxy = m.getMemberProxy();

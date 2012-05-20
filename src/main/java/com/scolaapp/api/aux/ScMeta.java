@@ -42,7 +42,6 @@ public class ScMeta
     private String deviceType = null;
     private String appVersion = null;
     private String registrationCode = null;
-
     private InternetAddress emailAddress = null;
     
     
@@ -85,8 +84,10 @@ public class ScMeta
     {
         validateAuthToken(authToken);
         
-        if (isValid) {
+        if (appVersion != null) {
             this.appVersion = appVersion;
+        } else {
+            ScLog.log().warning(meta(false) + "App version is missing.");
         }
     }
     
@@ -248,22 +249,30 @@ public class ScMeta
     {
         DAO = new ScDAO(this);
         
-        try {
-            Date now = new Date();
-            ScAuthMeta tokenMeta = DAO.ofy().get(ScAuthMeta.class, authToken); 
+        if (authPhase == ScAuthPhase.NONE) {
+            try {
+                Date now = new Date();
+                ScAuthMeta tokenMeta = DAO.ofy().get(ScAuthMeta.class, authToken); 
 
-            if (now.before(tokenMeta.dateExpires)) {
-                this.authToken = authToken;
-                
-                userId = tokenMeta.userId;
-                scolaId = tokenMeta.scolaId;
-                deviceId = tokenMeta.deviceId;
-                deviceType = tokenMeta.deviceType;
-            } else {
-                ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
+                if (now.before(tokenMeta.dateExpires)) {
+                    this.authToken = authToken;
+                    
+                    userId = tokenMeta.userId;
+                    scolaId = tokenMeta.scolaId;
+                    deviceId = tokenMeta.deviceId;
+                    deviceType = tokenMeta.deviceType;
+                } else {
+                    ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
+                }
+            } catch (NotFoundException e) {
+                ScLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
-        } catch (NotFoundException e) {
-            ScLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
+        } else if (authPhase != ScAuthPhase.REGISTRATION) {
+            if (authToken != null) {
+                this.authToken = authToken;
+            } else {
+                ScLog.log().warning(meta(false) + "Auth token is missing.");
+            }
         }
     }
     
@@ -274,6 +283,14 @@ public class ScMeta
             this.name = name;
         } else {
             ScLog.log().warning(meta(false) + String.format("'%s' is not a full name.", name));
+        }
+    }
+    
+    
+    public void validateLastFetchDate(Date lastFetchDate)
+    {
+        if (lastFetchDate == null) {
+            ScLog.log().warning(meta(false) + "Last fetch date is missing.");
         }
     }
     
