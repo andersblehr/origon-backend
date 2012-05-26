@@ -49,7 +49,6 @@ public class ScStrings
     public String strUseNew;
     
     // Auth view
-    public String strUserIntentionPrompt;
     public String strUserIntentionLogin;
     public String strUserIntentionRegistration;
     public String strUserHelpNew;
@@ -204,7 +203,6 @@ public class ScStrings
     private void setAuthViewStrings(String language)
     {
         if ("nb".equals(language)) {
-            strUserIntentionPrompt              = "Velkommen til Scola!";
             strUserIntentionLogin               = "Jeg vil logge inn";
             strUserIntentionRegistration        = "Jeg vil bli medlem";
             strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
@@ -223,7 +221,6 @@ public class ScStrings
             strRepeatPasswordPrompt             = "Samme passord som tidligere";
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
         } else {
-            strUserIntentionPrompt              = "Welcome to Scola!";
             strUserIntentionLogin               = "I want to log in";
             strUserIntentionRegistration        = "I want to register";
             strUserHelpNew                      = "To become a Scola member, please provide:";

@@ -138,7 +138,7 @@ public class ScAuthHandler
         m = new ScMeta(deviceId, deviceType, appVersion);
         
         Date now = new Date(); 
-        List<ScCachedEntity> scolaEntities = null;
+        List<ScCachedEntity> fetchedEntities = null;
         
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
@@ -148,11 +148,9 @@ public class ScAuthHandler
             
             if ((memberProxy != null) && memberProxy.didRegister) {
                 if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
-                    ScDAO DAO = m.getDAO();
-                    
-                    DAO.putAuthToken(authToken);
-                    //scolaEntities = DAO.fetchEntities(lastFetchDate);
-                    scolaEntities = DAO.fetchEntities(); // TODO: Remove this line and comment back in line above
+                    m.getDAO().putAuthToken(authToken);
+                    fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
+                    //fetchedEntities = m.getDAO().fetchEntities(); // TODO: Remove this line and comment back in line above
                 } else {
                     ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                     ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -166,8 +164,8 @@ public class ScAuthHandler
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if (scolaEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+        if (fetchedEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(now).build();
         } else {
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
         }
