@@ -91,13 +91,15 @@ public class ScDAO extends DAOBase
     }
     
     
-    public void persistEntities(List<ScCachedEntity> entityList, Date dateModified)
+    public void persistEntities(List<ScCachedEntity> entityList)
     {
         Set<ScCachedEntity> entities = new HashSet<ScCachedEntity>(entityList);
         
         Set<String> memberIds = new HashSet<String>();
         Set<ScMemberProxy> memberProxies = new HashSet<ScMemberProxy>();
         Map<String, Set<Key<ScMembership>>> addedMembershipKeys = new HashMap<String, Set<Key<ScMembership>>>();
+        
+        Date now = new Date();
         
         for (ScCachedEntity entity : entities) {
             entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
@@ -129,7 +131,7 @@ public class ScDAO extends DAOBase
                 }
             }
             
-            entity.dateModified = dateModified;
+            entity.dateModified = now;
         }
         
         Set<Key<ScMemberProxy>> missingMemberProxyKeys = new HashSet<Key<ScMemberProxy>>();

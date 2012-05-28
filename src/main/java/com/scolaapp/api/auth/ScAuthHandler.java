@@ -34,17 +34,17 @@ public class ScAuthHandler
     @Path("register")
     @Produces(MediaType.APPLICATION_JSON)
     public Response registerUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                 @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
-                                 @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
-                                 @QueryParam (ScURLParams.APP_VERSION)   String appVersion,
-                                 @QueryParam (ScURLParams.NAME)          String name)
+                                 @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
+                                 @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
+                                 @QueryParam(ScURLParams.APP_VERSION) String appVersion,
+                                 @QueryParam(ScURLParams.NAME) String name)
     {
         m = new ScMeta(deviceId, deviceType, appVersion);
         
-        ScAuthInfo authInfo = null;
-        
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.REGISTRATION);
         m.validateName(name);
+        
+        ScAuthInfo authInfo = null;
         
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
@@ -84,19 +84,19 @@ public class ScAuthHandler
     @Path("confirm")
     @Produces(MediaType.APPLICATION_JSON)
     public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                @QueryParam (ScURLParams.AUTH_TOKEN)    String authToken,
-                                @QueryParam (ScURLParams.SCOLA)         String scolaId,
-                                @QueryParam (ScURLParams.DEVICE_ID)     String deviceId,
-                                @QueryParam (ScURLParams.DEVICE_TYPE)   String deviceType,
-                                @QueryParam (ScURLParams.APP_VERSION)   String appVersion)
+                                @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
+                                @QueryParam(ScURLParams.SCOLA) String scolaId,
+                                @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
+                                @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
+                                @QueryParam(ScURLParams.APP_VERSION) String appVersion)
     {
         m = new ScMeta(scolaId, deviceId, deviceType, appVersion);
         
-        Date now = new Date();
-        List<ScCachedEntity> scolaEntities = null;
-        
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.CONFIRMATION);
         m.validateAuthToken(authToken);
+        
+        Date fetchDate = new Date();
+        List<ScCachedEntity> scolaEntities = null;
         
         if (m.isValid()) {
             ScAuthInfo authInfo = m.getAuthInfo();
@@ -118,9 +118,9 @@ public class ScAuthHandler
         }
         
         if (scolaEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(fetchDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(fetchDate).build();
         }
     }
     
@@ -128,20 +128,20 @@ public class ScAuthHandler
     @GET
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION)     String authorizationHeader,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date   lastFetchDate,
-                              @QueryParam (ScURLParams.AUTH_TOKEN)        String authToken,
-                              @QueryParam (ScURLParams.DEVICE_ID)         String deviceId,
-                              @QueryParam (ScURLParams.DEVICE_TYPE)       String deviceType,
-                              @QueryParam (ScURLParams.APP_VERSION)       String appVersion)
+    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
+                              @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
+                              @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
+                              @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
+                              @QueryParam(ScURLParams.APP_VERSION) String appVersion)
     {
         m = new ScMeta(deviceId, deviceType, appVersion);
         
-        Date now = new Date(); 
-        List<ScCachedEntity> fetchedEntities = null;
-        
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
+        
+        Date fetchDate = new Date(); 
+        List<ScCachedEntity> fetchedEntities = null;
         
         if (m.isValid()) {
             ScMemberProxy memberProxy = m.getMemberProxy();
@@ -149,8 +149,8 @@ public class ScAuthHandler
             if ((memberProxy != null) && memberProxy.didRegister) {
                 if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                     m.getDAO().putAuthToken(authToken);
+                    
                     fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
-                    //fetchedEntities = m.getDAO().fetchEntities(); // TODO: Remove this line and comment back in line above
                 } else {
                     ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                     ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -165,9 +165,9 @@ public class ScAuthHandler
         }
         
         if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(fetchDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(now).build();
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();
         }
     }
 }
