@@ -28,7 +28,6 @@ public class ScMember extends ScCachedEntity
     public Date activeSince;
     public String passwordHash;
     
-    public @NotSaved(IfFalse.class) boolean isMinor = false;
     public @NotSaved(IfFalse.class) boolean didRegister = false;
     
     

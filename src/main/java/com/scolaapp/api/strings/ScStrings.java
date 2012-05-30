@@ -54,12 +54,13 @@ public class ScStrings
     public String strRegView1NavItemTitle;
     public String strRegView1BackButtonTitle;
     public String strAddressUserHelp;
-    public String strAddressListedUserHelp;
+    public String strProvideAddressUserHelp;
+    public String strVerifyAddressUserHelp;
     public String strAddressLine1Prompt;
     public String strAddressLine2Prompt;
     public String strPostCodeAndCityPrompt;
     public String strDateOfBirthUserHelp;
-    public String strDateOfBirthListedUserHelp;
+    public String strVerifyDateOfBirthUserHelp;
     public String strDateOfBirthPrompt;
     public String strDateOfBirthClickHerePrompt;
     
@@ -71,10 +72,11 @@ public class ScStrings
     public String strMaleMinor;
     public String strGenderUserHelp;
     public String strMobilePhoneUserHelp;
-    public String strMobilePhoneListedUserHelp;
+    public String strVerifyMobilePhoneUserHelp;
     public String strMobilePhonePrompt;
     public String strLandlineUserHelp;
-    public String strLandlineListedUserHelp;
+    public String strProvideLandlineUserHelp;
+    public String strVerifyLandlineUserHelp;
     public String strLandlinePrompt;
     
     // Button titles
@@ -163,7 +165,7 @@ public class ScStrings
     private void setAuthViewStrings(String language)
     {
         if ("nb".equals(language)) {
-            strUserIntentionLogin               = "Jeg vil logge inn";
+            strUserIntentionLogin               = "Jeg er medlem";
             strUserIntentionRegistration        = "Jeg vil bli medlem";
             strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
             strUserHelpMember                   = "Logg inn om du allerede er Scola-medlem:";
@@ -207,25 +209,27 @@ public class ScStrings
         if ("nb".equals(language)) {
             strRegView1NavItemTitle             = "Adresse, fødselsdato";
             strRegView1BackButtonTitle          = "Adresse";
-            strAddressUserHelp                  = "Hva er adressen din?";
-            strAddressListedUserHelp            = "Verifiser adressen din:";
+            strAddressUserHelp                  = "Adressen din:";
+            strProvideAddressUserHelp           = "Hva er adressen din?";
+            strVerifyAddressUserHelp            = "Verifiser adressen din:";
             strAddressLine1Prompt               = "Adresselinje 1";
             strAddressLine2Prompt               = "Adresselinje 2";
             strPostCodeAndCityPrompt            = "Postnummer og poststed";
             strDateOfBirthUserHelp              = "Når ble du født?";
-            strDateOfBirthListedUserHelp        = "Verifiser fødselsdatoen din:";
+            strVerifyDateOfBirthUserHelp        = "Verifiser fødselsdatoen din:";
             strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
             strDateOfBirthClickHerePrompt       = "Fødselsdatoen din";
         } else {
             strRegView1NavItemTitle             = "Address, birth date";
             strRegView1BackButtonTitle          = "Address";
-            strAddressUserHelp                  = "What is your home address?";
-            strAddressListedUserHelp            = "Verify your home address:";
+            strAddressUserHelp                  = "Your address:";
+            strProvideAddressUserHelp           = "What is your home address?";
+            strVerifyAddressUserHelp            = "Verify your home address:";
             strAddressLine1Prompt               = "Address line 1";
             strAddressLine2Prompt               = "Address line 2";
             strPostCodeAndCityPrompt            = "Postal code and city/town";
             strDateOfBirthUserHelp              = "When were you born?";
-            strDateOfBirthListedUserHelp        = "Verify your birth date:";
+            strVerifyDateOfBirthUserHelp        = "Verify your birth date:";
             strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
             strDateOfBirthClickHerePrompt       = "Your birth date";
         }
@@ -242,11 +246,12 @@ public class ScStrings
             strMaleMinor                        = "Gutt";
             strGenderUserHelp                   = "Er du %@ eller %@?";
             strMobilePhoneUserHelp              = "Hva er mobilnummeret ditt?";
-            strMobilePhoneListedUserHelp        = "Verifiser mobilnummeret ditt:";
+            strVerifyMobilePhoneUserHelp        = "Verifiser mobilnummeret ditt:";
             strMobilePhonePrompt                = "Mobilnummeret ditt";
-            strLandlineUserHelp                 = "Har du fasttelefon?";
-            strLandlineListedUserHelp           = "Verifiser fasttelefonnummeret ditt:";
-            strLandlinePrompt                   = "Fasttelefonnummeret ditt";
+            strLandlineUserHelp                 = "Hjemmenummeret ditt:";
+            strProvideLandlineUserHelp          = "Hva er hjemmenummeret ditt?";
+            strVerifyLandlineUserHelp           = "Verifiser hjemmenummeret ditt:";
+            strLandlinePrompt                   = "Hjemmenummeret ditt";
         } else {
             strRegView2NavItemTitle             = "Gender, phone";
             strFemale                           = "Woman";
@@ -255,11 +260,12 @@ public class ScStrings
             strMaleMinor                        = "Boy";
             strGenderUserHelp                   = "Are you a %@ or a %@?";
             strMobilePhoneUserHelp              = "What is your mobile phone number?";
-            strMobilePhoneListedUserHelp        = "Verify your mobile phone number:";
+            strVerifyMobilePhoneUserHelp        = "Verify your mobile phone number:";
             strMobilePhonePrompt                = "Your mobile phone number";
-            strLandlineUserHelp                 = "Have you got a landline phone?";
-            strLandlineListedUserHelp           = "Verify your landline phone number:";
-            strLandlinePrompt                   = "Your landline phone number";
+            strLandlineUserHelp                 = "Your home phone number:";
+            strProvideLandlineUserHelp          = "What is your home phone number?";
+            strVerifyLandlineUserHelp           = "Verify your home phone number:";
+            strLandlinePrompt                   = "Your home phone number";
         }
     }
     

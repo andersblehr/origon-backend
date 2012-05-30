@@ -12,7 +12,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.scolaapp.api.aux.ScHTTPServletResponse;
 import com.scolaapp.api.aux.ScLog;
 import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
@@ -21,6 +20,9 @@ import com.scolaapp.api.aux.ScURLParams;
 @Path("model")
 public class ScModelHandler
 {
+    private final static int SC_MULTI_STATUS = 207;
+    
+    
     @POST
     @Path("sync")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -73,7 +75,7 @@ public class ScModelHandler
         }
         
         if ((entitiesToPersist.size() > 0) && (entitiesToReturn.size() > 0)) {
-            return Response.status(ScHTTPServletResponse.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(fetchDate).build();
+            return Response.status(SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(fetchDate).build();
         } else if (entitiesToPersist.size() > 0) {
             return Response.status(HttpServletResponse.SC_CREATED).lastModified(fetchDate).build();
         } else if (entitiesToReturn.size() > 0) {
