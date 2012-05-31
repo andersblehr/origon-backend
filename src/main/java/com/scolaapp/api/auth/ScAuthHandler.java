@@ -107,7 +107,7 @@ public class ScAuthHandler
                 DAO.ofy().delete(authInfo);
                 DAO.putAuthToken(authToken);
                 
-                scolaEntities = DAO.fetchEntities();
+                scolaEntities = DAO.fetchEntities(null);
             } else {
                 ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                 ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);

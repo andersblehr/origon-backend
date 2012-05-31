@@ -157,12 +157,6 @@ public class ScDAO extends DAOBase
     }
     
     
-    public List<ScCachedEntity> fetchEntities()
-    {
-        return fetchEntities(null);
-    }
-    
-    
     public List<ScCachedEntity> fetchEntities(Date lastFetchDate)
     {
         ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));

@@ -20,7 +20,6 @@ import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfFalse;
-import com.googlecode.objectify.condition.IfNotNull;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -47,7 +46,7 @@ public abstract class ScCachedEntity
     public @NotSaved String entityClass;
     
     public Date dateCreated;
-    public @Indexed(IfNotNull.class) @NotSaved(IfNull.class) Date dateModified;
+    public @Indexed Date dateModified;
     public @NotSaved(IfNull.class) Date dateExpires;
     
     public @NotSaved(IfFalse.class) boolean isShared = false;
