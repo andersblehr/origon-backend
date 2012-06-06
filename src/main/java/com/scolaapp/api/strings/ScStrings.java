@@ -64,6 +64,8 @@ public class ScStrings
     public String strMembershipViewDefaultTitle;
     public String strMembershipViewHomeScolaTitle1;
     public String strMembershipViewHomeScolaTitle2;
+    public String strHouseholdMembers;
+    public String strHouseholdMemberListFooter;
     
     // Error & alert messages
     public String strNoInternetError;
@@ -247,8 +249,12 @@ public class ScStrings
         
         if ("nb".equals(language)) {
             strMembershipViewDefaultTitle       = "Medlemmer";
+            strHouseholdMembers                 = "Medlemmer i husstanden";
+            strHouseholdMemberListFooter        = "Her kan du legge til eller fjerne medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
         } else {
             strMembershipViewDefaultTitle       = "Members";
+            strHouseholdMembers                 = "Household members";
+            strHouseholdMemberListFooter        = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
         }
     }
     
