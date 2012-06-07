@@ -7,6 +7,7 @@ public class ScStrings
     public String strAddress;
     public String strLandline;
     public String strMobilePhone;
+    public String strHousehold;
     public String strMyPlace;
     public String strOurPlace;
     public String strMyMessageBoard;
@@ -66,6 +67,7 @@ public class ScStrings
     public String strMembershipViewHomeScolaTitle2;
     public String strHouseholdMembers;
     public String strHouseholdMemberListFooter;
+    public String strDeleteConfirmation;
     
     // Error & alert messages
     public String strNoInternetError;
@@ -118,6 +120,7 @@ public class ScStrings
             strAddress                          = "Adresse";
             strLandline                         = "Telefon";
             strMobilePhone                      = "Mobil";
+            strHousehold                        = "Husstand";
             strMyPlace                          = "Min husstand";
             strOurPlace                         = "Vår husstand";
             strMyMessageBoard                   = "Min oppslagstavle";
@@ -126,6 +129,7 @@ public class ScStrings
             strAddress                          = "Address";
             strLandline                         = "Telephone";
             strMobilePhone                      = "Mobile";
+            strHousehold                        = "Household";
             strMyPlace                          = "My place";
             strOurPlace                         = "Our place";
             strMyMessageBoard                   = "My message board";
@@ -250,11 +254,13 @@ public class ScStrings
         if ("nb".equals(language)) {
             strMembershipViewDefaultTitle       = "Medlemmer";
             strHouseholdMembers                 = "Medlemmer i husstanden";
-            strHouseholdMemberListFooter        = "Her kan du legge til eller fjerne medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
+            strHouseholdMemberListFooter        = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
+            strDeleteConfirmation               = "Ta bort";
         } else {
             strMembershipViewDefaultTitle       = "Members";
             strHouseholdMembers                 = "Household members";
             strHouseholdMemberListFooter        = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
+            strDeleteConfirmation               = "Remove";
         }
     }
     
