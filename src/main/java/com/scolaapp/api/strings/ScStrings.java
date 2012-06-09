@@ -3,10 +3,20 @@ package com.scolaapp.api.strings;
 
 public class ScStrings
 {
-    // Generic Scola strings
+    // Generic labels
+    public String strName;
+    public String strNamePlaceholder;
+    public String strEmail;
+    public String strEmailPlaceholder;
     public String strAddress;
     public String strLandline;
-    public String strMobilePhone;
+    public String strLandlinePlaceholder;
+    public String strMobile;
+    public String strMobilePlaceholder;
+    public String strBorn;
+    public String strBornPlaceholder;
+    
+    // Generic Scola strings
     public String strHousehold;
     public String strMyPlace;
     public String strOurPlace;
@@ -69,6 +79,10 @@ public class ScStrings
     public String strHouseholdMemberListFooter;
     public String strDeleteConfirmation;
     
+    // Member view
+    public String strNewMemberViewTitle;
+    public String strUnderOurRoofViewTitle;
+    
     // Error & alert messages
     public String strNoInternetError;
     public String strServerErrorAlert;
@@ -78,6 +92,10 @@ public class ScStrings
     public String strInvalidEmailAlert;
     public String strInvalidPasswordTitle;
     public String strInvalidPasswordAlert;
+    public String strInvalidDateOfBirthTitle;
+    public String strInvalidDateOfBirthAlert;
+    public String strInvalidGenderTitle;
+    public String strInvalidGenderAlert;
     public String strEmailSentAlertTitle;
     public String strEmailSentAlert;
     public String strEmailSentToInviteeTitle;
@@ -90,8 +108,8 @@ public class ScStrings
     public String strNotLoggedInAlert;
     public String strNoAddressTitle;
     public String strNoAddressAlert;
-    public String strInvalidDateOfBirthTitle;
-    public String strInvalidDateOfBirthAlert;
+    public String strNoMobileNumberTitle;
+    public String strNoMobileNumberAlert;
     public String strNoPhoneNumberTitle;
     public String strNoPhoneNumberAlert;
     public String strIncompleteRegistrationTitle;
@@ -114,21 +132,45 @@ public class ScStrings
     public String strUseNew;
     
     
+    private void setGenericLabels(String language)
+    {
+        if ("nb".equals(language)) {
+            strName                             = "Navn";
+            strNamePlaceholder                  = "Fullt navn";
+            strEmail                            = "Epost";
+            strEmailPlaceholder                 = "En gyldig epostadresse";
+            strAddress                          = "Adresse";
+            strLandline                         = "Telefon";
+            strLandlinePlaceholder              = "Telefonnummer";
+            strMobile                           = "Mobil";
+            strMobilePlaceholder                = "Mobilnummer";
+            strBorn                             = "Født";
+            strBornPlaceholder                  = "Fødselsdato";
+        } else {
+            strName                             = "Name";
+            strNamePlaceholder                  = "Full name";
+            strEmail                            = "Email";
+            strEmailPlaceholder                 = "A valid email address";
+            strAddress                          = "Address";
+            strLandline                         = "Telephone";
+            strLandlinePlaceholder              = "Telephone number";
+            strMobile                           = "Mobile";
+            strMobilePlaceholder                = "Mobile telephone number";
+            strBorn                             = "Born";
+            strBornPlaceholder                  = "Date of birth";
+        }
+    }
+    
+    
     private void setGenericScolaStrings(String language)
     {
         if ("nb".equals(language)) {
-            strAddress                          = "Adresse";
-            strLandline                         = "Telefon";
-            strMobilePhone                      = "Mobil";
             strHousehold                        = "Husstand";
             strMyPlace                          = "Min husstand";
             strOurPlace                         = "Vår husstand";
             strMyMessageBoard                   = "Min oppslagstavle";
             strOurMessageBoard                  = "Vår oppslagstavle";
         } else {
-            strAddress                          = "Address";
-            strLandline                         = "Telephone";
-            strMobilePhone                      = "Mobile";
             strHousehold                        = "Household";
             strMyPlace                          = "My place";
             strOurPlace                         = "Our place";
@@ -265,17 +307,33 @@ public class ScStrings
     }
     
     
+    private void setMemberViewStrings(String language)
+    {
+        if ("nb".equals(language)) {
+            strNewMemberViewTitle               = "Nytt medlem";
+            strUnderOurRoofViewTitle            = "Under samme tak";
+        } else {
+            strNewMemberViewTitle               = "New member";
+            strUnderOurRoofViewTitle            = "Under our roof";
+        }
+    }
+    
+    
     private void setErrorAndAlertMessages(String language) 
     {
         if ("nb".equals(language)) {
             strNoInternetError                  = "Ingen internettforbindelse.";
             strServerErrorAlert                 = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
             strInvalidNameTitle                 = "Ufullstendig navn";
-            strInvalidNameAlert                 = "Du må oppgi fullt navn, som i signaturen din";
+            strInvalidNameAlert                 = "Du må oppgi både fornavn og etternavn.";
             strInvalidEmailTitle                = "Ugyldig epostadresse";
-            strInvalidEmailAlert                = "Du må oppgi en gyldig epostadresse";
+            strInvalidEmailAlert                = "Du må oppgi en gyldig epostadresse.";
             strInvalidPasswordTitle             = "For kort passord";
-            strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn";
+            strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn.";
+            strInvalidDateOfBirthTitle          = "Fødselsdato mangler";
+            strInvalidDateOfBirthAlert          = "Du må oppgi en gyldig fødselsdato.";
+            strInvalidGenderTitle               = "%@ eller %@?";
+            strInvalidGenderAlert               = "Du må oppgi om du er %@ eller %@.";
             strEmailSentAlertTitle              = "Registreringskode sendt";
             strEmailSentAlert                   = "En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
             strEmailSentToInviteeTitle          = "Velkommen til Scola!";
@@ -288,21 +346,25 @@ public class ScStrings
             strNotLoggedInAlert                 = "Feil epostadresse eller passord. Vennligst prøv igjen.";
             strNoAddressTitle                   = "Adresse mangler";
             strNoAddressAlert                   = "Du må oppgi en adresse. Det holder at ett av adressefeltene er utfylt.";
+            strNoMobileNumberTitle              = "Mobilnummer mangler";
+            strNoMobileNumberAlert              = "Du må oppgi et mobilnummer";
             strNoPhoneNumberTitle               = "Telefonnummer mangler";
             strNoPhoneNumberAlert               = "Du må oppgi et telefonnummer.";
-            strInvalidDateOfBirthTitle          = "Ugyldig fødselsdato";
-            strInvalidDateOfBirthAlert          = "Du har oppgitt en ugyldig fødselsdato. Du må være mellom 5 og 110 år gammel for å kunne bruke Scola.";
             strIncompleteRegistrationTitle      = "Ufullstendig registrering";
             strIncompleteRegistrationAlert      = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
         } else {
             strNoInternetError                  = "No internet connection.";
             strServerErrorAlert                 = "An error has occurred. Please try again later. [%d: \"%@\"]";
             strInvalidNameTitle                 = "Incomplete name";
-            strInvalidNameAlert                 = "Please provide your full name, as in your signature";
+            strInvalidNameAlert                 = "You must provide both given and family names.";
             strInvalidEmailTitle                = "Invalid email address";
-            strInvalidEmailAlert                = "Please provide a valid email address";
+            strInvalidEmailAlert                = "Please provide a valid email address.";
             strInvalidPasswordTitle             = "Password too short";
-            strInvalidPasswordAlert             = "The password must contain minimum %d characters";
+            strInvalidPasswordAlert             = "The password must contain minimum %d characters.";
+            strInvalidDateOfBirthTitle          = "Missing birth date";
+            strInvalidDateOfBirthAlert          = "You must provide a valid date of birth.";
+            strInvalidGenderTitle               = "%@ or %@";
+            strInvalidGenderAlert               = "You must indicate your gender.";
             strEmailSentAlertTitle              = "Registration code sent";
             strEmailSentAlert                   = "An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
             strEmailSentToInviteeTitle          = "Welcome to Scola!";
@@ -315,10 +377,10 @@ public class ScStrings
             strNotLoggedInAlert                 = "Incorrent email or password. Please try again.";
             strNoAddressTitle                   = "Missing address";
             strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
+            strNoMobileNumberTitle              = "Missing mobile number";
+            strNoMobileNumberAlert              = "You must provide a mobile phone number";
             strNoPhoneNumberTitle               = "Missing phone number";
             strNoPhoneNumberAlert               = "You must provide a phone number.";
-            strInvalidDateOfBirthTitle          = "Invalid date of birth";
-            strInvalidDateOfBirthAlert          = "You have provided an invalid date of birth. You must be between 5 and 110 years old in order to use Scola.";
             strIncompleteRegistrationTitle      = "Incomplete registration";
             strIncompleteRegistrationAlert      = "You must complete your registration before you can start using Scola.";
         }
@@ -369,12 +431,14 @@ public class ScStrings
     
     public ScStrings(String language)
     {
+        setGenericLabels(language);
         setGenericScolaStrings(language);
         
         setAuthViewStrings(language);
         setRegistrationView1Strings(language);
         setRegistrationView2Strings(language);
         setMembershipViewStrings(language);
+        setMemberViewStrings(language);
         
         setErrorAndAlertMessages(language);
         setButtonTitles(language);

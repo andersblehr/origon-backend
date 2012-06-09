@@ -113,4 +113,28 @@ public class ScModelHandler
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();
         }
     }
+    
+    
+    @GET
+    @Path("member/{memberId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response fetchEntity(@PathParam("memberId") String memberId,
+                                @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
+                                @QueryParam(ScURLParams.APP_VERSION) String appVersion)
+    {
+        ScMeta m = new ScMeta(authToken, appVersion);
+        
+        ScMember member = null;
+        
+        if (m.isValid()) {
+            member = m.getDAO().fetchMember(memberId);
+        }
+        
+        if (member != null) {
+            return Response.status(HttpServletResponse.SC_OK).entity(member).build();
+        } else {
+            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
+        }
+    }
+
 }

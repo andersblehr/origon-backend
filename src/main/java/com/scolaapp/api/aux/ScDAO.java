@@ -194,4 +194,19 @@ public class ScDAO extends DAOBase
         
         return new ArrayList<ScCachedEntity>(fetchedEntities);
     }
+    
+    
+    public ScMember fetchMember(String memberId)
+    {
+        ScLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
+        
+        ScMember member = null;
+        ScMemberProxy memberProxy = get(new Key<ScMemberProxy>(ScMemberProxy.class, memberId));
+        
+        if (memberProxy != null) {
+            member = get(memberProxy.memberKey);
+        }
+        
+        return member;
+    }
 }
