@@ -124,14 +124,14 @@ public class ScModelHandler
     {
         ScMeta m = new ScMeta(authToken, appVersion);
         
-        ScMember member = null;
+        List<ScCachedEntity> memberEntities = null;
         
         if (m.isValid()) {
-            member = m.getDAO().fetchMember(memberId);
+            memberEntities = m.getDAO().lookupMember(memberId);
         }
         
-        if (member != null) {
-            return Response.status(HttpServletResponse.SC_OK).entity(member).build();
+        if (memberEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
         } else {
             return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }

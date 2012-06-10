@@ -82,6 +82,7 @@ public class ScStrings
     // Member view
     public String strNewMemberViewTitle;
     public String strUnderOurRoofViewTitle;
+    public String strGenderActionSheetTitle;
     
     // Error & alert messages
     public String strNoInternetError;
@@ -312,9 +313,11 @@ public class ScStrings
         if ("nb".equals(language)) {
             strNewMemberViewTitle               = "Nytt medlem";
             strUnderOurRoofViewTitle            = "Under samme tak";
+            strGenderActionSheetTitle           = "Er %@ %@ eller %@?";           
         } else {
             strNewMemberViewTitle               = "New member";
             strUnderOurRoofViewTitle            = "Under our roof";
+            strGenderActionSheetTitle           = "Is %@ a %@ or a %@?";
         }
     }
     

@@ -196,17 +196,25 @@ public class ScDAO extends DAOBase
     }
     
     
-    public ScMember fetchMember(String memberId)
+    public List<ScCachedEntity> lookupMember(String memberId)
     {
         ScLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
         
-        ScMember member = null;
+        List<ScCachedEntity> memberEntities = new ArrayList<ScCachedEntity>();
+
         ScMemberProxy memberProxy = get(new Key<ScMemberProxy>(ScMemberProxy.class, memberId));
+        ScMember member = null;
+        ScScola memberScola = null;
         
         if (memberProxy != null) {
             member = get(memberProxy.memberKey);
+            memberScola = get(new Key<ScScola>(member.scolaKey, ScScola.class, member.scolaId));
+            
+            memberEntities.add(member);
+            memberEntities.add(memberScola);
         }
         
-        return member;
+        
+        return memberEntities;
     }
 }
