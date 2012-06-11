@@ -70,22 +70,39 @@ public class ScDAO extends DAOBase
     public void putAuthToken(String authToken)
     {
         ScMemberProxy memberProxy = m.getMemberProxy();
+        ScMemberResidency residency = null;
         
         Collection<ScAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
         
-        for (ScAuthMeta authMeta : authMetaItems) {
-            if (authMeta.deviceId.equals(m.getDeviceId())) {
-                memberProxy.authMetaKeys.remove(new Key<ScAuthMeta>(ScAuthMeta.class, authMeta.authToken));
-                ofy().delete(authMeta);
-                
-                ScLog.log().fine(m.meta() + String.format("Deleted old auth token (token: %s; user: %s).", authMeta.authToken, m.getUserId()));
+        if (authMetaItems.size() > 0) {
+            for (ScAuthMeta authMeta : authMetaItems) {
+                if (authMeta.deviceId.equals(m.getDeviceId())) {
+                    memberProxy.authMetaKeys.remove(new Key<ScAuthMeta>(ScAuthMeta.class, authMeta.authToken));
+                    ofy().delete(authMeta);
+                    
+                    ScLog.log().fine(m.meta() + String.format("Deleted old auth token (token: %s; user: %s).", authMeta.authToken, m.getUserId()));
+                }
+            }
+        } else {
+            memberProxy.didRegister = true;
+            
+            residency = get(getResidencyKey());
+            
+            if (residency != null) {
+                residency.isActive = true;
+                residency.dateModified = new Date();
+                ofy().put(residency);
             }
         }
         
         memberProxy.authMetaKeys.add(new Key<ScAuthMeta>(ScAuthMeta.class, authToken));
         ScAuthMeta authMeta = new ScAuthMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
         
-        ofy().put(memberProxy, authMeta);
+        if (residency != null) {
+            ofy().put(memberProxy, authMeta, residency);
+        } else {
+            ofy().put(memberProxy, authMeta);
+        }
         
         ScLog.log().fine(m.meta() + String.format("Persisted new auth token (token: %s; user: %s).", authToken, m.getUserId()));
     }
@@ -95,7 +112,7 @@ public class ScDAO extends DAOBase
     {
         Set<ScCachedEntity> entities = new HashSet<ScCachedEntity>(entityList);
         
-        Set<String> memberIds = new HashSet<String>();
+        Set<String> newMemberIds = new HashSet<String>();
         Set<ScMemberProxy> memberProxies = new HashSet<ScMemberProxy>();
         Map<String, Set<Key<ScMembership>>> addedMembershipKeys = new HashMap<String, Set<Key<ScMembership>>>();
         
@@ -105,16 +122,8 @@ public class ScDAO extends DAOBase
             entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
             
             if (entity.getClass().equals(ScMember.class) && (entity.dateModified == null)) {
-                memberIds.add(entity.entityId);
-                
-                if (entity.entityId.equals(m.getUserId())) {
-                    ScMemberProxy memberProxy = m.getMemberProxy();
-                    
-                    memberProxy.didRegister = true;
-                    memberProxies.add(m.getMemberProxy());
-                } else {
-                    memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
-                }
+                newMemberIds.add(entity.entityId);
+                memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
             } else if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
                 String memberId = ((ScMembership)entity).member.entityId;
                 
@@ -137,7 +146,7 @@ public class ScDAO extends DAOBase
         Set<Key<ScMemberProxy>> missingMemberProxyKeys = new HashSet<Key<ScMemberProxy>>();
         
         for (String memberId : addedMembershipKeys.keySet()) {
-            if (!memberIds.contains(memberId)) {
+            if (!newMemberIds.contains(memberId)) {
                 missingMemberProxyKeys.add(new Key<ScMemberProxy>(ScMemberProxy.class, memberId));
             }
         }
@@ -196,25 +205,34 @@ public class ScDAO extends DAOBase
     }
     
     
+    @SuppressWarnings("unchecked")
     public List<ScCachedEntity> lookupMember(String memberId)
     {
         ScLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
         
-        List<ScCachedEntity> memberEntities = new ArrayList<ScCachedEntity>();
-
         ScMemberProxy memberProxy = get(new Key<ScMemberProxy>(ScMemberProxy.class, memberId));
-        ScMember member = null;
-        ScScola memberScola = null;
+        ArrayList<ScCachedEntity> memberEntities = new ArrayList<ScCachedEntity>();
         
         if (memberProxy != null) {
-            member = get(memberProxy.memberKey);
-            memberScola = get(new Key<ScScola>(member.scolaKey, ScScola.class, member.scolaId));
+            Key<ScMember> memberKey = memberProxy.memberKey;
+            Key<ScScola> homeScolaKey = new Key<ScScola>(new Key<ScScola>(ScScola.class, memberProxy.scolaId), ScScola.class, memberProxy.scolaId);
+            Key<ScMemberResidency> residencyKey = getResidencyKey();
             
-            memberEntities.add(member);
-            memberEntities.add(memberScola);
+            memberEntities.addAll(ofy().get(memberKey, homeScolaKey, residencyKey).values());
         }
         
         
         return memberEntities;
+    }
+    
+    
+    private Key<ScMemberResidency> getResidencyKey()
+    {
+        ScMemberProxy memberProxy = m.getMemberProxy();
+        
+        Key<ScScola> homeScolaAncestorKey = new Key<ScScola>(ScScola.class, memberProxy.scolaId);
+        String residencyId = String.format("%s$%s", memberProxy.userId, memberProxy.scolaId);
+        
+        return new Key<ScMemberResidency>(homeScolaAncestorKey, ScMemberResidency.class, residencyId);
     }
 }
