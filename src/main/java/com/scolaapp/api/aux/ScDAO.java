@@ -123,7 +123,15 @@ public class ScDAO extends DAOBase
             
             if (entity.getClass().equals(ScMember.class) && (entity.dateModified == null)) {
                 newMemberIds.add(entity.entityId);
-                memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
+                
+                if (entity.entityId.equals(m.getUserId())) {
+                    ScMemberProxy memberProxy = m.getMemberProxy();
+                    
+                    memberProxy.didRegister = true;
+                    memberProxies.add(m.getMemberProxy());
+                } else {
+                    memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
+                }
             } else if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
                 String memberId = ((ScMembership)entity).member.entityId;
                 
