@@ -17,6 +17,7 @@ import com.googlecode.objectify.util.DAOBase;
 import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthMeta;
 import com.scolaapp.api.model.ScCachedEntity;
+import com.scolaapp.api.model.ScCachedEntityGhost;
 import com.scolaapp.api.model.ScDevice;
 import com.scolaapp.api.model.ScMemberResidency;
 import com.scolaapp.api.model.ScMessageBoard;
@@ -37,6 +38,7 @@ public class ScDAO extends DAOBase
         ObjectifyService.register(ScAuthInfo.class);
         ObjectifyService.register(ScAuthMeta.class);
         
+        ObjectifyService.register(ScCachedEntityGhost.class);
         ObjectifyService.register(ScDevice.class);
         ObjectifyService.register(ScMessageBoard.class);
         ObjectifyService.register(ScMember.class);
@@ -110,40 +112,59 @@ public class ScDAO extends DAOBase
     
     public void persistEntities(List<ScCachedEntity> entityList)
     {
-        Set<ScCachedEntity> entities = new HashSet<ScCachedEntity>(entityList);
+        Set<ScCachedEntity> entitiesToPersist = new HashSet<ScCachedEntity>();
         
         Set<String> newMemberIds = new HashSet<String>();
         Set<ScMemberProxy> memberProxies = new HashSet<ScMemberProxy>();
         Map<String, Set<Key<ScMembership>>> addedMembershipKeys = new HashMap<String, Set<Key<ScMembership>>>();
         
+        Set<Key<ScCachedEntity>> entityKeysForDeletion = new HashSet<Key<ScCachedEntity>>();
+        Set<Key<ScMemberProxy>> memberProxyKeysForDeletion = new HashSet<Key<ScMemberProxy>>();
+        
         Date now = new Date();
         
-        for (ScCachedEntity entity : entities) {
+        for (ScCachedEntity entity : entityList) {
             entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
             
-            if (entity.getClass().equals(ScMember.class) && (entity.dateModified == null)) {
-                newMemberIds.add(entity.entityId);
+            if (entity.getClass().equals(ScCachedEntityGhost.class)) {
+                ScCachedEntityGhost entityGhost = (ScCachedEntityGhost)entity;
                 
-                if (entity.entityId.equals(m.getUserId())) {
-                    ScMemberProxy memberProxy = m.getMemberProxy();
-                    
-                    memberProxy.didRegister = true;
-                    memberProxies.add(m.getMemberProxy());
+                if (entityGhost.hasExpired) {
+                    entityKeysForDeletion.add(new Key<ScCachedEntity>(entity.scolaKey, ScCachedEntity.class, entity.entityId));
                 } else {
-                    memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
-                }
-            } else if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
-                String memberId = ((ScMembership)entity).member.entityId;
-                
-                if (memberId.equals(m.getUserId()) || (entity.dateModified == null)) {
-                    Set<Key<ScMembership>> addedMembershipKeysForMember = addedMembershipKeys.get(memberId);
+                    entitiesToPersist.add(entity);
                     
-                    if (addedMembershipKeysForMember == null) {
-                        addedMembershipKeysForMember = new HashSet<Key<ScMembership>>();
+                    if (entityGhost.ghostedEntityClass.equals(ScMember.class.getSimpleName())) {
+                        memberProxyKeysForDeletion.add(new Key<ScMemberProxy>(ScMemberProxy.class, entity.entityId));
                     }
+                }
+            } else {
+                entitiesToPersist.add(entity);
+                
+                if (entity.getClass().equals(ScMember.class) && (entity.dateModified == null)) {
+                    newMemberIds.add(entity.entityId);
                     
-                    if (addedMembershipKeysForMember.add(new Key<ScMembership>(entity.scolaKey, ScMembership.class, entity.entityId))) {
-                        addedMembershipKeys.put(memberId, addedMembershipKeysForMember);
+                    if (entity.entityId.equals(m.getUserId())) {
+                        ScMemberProxy memberProxy = m.getMemberProxy();
+                        
+                        memberProxy.didRegister = true;
+                        memberProxies.add(m.getMemberProxy());
+                    } else {
+                        memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
+                    }
+                } else if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
+                    String memberId = ((ScMembership)entity).member.entityId;
+                    
+                    if (memberId.equals(m.getUserId()) || (entity.dateModified == null)) {
+                        Set<Key<ScMembership>> addedMembershipKeysForMember = addedMembershipKeys.get(memberId);
+                        
+                        if (addedMembershipKeysForMember == null) {
+                            addedMembershipKeysForMember = new HashSet<Key<ScMembership>>();
+                        }
+                        
+                        if (addedMembershipKeysForMember.add(new Key<ScMembership>(entity.scolaKey, ScMembership.class, entity.entityId))) {
+                            addedMembershipKeys.put(memberId, addedMembershipKeysForMember);
+                        }
                     }
                 }
             }
@@ -167,10 +188,22 @@ public class ScDAO extends DAOBase
             memberProxy.membershipKeys.addAll(addedMembershipKeys.get(memberProxy.userId));
         }
         
-        ofy().put(memberProxies);
-        ofy().put(entities);
+        if (memberProxies.size() > 0) {
+            ofy().put(memberProxies);
+        }
         
-        ScLog.log().fine(m.meta() + "Persisted entities: " + entities.toString());
+        ofy().put(entitiesToPersist);
+        ScLog.log().fine(m.meta() + "Persisted entities: " + entitiesToPersist.toString());
+
+        if (entityKeysForDeletion.size() > 0) {
+            ofy().delete(entityKeysForDeletion);
+            ScLog.log().fine(m.meta() + "Permanently deleted ghost entities: " + entityKeysForDeletion);
+        }
+        
+        if (memberProxyKeysForDeletion.size() > 0) {
+            ofy().delete(memberProxyKeysForDeletion);
+            ScLog.log().fine(m.meta() + "Deleted member proxies: " + memberProxyKeysForDeletion);
+        }
     }
     
     
@@ -228,7 +261,6 @@ public class ScDAO extends DAOBase
             
             memberEntities.addAll(ofy().get(memberKey, homeScolaKey, residencyKey).values());
         }
-        
         
         return memberEntities;
     }

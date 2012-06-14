@@ -30,6 +30,7 @@ import com.googlecode.objectify.condition.IfNull;
     include = JsonTypeInfo.As.PROPERTY,
     property = "entityClass")
 @JsonSubTypes({
+    @Type(value = ScCachedEntityGhost.class, name = "ScCachedEntityGhost"),
     @Type(value = ScDevice.class, name = "ScDevice"),
     @Type(value = ScMember.class, name = "ScMember"),
     @Type(value = ScMemberResidency.class, name = "ScMemberResidency"),

@@ -11,6 +11,7 @@ import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfFalse;
+import com.googlecode.objectify.condition.IfNull;
 
 
 @Subclass(unindexed = true)
@@ -23,10 +24,10 @@ public class ScMember extends ScCachedEntity
     public String name;
     public String gender;
     public Date dateOfBirth;
-    public String mobilePhone;
+    public @NotSaved(IfNull.class) String mobilePhone;
     
-    public Date activeSince;
-    public String passwordHash;
+    public @NotSaved(IfNull.class) Date activeSince;
+    public @NotSaved(IfNull.class) String passwordHash;
     
     public @NotSaved(IfFalse.class) boolean didRegister = false;
     
