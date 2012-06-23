@@ -21,7 +21,7 @@ public class ScAuthInfo
     public String registrationCode;
     
     public boolean isListed;
-    public boolean isRegistered;
+    public boolean didRegister;
     
     
     public ScAuthInfo() {}

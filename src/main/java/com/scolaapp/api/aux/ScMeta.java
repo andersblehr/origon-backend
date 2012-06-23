@@ -181,7 +181,7 @@ public class ScMeta
         ScAuthInfo authInfo = null;
         
         if (isValid) {
-            if (authPhase == ScAuthPhase.REGISTRATION) {
+            if (authPhase != ScAuthPhase.CONFIRMATION) {
                 registrationCode = generateRegistrationCode();
                 
                 authInfo = new ScAuthInfo();
@@ -201,11 +201,11 @@ public class ScMeta
                 
                 if (member != null) {
                     authInfo.isListed = true;
-                    authInfo.isRegistered = member.didRegister;
+                    authInfo.didRegister = member.didRegister;
                     authInfo.homeScolaId = member.scolaId;
                 } else {
                     authInfo.isListed = false;
-                    authInfo.isRegistered = false;
+                    authInfo.didRegister = false;
                 }
             } else if (authPhase == ScAuthPhase.CONFIRMATION) {
                 authInfo = DAO.get(new Key<ScAuthInfo>(ScAuthInfo.class, userId));

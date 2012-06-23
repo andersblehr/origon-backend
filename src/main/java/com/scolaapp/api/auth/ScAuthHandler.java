@@ -49,7 +49,7 @@ public class ScAuthHandler
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
             
-            if (!authInfo.isRegistered) {
+            if (!authInfo.didRegister) {
                 m.getDAO().ofy().put(authInfo);
                 
                 Session session = Session.getInstance(new Properties());
@@ -140,31 +140,58 @@ public class ScAuthHandler
         m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
         
-        Date fetchDate = new Date(); 
+        ScAuthInfo authInfo = null;
         List<ScCachedEntity> fetchedEntities = null;
+        Date fetchDate = new Date(); 
         
         if (m.isValid()) {
             ScMemberProxy memberProxy = m.getMemberProxy();
             
-            if ((memberProxy != null) && memberProxy.didRegister) {
-                if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
-                    m.getDAO().putAuthToken(authToken);
+            if ((memberProxy == null) || !memberProxy.didRegister) {
+                authInfo = m.getAuthInfo();
+                m.getDAO().ofy().put(authInfo);
+                
+                Session session = Session.getInstance(new Properties());
+
+                try {
+                    Message msg = new MimeMessage(session);
                     
-                    fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
-                } else {
-                    ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                    // TODO: Localise message
+                    // TODO: Provide URL directly to app on device
+                    msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
+                    msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
+                    msg.setSubject("Complete your registration with Scola");
+                    msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
+                    
+                    Transport.send(msg);
+                    
+                    ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
+                } catch (MessagingException e) {
+                    ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             } else {
-                ScLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
-                ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                if ((memberProxy != null) && memberProxy.didRegister) {
+                    if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
+                        m.getDAO().putAuthToken(authToken);
+                        
+                        fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
+                    } else {
+                        ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                        ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                    }
+                } else {
+                    ScLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
+                    ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                }
             }
         } else {
             ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if (fetchedEntities.size() > 0) {
+        if (authInfo != null) {
+            return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
+        } else if (fetchedEntities.size() > 0) {
             return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(fetchDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();

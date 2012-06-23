@@ -24,14 +24,18 @@ public class ScStrings
     public String strOurMessageBoard;
     
     // Auth view
+    public String strSignInOrRegisterPrompt;
+    public String strEmailPrompt;
+    public String strPasswordPrompt;
+    public String strSignInOrRegisterFooter;
+    
+    // Old auth view
     public String strUserIntentionLogin;
     public String strUserIntentionRegistration;
     public String strUserHelpNew;
     public String strUserHelpMember;
     public String strNamePrompt;
-    public String strEmailPrompt;
     public String strNewPasswordPrompt;
-    public String strPasswordPrompt;
     public String strPleaseWait;
     public String strUserHelpCompleteRegistration;
     public String strSeeYouLaterPopUpTitle;
@@ -184,14 +188,28 @@ public class ScStrings
     private void setAuthViewStrings(String language)
     {
         if ("nb".equals(language)) {
+            strSignInOrRegisterPrompt           = "Logg på eller registrer ny bruker";
+            strEmailPrompt                      = "Epostadressen din";
+            strPasswordPrompt                   = "Passordet ditt";
+            strSignInOrRegisterFooter           = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å fullføre registreringen.";
+        } else {
+            strSignInOrRegisterPrompt           = "Sign in or register";
+            strEmailPrompt                      = "Your email address";
+            strPasswordPrompt                   = "Your password";
+            strSignInOrRegisterFooter           = "When you register, you will receive an email with a registration code that you must provide in order to complete registration.";
+        }
+    }
+    
+    
+    private void setOldAuthViewStrings(String language)
+    {
+        if ("nb".equals(language)) {
             strUserIntentionLogin               = "Jeg er medlem";
             strUserIntentionRegistration        = "Jeg vil bli medlem";
             strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
             strUserHelpMember                   = "Logg inn om du allerede er Scola-medlem:";
             strNamePrompt                       = "Fullt navn som i signaturen din";
-            strEmailPrompt                      = "Epostadressen din";
             strNewPasswordPrompt                = "Et fritt valgt passord";
-            strPasswordPrompt                   = "Passordet ditt";
             strPleaseWait                       = "Vent litt...";
             strUserHelpCompleteRegistration     = "For å fullføre registreringen må du oppgi:";
             strSeeYouLaterPopUpTitle            = "Ser deg senere!";
@@ -207,9 +225,7 @@ public class ScStrings
             strUserHelpNew                      = "To become a Scola member, please provide:";
             strUserHelpMember                   = "Log in if you are already a Scola member:";
             strNamePrompt                       = "Your name as you sign it";
-            strEmailPrompt                      = "Your email address";
             strNewPasswordPrompt                = "A password of your choice";
-            strPasswordPrompt                   = "Your password";
             strPleaseWait                       = "Please wait...";
             strUserHelpCompleteRegistration     = "To complete your registration, please provide:";
             strSeeYouLaterPopUpTitle            = "See you later!";
@@ -438,6 +454,7 @@ public class ScStrings
         setGenericScolaStrings(language);
         
         setAuthViewStrings(language);
+        setOldAuthViewStrings(language);
         setRegistrationView1Strings(language);
         setRegistrationView2Strings(language);
         setMembershipViewStrings(language);
