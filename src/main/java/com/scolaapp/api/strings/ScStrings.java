@@ -25,9 +25,12 @@ public class ScStrings
     
     // Auth view
     public String strSignInOrRegisterPrompt;
+    public String strConfirmRegistrationPrompt;
     public String strEmailPrompt;
     public String strPasswordPrompt;
+    public String strRepeatPasswordPrompt;
     public String strSignInOrRegisterFooter;
+    public String strConfirmRegistrationFooter;
     
     // Old auth view
     public String strUserIntentionLogin;
@@ -43,7 +46,6 @@ public class ScStrings
     public String strWelcomeBackPopUpTitle;
     public String strWelcomeBackPopUpMessage;
     public String strRegistrationCodePrompt;
-    public String strRepeatPasswordPrompt;
     public String strScolaDescription;
 
     // Registration view 1
@@ -189,14 +191,22 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             strSignInOrRegisterPrompt           = "Logg på eller registrer ny bruker";
+            strConfirmRegistrationPrompt        = "Bekreft registreringen din";
             strEmailPrompt                      = "Epostadressen din";
             strPasswordPrompt                   = "Passordet ditt";
-            strSignInOrRegisterFooter           = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å fullføre registreringen.";
+            strRepeatPasswordPrompt             = "Gjenta passordet ditt";
+            strRegistrationCodePrompt           = "Registreringskoden din";
+            strSignInOrRegisterFooter           = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte registreringen din.";
+            strConfirmRegistrationFooter        = "Oppgi registreringskoden som du har mottatt på epost, eller vent til du er klar om ikke du har tilgang til eposten din her og nå.";
         } else {
-            strSignInOrRegisterPrompt           = "Sign in or register";
+            strSignInOrRegisterPrompt           = "Sign in or register new user";
+            strConfirmRegistrationPrompt        = "Confirm your registration";
             strEmailPrompt                      = "Your email address";
             strPasswordPrompt                   = "Your password";
-            strSignInOrRegisterFooter           = "When you register, you will receive an email with a registration code that you must provide in order to complete registration.";
+            strRepeatPasswordPrompt             = "Repeat your password";
+            strRegistrationCodePrompt           = "Your registration code";
+            strSignInOrRegisterFooter           = "When you register, you will receive an email with a registration code that you must provide in order to confirm your registration.";
+            strConfirmRegistrationFooter        = "Please provide the registration code that was emailed to you, or wait until you're ready if you don't have access to your email at this time.";
         }
     }
     
@@ -216,8 +226,6 @@ public class ScStrings
             strSeeYouLaterPopUpMessage          = "Du kan trygt forlate Scola. Vi fortsetter neste gang du er innom.";
             strWelcomeBackPopUpTitle            = "Velkommen tilbake!";
             strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
-            strRegistrationCodePrompt           = "Din personlige registreringskode";
-            strRepeatPasswordPrompt             = "Samme passord som tidligere";
             strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
         } else {
             strUserIntentionLogin               = "I want to log in";
@@ -232,8 +240,6 @@ public class ScStrings
             strSeeYouLaterPopUpMessage          = "You can safely leave Scola. We'll continue next time your drop by.";
             strWelcomeBackPopUpTitle            = "Welcome back!";
             strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
-            strRegistrationCodePrompt           = "Your personal registration code";
-            strRepeatPasswordPrompt             = "The same password as before";
             strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
         }
     }
