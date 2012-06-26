@@ -3,6 +3,11 @@ package com.scolaapp.api.strings;
 
 public class ScStrings
 {
+    // Scola EULA
+    public String strEULA;
+    public String strAgree;
+    public String strDisagree;
+    
     // Generic labels
     public String strName;
     public String strNamePlaceholder;
@@ -17,6 +22,9 @@ public class ScStrings
     public String strBornPlaceholder;
     
     // Generic Scola strings
+    public String strAbout;
+    public String strYouSubject;
+    public String strYouObject;
     public String strHousehold;
     public String strMyPlace;
     public String strOurPlace;
@@ -86,8 +94,9 @@ public class ScStrings
     public String strDeleteConfirmation;
     
     // Member view
+    public String strAboutYouViewTitle;
     public String strNewMemberViewTitle;
-    public String strUnderOurRoofViewTitle;
+    public String strNewHouseholdMemberViewTitle;
     public String strGenderActionSheetTitle;
     
     // Error & alert messages
@@ -139,6 +148,28 @@ public class ScStrings
     public String strUseNew;
     
     
+    private void setScolaEULA(String language)
+    {
+        if ("nb".equals(language)) {
+            strEULA                             = "KONTRAKT\n" +
+                                                  "\n" +
+                                                  "Du er nå nesten klar til å begynne å bruke Scola. Men først vil vi be deg gi noen opplysninger om deg selv og husstanden din. Vi trenger disse opplysningene for at Scola skal fungere. Derfor vil vi at du skal vite at:\n" +
+                                                  "\n" +
+                                                  "- Opplysningene du oppgir, er ingen andre enn deg og din husstands eiendom.\n" +
+                                                  "- Vi selger dem derfor naturligvis ikke videre.\n" + 
+                                                  "- Vi bruker dem heller ikke til å prøve å finne ut noe om deg.\n" +
+                                                  "\n" +
+                                                  "[TODO]";
+            strAgree                            = "Godta";
+            strDisagree                         = "Avslå";
+        } else {
+            strEULA                             = "Work in progress...";
+            strAgree                            = "Agree";
+            strDisagree                         = "Disagree";
+        }
+    }
+    
+    
     private void setGenericLabels(String language)
     {
         if ("nb".equals(language)) {
@@ -172,12 +203,18 @@ public class ScStrings
     private void setGenericScolaStrings(String language)
     {
         if ("nb".equals(language)) {
+            strAbout                            = "Om";
+            strYouSubject                       = "Du";
+            strYouObject                        = "Deg";
             strHousehold                        = "Husstand";
             strMyPlace                          = "Min husstand";
             strOurPlace                         = "Vår husstand";
             strMyMessageBoard                   = "Min oppslagstavle";
             strOurMessageBoard                  = "Vår oppslagstavle";
         } else {
+            strAbout                            = "About";
+            strYouSubject                       = "You";
+            strYouObject                        = "You";
             strHousehold                        = "Household";
             strMyPlace                          = "My place";
             strOurPlace                         = "Our place";
@@ -191,22 +228,22 @@ public class ScStrings
     {
         if ("nb".equals(language)) {
             strSignInOrRegisterPrompt           = "Logg på eller registrer ny bruker";
-            strConfirmRegistrationPrompt        = "Bekreft registreringen din";
+            strConfirmRegistrationPrompt        = "Oppgi registreringskoden din";
             strEmailPrompt                      = "Epostadressen din";
             strPasswordPrompt                   = "Passordet ditt";
             strRepeatPasswordPrompt             = "Gjenta passordet ditt";
-            strRegistrationCodePrompt           = "Registreringskoden din";
+            strRegistrationCodePrompt           = "Registreringskode fra epost";
             strSignInOrRegisterFooter           = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte registreringen din.";
-            strConfirmRegistrationFooter        = "Oppgi registreringskoden som du har mottatt på epost, eller vent til du er klar om ikke du har tilgang til eposten din her og nå.";
+            strConfirmRegistrationFooter        = "Oppgi registreringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
         } else {
             strSignInOrRegisterPrompt           = "Sign in or register new user";
-            strConfirmRegistrationPrompt        = "Confirm your registration";
+            strConfirmRegistrationPrompt        = "Provide your registration code";
             strEmailPrompt                      = "Your email address";
             strPasswordPrompt                   = "Your password";
             strRepeatPasswordPrompt             = "Repeat your password";
-            strRegistrationCodePrompt           = "Your registration code";
+            strRegistrationCodePrompt           = "Registration code from email";
             strSignInOrRegisterFooter           = "When you register, you will receive an email with a registration code that you must provide in order to confirm your registration.";
-            strConfirmRegistrationFooter        = "Please provide the registration code that was emailed to you, or wait until you're ready if you don't have access to your email at this time.";
+            strConfirmRegistrationFooter        = "Please provide the registration code that was emailed to you, or come back later if you don't have access to your email at this time.";
         }
     }
     
@@ -333,12 +370,14 @@ public class ScStrings
     private void setMemberViewStrings(String language)
     {
         if ("nb".equals(language)) {
+            strAboutYouViewTitle                = "Om deg";
             strNewMemberViewTitle               = "Nytt medlem";
-            strUnderOurRoofViewTitle            = "Under samme tak";
+            strNewHouseholdMemberViewTitle      = "I husstanden";
             strGenderActionSheetTitle           = "Er %@ %@ eller %@?";           
         } else {
+            strAboutYouViewTitle                = "About you";
             strNewMemberViewTitle               = "New member";
-            strUnderOurRoofViewTitle            = "Under our roof";
+            strNewHouseholdMemberViewTitle      = "In our houshold";
             strGenderActionSheetTitle           = "Is %@ a %@ or a %@?";
         }
     }
@@ -456,6 +495,8 @@ public class ScStrings
     
     public ScStrings(String language)
     {
+        setScolaEULA(language);
+        
         setGenericLabels(language);
         setGenericScolaStrings(language);
         

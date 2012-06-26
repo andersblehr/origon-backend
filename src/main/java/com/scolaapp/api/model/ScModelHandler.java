@@ -118,7 +118,7 @@ public class ScModelHandler
     @GET
     @Path("member/{memberId}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchEntity(@PathParam("memberId") String memberId,
+    public Response fetchMember(@PathParam("memberId") String memberId,
                                 @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
                                 @QueryParam(ScURLParams.APP_VERSION) String appVersion)
     {
