@@ -52,7 +52,7 @@ public class ScMeta
         }
         
         for (int i = 10; i < 16; i++) {
-            symbols[i] = (char)('a' + (i - 10));
+            symbols[i] = (char)('A' + (i - 10));
         }
     }
     
