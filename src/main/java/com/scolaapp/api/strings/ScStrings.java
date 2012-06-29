@@ -3,103 +3,243 @@ package com.scolaapp.api.strings;
 
 public class ScStrings
 {
-    // Scola EULA
+    public static final String LANG_ENGLISH = "en";
+    public static final String LANG_NORWEGIAN_BOKMAL = "nb";
+    
+    
+    public ScStrings()
+    {
+        this(LANG_ENGLISH);
+    }
+    
+    
+    public ScStrings(String language)
+    {
+        setEULA(language);
+        
+        setGenericStrings(language);
+        setPrompts(language);
+        setLabels(language);
+        setHeaderAndFooterStrings(language);
+        setButtonTitles(language);
+        setAlertsAndErrorMessages(language);
+        
+        setMembershipViewStrings(language);
+        setMemberViewStrings(language);
+    }
+    
+    
+    /* ==== EULA ==== */
+    
     public String strEULA;
-    public String strAgree;
-    public String strDisagree;
+    public String strAccept;
+    public String strDecline;
     
-    // Generic labels
-    public String strName;
-    public String strNamePlaceholder;
-    public String strEmail;
-    public String strEmailPlaceholder;
-    public String strAddress;
-    public String strLandline;
-    public String strLandlinePlaceholder;
-    public String strMobile;
-    public String strMobilePlaceholder;
-    public String strBorn;
-    public String strBornPlaceholder;
+    private void setEULA(String language)
+    {
+        if ("nb".equals(language)) {
+            strEULA    = "– MELLOM OSS –\n" +
+                         "\n" +
+                         "Du er nå nesten klar til å begynne å bruke Scola. Men for at Scola skal være til nytte for deg og dine, må vi be deg gi noen opplysninger om husstanden din. Vi lover derfor at:\n" +
+                         "\n" +
+                         "- Opplysningene forblir dine og bare dine.\n" +
+                         "- Vi forbeholder oss absolutt ingen rett til dem.\n" +
+                         "- Vi selger dem ikke videre.\n" + 
+                         "- Vi analyserer dem ikke for å finne ut hva du og dine nærmeste liker og mener.\n" +
+                         "- Vi har dem bare til låns, for uten dem har Scola ingen nytteverdi.\n" +
+                         "\n" +
+                         "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
+            strAccept  = "Godta";
+            strDecline = "Avslå";
+        } else {
+            strEULA    = "– BETWEEN US –\n" +
+                         "\n" +
+                         "You are now almost ready to start using Scola. But for Scola to be of use to you and your family, we need you to provide some information about your household. We promise that:\n" +
+                         "\n" +
+                         "- The information remains yours and yours only.\n" +
+                         "- We claim no rights to it whatsoever.\n" +
+                         "- We do not sell it to third parties.\n" + 
+                         "- We do not analyse it in order to figure out what you and your family may like.\n" +
+                         "- We are only borrowing it, for without it, Scola has no use.\n" +
+                         "\n" +
+                         "If you accept this, you will receive an email from us that documents the above.";
+            strAccept    = "Accept";
+            strDecline   = "Decline";
+        }
+    }
     
-    // Generic Scola strings
+    
+    /* ==== GENERIC STRINGS ==== */
+    
+    public String strPleaseWait;
     public String strAbout;
     public String strYouSubject;
     public String strYouObject;
     public String strHousehold;
+    public String strFemale;
+    public String strFemaleMinor;
+    public String strMale;
+    public String strMaleMinor;
     public String strMyPlace;
     public String strOurPlace;
     public String strMyMessageBoard;
     public String strOurMessageBoard;
     
-    // Auth view
-    public String strSignInOrRegisterPrompt;
-    public String strConfirmRegistrationPrompt;
-    public String strEmailPrompt;
-    public String strPasswordPrompt;
-    public String strRepeatPasswordPrompt;
-    public String strSignInOrRegisterFooter;
-    public String strConfirmRegistrationFooter;
+    private void setGenericStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strPleaseWait      = "Vent litt...";
+            strAbout           = "Om";
+            strYouSubject      = "Du";
+            strYouObject       = "Deg";
+            strFemale          = "Kvinne";
+            strFemaleMinor     = "Jente";
+            strMale            = "Mann";
+            strMaleMinor       = "Gutt";
+            strHousehold       = "Husstand";
+            strMyPlace         = "Min husstand";
+            strOurPlace        = "Vår husstand";
+            strMyMessageBoard  = "Min oppslagstavle";
+            strOurMessageBoard = "Vår oppslagstavle";
+        } else {
+            strPleaseWait      = "Please wait...";
+            strAbout           = "About";
+            strYouSubject      = "You";
+            strYouObject       = "You";
+            strFemale          = "Woman";
+            strFemaleMinor     = "Girl";
+            strMale            = "Man";
+            strMaleMinor       = "Boy";
+            strHousehold       = "Household";
+            strMyPlace         = "My place";
+            strOurPlace        = "Our place";
+            strMyMessageBoard  = "My message board";
+            strOurMessageBoard = "Our message board";
+        }
+    }
     
-    // Old auth view
-    public String strUserIntentionLogin;
-    public String strUserIntentionRegistration;
-    public String strUserHelpNew;
-    public String strUserHelpMember;
-    public String strNamePrompt;
-    public String strNewPasswordPrompt;
-    public String strPleaseWait;
-    public String strUserHelpCompleteRegistration;
-    public String strSeeYouLaterPopUpTitle;
-    public String strSeeYouLaterPopUpMessage;
-    public String strWelcomeBackPopUpTitle;
-    public String strWelcomeBackPopUpMessage;
+    
+    /* ==== PROMTPS ==== */
+    
+    public String strAuthEmailPrompt;
+    public String strPasswordPrompt;
     public String strRegistrationCodePrompt;
-    public String strScolaDescription;
-
-    // Registration view 1
-    public String strRegistrationView1Title;
-    public String strRegistrationView1BackButtonTitle;
-    public String strAddressUserHelp;
-    public String strProvideAddressUserHelp;
-    public String strVerifyAddressUserHelp;
+    public String strRepeatPasswordPrompt;
+    public String strPhotoPrompt;
+    public String strNamePrompt;
+    public String strEmailPrompt;
+    public String strDateOfBirthPrompt;
+    public String strMobilePhonePrompt;
     public String strAddressLine1Prompt;
     public String strAddressLine2Prompt;
     public String strPostCodeAndCityPrompt;
-    public String strDateOfBirthUserHelp;
-    public String strVerifyDateOfBirthUserHelp;
-    public String strDateOfBirthPrompt;
-    public String strDateOfBirthClickHerePrompt;
-    
-    // Registration view 2
-    public String strRegistrationView2Title;
-    public String strFemale;
-    public String strFemaleMinor;
-    public String strMale;
-    public String strMaleMinor;
-    public String strGenderUserHelp;
-    public String strMobilePhoneUserHelp;
-    public String strVerifyMobilePhoneUserHelp;
-    public String strMobilePhonePrompt;
-    public String strLandlineUserHelp;
-    public String strProvideLandlineUserHelp;
-    public String strVerifyLandlineUserHelp;
     public String strLandlinePrompt;
     
-    // Membership view
-    public String strMembershipViewDefaultTitle;
-    public String strMembershipViewHomeScolaTitle1;
-    public String strMembershipViewHomeScolaTitle2;
-    public String strHouseholdMembers;
+    private void setPrompts(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strAuthEmailPrompt        = "Epostadressen din";
+            strPasswordPrompt         = "Passordet ditt";
+            strRegistrationCodePrompt = "Registreringskode fra epost";
+            strRepeatPasswordPrompt   = "Gjenta passordet ditt";
+            strPhotoPrompt            = "Bilde";
+            strNamePrompt             = "Fullt navn";
+            strEmailPrompt            = "En gyldig epostadresse";
+            strDateOfBirthPrompt      = "Fødselsdato";
+            strMobilePhonePrompt      = "Mobilnummer";
+            strAddressLine1Prompt     = "Adresselinje 1";
+            strAddressLine2Prompt     = "Adresselinje 2";
+            strPostCodeAndCityPrompt  = "Postnummer og poststed";
+            strLandlinePrompt         = "Telefonnummer";
+        } else {
+            strAuthEmailPrompt        = "Your email address";
+            strPasswordPrompt         = "Your password";
+            strRegistrationCodePrompt = "Registration code from email";
+            strRepeatPasswordPrompt   = "Repeat your password";
+            strPhotoPrompt            = "Photo";
+            strNamePrompt             = "Full name";
+            strEmailPrompt            = "A valid email address";
+            strDateOfBirthPrompt      = "Date of birth";
+            strMobilePhonePrompt      = "Mobile telephone number";
+            strAddressLine1Prompt     = "Address line 1";
+            strAddressLine2Prompt     = "Address line 2";
+            strPostCodeAndCityPrompt  = "Postal code and city/town";
+            strLandlinePrompt         = "Telephone number";
+        }
+    }
+    
+    
+    /* ==== LABELS ==== */
+    
+    public String strSignInOrRegisterLabel;
+    public String strConfirmRegistrationLabel;
+    public String strAddressLabel;
+    public String strLandlineLabel;
+    
+    private void setLabels(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strSignInOrRegisterLabel    = "Logg på eller registrer ny bruker";
+            strConfirmRegistrationLabel = "Oppgi registreringskoden din";
+            strAddressLabel             = "Adresse";
+            strLandlineLabel            = "Telefon";
+        } else {
+            strSignInOrRegisterLabel    = "Sign in or register new user";
+            strConfirmRegistrationLabel = "Provide your registration code";
+            strAddressLabel             = "Address";
+            strLandlineLabel            = "Telephone";
+        }
+    }
+    
+    
+    /* ==== HEADER & FOOTER STRINGS ==== */
+    
+    public String strSignInOrRegisterFooter;
+    public String strConfirmRegistrationFooter;
     public String strHouseholdMemberListFooter;
-    public String strDeleteConfirmation;
     
-    // Member view
-    public String strAboutYouViewTitle;
-    public String strNewMemberViewTitle;
-    public String strNewHouseholdMemberViewTitle;
-    public String strGenderActionSheetTitle;
+    private void setHeaderAndFooterStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte registreringen din.";
+            strConfirmRegistrationFooter = "Oppgi registreringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
+            strHouseholdMemberListFooter = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
+        } else {
+            strSignInOrRegisterFooter    = "When you register, you will receive an email with a registration code that you must provide in order to confirm your registration.";
+            strConfirmRegistrationFooter = "Please provide the registration code that was emailed to you, or come back later if you don't have access to your email at this time.";
+            strHouseholdMemberListFooter = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
+        }
+    }
     
-    // Error & alert messages
+    
+    /* ==== BUTTON TITLES ==== */
+    
+    public String strOK;
+    public String strCancel;
+    public String strRetry;
+    public String strHaveCode;
+    public String strGoBack;
+    
+    private void setButtonTitles(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strOK         = "OK";
+            strCancel     = "Avbryt";
+            strRetry      = "Prøv igjen";
+            strHaveCode   = "Har kode";
+            strGoBack     = "Gå tilbake";
+        } else {
+            strOK         = "OK";
+            strCancel     = "Cancel";
+            strRetry      = "Retry";
+            strHaveCode   = "Have code";
+            strGoBack     = "Go back";
+        }
+    }
+    
+    
+    /* ==== ALERTS & ERROR MESSAGES ==== */
+    
     public String strNoInternetError;
     public String strServerErrorAlert;
     public String strInvalidNameTitle;
@@ -110,404 +250,122 @@ public class ScStrings
     public String strInvalidPasswordAlert;
     public String strInvalidDateOfBirthTitle;
     public String strInvalidDateOfBirthAlert;
-    public String strInvalidGenderTitle;
-    public String strInvalidGenderAlert;
-    public String strEmailSentAlertTitle;
-    public String strEmailSentAlert;
-    public String strEmailSentToInviteeTitle;
-    public String strEmailSentToInviteeAlert;
-    public String strPasswordsDoNotMatchTitle;
-    public String strPasswordsDoNotMatchAlert;
     public String strInvalidRegistrationCodeTitle;
     public String strInvalidRegistrationCodeAlert;
-    public String strUserExistsMustLogInAlert;
-    public String strNotLoggedInAlert;
+    public String strPasswordsDoNotMatchTitle;
+    public String strPasswordsDoNotMatchAlert;
     public String strNoAddressTitle;
     public String strNoAddressAlert;
     public String strNoMobileNumberTitle;
     public String strNoMobileNumberAlert;
     public String strNoPhoneNumberTitle;
     public String strNoPhoneNumberAlert;
+    public String strWelcomeBackTitle;
+    public String strWelcomeBackAlert;
     public String strIncompleteRegistrationTitle;
     public String strIncompleteRegistrationAlert;
+
     
-    // Button titles
-    public String strOK;
-    public String strCancel;
-    public String strLogIn;
-    public String strNewUser;
-    public String strHaveAccess;
-    public String strHaveCode;
-    public String strLater;
-    public String strTryAgain;
-    public String strGoBack;
-    public String strContinue;
-    public String strNext;
-    public String strDone;
-    public String strUseConfigured;
-    public String strUseNew;
-    
-    
-    private void setScolaEULA(String language)
+    private void setAlertsAndErrorMessages(String language) 
     {
-        if ("nb".equals(language)) {
-            strEULA                             = "KONTRAKT\n" +
-                                                  "\n" +
-                                                  "Du er nå nesten klar til å begynne å bruke Scola. Men først vil vi be deg gi noen opplysninger om deg selv og husstanden din. Vi trenger disse opplysningene for at Scola skal fungere. Derfor vil vi at du skal vite at:\n" +
-                                                  "\n" +
-                                                  "- Opplysningene du oppgir, er ingen andre enn deg og din husstands eiendom.\n" +
-                                                  "- Vi selger dem derfor naturligvis ikke videre.\n" + 
-                                                  "- Vi bruker dem heller ikke til å prøve å finne ut noe om deg.\n" +
-                                                  "\n" +
-                                                  "[TODO]";
-            strAgree                            = "Godta";
-            strDisagree                         = "Avslå";
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strNoInternetError              = "Ingen internettforbindelse.";
+            strServerErrorAlert             = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
+            strInvalidNameTitle             = "Ufullstendig navn";
+            strInvalidNameAlert             = "Du må oppgi både fornavn og etternavn.";
+            strInvalidEmailTitle            = "Ugyldig epostadresse";
+            strInvalidEmailAlert            = "Du må oppgi en gyldig epostadresse.";
+            strInvalidPasswordTitle         = "For kort passord";
+            strInvalidPasswordAlert         = "Passordet må inneholde minimum %d tegn.";
+            strInvalidDateOfBirthTitle      = "Fødselsdato mangler";
+            strInvalidDateOfBirthAlert      = "Du må oppgi en gyldig fødselsdato.";
+            strInvalidRegistrationCodeTitle = "Ugyldig registreringskode";
+            strInvalidRegistrationCodeAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
+            strPasswordsDoNotMatchTitle     = "Ugyldig passord";
+            strPasswordsDoNotMatchAlert     = "Passordet stemmer ikke med det du oppga tidligere. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
+            strNoAddressTitle               = "Adresse mangler";
+            strNoAddressAlert               = "Du må oppgi en adresse. Det holder at ett av adressefeltene er utfylt.";
+            strNoMobileNumberTitle          = "Mobilnummer mangler";
+            strNoMobileNumberAlert          = "Du må oppgi et mobilnummer";
+            strNoPhoneNumberTitle           = "Telefonnummer mangler";
+            strNoPhoneNumberAlert           = "Du må oppgi et telefonnummer.";
+            strWelcomeBackTitle             = "Velkommen tilbake!";
+            strWelcomeBackAlert             = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
+            strIncompleteRegistrationTitle  = "Ufullstendig registrering";
+            strIncompleteRegistrationAlert  = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
         } else {
-            strEULA                             = "Work in progress...";
-            strAgree                            = "Agree";
-            strDisagree                         = "Disagree";
+            strNoInternetError              = "No internet connection.";
+            strServerErrorAlert             = "An error has occurred. Please try again later. [%d: \"%@\"]";
+            strInvalidNameTitle             = "Incomplete name";
+            strInvalidNameAlert             = "You must provide both given and family names.";
+            strInvalidEmailTitle            = "Invalid email address";
+            strInvalidEmailAlert            = "Please provide a valid email address.";
+            strInvalidPasswordTitle         = "Password too short";
+            strInvalidPasswordAlert         = "The password must contain minimum %d characters.";
+            strInvalidDateOfBirthTitle      = "Missing birth date";
+            strInvalidDateOfBirthAlert      = "You must provide a valid date of birth.";
+            strInvalidRegistrationCodeTitle = "Invalid registration code";
+            strInvalidRegistrationCodeAlert = "The registration code does not match the one you have received by email. You can try again, or you can go back and start over.";
+            strPasswordsDoNotMatchTitle     = "Invalid password";
+            strPasswordsDoNotMatchAlert     = "The password does not match the one you entered before. You can try again, or you can go back and start over.";
+            strNoAddressTitle               = "Missing address";
+            strNoAddressAlert               = "Please provide an address. It is sufficient to fill in one of the fields.";
+            strNoMobileNumberTitle          = "Missing mobile number";
+            strNoMobileNumberAlert          = "You must provide a mobile phone number";
+            strNoPhoneNumberTitle           = "Missing phone number";
+            strNoPhoneNumberAlert           = "You must provide a phone number.";
+            strWelcomeBackTitle             = "Welcome back!";
+            strWelcomeBackAlert             = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
+            strIncompleteRegistrationTitle  = "Incomplete registration";
+            strIncompleteRegistrationAlert  = "You must complete your registration before you can start using Scola.";
         }
     }
     
     
-    private void setGenericLabels(String language)
-    {
-        if ("nb".equals(language)) {
-            strName                             = "Navn";
-            strNamePlaceholder                  = "Fullt navn";
-            strEmail                            = "Epost";
-            strEmailPlaceholder                 = "En gyldig epostadresse";
-            strAddress                          = "Adresse";
-            strLandline                         = "Telefon";
-            strLandlinePlaceholder              = "Telefonnummer";
-            strMobile                           = "Mobil";
-            strMobilePlaceholder                = "Mobilnummer";
-            strBorn                             = "Født";
-            strBornPlaceholder                  = "Fødselsdato";
-        } else {
-            strName                             = "Name";
-            strNamePlaceholder                  = "Full name";
-            strEmail                            = "Email";
-            strEmailPlaceholder                 = "A valid email address";
-            strAddress                          = "Address";
-            strLandline                         = "Telephone";
-            strLandlinePlaceholder              = "Telephone number";
-            strMobile                           = "Mobile";
-            strMobilePlaceholder                = "Mobile telephone number";
-            strBorn                             = "Born";
-            strBornPlaceholder                  = "Date of birth";
-        }
-    }
+    /* ==== ScMembershipView STRINGS ==== */
     
-    
-    private void setGenericScolaStrings(String language)
-    {
-        if ("nb".equals(language)) {
-            strAbout                            = "Om";
-            strYouSubject                       = "Du";
-            strYouObject                        = "Deg";
-            strHousehold                        = "Husstand";
-            strMyPlace                          = "Min husstand";
-            strOurPlace                         = "Vår husstand";
-            strMyMessageBoard                   = "Min oppslagstavle";
-            strOurMessageBoard                  = "Vår oppslagstavle";
-        } else {
-            strAbout                            = "About";
-            strYouSubject                       = "You";
-            strYouObject                        = "You";
-            strHousehold                        = "Household";
-            strMyPlace                          = "My place";
-            strOurPlace                         = "Our place";
-            strMyMessageBoard                   = "My message board";
-            strOurMessageBoard                  = "Our message board";
-        }
-    }
-    
-    
-    private void setAuthViewStrings(String language)
-    {
-        if ("nb".equals(language)) {
-            strSignInOrRegisterPrompt           = "Logg på eller registrer ny bruker";
-            strConfirmRegistrationPrompt        = "Oppgi registreringskoden din";
-            strEmailPrompt                      = "Epostadressen din";
-            strPasswordPrompt                   = "Passordet ditt";
-            strRepeatPasswordPrompt             = "Gjenta passordet ditt";
-            strRegistrationCodePrompt           = "Registreringskode fra epost";
-            strSignInOrRegisterFooter           = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte registreringen din.";
-            strConfirmRegistrationFooter        = "Oppgi registreringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
-        } else {
-            strSignInOrRegisterPrompt           = "Sign in or register new user";
-            strConfirmRegistrationPrompt        = "Provide your registration code";
-            strEmailPrompt                      = "Your email address";
-            strPasswordPrompt                   = "Your password";
-            strRepeatPasswordPrompt             = "Repeat your password";
-            strRegistrationCodePrompt           = "Registration code from email";
-            strSignInOrRegisterFooter           = "When you register, you will receive an email with a registration code that you must provide in order to confirm your registration.";
-            strConfirmRegistrationFooter        = "Please provide the registration code that was emailed to you, or come back later if you don't have access to your email at this time.";
-        }
-    }
-    
-    
-    private void setOldAuthViewStrings(String language)
-    {
-        if ("nb".equals(language)) {
-            strUserIntentionLogin               = "Jeg er medlem";
-            strUserIntentionRegistration        = "Jeg vil bli medlem";
-            strUserHelpNew                      = "For å bli Scola-medlem må du oppgi:";
-            strUserHelpMember                   = "Logg inn om du allerede er Scola-medlem:";
-            strNamePrompt                       = "Fullt navn som i signaturen din";
-            strNewPasswordPrompt                = "Et fritt valgt passord";
-            strPleaseWait                       = "Vent litt...";
-            strUserHelpCompleteRegistration     = "For å fullføre registreringen må du oppgi:";
-            strSeeYouLaterPopUpTitle            = "Ser deg senere!";
-            strSeeYouLaterPopUpMessage          = "Du kan trygt forlate Scola. Vi fortsetter neste gang du er innom.";
-            strWelcomeBackPopUpTitle            = "Velkommen tilbake!";
-            strWelcomeBackPopUpMessage          = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
-            strScolaDescription                 = "[subst.] en gruppe mennesker som omgås, samarbeider og/eller er avhengige av hverandre i det daglige.";
-        } else {
-            strUserIntentionLogin               = "I want to log in";
-            strUserIntentionRegistration        = "I want to register";
-            strUserHelpNew                      = "To become a Scola member, please provide:";
-            strUserHelpMember                   = "Log in if you are already a Scola member:";
-            strNamePrompt                       = "Your name as you sign it";
-            strNewPasswordPrompt                = "A password of your choice";
-            strPleaseWait                       = "Please wait...";
-            strUserHelpCompleteRegistration     = "To complete your registration, please provide:";
-            strSeeYouLaterPopUpTitle            = "See you later!";
-            strSeeYouLaterPopUpMessage          = "You can safely leave Scola. We'll continue next time your drop by.";
-            strWelcomeBackPopUpTitle            = "Welcome back!";
-            strWelcomeBackPopUpMessage          = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
-            strScolaDescription                 = "[noun] a group of people who interact, team up, and/or depend on each other in day-to-day activities.";
-        }
-    }
-    
-    
-    private void setRegistrationView1Strings(String language)
-    {
-        if ("nb".equals(language)) {
-            strRegistrationView1Title           = "Adresse, fødselsdato";
-            strRegistrationView1BackButtonTitle = "Adresse";
-            strAddressUserHelp                  = "Adressen din:";
-            strProvideAddressUserHelp           = "Hva er adressen din?";
-            strVerifyAddressUserHelp            = "Verifiser adressen din:";
-            strAddressLine1Prompt               = "Adresselinje 1";
-            strAddressLine2Prompt               = "Adresselinje 2";
-            strPostCodeAndCityPrompt            = "Postnummer og poststed";
-            strDateOfBirthUserHelp              = "Når ble du født?";
-            strVerifyDateOfBirthUserHelp        = "Verifiser fødselsdatoen din:";
-            strDateOfBirthPrompt                = "Bruk datohjulene til å angi fødselsdato";
-            strDateOfBirthClickHerePrompt       = "Fødselsdatoen din";
-        } else {
-            strRegistrationView1Title           = "Address, birth date";
-            strRegistrationView1BackButtonTitle = "Address";
-            strAddressUserHelp                  = "Your address:";
-            strProvideAddressUserHelp           = "What is your home address?";
-            strVerifyAddressUserHelp            = "Verify your home address:";
-            strAddressLine1Prompt               = "Address line 1";
-            strAddressLine2Prompt               = "Address line 2";
-            strPostCodeAndCityPrompt            = "Postal code and city/town";
-            strDateOfBirthUserHelp              = "When were you born?";
-            strVerifyDateOfBirthUserHelp        = "Verify your birth date:";
-            strDateOfBirthPrompt                = "Use the date wheels to enter your birth date";
-            strDateOfBirthClickHerePrompt       = "Your birth date";
-        }
-    }
-    
-    
-    private void setRegistrationView2Strings(String language)
-    {
-        if ("nb".equals(language)) {
-            strRegistrationView2Title           = "Kjønn, telefon";
-            strFemale                           = "Kvinne";
-            strFemaleMinor                      = "Jente";
-            strMale                             = "Mann";
-            strMaleMinor                        = "Gutt";
-            strGenderUserHelp                   = "Er du %@ eller %@?";
-            strMobilePhoneUserHelp              = "Hva er mobilnummeret ditt?";
-            strVerifyMobilePhoneUserHelp        = "Verifiser mobilnummeret ditt:";
-            strMobilePhonePrompt                = "Mobilnummeret ditt";
-            strLandlineUserHelp                 = "Hjemmenummeret ditt:";
-            strProvideLandlineUserHelp          = "Hva er hjemmenummeret ditt?";
-            strVerifyLandlineUserHelp           = "Verifiser hjemmenummeret ditt:";
-            strLandlinePrompt                   = "Hjemmenummeret ditt";
-        } else {
-            strRegistrationView2Title           = "Gender, phone";
-            strFemale                           = "Woman";
-            strFemaleMinor                      = "Girl";
-            strMale                             = "Man";
-            strMaleMinor                        = "Boy";
-            strGenderUserHelp                   = "Are you a %@ or a %@?";
-            strMobilePhoneUserHelp              = "What is your mobile phone number?";
-            strVerifyMobilePhoneUserHelp        = "Verify your mobile phone number:";
-            strMobilePhonePrompt                = "Your mobile phone number";
-            strLandlineUserHelp                 = "Your home phone number:";
-            strProvideLandlineUserHelp          = "What is your home phone number?";
-            strVerifyLandlineUserHelp           = "Verify your home phone number:";
-            strLandlinePrompt                   = "Your home phone number";
-        }
-    }
-    
+    public String strMembershipViewTitleDefault;
+    public String strMembershipViewTitleMyPlace;
+    public String strMembershipViewTitleOurPlace;
+    public String strHouseholdMembers;
+    public String strDeleteConfirmation;
     
     private void setMembershipViewStrings(String language)
     {
-        strMembershipViewHomeScolaTitle1 = strMyPlace;
-        strMembershipViewHomeScolaTitle2 = strOurPlace;
+        strMembershipViewTitleMyPlace  = strMyPlace;
+        strMembershipViewTitleOurPlace = strOurPlace;
         
-        if ("nb".equals(language)) {
-            strMembershipViewDefaultTitle       = "Medlemmer";
-            strHouseholdMembers                 = "Medlemmer i husstanden";
-            strHouseholdMemberListFooter        = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
-            strDeleteConfirmation               = "Ta bort";
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strMembershipViewTitleDefault = "Medlemmer";
+            strHouseholdMembers           = "Medlemmer i husstanden";
+            strDeleteConfirmation         = "Ta bort";
         } else {
-            strMembershipViewDefaultTitle       = "Members";
-            strHouseholdMembers                 = "Household members";
-            strHouseholdMemberListFooter        = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
-            strDeleteConfirmation               = "Remove";
+            strMembershipViewTitleDefault = "Members";
+            strHouseholdMembers           = "Household members";
+            strDeleteConfirmation         = "Remove";
         }
     }
     
+    
+    /* ==== ScMemberView STRINGS ==== */
+    
+    public String strMemberViewTitleAboutYou;
+    public String strMemberViewTitleNewMember;
+    public String strMemberViewTitleNewHouseholdMember;
+    public String strGenderActionSheetTitle;
     
     private void setMemberViewStrings(String language)
     {
-        if ("nb".equals(language)) {
-            strAboutYouViewTitle                = "Om deg";
-            strNewMemberViewTitle               = "Nytt medlem";
-            strNewHouseholdMemberViewTitle      = "I husstanden";
-            strGenderActionSheetTitle           = "Er %@ %@ eller %@?";           
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strMemberViewTitleAboutYou           = "Om deg";
+            strMemberViewTitleNewMember          = "Nytt medlem";
+            strMemberViewTitleNewHouseholdMember = "I husstanden";
+            strGenderActionSheetTitle            = "Er %@ %@ eller %@?";           
         } else {
-            strAboutYouViewTitle                = "About you";
-            strNewMemberViewTitle               = "New member";
-            strNewHouseholdMemberViewTitle      = "In our houshold";
-            strGenderActionSheetTitle           = "Is %@ a %@ or a %@?";
+            strMemberViewTitleAboutYou           = "About you";
+            strMemberViewTitleNewMember          = "New member";
+            strMemberViewTitleNewHouseholdMember = "In our houshold";
+            strGenderActionSheetTitle            = "Is %@ a %@ or a %@?";
         }
-    }
-    
-    
-    private void setErrorAndAlertMessages(String language) 
-    {
-        if ("nb".equals(language)) {
-            strNoInternetError                  = "Ingen internettforbindelse.";
-            strServerErrorAlert                 = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
-            strInvalidNameTitle                 = "Ufullstendig navn";
-            strInvalidNameAlert                 = "Du må oppgi både fornavn og etternavn.";
-            strInvalidEmailTitle                = "Ugyldig epostadresse";
-            strInvalidEmailAlert                = "Du må oppgi en gyldig epostadresse.";
-            strInvalidPasswordTitle             = "For kort passord";
-            strInvalidPasswordAlert             = "Passordet må inneholde minimum %d tegn.";
-            strInvalidDateOfBirthTitle          = "Fødselsdato mangler";
-            strInvalidDateOfBirthAlert          = "Du må oppgi en gyldig fødselsdato.";
-            strInvalidGenderTitle               = "%@ eller %@?";
-            strInvalidGenderAlert               = "Du må oppgi om du er %@ eller %@.";
-            strEmailSentAlertTitle              = "Registreringskode sendt";
-            strEmailSentAlert                   = "En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
-            strEmailSentToInviteeTitle          = "Velkommen til Scola!";
-            strEmailSentToInviteeAlert          = "Takk for at du tar imot scola-invitasjonen(e) du har mottatt. En epost med din personlige registreringskode er sendt til %@. Har du tilgang til eposten slik at du kan fortsette nå?";
-            strPasswordsDoNotMatchTitle         = "Ugyldig passord";
-            strPasswordsDoNotMatchAlert         = "Passordet stemmer ikke med det du oppga tidligere. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
-            strInvalidRegistrationCodeTitle     = "Ugyldig registreringskode";
-            strInvalidRegistrationCodeAlert     = "Registreringskoden stemmer ikke med den du har mottatt på epost. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
-            strUserExistsMustLogInAlert         = "Det ser ut som du prøver å logge inn. Du blir nå tatt til innloggingsdialogen.";
-            strNotLoggedInAlert                 = "Feil epostadresse eller passord. Vennligst prøv igjen.";
-            strNoAddressTitle                   = "Adresse mangler";
-            strNoAddressAlert                   = "Du må oppgi en adresse. Det holder at ett av adressefeltene er utfylt.";
-            strNoMobileNumberTitle              = "Mobilnummer mangler";
-            strNoMobileNumberAlert              = "Du må oppgi et mobilnummer";
-            strNoPhoneNumberTitle               = "Telefonnummer mangler";
-            strNoPhoneNumberAlert               = "Du må oppgi et telefonnummer.";
-            strIncompleteRegistrationTitle      = "Ufullstendig registrering";
-            strIncompleteRegistrationAlert      = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
-        } else {
-            strNoInternetError                  = "No internet connection.";
-            strServerErrorAlert                 = "An error has occurred. Please try again later. [%d: \"%@\"]";
-            strInvalidNameTitle                 = "Incomplete name";
-            strInvalidNameAlert                 = "You must provide both given and family names.";
-            strInvalidEmailTitle                = "Invalid email address";
-            strInvalidEmailAlert                = "Please provide a valid email address.";
-            strInvalidPasswordTitle             = "Password too short";
-            strInvalidPasswordAlert             = "The password must contain minimum %d characters.";
-            strInvalidDateOfBirthTitle          = "Missing birth date";
-            strInvalidDateOfBirthAlert          = "You must provide a valid date of birth.";
-            strInvalidGenderTitle               = "%@ or %@";
-            strInvalidGenderAlert               = "You must indicate your gender.";
-            strEmailSentAlertTitle              = "Registration code sent";
-            strEmailSentAlert                   = "An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
-            strEmailSentToInviteeTitle          = "Welcome to Scola!";
-            strEmailSentToInviteeAlert          = "Thank you for accepting the scola invitation(s) you have received. An email with your personal registration code has been sent to %@. Have you got access to your email so that you can continue now?";
-            strPasswordsDoNotMatchTitle         = "Invalid password";
-            strPasswordsDoNotMatchAlert         = "The password does not match the one you entered before. You can try again, or you can go back and start over.";
-            strInvalidRegistrationCodeTitle     = "Invalid registration code";
-            strInvalidRegistrationCodeAlert     = "The registration code does not match the one you have received by email. You can try again, or you can go back and start over.";
-            strUserExistsMustLogInAlert         = "It looks like you are trying to log in. You will now be taken to the login dialog.";
-            strNotLoggedInAlert                 = "Incorrent email or password. Please try again.";
-            strNoAddressTitle                   = "Missing address";
-            strNoAddressAlert                   = "Please provide an address. It is sufficient to fill in one of the fields.";
-            strNoMobileNumberTitle              = "Missing mobile number";
-            strNoMobileNumberAlert              = "You must provide a mobile phone number";
-            strNoPhoneNumberTitle               = "Missing phone number";
-            strNoPhoneNumberAlert               = "You must provide a phone number.";
-            strIncompleteRegistrationTitle      = "Incomplete registration";
-            strIncompleteRegistrationAlert      = "You must complete your registration before you can start using Scola.";
-        }
-    }
-    
-    
-    private void setButtonTitles(String language)
-    {
-        if ("nb".equals(language)) {
-            strOK                               = "OK";
-            strCancel                           = "Avbryt";
-            strLogIn                            = "Logg inn";
-            strNewUser                          = "Ny bruker";
-            strHaveAccess                       = "Har tilgang";
-            strHaveCode                         = "Har kode";
-            strLater                            = "Nei, ikke nå";
-            strTryAgain                         = "Prøv igjen";
-            strGoBack                           = "Gå tilbake";
-            strContinue                         = "Fortsett";
-            strNext                             = "Neste";
-            strDone                             = "Ferdig";
-            strUseConfigured                    = "Lagret navn";
-            strUseNew                           = "Nytt navn";
-        } else {
-            strOK                               = "OK";
-            strCancel                           = "Cancel";
-            strLogIn                            = "Log in";
-            strNewUser                          = "New user";
-            strHaveAccess                       = "Have access";
-            strHaveCode                         = "Have code";
-            strLater                            = "No, not now";
-            strTryAgain                         = "Try again";
-            strGoBack                           = "Go back";
-            strContinue                         = "Continue";
-            strNext                             = "Next";
-            strDone                             = "Done";
-            strUseConfigured                    = "Configured";
-            strUseNew                           = "New name";
-        }
-    }
-    
-    
-    public ScStrings()
-    {
-    	this("en");
-    }
-    
-    
-    public ScStrings(String language)
-    {
-        setScolaEULA(language);
-        
-        setGenericLabels(language);
-        setGenericScolaStrings(language);
-        
-        setAuthViewStrings(language);
-        setOldAuthViewStrings(language);
-        setRegistrationView1Strings(language);
-        setRegistrationView2Strings(language);
-        setMembershipViewStrings(language);
-        setMemberViewStrings(language);
-        
-        setErrorAndAlertMessages(language);
-        setButtonTitles(language);
     }
 }
