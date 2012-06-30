@@ -59,8 +59,6 @@
 						<exclude>com.google.appengine:appengine-api-1.0-sdk</exclude>
 						<exclude>com.google.appengine:appengine-api-labs</exclude>
 						<exclude>org.apache.geronimo.specs:geronimo-jpa_3.0_spec</exclude>
-						<exclude>org.apache.geronimo.specs:geronimo-jta_1.1_spec</exclude>
-						<exclude>javax.jdo:jdo2-api</exclude>
 					</excludes>
 					<additionalConfig>
 						<file>
@@ -200,13 +198,6 @@ warSrcDirIsOutput=true]]>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-        <dependency>
-            <groupId>com.google.appengine</groupId>
-            <artifactId>appengine-api-labs</artifactId>
-            <version>${gae.version}</version>
-            <type>jar</type>
-            <scope>runtime</scope>
-		</dependency>
 		<dependency>
             <groupId>com.google.appengine</groupId>
             <artifactId>appengine-jsr107cache</artifactId>
@@ -218,34 +209,6 @@ warSrcDirIsOutput=true]]>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jpa_3.0_spec</artifactId>
 			<version>1.1.1</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jta_1.1_spec</artifactId>
-			<version>1.1.1</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-servlet_2.5_spec</artifactId>
-			<version>1.2</version>
-			<type>jar</type>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-jsp_2.1_spec</artifactId>
-			<version>1.0.1</version>
-			<type>jar</type>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.geronimo.specs</groupId>
-			<artifactId>geronimo-el_1.0_spec</artifactId>
-			<version>1.0.1</version>
 			<type>jar</type>
 			<scope>runtime</scope>
 		</dependency>
@@ -272,11 +235,6 @@ warSrcDirIsOutput=true]]>
 			<version>3.1</version>
 		</dependency>
 		<dependency>
-		    <groupId>commons-codec</groupId>
-		    <artifactId>commons-codec</artifactId>
-		    <version>1.6</version>
-		</dependency>
-		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>3.8.1</version>
@@ -286,9 +244,8 @@ warSrcDirIsOutput=true]]>
 
 	<properties>
 		<maven.executable>mvn</maven.executable>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resteasy.version>2.3.0.GA</resteasy.version>
-		<gae.version>1.6.5</gae.version>
-		<jdo.version>2.3-eb</jdo.version>
+		<gae.version>1.7.0</gae.version>
 	</properties>
 </project>

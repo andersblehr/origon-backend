@@ -33,7 +33,6 @@ public class ScMeta
     
     private boolean isValid = true;
     
-    private String name = null;
     private String userId = null;
     private String scolaId = null;
     private String authToken = null;
@@ -52,7 +51,7 @@ public class ScMeta
         }
         
         for (int i = 10; i < 16; i++) {
-            symbols[i] = (char)('A' + (i - 10));
+            symbols[i] = (char)('a' + (i - 10));
         }
     }
     
@@ -187,7 +186,6 @@ public class ScMeta
                 authInfo = new ScAuthInfo();
                 
                 authInfo.userId = userId;
-                authInfo.name = name;
                 authInfo.deviceId = deviceId;
                 authInfo.passwordHash = passwordHash;
                 authInfo.registrationCode = registrationCode;
@@ -273,16 +271,6 @@ public class ScMeta
             } else {
                 ScLog.log().warning(meta(false) + "Auth token is missing.");
             }
-        }
-    }
-    
-    
-    public void validateName(String name)
-    {
-        if ((name != null) && (name.length() > 0) && (name.indexOf(" ") > 0)) {
-            this.name = name;
-        } else {
-            ScLog.log().warning(meta(false) + String.format("'%s' is not a full name.", name));
         }
     }
     

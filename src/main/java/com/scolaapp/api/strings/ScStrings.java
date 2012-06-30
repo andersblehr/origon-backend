@@ -37,7 +37,7 @@ public class ScStrings
     
     private void setEULA(String language)
     {
-        if ("nb".equals(language)) {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strEULA    = "– MELLOM OSS –\n" +
                          "\n" +
                          "Du er nå nesten klar til å begynne å bruke Scola. Men for at Scola skal være til nytte for deg og dine, må vi be deg gi noen opplysninger om husstanden din. Vi lover derfor at:\n" +
@@ -201,11 +201,11 @@ public class ScStrings
     private void setHeaderAndFooterStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte registreringen din.";
+            strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte identiteten din.";
             strConfirmRegistrationFooter = "Oppgi registreringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
             strHouseholdMemberListFooter = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
         } else {
-            strSignInOrRegisterFooter    = "When you register, you will receive an email with a registration code that you must provide in order to confirm your registration.";
+            strSignInOrRegisterFooter    = "When you register, you will receive an email with a registration code that you must provide in order to confirm your identity.";
             strConfirmRegistrationFooter = "Please provide the registration code that was emailed to you, or come back later if you don't have access to your email at this time.";
             strHouseholdMemberListFooter = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
         }
@@ -217,23 +217,23 @@ public class ScStrings
     public String strOK;
     public String strCancel;
     public String strRetry;
+    public String strStartOver;
     public String strHaveCode;
-    public String strGoBack;
     
     private void setButtonTitles(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOK         = "OK";
-            strCancel     = "Avbryt";
-            strRetry      = "Prøv igjen";
-            strHaveCode   = "Har kode";
-            strGoBack     = "Gå tilbake";
+            strOK        = "OK";
+            strCancel    = "Avbryt";
+            strRetry     = "Prøv igjen";
+            strStartOver = "Gå tilbake";
+            strHaveCode  = "Har kode";
         } else {
-            strOK         = "OK";
-            strCancel     = "Cancel";
-            strRetry      = "Retry";
-            strHaveCode   = "Have code";
-            strGoBack     = "Go back";
+            strOK        = "OK";
+            strCancel    = "Cancel";
+            strRetry     = "Retry";
+            strStartOver = "Start over";
+            strHaveCode  = "Have code";
         }
     }
     
@@ -250,10 +250,8 @@ public class ScStrings
     public String strInvalidPasswordAlert;
     public String strInvalidDateOfBirthTitle;
     public String strInvalidDateOfBirthAlert;
-    public String strInvalidRegistrationCodeTitle;
-    public String strInvalidRegistrationCodeAlert;
-    public String strPasswordsDoNotMatchTitle;
-    public String strPasswordsDoNotMatchAlert;
+    public String strUserConfirmationFailedTitle;
+    public String strUserConfirmationFailedAlert;
     public String strNoAddressTitle;
     public String strNoAddressAlert;
     public String strNoMobileNumberTitle;
@@ -279,10 +277,8 @@ public class ScStrings
             strInvalidPasswordAlert         = "Passordet må inneholde minimum %d tegn.";
             strInvalidDateOfBirthTitle      = "Fødselsdato mangler";
             strInvalidDateOfBirthAlert      = "Du må oppgi en gyldig fødselsdato.";
-            strInvalidRegistrationCodeTitle = "Ugyldig registreringskode";
-            strInvalidRegistrationCodeAlert = "Registreringskoden stemmer ikke med den du har mottatt på epost. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
-            strPasswordsDoNotMatchTitle     = "Ugyldig passord";
-            strPasswordsDoNotMatchAlert     = "Passordet stemmer ikke med det du oppga tidligere. Du kan prøve igjen, eller du kan gå tilbake og start på nytt.";
+            strUserConfirmationFailedTitle  = "Bekreftelse mislyktes";
+            strUserConfirmationFailedAlert  = "Det ser ut til at du enten har mistet registreringskoden som ble sendt på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
             strNoAddressTitle               = "Adresse mangler";
             strNoAddressAlert               = "Du må oppgi en adresse. Det holder at ett av adressefeltene er utfylt.";
             strNoMobileNumberTitle          = "Mobilnummer mangler";
@@ -290,7 +286,7 @@ public class ScStrings
             strNoPhoneNumberTitle           = "Telefonnummer mangler";
             strNoPhoneNumberAlert           = "Du må oppgi et telefonnummer.";
             strWelcomeBackTitle             = "Velkommen tilbake!";
-            strWelcomeBackAlert             = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og få tilsendt en ny registreringskode.";
+            strWelcomeBackAlert             = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
             strIncompleteRegistrationTitle  = "Ufullstendig registrering";
             strIncompleteRegistrationAlert  = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
         } else {
@@ -304,10 +300,8 @@ public class ScStrings
             strInvalidPasswordAlert         = "The password must contain minimum %d characters.";
             strInvalidDateOfBirthTitle      = "Missing birth date";
             strInvalidDateOfBirthAlert      = "You must provide a valid date of birth.";
-            strInvalidRegistrationCodeTitle = "Invalid registration code";
-            strInvalidRegistrationCodeAlert = "The registration code does not match the one you have received by email. You can try again, or you can go back and start over.";
-            strPasswordsDoNotMatchTitle     = "Invalid password";
-            strPasswordsDoNotMatchAlert     = "The password does not match the one you entered before. You can try again, or you can go back and start over.";
+            strUserConfirmationFailedTitle  = "Confirmation failed";
+            strUserConfirmationFailedAlert  = "It looks like you may have lost the registration code that was sent to you by email, or forgotten the password you provided. Let's start over.";
             strNoAddressTitle               = "Missing address";
             strNoAddressAlert               = "Please provide an address. It is sufficient to fill in one of the fields.";
             strNoMobileNumberTitle          = "Missing mobile number";
@@ -315,7 +309,7 @@ public class ScStrings
             strNoPhoneNumberTitle           = "Missing phone number";
             strNoPhoneNumberAlert           = "You must provide a phone number.";
             strWelcomeBackTitle             = "Welcome back!";
-            strWelcomeBackAlert             = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and receive a new registration code.";
+            strWelcomeBackAlert             = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and start over.";
             strIncompleteRegistrationTitle  = "Incomplete registration";
             strIncompleteRegistrationAlert  = "You must complete your registration before you can start using Scola.";
         }

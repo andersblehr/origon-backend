@@ -31,56 +31,6 @@ public class ScAuthHandler
     
     
     @GET
-    @Path("register")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response registerUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                 @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
-                                 @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
-                                 @QueryParam(ScURLParams.APP_VERSION) String appVersion,
-                                 @QueryParam(ScURLParams.NAME) String name)
-    {
-        m = new ScMeta(deviceId, deviceType, appVersion);
-        
-        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.REGISTRATION);
-        m.validateName(name);
-        
-        ScAuthInfo authInfo = null;
-        
-        if (m.isValid()) {
-            authInfo = m.getAuthInfo();
-            
-            if (!authInfo.didRegister) {
-                m.getDAO().ofy().put(authInfo);
-                
-                Session session = Session.getInstance(new Properties());
-
-                try {
-                    Message msg = new MimeMessage(session);
-                    
-                    // TODO: Localise message
-                    // TODO: Provide URL directly to app on device
-                    msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
-                    msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-                    msg.setSubject("Complete your registration with Scola");
-                    msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
-                    
-                    Transport.send(msg);
-                    
-                    ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
-                } catch (MessagingException e) {
-                    ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
-            }
-        } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        return Response.status(HttpServletResponse.SC_OK).entity(authInfo).build();
-    }
-    
-    
-    @GET
     @Path("confirm")
     @Produces(MediaType.APPLICATION_JSON)
     public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,

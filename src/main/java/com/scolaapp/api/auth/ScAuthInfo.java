@@ -14,7 +14,6 @@ public class ScAuthInfo
 {
     public @Id String userId;
     
-    public String name;
     public String homeScolaId;
     public String deviceId;
     public String passwordHash;
