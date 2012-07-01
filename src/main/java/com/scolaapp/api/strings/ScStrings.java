@@ -130,10 +130,10 @@ public class ScStrings
     public String strEmailPrompt;
     public String strDateOfBirthPrompt;
     public String strMobilePhonePrompt;
-    public String strAddressLine1Prompt;
-    public String strAddressLine2Prompt;
-    public String strPostCodeAndCityPrompt;
+    public String strUserWebsitePrompt;
+    public String strAddressPrompt;
     public String strLandlinePrompt;
+    public String strScolaWebsitePrompt;
     
     private void setPrompts(String language)
     {
@@ -147,10 +147,10 @@ public class ScStrings
             strEmailPrompt            = "En gyldig epostadresse";
             strDateOfBirthPrompt      = "Fødselsdato";
             strMobilePhonePrompt      = "Mobilnummer";
-            strAddressLine1Prompt     = "Adresselinje 1";
-            strAddressLine2Prompt     = "Adresselinje 2";
-            strPostCodeAndCityPrompt  = "Postnummer og poststed";
+            strUserWebsitePrompt      = "Nettside, blogg el.tilsv.";
+            strAddressPrompt          = "Adresse (bruk komma)";
             strLandlinePrompt         = "Telefonnummer";
+            strScolaWebsitePrompt     = "Hjemmeside";
         } else {
             strAuthEmailPrompt        = "Your email address";
             strPasswordPrompt         = "Your password";
@@ -161,10 +161,10 @@ public class ScStrings
             strEmailPrompt            = "A valid email address";
             strDateOfBirthPrompt      = "Date of birth";
             strMobilePhonePrompt      = "Mobile telephone number";
-            strAddressLine1Prompt     = "Address line 1";
-            strAddressLine2Prompt     = "Address line 2";
-            strPostCodeAndCityPrompt  = "Postal code and city/town";
+            strUserWebsitePrompt      = "Web page, blog or similar";
+            strAddressPrompt          = "Address (use comma)";
             strLandlinePrompt         = "Telephone number";
+            strScolaWebsitePrompt     = "Home page";
         }
     }
     
@@ -173,21 +173,39 @@ public class ScStrings
     
     public String strSignInOrRegisterLabel;
     public String strConfirmRegistrationLabel;
+    public String strSingleLetterEmailLabel;
+    public String strSingleLetterMobilePhoneLabel;
+    public String strSingleLetterDateOfBirthLabel;
+    public String strSingleLetterAddressLabel;
+    public String strSingleLetterLandlineLabel;
+    public String strSingleLetterWebsiteLabel;
     public String strAddressLabel;
     public String strLandlineLabel;
     
     private void setLabels(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strSignInOrRegisterLabel    = "Logg på eller registrer ny bruker";
-            strConfirmRegistrationLabel = "Oppgi registreringskoden din";
-            strAddressLabel             = "Adresse";
-            strLandlineLabel            = "Telefon";
+            strSignInOrRegisterLabel        = "Logg på eller registrer ny bruker";
+            strConfirmRegistrationLabel     = "Oppgi registreringskoden din";
+            strSingleLetterEmailLabel       = "e:";
+            strSingleLetterMobilePhoneLabel = "m:";
+            strSingleLetterDateOfBirthLabel = "f:";
+            strSingleLetterAddressLabel     = "a:";
+            strSingleLetterLandlineLabel    = "t:";
+            strSingleLetterWebsiteLabel     = "w:";
+            strAddressLabel                 = "Adresse";
+            strLandlineLabel                = "Telefon";
         } else {
-            strSignInOrRegisterLabel    = "Sign in or register new user";
-            strConfirmRegistrationLabel = "Provide your registration code";
-            strAddressLabel             = "Address";
-            strLandlineLabel            = "Telephone";
+            strSignInOrRegisterLabel        = "Sign in or register new user";
+            strConfirmRegistrationLabel     = "Provide your registration code";
+            strSingleLetterEmailLabel       = "e:";
+            strSingleLetterMobilePhoneLabel = "m:";
+            strSingleLetterDateOfBirthLabel = "b:";
+            strSingleLetterAddressLabel     = "a:";
+            strSingleLetterLandlineLabel    = "p:";
+            strSingleLetterWebsiteLabel     = "w:";
+            strAddressLabel                 = "Address";
+            strLandlineLabel                = "Telephone";
         }
     }
     
