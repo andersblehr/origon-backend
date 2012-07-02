@@ -73,8 +73,10 @@ public class ScStrings
     
     public String strPleaseWait;
     public String strAbout;
-    public String strYouSubject;
-    public String strYouObject;
+    public String strToBe2ndPSg;
+    public String strToBe3rdPSg;
+    public String strYouNom;
+    public String strYouAcc;
     public String strHousehold;
     public String strFemale;
     public String strFemaleMinor;
@@ -90,8 +92,10 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strPleaseWait      = "Vent litt...";
             strAbout           = "Om";
-            strYouSubject      = "Du";
-            strYouObject       = "Deg";
+            strToBe2ndPSg      = "Er";
+            strToBe3rdPSg      = "Er";
+            strYouNom          = "Du";
+            strYouAcc          = "Deg";
             strFemale          = "Kvinne";
             strFemaleMinor     = "Jente";
             strMale            = "Mann";
@@ -104,8 +108,10 @@ public class ScStrings
         } else {
             strPleaseWait      = "Please wait...";
             strAbout           = "About";
-            strYouSubject      = "You";
-            strYouObject       = "You";
+            strToBe2ndPSg      = "Are";
+            strToBe3rdPSg      = "Is";
+            strYouNom          = "You";
+            strYouAcc          = "You";
             strFemale          = "Woman";
             strFemaleMinor     = "Girl";
             strMale            = "Man";
@@ -131,40 +137,46 @@ public class ScStrings
     public String strDateOfBirthPrompt;
     public String strMobilePhonePrompt;
     public String strUserWebsitePrompt;
-    public String strAddressPrompt;
-    public String strLandlinePrompt;
+    public String strAddressLine1Prompt;
+    public String strAddressLine2Prompt;
+    public String strHouseholdLandlinePrompt;
+    public String strScolaLandlinePrompt;
     public String strScolaWebsitePrompt;
     
     private void setPrompts(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strAuthEmailPrompt        = "Epostadressen din";
-            strPasswordPrompt         = "Passordet ditt";
-            strRegistrationCodePrompt = "Registreringskode fra epost";
-            strRepeatPasswordPrompt   = "Gjenta passordet ditt";
-            strPhotoPrompt            = "Bilde";
-            strNamePrompt             = "Fullt navn";
-            strEmailPrompt            = "En gyldig epostadresse";
-            strDateOfBirthPrompt      = "Fødselsdato";
-            strMobilePhonePrompt      = "Mobilnummer";
-            strUserWebsitePrompt      = "Nettside, blogg el.tilsv.";
-            strAddressPrompt          = "Adresse (bruk komma)";
-            strLandlinePrompt         = "Telefonnummer";
-            strScolaWebsitePrompt     = "Hjemmeside";
+            strAuthEmailPrompt         = "Epostadressen din";
+            strPasswordPrompt          = "Passordet ditt";
+            strRegistrationCodePrompt  = "Registreringskode fra epost";
+            strRepeatPasswordPrompt    = "Gjenta passordet ditt";
+            strPhotoPrompt             = "Bilde";
+            strNamePrompt              = "Fullt navn";
+            strEmailPrompt             = "En gyldig epostadresse";
+            strDateOfBirthPrompt       = "Fødselsdato";
+            strMobilePhonePrompt       = "Mobilnummer";
+            strUserWebsitePrompt       = "Nettside, blogg el.tilsv.";
+            strAddressLine1Prompt      = "Gateadresse";
+            strAddressLine2Prompt      = "Postnummer og -sted";
+            strHouseholdLandlinePrompt = "Hjemmetelefonnummer";
+            strScolaLandlinePrompt     = "Telefonnummer til kontaktperson";
+            strScolaWebsitePrompt      = "Hjemmeside";
         } else {
-            strAuthEmailPrompt        = "Your email address";
-            strPasswordPrompt         = "Your password";
-            strRegistrationCodePrompt = "Registration code from email";
-            strRepeatPasswordPrompt   = "Repeat your password";
-            strPhotoPrompt            = "Photo";
-            strNamePrompt             = "Full name";
-            strEmailPrompt            = "A valid email address";
-            strDateOfBirthPrompt      = "Date of birth";
-            strMobilePhonePrompt      = "Mobile telephone number";
-            strUserWebsitePrompt      = "Web page, blog or similar";
-            strAddressPrompt          = "Address (use comma)";
-            strLandlinePrompt         = "Telephone number";
-            strScolaWebsitePrompt     = "Home page";
+            strAuthEmailPrompt         = "Your email address";
+            strPasswordPrompt          = "Your password";
+            strRegistrationCodePrompt  = "Registration code from email";
+            strRepeatPasswordPrompt    = "Repeat your password";
+            strPhotoPrompt             = "Photo";
+            strNamePrompt              = "Full name";
+            strEmailPrompt             = "A valid email address";
+            strDateOfBirthPrompt       = "Date of birth";
+            strMobilePhonePrompt       = "Mobile phone number";
+            strUserWebsitePrompt       = "Web page, blog or similar";
+            strAddressLine1Prompt      = "Street address";
+            strAddressLine2Prompt      = "Postal code and city/town";
+            strHouseholdLandlinePrompt = "Home telephone number";
+            strScolaLandlinePrompt     = "Contact phone number";
+            strScolaWebsitePrompt      = "Home page";
         }
     }
     
@@ -260,22 +272,8 @@ public class ScStrings
     
     public String strNoInternetError;
     public String strServerErrorAlert;
-    public String strInvalidNameTitle;
-    public String strInvalidNameAlert;
-    public String strInvalidEmailTitle;
-    public String strInvalidEmailAlert;
-    public String strInvalidPasswordTitle;
-    public String strInvalidPasswordAlert;
-    public String strInvalidDateOfBirthTitle;
-    public String strInvalidDateOfBirthAlert;
     public String strUserConfirmationFailedTitle;
     public String strUserConfirmationFailedAlert;
-    public String strNoAddressTitle;
-    public String strNoAddressAlert;
-    public String strNoMobileNumberTitle;
-    public String strNoMobileNumberAlert;
-    public String strNoPhoneNumberTitle;
-    public String strNoPhoneNumberAlert;
     public String strWelcomeBackTitle;
     public String strWelcomeBackAlert;
     public String strIncompleteRegistrationTitle;
@@ -287,22 +285,8 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strNoInternetError              = "Ingen internettforbindelse.";
             strServerErrorAlert             = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
-            strInvalidNameTitle             = "Ufullstendig navn";
-            strInvalidNameAlert             = "Du må oppgi både fornavn og etternavn.";
-            strInvalidEmailTitle            = "Ugyldig epostadresse";
-            strInvalidEmailAlert            = "Du må oppgi en gyldig epostadresse.";
-            strInvalidPasswordTitle         = "For kort passord";
-            strInvalidPasswordAlert         = "Passordet må inneholde minimum %d tegn.";
-            strInvalidDateOfBirthTitle      = "Fødselsdato mangler";
-            strInvalidDateOfBirthAlert      = "Du må oppgi en gyldig fødselsdato.";
             strUserConfirmationFailedTitle  = "Bekreftelse mislyktes";
             strUserConfirmationFailedAlert  = "Det ser ut til at du enten har mistet registreringskoden som ble sendt på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
-            strNoAddressTitle               = "Adresse mangler";
-            strNoAddressAlert               = "Du må oppgi en adresse. Det holder at ett av adressefeltene er utfylt.";
-            strNoMobileNumberTitle          = "Mobilnummer mangler";
-            strNoMobileNumberAlert          = "Du må oppgi et mobilnummer";
-            strNoPhoneNumberTitle           = "Telefonnummer mangler";
-            strNoPhoneNumberAlert           = "Du må oppgi et telefonnummer.";
             strWelcomeBackTitle             = "Velkommen tilbake!";
             strWelcomeBackAlert             = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
             strIncompleteRegistrationTitle  = "Ufullstendig registrering";
@@ -310,22 +294,8 @@ public class ScStrings
         } else {
             strNoInternetError              = "No internet connection.";
             strServerErrorAlert             = "An error has occurred. Please try again later. [%d: \"%@\"]";
-            strInvalidNameTitle             = "Incomplete name";
-            strInvalidNameAlert             = "You must provide both given and family names.";
-            strInvalidEmailTitle            = "Invalid email address";
-            strInvalidEmailAlert            = "Please provide a valid email address.";
-            strInvalidPasswordTitle         = "Password too short";
-            strInvalidPasswordAlert         = "The password must contain minimum %d characters.";
-            strInvalidDateOfBirthTitle      = "Missing birth date";
-            strInvalidDateOfBirthAlert      = "You must provide a valid date of birth.";
             strUserConfirmationFailedTitle  = "Confirmation failed";
             strUserConfirmationFailedAlert  = "It looks like you may have lost the registration code that was sent to you by email, or forgotten the password you provided. Let's start over.";
-            strNoAddressTitle               = "Missing address";
-            strNoAddressAlert               = "Please provide an address. It is sufficient to fill in one of the fields.";
-            strNoMobileNumberTitle          = "Missing mobile number";
-            strNoMobileNumberAlert          = "You must provide a mobile phone number";
-            strNoPhoneNumberTitle           = "Missing phone number";
-            strNoPhoneNumberAlert           = "You must provide a phone number.";
             strWelcomeBackTitle             = "Welcome back!";
             strWelcomeBackAlert             = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and start over.";
             strIncompleteRegistrationTitle  = "Incomplete registration";
@@ -372,12 +342,12 @@ public class ScStrings
             strMemberViewTitleAboutYou           = "Om deg";
             strMemberViewTitleNewMember          = "Nytt medlem";
             strMemberViewTitleNewHouseholdMember = "I husstanden";
-            strGenderActionSheetTitle            = "Er %@ %@ eller %@?";           
+            strGenderActionSheetTitle            = "%@ %@ %@ eller %@?";           
         } else {
             strMemberViewTitleAboutYou           = "About you";
             strMemberViewTitleNewMember          = "New member";
-            strMemberViewTitleNewHouseholdMember = "In our houshold";
-            strGenderActionSheetTitle            = "Is %@ a %@ or a %@?";
+            strMemberViewTitleNewHouseholdMember = "In the household";
+            strGenderActionSheetTitle            = "%@ %@ a %@ or a %@?";
         }
     }
 }
