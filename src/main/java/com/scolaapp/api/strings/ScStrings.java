@@ -214,7 +214,7 @@ public class ScStrings
             strSingleLetterMobilePhoneLabel = "m:";
             strSingleLetterDateOfBirthLabel = "b:";
             strSingleLetterAddressLabel     = "a:";
-            strSingleLetterLandlineLabel    = "p:";
+            strSingleLetterLandlineLabel    = "t:";
             strSingleLetterWebsiteLabel     = "w:";
             strAddressLabel                 = "Address";
             strLandlineLabel                = "Telephone";
