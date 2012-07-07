@@ -71,7 +71,7 @@ public class ScDAO extends DAOBase
     
     public void putAuthToken(String authToken)
     {
-        ScMemberProxy memberProxy = m.getMemberProxy();
+        ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
         ScMemberResidency residency = null;
         
         Collection<ScAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
@@ -88,7 +88,7 @@ public class ScDAO extends DAOBase
         } else {
             memberProxy.didRegister = true;
             
-            residency = get(getResidencyKey());
+            residency = get(getResidencyKey(m.getUserId()));
             
             if (residency != null) {
                 residency.isActive = true;
@@ -145,10 +145,10 @@ public class ScDAO extends DAOBase
                     newMemberIds.add(entity.entityId);
                     
                     if (entity.entityId.equals(m.getUserId())) {
-                        ScMemberProxy memberProxy = m.getMemberProxy();
+                        ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
                         
                         memberProxy.didRegister = true;
-                        memberProxies.add(m.getMemberProxy());
+                        memberProxies.add(m.getMemberProxy(m.getUserId()));
                     } else {
                         memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
                     }
@@ -211,7 +211,7 @@ public class ScDAO extends DAOBase
     {
         ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));
         
-        Collection<ScMembership> memberships = ofy().get(m.getMemberProxy().membershipKeys).values();
+        Collection<ScMembership> memberships = ofy().get(m.getMemberProxy(m.getUserId()).membershipKeys).values();
         
         Set<ScCachedEntity> fetchedEntities = new HashSet<ScCachedEntity>();
         Set<Key<ScCachedEntity>> additionalEntityKeys = new HashSet<Key<ScCachedEntity>>();
@@ -257,7 +257,7 @@ public class ScDAO extends DAOBase
         if (memberProxy != null) {
             Key<ScMember> memberKey = memberProxy.memberKey;
             Key<ScScola> homeScolaKey = new Key<ScScola>(new Key<ScScola>(ScScola.class, memberProxy.scolaId), ScScola.class, memberProxy.scolaId);
-            Key<ScMemberResidency> residencyKey = getResidencyKey();
+            Key<ScMemberResidency> residencyKey = getResidencyKey(memberId);
             
             memberEntities.addAll(ofy().get(memberKey, homeScolaKey, residencyKey).values());
         }
@@ -266,9 +266,9 @@ public class ScDAO extends DAOBase
     }
     
     
-    private Key<ScMemberResidency> getResidencyKey()
+    private Key<ScMemberResidency> getResidencyKey(String memberId)
     {
-        ScMemberProxy memberProxy = m.getMemberProxy();
+        ScMemberProxy memberProxy = m.getMemberProxy(memberId);
         
         Key<ScScola> homeScolaAncestorKey = new Key<ScScola>(ScScola.class, memberProxy.scolaId);
         String residencyId = String.format("%s$%s", memberProxy.userId, memberProxy.scolaId);

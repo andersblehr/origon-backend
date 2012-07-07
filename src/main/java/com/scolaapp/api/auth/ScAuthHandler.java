@@ -95,7 +95,7 @@ public class ScAuthHandler
         Date fetchDate = new Date(); 
         
         if (m.isValid()) {
-            ScMemberProxy memberProxy = m.getMemberProxy();
+            ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
             
             if ((memberProxy == null) || !memberProxy.didRegister) {
                 authInfo = m.getAuthInfo();

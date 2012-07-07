@@ -18,7 +18,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"scolaKey", "sharedEntityKey"}, ignoreUnknown = true)
 public class ScSharedEntityRef extends ScCachedEntity
 {
     public @NotSaved String sharedEntityId;
