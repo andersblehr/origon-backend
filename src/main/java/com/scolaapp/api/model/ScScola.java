@@ -25,7 +25,8 @@ public class ScScola extends ScCachedEntity
     public String name;
     public @NotSaved(IfNull.class) String descriptionText;
     
-    public @NotSaved(IfNull.class) String address;
+    public @NotSaved(IfNull.class) String addressLine1;
+    public @NotSaved(IfNull.class) String addressLine2;
     public @NotSaved(IfNull.class) String landline;
     public @NotSaved(IfNull.class) Blob photo;
     public @NotSaved(IfNull.class) String website;

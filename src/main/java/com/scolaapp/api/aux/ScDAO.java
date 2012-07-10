@@ -93,7 +93,6 @@ public class ScDAO extends DAOBase
             if (residency != null) {
                 residency.isActive = true;
                 residency.dateModified = new Date();
-                ofy().put(residency);
             }
         }
         
