@@ -17,6 +17,7 @@ import com.googlecode.objectify.condition.IfNull;
 
 import com.scolaapp.api.auth.ScAuthMeta;
 import com.scolaapp.api.model.ScMember;
+import com.scolaapp.api.model.ScMemberResidency;
 import com.scolaapp.api.model.ScMembership;
 import com.scolaapp.api.model.ScScola;
 
@@ -32,11 +33,13 @@ public class ScMemberProxy
     public @NotSaved(IfDefault.class) boolean didRegister = false;
     public @NotSaved(IfNull.class) String passwordHash;
     
+    public @NotSaved(IfEmpty.class) Set<Key<ScAuthMeta>> authMetaKeys;
+    public @NotSaved(IfEmpty.class) Set<Key<ScMembership>> membershipKeys;
+
     public @NotSaved Key<ScScola> scolaKey;
     public @NotSaved Key<ScMember> memberKey;
-    
-    public @NotSaved(IfEmpty.class) Set<Key<ScMembership>> membershipKeys;
-    public @NotSaved(IfEmpty.class) Set<Key<ScAuthMeta>> authMetaKeys;
+    public @NotSaved Set<Key<ScMemberResidency>> residencyKeys;
+    public @NotSaved Set<Key<ScScola>> residenceKeys;
     
     
     public ScMemberProxy() {}
@@ -50,8 +53,8 @@ public class ScMemberProxy
         scolaKey = new Key<ScScola>(ScScola.class, scolaId);
         memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
         
-        membershipKeys = new HashSet<Key<ScMembership>>();
         authMetaKeys = new HashSet<Key<ScAuthMeta>>();
+        membershipKeys = new HashSet<Key<ScMembership>>();
     }
     
     
@@ -61,12 +64,25 @@ public class ScMemberProxy
         scolaKey = new Key<ScScola>(ScScola.class, scolaId);
         memberKey = new Key<ScMember>(scolaKey, ScMember.class, userId);
         
+        if (authMetaKeys == null) {
+            authMetaKeys = new HashSet<Key<ScAuthMeta>>();
+        }
+        
         if (membershipKeys == null) {
             membershipKeys = new HashSet<Key<ScMembership>>();
         }
         
-        if (authMetaKeys == null) {
-            authMetaKeys = new HashSet<Key<ScAuthMeta>>();
+        residencyKeys = new HashSet<Key<ScMemberResidency>>();
+        residenceKeys = new HashSet<Key<ScScola>>();
+        
+        for (Key<ScMembership> membershipKey : membershipKeys) {
+            Key<ScScola> scolaKey = new Key<ScScola>(ScScola.class, membershipKey.getRaw().getParent().getName());
+            String membershipId = membershipKey.getRaw().getName();
+            
+            if (membershipId.startsWith(userId)) {
+                residencyKeys.add(new Key<ScMemberResidency>(scolaKey, ScMemberResidency.class, membershipId));
+                residenceKeys.add(new Key<ScScola>(scolaKey, ScScola.class, membershipId.substring(membershipId.indexOf("$") + 1)));
+            }
         }
     }
 }

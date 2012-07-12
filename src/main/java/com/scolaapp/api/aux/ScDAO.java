@@ -72,9 +72,12 @@ public class ScDAO extends DAOBase
     public void putAuthToken(String authToken)
     {
         ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
-        ScMemberResidency residency = null;
         
+        Collection<ScMemberResidency> memberResidencies = null;
         Collection<ScAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
+        
+        ScMemberResidency residency1 = null;
+        ScMemberResidency residency2 = null;
         
         if (authMetaItems.size() > 0) {
             for (ScAuthMeta authMeta : authMetaItems) {
@@ -88,19 +91,29 @@ public class ScDAO extends DAOBase
         } else {
             memberProxy.didRegister = true;
             
-            residency = get(getResidencyKey(m.getUserId()));
-            
-            if (residency != null) {
-                residency.isActive = true;
-                residency.dateModified = new Date();
+            if (memberProxy.residencyKeys != null) {
+                memberResidencies = ofy().get(memberProxy.residencyKeys).values();
+                
+                for (ScMemberResidency memberResidency : memberResidencies) {
+                    memberResidency.isActive = true;
+                    memberResidency.dateModified = new Date();
+                    
+                    if (residency1 == null) {
+                        residency1 = memberResidency;
+                    } else {
+                        residency2 = memberResidency;
+                    }
+                }
             }
         }
         
         memberProxy.authMetaKeys.add(new Key<ScAuthMeta>(ScAuthMeta.class, authToken));
         ScAuthMeta authMeta = new ScAuthMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
         
-        if (residency != null) {
-            ofy().put(memberProxy, authMeta, residency);
+        if ((residency1 != null) && (residency2 != null)) {
+            ofy().put(memberProxy, authMeta, residency1, residency2);
+        } else if (residency1 != null) {
+            ofy().put(memberProxy, authMeta, residency1);
         } else {
             ofy().put(memberProxy, authMeta);
         }
@@ -255,23 +268,35 @@ public class ScDAO extends DAOBase
         
         if (memberProxy != null) {
             Key<ScMember> memberKey = memberProxy.memberKey;
-            Key<ScScola> homeScolaKey = new Key<ScScola>(new Key<ScScola>(ScScola.class, memberProxy.scolaId), ScScola.class, memberProxy.scolaId);
-            Key<ScMemberResidency> residencyKey = getResidencyKey(memberId);
             
-            memberEntities.addAll(ofy().get(memberKey, homeScolaKey, residencyKey).values());
+            Key<ScMemberResidency> residencyKey1 = null;
+            Key<ScMemberResidency> residencyKey2 = null;
+            Key<ScScola> residenceKey1 = null;
+            Key<ScScola> residenceKey2 = null;
+            
+            for (Key<ScMemberResidency> residencyKey : memberProxy.residencyKeys) {
+                if (residencyKey1 == null) {
+                    residencyKey1 = residencyKey;
+                } else {
+                    residencyKey2 = residencyKey;
+                }
+            }
+            
+            for (Key<ScScola> residenceKey : memberProxy.residenceKeys) {
+                if (residenceKey1 == null) {
+                    residenceKey1 = residenceKey;
+                } else {
+                    residenceKey2 = residenceKey;
+                }
+            }
+            
+            if (residencyKey2 != null) {
+                memberEntities.addAll(ofy().get(memberKey, residencyKey1, residencyKey2, residenceKey1, residenceKey2).values());
+            } else {
+                memberEntities.addAll(ofy().get(memberKey, residencyKey1, residenceKey1).values());
+            }
         }
         
         return memberEntities;
-    }
-    
-    
-    private Key<ScMemberResidency> getResidencyKey(String memberId)
-    {
-        ScMemberProxy memberProxy = m.getMemberProxy(memberId);
-        
-        Key<ScScola> homeScolaAncestorKey = new Key<ScScola>(ScScola.class, memberProxy.scolaId);
-        String residencyId = String.format("%s$%s", memberProxy.userId, memberProxy.scolaId);
-        
-        return new Key<ScMemberResidency>(homeScolaAncestorKey, ScMemberResidency.class, residencyId);
     }
 }
