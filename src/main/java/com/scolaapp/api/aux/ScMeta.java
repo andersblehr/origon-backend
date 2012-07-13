@@ -157,10 +157,10 @@ public class ScMeta
     }
     
     
-    public ScMemberProxy getMemberProxy(String memberId)
+    public ScMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, memberId));
+            memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
             
             if (authPhase == ScAuthPhase.CONFIRMATION) {
                 if (memberProxy == null) {
@@ -190,7 +190,7 @@ public class ScMeta
                 authInfo.passwordHash = passwordHash;
                 authInfo.registrationCode = registrationCode;
                 
-                ScMemberProxy memberProxy = getMemberProxy(userId);
+                ScMemberProxy memberProxy = getMemberProxy();
                 ScMember member = null;
                 
                 if (memberProxy != null) {

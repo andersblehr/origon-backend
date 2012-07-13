@@ -71,7 +71,7 @@ public class ScDAO extends DAOBase
     
     public void putAuthToken(String authToken)
     {
-        ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
+        ScMemberProxy memberProxy = m.getMemberProxy();
         
         Collection<ScMemberResidency> memberResidencies = null;
         Collection<ScAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
@@ -94,9 +94,11 @@ public class ScDAO extends DAOBase
             if (memberProxy.residencyKeys != null) {
                 memberResidencies = ofy().get(memberProxy.residencyKeys).values();
                 
+                Date dateModified = new Date();
+                
                 for (ScMemberResidency memberResidency : memberResidencies) {
                     memberResidency.isActive = true;
-                    memberResidency.dateModified = new Date();
+                    memberResidency.dateModified = dateModified;
                     
                     if (residency1 == null) {
                         residency1 = memberResidency;
@@ -133,7 +135,7 @@ public class ScDAO extends DAOBase
         Set<Key<ScCachedEntity>> entityKeysForDeletion = new HashSet<Key<ScCachedEntity>>();
         Set<Key<ScMemberProxy>> memberProxyKeysForDeletion = new HashSet<Key<ScMemberProxy>>();
         
-        Date now = new Date();
+        Date dateModified = new Date();
         
         for (ScCachedEntity entity : entityList) {
             entity.scolaKey = new Key<ScScola>(ScScola.class, entity.scolaId);
@@ -157,10 +159,10 @@ public class ScDAO extends DAOBase
                     newMemberIds.add(entity.entityId);
                     
                     if (entity.entityId.equals(m.getUserId())) {
-                        ScMemberProxy memberProxy = m.getMemberProxy(m.getUserId());
+                        ScMemberProxy memberProxy = m.getMemberProxy();
                         
                         memberProxy.didRegister = true;
-                        memberProxies.add(m.getMemberProxy(m.getUserId()));
+                        memberProxies.add(memberProxy);
                     } else {
                         memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
                     }
@@ -181,7 +183,7 @@ public class ScDAO extends DAOBase
                 }
             }
             
-            entity.dateModified = now;
+            entity.dateModified = dateModified;
         }
         
         Set<Key<ScMemberProxy>> missingMemberProxyKeys = new HashSet<Key<ScMemberProxy>>();
@@ -223,7 +225,7 @@ public class ScDAO extends DAOBase
     {
         ScLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastFetchDate != null) ? lastFetchDate.toString() : "<dawn of time>"));
         
-        Collection<ScMembership> memberships = ofy().get(m.getMemberProxy(m.getUserId()).membershipKeys).values();
+        Collection<ScMembership> memberships = ofy().get(m.getMemberProxy().membershipKeys).values();
         
         Set<ScCachedEntity> fetchedEntities = new HashSet<ScCachedEntity>();
         Set<Key<ScCachedEntity>> additionalEntityKeys = new HashSet<Key<ScCachedEntity>>();

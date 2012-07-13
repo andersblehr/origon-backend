@@ -25,6 +25,7 @@ public class ScMember extends ScCachedEntity
     public String name;
     public String gender;
     public Date dateOfBirth;
+    public @NotSaved(IfNull.class) String givenName;
     public @NotSaved(IfNull.class) String mobilePhone;
     public @NotSaved(IfNull.class) Blob photo;
     

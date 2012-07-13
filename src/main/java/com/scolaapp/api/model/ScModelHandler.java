@@ -55,7 +55,7 @@ public class ScModelHandler
                     throw new RuntimeException(e);
                 }
             }
-            
+
             fetchDate = new Date();
 
             List<ScCachedEntity> fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);

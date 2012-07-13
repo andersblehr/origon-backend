@@ -144,4 +144,24 @@ public abstract class ScCachedEntity
         
         return entityRef;
     }
+    
+    
+    @Override
+    public boolean equals(Object other)
+    {
+        boolean areEqual = false;
+        
+        if (ScCachedEntity.class.isAssignableFrom(other.getClass())) {
+            areEqual = (((ScCachedEntity)other).hashCode() == this.hashCode());
+        }
+        
+        return areEqual;
+    }
+    
+    
+    @Override
+    public int hashCode()
+    {
+        return String.format("%s$%s", scolaId, entityId).hashCode();
+    }
 }
