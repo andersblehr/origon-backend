@@ -72,12 +72,7 @@ public class ScDAO extends DAOBase
     public void putAuthToken(String authToken)
     {
         ScMemberProxy memberProxy = m.getMemberProxy();
-        
-        Collection<ScMemberResidency> memberResidencies = null;
         Collection<ScAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
-        
-        ScMemberResidency residency1 = null;
-        ScMemberResidency residency2 = null;
         
         if (authMetaItems.size() > 0) {
             for (ScAuthMeta authMeta : authMetaItems) {
@@ -90,35 +85,12 @@ public class ScDAO extends DAOBase
             }
         } else {
             memberProxy.didRegister = true;
-            
-            if (memberProxy.residencyKeys != null) {
-                memberResidencies = ofy().get(memberProxy.residencyKeys).values();
-                
-                Date dateModified = new Date();
-                
-                for (ScMemberResidency memberResidency : memberResidencies) {
-                    memberResidency.isActive = true;
-                    memberResidency.dateModified = dateModified;
-                    
-                    if (residency1 == null) {
-                        residency1 = memberResidency;
-                    } else {
-                        residency2 = memberResidency;
-                    }
-                }
-            }
         }
         
-        memberProxy.authMetaKeys.add(new Key<ScAuthMeta>(ScAuthMeta.class, authToken));
         ScAuthMeta authMeta = new ScAuthMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
+        memberProxy.authMetaKeys.add(new Key<ScAuthMeta>(ScAuthMeta.class, authToken));
         
-        if ((residency1 != null) && (residency2 != null)) {
-            ofy().put(memberProxy, authMeta, residency1, residency2);
-        } else if (residency1 != null) {
-            ofy().put(memberProxy, authMeta, residency1);
-        } else {
-            ofy().put(memberProxy, authMeta);
-        }
+        ofy().put(authMeta, memberProxy);
         
         ScLog.log().fine(m.meta() + String.format("Persisted new auth token (token: %s; user: %s).", authToken, m.getUserId()));
     }
@@ -231,7 +203,7 @@ public class ScDAO extends DAOBase
         Set<Key<ScCachedEntity>> additionalEntityKeys = new HashSet<Key<ScCachedEntity>>();
         
         for (ScMembership membership : memberships) {
-            if (membership.isActive) {
+            if (membership.isActive || (membership.getClass().equals(ScMemberResidency.class))) {
                 Iterable<ScCachedEntity> membershipEntities = null;
                 
                 if (lastFetchDate != null) {
