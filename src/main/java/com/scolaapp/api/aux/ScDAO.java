@@ -233,7 +233,7 @@ public class ScDAO extends DAOBase
     
     
     @SuppressWarnings("unchecked")
-    public List<ScCachedEntity> lookupMember(String memberId)
+    public List<ScCachedEntity> lookupMember(String memberId) // TODO: Bug-prone to return a fixed number of residencies
     {
         ScLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
         
