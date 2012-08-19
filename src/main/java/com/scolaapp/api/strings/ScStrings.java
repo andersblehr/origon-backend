@@ -192,6 +192,7 @@ public class ScStrings
     public String strSingleLetterLandlineLabel;
     public String strSingleLetterWebsiteLabel;
     public String strAddressLabel;
+    public String strAddressesLabel;
     public String strLandlineLabel;
     
     private void setLabels(String language)
@@ -206,6 +207,7 @@ public class ScStrings
             strSingleLetterLandlineLabel    = "t:";
             strSingleLetterWebsiteLabel     = "w:";
             strAddressLabel                 = "Adresse";
+            strAddressesLabel               = "Adresser";
             strLandlineLabel                = "Telefon";
         } else {
             strSignInOrRegisterLabel        = "Sign in or register new user";
@@ -217,6 +219,7 @@ public class ScStrings
             strSingleLetterLandlineLabel    = "t:";
             strSingleLetterWebsiteLabel     = "w:";
             strAddressLabel                 = "Address";
+            strAddressesLabel               = "Addresses";
             strLandlineLabel                = "Telephone";
         }
     }
