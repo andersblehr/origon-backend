@@ -188,9 +188,7 @@ public class ScStrings
     public String strSingleLetterEmailLabel;
     public String strSingleLetterMobilePhoneLabel;
     public String strSingleLetterDateOfBirthLabel;
-    public String strSingleLetterAddressLabel;
     public String strSingleLetterLandlineLabel;
-    public String strSingleLetterWebsiteLabel;
     public String strAddressLabel;
     public String strAddressesLabel;
     public String strLandlineLabel;
@@ -200,12 +198,10 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strSignInOrRegisterLabel        = "Logg på eller registrer ny bruker";
             strConfirmRegistrationLabel     = "Oppgi registreringskoden din";
-            strSingleLetterEmailLabel       = "e:";
-            strSingleLetterMobilePhoneLabel = "m:";
-            strSingleLetterDateOfBirthLabel = "f:";
-            strSingleLetterAddressLabel     = "a:";
-            strSingleLetterLandlineLabel    = "t:";
-            strSingleLetterWebsiteLabel     = "w:";
+            strSingleLetterEmailLabel       = "e";
+            strSingleLetterMobilePhoneLabel = "m";
+            strSingleLetterDateOfBirthLabel = "f";
+            strSingleLetterLandlineLabel    = "t";
             strAddressLabel                 = "Adresse";
             strAddressesLabel               = "Adresser";
             strLandlineLabel                = "Telefon";
@@ -215,9 +211,7 @@ public class ScStrings
             strSingleLetterEmailLabel       = "e:";
             strSingleLetterMobilePhoneLabel = "m:";
             strSingleLetterDateOfBirthLabel = "b:";
-            strSingleLetterAddressLabel     = "a:";
             strSingleLetterLandlineLabel    = "t:";
-            strSingleLetterWebsiteLabel     = "w:";
             strAddressLabel                 = "Address";
             strAddressesLabel               = "Addresses";
             strLandlineLabel                = "Telephone";
