@@ -8,8 +8,4 @@ public final class ScURLParams
     public static final String DEVICE_TYPE = "device";
     public static final String APP_VERSION = "version";
     public static final String NAME = "name";
-    public static final String SCOLA = "scola";
-    
-    
-    private ScURLParams() {}
 }

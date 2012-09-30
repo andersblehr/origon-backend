@@ -53,9 +53,6 @@ public abstract class ScCachedEntity
     public @NotSaved(IfFalse.class) boolean isShared = false;
     
     
-    public ScCachedEntity() {}
-    
-    
     @PrePersist
     @SuppressWarnings("unchecked")
     public <T extends ScCachedEntity> void internaliseRelationships()

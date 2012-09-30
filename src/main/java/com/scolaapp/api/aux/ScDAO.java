@@ -25,7 +25,6 @@ import com.scolaapp.api.model.ScScola;
 import com.scolaapp.api.model.ScMember;
 import com.scolaapp.api.model.ScMembership;
 import com.scolaapp.api.model.ScSharedEntityRef;
-import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
 public class ScDAO extends DAOBase
@@ -87,7 +86,7 @@ public class ScDAO extends DAOBase
             memberProxy.didRegister = true;
         }
         
-        ScAuthMeta authMeta = new ScAuthMeta(authToken, m.getUserId(), m.getScolaId(), m.getDeviceId(), m.getDeviceType());
+        ScAuthMeta authMeta = new ScAuthMeta(authToken, m.getUserId(), m.getDeviceId(), m.getDeviceType());
         memberProxy.authMetaKeys.add(new Key<ScAuthMeta>(ScAuthMeta.class, authToken));
         
         ofy().put(authMeta, memberProxy);
@@ -136,7 +135,7 @@ public class ScDAO extends DAOBase
                         memberProxy.didRegister = true;
                         memberProxies.add(memberProxy);
                     } else {
-                        memberProxies.add(new ScMemberProxy(entity.entityId, entity.scolaId));
+                        memberProxies.add(new ScMemberProxy(entity.entityId));
                     }
                 } else if (entity.getClass().equals(ScMembership.class) || entity.getClass().equals(ScMemberResidency.class)) {
                     String memberId = ((ScMembership)entity).member.entityId;
@@ -232,8 +231,7 @@ public class ScDAO extends DAOBase
     }
     
     
-    @SuppressWarnings("unchecked")
-    public List<ScCachedEntity> lookupMember(String memberId) // TODO: Bug-prone to return a fixed number of residencies
+    public List<ScCachedEntity> lookupMember(String memberId)
     {
         ScLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
         
@@ -241,34 +239,13 @@ public class ScDAO extends DAOBase
         ArrayList<ScCachedEntity> memberEntities = new ArrayList<ScCachedEntity>();
         
         if (memberProxy != null) {
-            Key<ScMember> memberKey = memberProxy.memberKey;
+            Set<Key<ScCachedEntity>> memberEntityKeys = new HashSet<Key<ScCachedEntity>>();
             
-            Key<ScMemberResidency> residencyKey1 = null;
-            Key<ScMemberResidency> residencyKey2 = null;
-            Key<ScScola> residenceKey1 = null;
-            Key<ScScola> residenceKey2 = null;
+            memberEntityKeys.add(memberProxy.memberKey);
+            memberEntityKeys.addAll(memberProxy.residencyKeys);
+            memberEntityKeys.addAll(memberProxy.residenceKeys);
             
-            for (Key<ScMemberResidency> residencyKey : memberProxy.residencyKeys) {
-                if (residencyKey1 == null) {
-                    residencyKey1 = residencyKey;
-                } else {
-                    residencyKey2 = residencyKey;
-                }
-            }
-            
-            for (Key<ScScola> residenceKey : memberProxy.residenceKeys) {
-                if (residenceKey1 == null) {
-                    residenceKey1 = residenceKey;
-                } else {
-                    residenceKey2 = residenceKey;
-                }
-            }
-            
-            if (residencyKey2 != null) {
-                memberEntities.addAll(ofy().get(memberKey, residencyKey1, residencyKey2, residenceKey1, residenceKey2).values());
-            } else {
-                memberEntities.addAll(ofy().get(memberKey, residencyKey1, residenceKey1).values());
-            }
+            memberEntities.addAll(ofy().get(memberEntityKeys).values());
         }
         
         return memberEntities;

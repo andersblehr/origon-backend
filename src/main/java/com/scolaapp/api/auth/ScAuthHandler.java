@@ -18,10 +18,10 @@ import javax.ws.rs.core.Response;
 
 import com.scolaapp.api.aux.ScDAO;
 import com.scolaapp.api.aux.ScLog;
+import com.scolaapp.api.aux.ScMemberProxy;
 import com.scolaapp.api.aux.ScMeta;
 import com.scolaapp.api.aux.ScURLParams;
 import com.scolaapp.api.model.ScCachedEntity;
-import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
 @Path("auth")
@@ -31,18 +31,17 @@ public class ScAuthHandler
     
     
     @GET
-    @Path("confirm")
+    @Path("activate")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response confirmUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
-                                @QueryParam(ScURLParams.SCOLA) String scolaId,
-                                @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
-                                @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
-                                @QueryParam(ScURLParams.APP_VERSION) String appVersion)
+    public Response activateUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                 @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
+                                 @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
+                                 @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
+                                 @QueryParam(ScURLParams.APP_VERSION) String appVersion)
     {
-        m = new ScMeta(scolaId, deviceId, deviceType, appVersion);
+        m = new ScMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.CONFIRMATION);
+        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.ACTIVATION);
         m.validateAuthToken(authToken);
         
         Date fetchDate = new Date();
@@ -104,18 +103,18 @@ public class ScAuthHandler
                 Session session = Session.getInstance(new Properties());
 
                 try {
-                    Message msg = new MimeMessage(session);
+                    Message message = new MimeMessage(session);
                     
                     // TODO: Localise message
                     // TODO: Provide URL directly to app on device
-                    msg.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
-                    msg.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-                    msg.setSubject("Complete your registration with Scola");
-                    msg.setText(String.format("Registration code: %s", m.getRegistrationCode()));
+                    message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
+                    message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
+                    message.setSubject("Complete your registration with Scola");
+                    message.setText(String.format("Activation code: %s", m.getActivationCode()));
                     
-                    Transport.send(msg);
+                    Transport.send(message);
                     
-                    ScLog.log().fine(m.meta() + "Sent registration code to new Scola user.");
+                    ScLog.log().fine(m.meta() + "Sent activation code to new Scola user.");
                 } catch (MessagingException e) {
                     ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }

@@ -18,22 +18,17 @@ public class ScAuthMeta
     public @Id String authToken;
     
     public String userId;
-    public String scolaId;
     public String deviceId;
     public String deviceType;
     
     public Date dateExpires;
     
     
-    public ScAuthMeta() {}
-    
-    
-    public ScAuthMeta(String authToken, String userId, String scolaId, String deviceId, String deviceType)
+    public ScAuthMeta(String authToken, String userId, String deviceId, String deviceType)
     {
         this.authToken = authToken;
         
         this.userId = userId;
-        this.scolaId = scolaId;
         this.deviceId = deviceId;
         this.deviceType = deviceType;
         

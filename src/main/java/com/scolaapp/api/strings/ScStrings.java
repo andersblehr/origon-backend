@@ -15,8 +15,9 @@ public class ScStrings
     
     public ScStrings(String language)
     {
-        setEULA(language);
+        setMeta(language);
         
+        setEULA(language);
         setGenericStrings(language);
         setPrompts(language);
         setLabels(language);
@@ -26,6 +27,71 @@ public class ScStrings
         
         setMembershipViewStrings(language);
         setMemberViewStrings(language);
+    }
+    
+    
+    /* ==== META ==== */
+    
+    public String strScolaTypeSchoolClass;
+    public String strScolaTypePreschoolClass;
+    public String strScolaTypeSportsTeam;
+    public String strScolaTypeOther;
+    
+    public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
+    public String schoolClassTeacher;
+    public String schoolTopicTeacher;
+    public String schoolSpecialEducationTeacher;
+    public String schoolAssistantTeacher;
+    public String schoolHeadTeacher;
+    
+    public String xstrContactRolesPreschoolClass = "preschoolDepartmentHead|preschoolTeacher|preschoolAssistant";
+    public String preschoolDepartmentHead;
+    public String preschoolTeacher;
+    public String preschoolAssistant;
+    
+    public String xstrContactRolesSportsTeam = "teamCoach|teamAssistantCoach";
+    public String teamCoach;
+    public String teamAssistantCoach;
+    
+    private void setMeta(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strScolaTypeSchoolClass = "Skoleklasse";
+            strScolaTypePreschoolClass = "Barnehage/avdeling";
+            strScolaTypeSportsTeam = "Lag";
+            strScolaTypeOther = "Annet";
+            
+            schoolClassTeacher = "Kontaktlærer";
+            schoolTopicTeacher = "Faglærer";
+            schoolSpecialEducationTeacher = "Spesiallærer";
+            schoolAssistantTeacher = "Assistentlærer";
+            schoolHeadTeacher = "Rektor";
+            
+            preschoolDepartmentHead = "Avdelingsleder";
+            preschoolTeacher = "Førskolelærer";
+            preschoolAssistant = "Assistent";
+            
+            teamCoach = "Trener";
+            teamAssistantCoach = "Assistenttrener";
+        } else {
+            strScolaTypeSchoolClass = "School class";
+            strScolaTypePreschoolClass = "Preschool/daycare";
+            strScolaTypeSportsTeam = "Sports team";
+            strScolaTypeOther = "Other";
+            
+            schoolClassTeacher = "Teacher";
+            schoolTopicTeacher = "Topic teacher";
+            schoolSpecialEducationTeacher = "Special education teacher";
+            schoolAssistantTeacher = "Assistant teacher";
+            schoolHeadTeacher = "Head teacher";
+            
+            preschoolDepartmentHead = "Department head";
+            preschoolTeacher = "Teacher";
+            preschoolAssistant = "Assistant";
+            
+            teamCoach = "Coach";
+            teamAssistantCoach = "Assistant coach";
+        }
     }
     
     
@@ -72,11 +138,8 @@ public class ScStrings
     /* ==== GENERIC STRINGS ==== */
     
     public String strPleaseWait;
-    public String strAbout;
-    public String strToBe2ndPSg;
-    public String strToBe3rdPSg;
-    public String strYouNom;
-    public String strYouAcc;
+    public String strAboutYou;
+    public String strAboutMember;
     public String strHousehold;
     public String strFemale;
     public String strFemaleMinor;
@@ -91,11 +154,8 @@ public class ScStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strPleaseWait      = "Vent litt...";
-            strAbout           = "Om";
-            strToBe2ndPSg      = "Er";
-            strToBe3rdPSg      = "Er";
-            strYouNom          = "Du";
-            strYouAcc          = "Deg";
+            strAboutYou        = "Om deg";
+            strAboutMember     = "Om %@";
             strFemale          = "Kvinne";
             strFemaleMinor     = "Jente";
             strMale            = "Mann";
@@ -107,11 +167,8 @@ public class ScStrings
             strOurMessageBoard = "Vår oppslagstavle";
         } else {
             strPleaseWait      = "Please wait...";
-            strAbout           = "About";
-            strToBe2ndPSg      = "Are";
-            strToBe3rdPSg      = "Is";
-            strYouNom          = "You";
-            strYouAcc          = "You";
+            strAboutYou        = "About you";
+            strAboutMember     = "About %@";
             strFemale          = "Woman";
             strFemaleMinor     = "Girl";
             strMale            = "Man";
@@ -129,7 +186,7 @@ public class ScStrings
     
     public String strAuthEmailPrompt;
     public String strPasswordPrompt;
-    public String strRegistrationCodePrompt;
+    public String strActivationCodePrompt;
     public String strRepeatPasswordPrompt;
     public String strPhotoPrompt;
     public String strNamePrompt;
@@ -148,7 +205,7 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strAuthEmailPrompt         = "Epostadressen din";
             strPasswordPrompt          = "Passordet ditt";
-            strRegistrationCodePrompt  = "Registreringskode fra epost";
+            strActivationCodePrompt    = "Aktiveringskode fra epost";
             strRepeatPasswordPrompt    = "Gjenta passordet ditt";
             strPhotoPrompt             = "Bilde";
             strNamePrompt              = "Fullt navn";
@@ -164,7 +221,7 @@ public class ScStrings
         } else {
             strAuthEmailPrompt         = "Your email address";
             strPasswordPrompt          = "Your password";
-            strRegistrationCodePrompt  = "Registration code from email";
+            strActivationCodePrompt    = "Activation code from email";
             strRepeatPasswordPrompt    = "Repeat your password";
             strPhotoPrompt             = "Photo";
             strNamePrompt              = "Full name";
@@ -184,7 +241,7 @@ public class ScStrings
     /* ==== LABELS ==== */
     
     public String strSignInOrRegisterLabel;
-    public String strConfirmRegistrationLabel;
+    public String strActivateLabel;
     public String strSingleLetterEmailLabel;
     public String strSingleLetterMobilePhoneLabel;
     public String strSingleLetterDateOfBirthLabel;
@@ -197,7 +254,7 @@ public class ScStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strSignInOrRegisterLabel        = "Logg på eller registrer ny bruker";
-            strConfirmRegistrationLabel     = "Oppgi registreringskoden din";
+            strActivateLabel                = "Oppgi aktiveringskoden din";
             strSingleLetterEmailLabel       = "e";
             strSingleLetterMobilePhoneLabel = "m";
             strSingleLetterDateOfBirthLabel = "f";
@@ -207,7 +264,7 @@ public class ScStrings
             strLandlineLabel                = "Telefon";
         } else {
             strSignInOrRegisterLabel        = "Sign in or register new user";
-            strConfirmRegistrationLabel     = "Provide your registration code";
+            strActivateLabel                = "Provide your activation code";
             strSingleLetterEmailLabel       = "e:";
             strSingleLetterMobilePhoneLabel = "m:";
             strSingleLetterDateOfBirthLabel = "b:";
@@ -222,18 +279,18 @@ public class ScStrings
     /* ==== HEADER & FOOTER STRINGS ==== */
     
     public String strSignInOrRegisterFooter;
-    public String strConfirmRegistrationFooter;
+    public String strActivateFooter;
     public String strHouseholdMemberListFooter;
     
     private void setHeaderAndFooterStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en registreringskode som du må oppgi for å bekrefte identiteten din.";
-            strConfirmRegistrationFooter = "Oppgi registreringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
+            strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en aktiveringskode som du må oppgi for å aktivere medlemskapet ditt.";
+            strActivateFooter            = "Oppgi aktiveringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
             strHouseholdMemberListFooter = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
         } else {
-            strSignInOrRegisterFooter    = "When you register, you will receive an email with a registration code that you must provide in order to confirm your identity.";
-            strConfirmRegistrationFooter = "Please provide the registration code that was emailed to you, or come back later if you don't have access to your email at this time.";
+            strSignInOrRegisterFooter    = "When you register, you will receive an email with an activation code that you must provide in order to activate your membership.";
+            strActivateFooter            = "Please provide the activation code that was emailed to you, or come back later if you don't have access to your email at this time.";
             strHouseholdMemberListFooter = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
         }
     }
@@ -246,21 +303,27 @@ public class ScStrings
     public String strRetry;
     public String strStartOver;
     public String strHaveCode;
+    public String strInviteToHousehold;
+    public String strMergeHouseholds;
     
     private void setButtonTitles(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOK        = "OK";
-            strCancel    = "Avbryt";
-            strRetry     = "Prøv igjen";
-            strStartOver = "Gå tilbake";
-            strHaveCode  = "Har kode";
+            strOK                = "OK";
+            strCancel            = "Avbryt";
+            strRetry             = "Prøv igjen";
+            strStartOver         = "Gå tilbake";
+            strHaveCode          = "Har kode";
+            strInviteToHousehold = "Inviter til husstand";
+            strMergeHouseholds   = "Slå sammen husstandene";
         } else {
-            strOK        = "OK";
-            strCancel    = "Cancel";
-            strRetry     = "Retry";
-            strStartOver = "Start over";
-            strHaveCode  = "Have code";
+            strOK                = "OK";
+            strCancel            = "Cancel";
+            strRetry             = "Retry";
+            strStartOver         = "Start over";
+            strHaveCode          = "Have code";
+            strInviteToHousehold = "Invite to household";
+            strMergeHouseholds   = "Merge households";
         }
     }
     
@@ -269,34 +332,43 @@ public class ScStrings
     
     public String strNoInternetError;
     public String strServerErrorAlert;
-    public String strUserConfirmationFailedTitle;
-    public String strUserConfirmationFailedAlert;
+    public String strActivationFailedTitle;
+    public String strActivationFailedAlert;
     public String strWelcomeBackTitle;
     public String strWelcomeBackAlert;
     public String strIncompleteRegistrationTitle;
     public String strIncompleteRegistrationAlert;
+    public String strMemberExistsTitle;
+    public String strMemberExistsAlert;
+    public String strExistingResidenceAlert;
 
     
     private void setAlertsAndErrorMessages(String language) 
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strNoInternetError              = "Ingen internettforbindelse.";
-            strServerErrorAlert             = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
-            strUserConfirmationFailedTitle  = "Bekreftelse mislyktes";
-            strUserConfirmationFailedAlert  = "Det ser ut til at du enten har mistet registreringskoden som ble sendt på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
-            strWelcomeBackTitle             = "Velkommen tilbake!";
-            strWelcomeBackAlert             = "Om du har registreringskoden som ble sendt til %@, kan du nå fullføre registreringen. Om ikke, kan du gå tilbake og starte på nytt.";
-            strIncompleteRegistrationTitle  = "Ufullstendig registrering";
-            strIncompleteRegistrationAlert  = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
+            strNoInternetError             = "Ingen internettforbindelse.";
+            strServerErrorAlert            = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
+            strActivationFailedTitle       = "Aktivering mislyktes";
+            strActivationFailedAlert       = "Det ser ut til at du enten har mistet aktiveringskoden som vi sendte deg på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
+            strWelcomeBackTitle            = "Velkommen tilbake!";
+            strWelcomeBackAlert            = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
+            strIncompleteRegistrationTitle = "Ufullstendig registrering";
+            strIncompleteRegistrationAlert = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
+            strMemberExistsTitle           = "Medlem eksisterer";
+            strMemberExistsAlert           = "Epost-adressen '%@' er allerede registrert i '@%'. Vennligst oppgi en annen adresse (eller avbryt registreringen).";
+            strExistingResidenceAlert      = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
         } else {
-            strNoInternetError              = "No internet connection.";
-            strServerErrorAlert             = "An error has occurred. Please try again later. [%d: \"%@\"]";
-            strUserConfirmationFailedTitle  = "Confirmation failed";
-            strUserConfirmationFailedAlert  = "It looks like you may have lost the registration code that was sent to you by email, or forgotten the password you provided. Let's start over.";
-            strWelcomeBackTitle             = "Welcome back!";
-            strWelcomeBackAlert             = "If you have handy the registration code sent to %@, you can now complete your registration. If not, you may go back and start over.";
-            strIncompleteRegistrationTitle  = "Incomplete registration";
-            strIncompleteRegistrationAlert  = "You must complete your registration before you can start using Scola.";
+            strNoInternetError             = "No internet connection.";
+            strServerErrorAlert            = "An error has occurred. Please try again later. [%d: \"%@\"]";
+            strActivationFailedTitle       = "Activation failed";
+            strActivationFailedAlert       = "It looks like you may have lost the activation code that we sent to you by email, or forgotten the password you provided. Let's start over.";
+            strWelcomeBackTitle            = "Welcome back!";
+            strWelcomeBackAlert            = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
+            strIncompleteRegistrationTitle = "Incomplete registration";
+            strIncompleteRegistrationAlert = "You must complete your registration before you can start using Scola.";
+            strMemberExistsTitle           = "Member exists";
+            strMemberExistsAlert           = "The email address '%@' is already registered in '%@'. Please enter a different address (or cancel the registration).";
+            strExistingResidenceAlert      = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
         }
     }
     
@@ -331,7 +403,10 @@ public class ScStrings
     public String strMemberViewTitleAboutYou;
     public String strMemberViewTitleNewMember;
     public String strMemberViewTitleNewHouseholdMember;
-    public String strGenderActionSheetTitle;
+    public String strGenderActionSheetTitleSelf;
+    public String strGenderActionSheetTitleSelfMinor;
+    public String strGenderActionSheetTitleMember;
+    public String strGenderActionSheetTitleMemberMinor;
     
     private void setMemberViewStrings(String language)
     {
@@ -339,12 +414,18 @@ public class ScStrings
             strMemberViewTitleAboutYou           = "Om deg";
             strMemberViewTitleNewMember          = "Nytt medlem";
             strMemberViewTitleNewHouseholdMember = "I husstanden";
-            strGenderActionSheetTitle            = "%@ %@ %@ eller %@?";           
+            strGenderActionSheetTitleSelf        = "Er du kvinne eller mann?";
+            strGenderActionSheetTitleSelfMinor   = "Er du jente eller gutt?";
+            strGenderActionSheetTitleMember      = "Er %@ kvinne eller mann?";
+            strGenderActionSheetTitleMemberMinor = "Er %@ jente eller gutt?";
         } else {
             strMemberViewTitleAboutYou           = "About you";
             strMemberViewTitleNewMember          = "New member";
             strMemberViewTitleNewHouseholdMember = "In the household";
-            strGenderActionSheetTitle            = "%@ %@ a %@ or a %@?";
+            strGenderActionSheetTitleSelf        = "Are you a woman or a man?";
+            strGenderActionSheetTitleSelfMinor   = "Are you a girl or a boy?";
+            strGenderActionSheetTitleMember      = "Is %@ a woman or a man?";
+            strGenderActionSheetTitleMemberMinor = "Is %@ a girl or a boy?";
         }
     }
 }

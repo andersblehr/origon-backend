@@ -15,8 +15,6 @@ import com.scolaapp.api.auth.ScAuthInfo;
 import com.scolaapp.api.auth.ScAuthPhase;
 import com.scolaapp.api.auth.ScAuthMeta;
 import com.scolaapp.api.model.ScMember;
-import com.scolaapp.api.model.ScScola;
-import com.scolaapp.api.model.proxy.ScMemberProxy;
 
 
 public class ScMeta
@@ -24,7 +22,7 @@ public class ScMeta
     private static final char[] symbols = new char[16];
     
     private static final int kMinimumPasswordLength = 6;
-    private static final int kRegistrationCodeLength = 6;
+    private static final int kActivationCodeLength = 6;
     
     private ScAuthPhase authPhase = ScAuthPhase.NONE;
     
@@ -34,13 +32,12 @@ public class ScMeta
     private boolean isValid = true;
     
     private String userId = null;
-    private String scolaId = null;
     private String authToken = null;
     private String passwordHash = null;
     private String deviceId = null;
     private String deviceType = null;
     private String appVersion = null;
-    private String registrationCode = null;
+    private String activationCode = null;
     private InternetAddress emailAddress = null;
     
     
@@ -71,14 +68,6 @@ public class ScMeta
     }
     
     
-    public ScMeta(String scolaId, String deviceId, String deviceType, String appVersion)
-    {
-        this(deviceId, deviceType, appVersion);
-        
-        validateScolaId(scolaId);
-    }
-    
-    
     public ScMeta(String authToken, String appVersion)
     {
         validateAuthToken(authToken);
@@ -100,12 +89,6 @@ public class ScMeta
     public String getUserId()
     {
         return userId;
-    }
-    
-    
-    public String getScolaId()
-    {
-        return scolaId;
     }
     
     
@@ -133,9 +116,9 @@ public class ScMeta
     }
     
     
-    public String getRegistrationCode()
+    public String getActivationCode()
     {
-        return registrationCode;
+        return activationCode;
     }
     
     
@@ -151,20 +134,14 @@ public class ScMeta
     }
     
     
-    public Key<ScScola> getScolaKey()
-    {
-        return new Key<ScScola>(ScScola.class, scolaId);
-    }
-    
-    
     public ScMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
             memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
             
-            if (authPhase == ScAuthPhase.CONFIRMATION) {
+            if (authPhase == ScAuthPhase.ACTIVATION) {
                 if (memberProxy == null) {
-                    memberProxy = new ScMemberProxy(userId, scolaId);
+                    memberProxy = new ScMemberProxy(userId);
                 }
                 
                 memberProxy.passwordHash = passwordHash;
@@ -180,32 +157,26 @@ public class ScMeta
         ScAuthInfo authInfo = null;
         
         if (isValid) {
-            if (authPhase != ScAuthPhase.CONFIRMATION) {
-                registrationCode = generateRegistrationCode();
+            if (authPhase != ScAuthPhase.ACTIVATION) {
+                activationCode = generateActivationCode();
                 
-                authInfo = new ScAuthInfo();
-                
-                authInfo.userId = userId;
-                authInfo.deviceId = deviceId;
-                authInfo.passwordHash = passwordHash;
-                authInfo.registrationCode = registrationCode;
+                authInfo = new ScAuthInfo(userId, deviceId, passwordHash, activationCode);
                 
                 ScMemberProxy memberProxy = getMemberProxy();
                 ScMember member = null;
                 
                 if (memberProxy != null) {
-                    member = DAO.get(memberProxy.memberKey);
+                    member = (ScMember)DAO.get(memberProxy.memberKey);
                 }
                 
                 if (member != null) {
                     authInfo.isListed = true;
                     authInfo.didRegister = member.didRegister;
-                    authInfo.homeScolaId = member.scolaId;
                 } else {
                     authInfo.isListed = false;
                     authInfo.didRegister = false;
                 }
-            } else if (authPhase == ScAuthPhase.CONFIRMATION) {
+            } else if (authPhase == ScAuthPhase.ACTIVATION) {
                 authInfo = DAO.get(new Key<ScAuthInfo>(ScAuthInfo.class, userId));
             }
         }
@@ -256,7 +227,6 @@ public class ScMeta
                     this.authToken = authToken;
                     
                     userId = tokenMeta.userId;
-                    scolaId = tokenMeta.scolaId;
                     deviceId = tokenMeta.deviceId;
                     deviceType = tokenMeta.deviceType;
                 } else {
@@ -339,16 +309,6 @@ public class ScMeta
     }
     
     
-    private void validateScolaId(String scolaId)
-    {
-        if (isValidUUID(scolaId)) {
-            this.scolaId = scolaId;
-        } else {
-            ScLog.log().warning(meta(false) + String.format("User home scola id %s is not a valid UUID.", scolaId));
-        }
-    }
-    
-    
     private void validatePassword(String password)
     {
         if ((password != null) && (password.length() >= kMinimumPasswordLength)) {
@@ -363,15 +323,15 @@ public class ScMeta
     }
     
     
-    private String generateRegistrationCode()
+    private String generateActivationCode()
     {
         Random randomiser = new Random();
-        char[] randomChars = new char[kRegistrationCodeLength];
+        char[] randomCharacters = new char[kActivationCodeLength];
         
-        for (int i=0; i < kRegistrationCodeLength; i++) {
-            randomChars[i] = symbols[randomiser.nextInt(symbols.length)];
+        for (int i=0; i < kActivationCodeLength; i++) {
+            randomCharacters[i] = symbols[randomiser.nextInt(symbols.length)];
         }
         
-        return new String(randomChars);
+        return new String(randomCharacters);
     }
 }

@@ -14,14 +14,19 @@ public class ScAuthInfo
 {
     public @Id String userId;
     
-    public String homeScolaId;
     public String deviceId;
     public String passwordHash;
-    public String registrationCode;
+    public String activationCode;
     
     public boolean isListed;
     public boolean didRegister;
     
     
-    public ScAuthInfo() {}
+    public ScAuthInfo(String userId, String deviceId, String passwordHash, String activationCode)
+    {
+        this.userId = userId;
+        this.deviceId = deviceId;
+        this.passwordHash = passwordHash;
+        this.activationCode = activationCode;
+    }
 }
