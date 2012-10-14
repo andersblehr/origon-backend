@@ -22,6 +22,9 @@ public class ScAuthInfo
     public boolean didRegister;
     
     
+    public ScAuthInfo() {}
+    
+    
     public ScAuthInfo(String userId, String deviceId, String passwordHash, String activationCode)
     {
         this.userId = userId;

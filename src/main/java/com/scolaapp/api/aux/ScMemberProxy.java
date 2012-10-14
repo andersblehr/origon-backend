@@ -42,6 +42,9 @@ public class ScMemberProxy
     public @NotSaved Set<Key<ScCachedEntity>> residenceKeys;
     
     
+    public ScMemberProxy() {}
+    
+    
     public ScMemberProxy(String userId)
     {
         this.userId = userId;

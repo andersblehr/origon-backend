@@ -24,6 +24,9 @@ public class ScAuthMeta
     public Date dateExpires;
     
     
+    public ScAuthMeta() {}
+    
+    
     public ScAuthMeta(String authToken, String userId, String deviceId, String deviceType)
     {
         this.authToken = authToken;
