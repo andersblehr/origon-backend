@@ -140,13 +140,11 @@ public class ScStrings
     public String strPleaseWait;
     public String strAboutYou;
     public String strAboutMember;
-    public String strHousehold;
     public String strFemale;
     public String strFemaleMinor;
     public String strMale;
     public String strMaleMinor;
-    public String strMyPlace;
-    public String strOurPlace;
+    public String strMyHousehold;
     public String strMyMessageBoard;
     public String strOurMessageBoard;
     
@@ -160,9 +158,7 @@ public class ScStrings
             strFemaleMinor     = "Jente";
             strMale            = "Mann";
             strMaleMinor       = "Gutt";
-            strHousehold       = "Husstand";
-            strMyPlace         = "Min husstand";
-            strOurPlace        = "Vår husstand";
+            strMyHousehold     = "Min husstand";
             strMyMessageBoard  = "Min oppslagstavle";
             strOurMessageBoard = "Vår oppslagstavle";
         } else {
@@ -173,9 +169,7 @@ public class ScStrings
             strFemaleMinor     = "Girl";
             strMale            = "Man";
             strMaleMinor       = "Boy";
-            strHousehold       = "Household";
-            strMyPlace         = "My place";
-            strOurPlace        = "Our place";
+            strMyHousehold     = "My place";
             strMyMessageBoard  = "My message board";
             strOurMessageBoard = "Our message board";
         }
@@ -196,9 +190,7 @@ public class ScStrings
     public String strUserWebsitePrompt;
     public String strAddressLine1Prompt;
     public String strAddressLine2Prompt;
-    public String strHouseholdLandlinePrompt;
-    public String strScolaLandlinePrompt;
-    public String strScolaWebsitePrompt;
+    public String strTelephonePrompt;
     
     private void setPrompts(String language)
     {
@@ -215,9 +207,7 @@ public class ScStrings
             strUserWebsitePrompt       = "Nettside, blogg el.tilsv.";
             strAddressLine1Prompt      = "Gateadresse";
             strAddressLine2Prompt      = "Postnummer og -sted";
-            strHouseholdLandlinePrompt = "Hjemmetelefonnummer";
-            strScolaLandlinePrompt     = "Telefonnummer til kontaktperson";
-            strScolaWebsitePrompt      = "Hjemmeside";
+            strTelephonePrompt         = "Telefonnummer";
         } else {
             strAuthEmailPrompt         = "Your email address";
             strPasswordPrompt          = "Your password";
@@ -231,9 +221,7 @@ public class ScStrings
             strUserWebsitePrompt       = "Web page, blog or similar";
             strAddressLine1Prompt      = "Street address";
             strAddressLine2Prompt      = "Postal code and city/town";
-            strHouseholdLandlinePrompt = "Home telephone number";
-            strScolaLandlinePrompt     = "Contact phone number";
-            strScolaWebsitePrompt      = "Home page";
+            strTelephonePrompt         = "Telephone number";
         }
     }
     
@@ -245,10 +233,10 @@ public class ScStrings
     public String strSingleLetterEmailLabel;
     public String strSingleLetterMobilePhoneLabel;
     public String strSingleLetterDateOfBirthLabel;
-    public String strSingleLetterLandlineLabel;
+    public String strSingleLetterTelephoneLabel;
     public String strAddressLabel;
     public String strAddressesLabel;
-    public String strLandlineLabel;
+    public String strTelephoneLabel;
     
     private void setLabels(String language)
     {
@@ -258,20 +246,20 @@ public class ScStrings
             strSingleLetterEmailLabel       = "e";
             strSingleLetterMobilePhoneLabel = "m";
             strSingleLetterDateOfBirthLabel = "f";
-            strSingleLetterLandlineLabel    = "t";
+            strSingleLetterTelephoneLabel   = "t";
             strAddressLabel                 = "Adresse";
             strAddressesLabel               = "Adresser";
-            strLandlineLabel                = "Telefon";
+            strTelephoneLabel               = "Telefon";
         } else {
             strSignInOrRegisterLabel        = "Sign in or register new user";
             strActivateLabel                = "Provide your activation code";
             strSingleLetterEmailLabel       = "e:";
             strSingleLetterMobilePhoneLabel = "m:";
             strSingleLetterDateOfBirthLabel = "b:";
-            strSingleLetterLandlineLabel    = "t:";
+            strSingleLetterTelephoneLabel   = "t:";
             strAddressLabel                 = "Address";
             strAddressesLabel               = "Addresses";
-            strLandlineLabel                = "Telephone";
+            strTelephoneLabel               = "Telephone";
         }
     }
     
@@ -375,25 +363,23 @@ public class ScStrings
     
     /* ==== ScMembershipView STRINGS ==== */
     
-    public String strMembershipViewTitleDefault;
-    public String strMembershipViewTitleMyPlace;
-    public String strMembershipViewTitleOurPlace;
+    public String strMemberListViewTitleDefault;
+    public String strMemberListViewTitleHousehold;
     public String strHouseholdMembers;
     public String strDeleteConfirmation;
     
     private void setMembershipViewStrings(String language)
     {
-        strMembershipViewTitleMyPlace  = strMyPlace;
-        strMembershipViewTitleOurPlace = strOurPlace;
-        
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strMembershipViewTitleDefault = "Medlemmer";
-            strHouseholdMembers           = "Medlemmer i husstanden";
-            strDeleteConfirmation         = "Ta bort";
+            strMemberListViewTitleDefault   = "Medlemmer";
+            strMemberListViewTitleHousehold = "I husstanden";
+            strHouseholdMembers             = "Medlemmer i husstanden";
+            strDeleteConfirmation           = "Ta bort";
         } else {
-            strMembershipViewTitleDefault = "Members";
-            strHouseholdMembers           = "Household members";
-            strDeleteConfirmation         = "Remove";
+            strMemberListViewTitleDefault   = "Members";
+            strMemberListViewTitleHousehold = "In the household";
+            strHouseholdMembers             = "Household members";
+            strDeleteConfirmation           = "Remove";
         }
     }
     
