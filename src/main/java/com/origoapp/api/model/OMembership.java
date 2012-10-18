@@ -12,6 +12,7 @@ import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfFalse;
+import com.googlecode.objectify.condition.IfNull;
 
 
 @Subclass(unindexed = true)
@@ -25,6 +26,7 @@ public class OMembership extends OCachedEntity
     public @NotSaved(IfFalse.class) boolean isAdmin = false;
     public @NotSaved(IfFalse.class) boolean isCoach = false;
     public @NotSaved(IfFalse.class) boolean isTeacher = false;
+    public @NotSaved(IfNull.class) String contactRole;
     
     public @NotSaved Map<String, String> origoRef;
     
