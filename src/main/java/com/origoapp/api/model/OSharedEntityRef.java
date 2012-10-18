@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import javax.persistence.PostLoad;
 import javax.persistence.PrePersist;
@@ -18,15 +18,15 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey", "sharedEntityKey"}, ignoreUnknown = true)
-public class ScSharedEntityRef extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey", "sharedEntityKey"}, ignoreUnknown = true)
+public class OSharedEntityRef extends OCachedEntity
 {
     public @NotSaved String sharedEntityId;
-    public @NotSaved String sharedEntityScolaId;
-    public Key<ScCachedEntity> sharedEntityKey;
+    public @NotSaved String sharedEntityOrigoId;
+    public Key<OCachedEntity> sharedEntityKey;
 
 
-    public ScSharedEntityRef()
+    public OSharedEntityRef()
     {
         super();
     }
@@ -38,7 +38,7 @@ public class ScSharedEntityRef extends ScCachedEntity
     {
         super.internaliseRelationships();
         
-        sharedEntityKey = new Key<ScCachedEntity>(new Key<ScScola>(ScScola.class, sharedEntityScolaId), ScCachedEntity.class, sharedEntityId);
+        sharedEntityKey = new Key<OCachedEntity>(new Key<OOrigo>(OOrigo.class, sharedEntityOrigoId), OCachedEntity.class, sharedEntityId);
     }
     
     
@@ -49,6 +49,6 @@ public class ScSharedEntityRef extends ScCachedEntity
         super.externaliseRelationships();
         
         sharedEntityId = sharedEntityKey.getRaw().getName();
-        sharedEntityScolaId = sharedEntityKey.getParent().getRaw().getName();
+        sharedEntityOrigoId = sharedEntityKey.getParent().getRaw().getName();
     }
 }

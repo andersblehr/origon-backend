@@ -1,4 +1,4 @@
-package com.scolaapp.api.aux;
+package com.origoapp.api.aux;
 
 import java.security.MessageDigest;
 
@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
 
-public class ScCrypto
+public class OCrypto
 {
     public static String hashUsingSHA1(String inputString)
     {
@@ -22,7 +22,7 @@ public class ScCrypto
                 output = output.concat(String.format("%02x", digestOutput[i]));
             }
         } catch (Exception e) {
-            ScLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
+            OLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
             throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
@@ -35,8 +35,8 @@ public class ScCrypto
         String passwordHash = null;
         
         if ((password != null) && (email != null)) {
-            String saltyDiff = ScCrypto.diffStrings(password, email);
-            passwordHash = ScCrypto.hashUsingSHA1(saltyDiff); 
+            String saltyDiff = OCrypto.diffStrings(password, email);
+            passwordHash = OCrypto.hashUsingSHA1(saltyDiff); 
         }
         
         return passwordHash; 

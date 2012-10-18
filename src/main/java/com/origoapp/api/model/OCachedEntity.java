@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -30,20 +30,20 @@ import com.googlecode.objectify.condition.IfNull;
     include = JsonTypeInfo.As.PROPERTY,
     property = "entityClass")
 @JsonSubTypes({
-    @Type(value = ScCachedEntityGhost.class, name = "ScCachedEntityGhost"),
-    @Type(value = ScDevice.class, name = "ScDevice"),
-    @Type(value = ScMember.class, name = "ScMember"),
-    @Type(value = ScMemberResidency.class, name = "ScMemberResidency"),
-    @Type(value = ScMembership.class, name = "ScMembership"),
-    @Type(value = ScMessageBoard.class, name = "ScMessageBoard"),
-    @Type(value = ScScola.class, name = "ScScola"),
-    @Type(value = ScSharedEntityRef.class, name = "ScSharedEntityRef")})
-public abstract class ScCachedEntity
+    @Type(value = OCachedEntityGhost.class, name = "OCachedEntityGhost"),
+    @Type(value = ODevice.class, name = "ODevice"),
+    @Type(value = OMember.class, name = "OMember"),
+    @Type(value = OMemberResidency.class, name = "OMemberResidency"),
+    @Type(value = OMembership.class, name = "OMembership"),
+    @Type(value = OMessageBoard.class, name = "OMessageBoard"),
+    @Type(value = OOrigo.class, name = "OOrigo"),
+    @Type(value = OSharedEntityRef.class, name = "OSharedEntityRef")})
+public abstract class OCachedEntity
 {
-    public @Parent Key<ScScola> scolaKey;
+    public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
     
-    public @NotSaved String scolaId;
+    public @NotSaved String origoId;
     public @NotSaved String entityClass;
     
     public Date dateCreated;
@@ -55,7 +55,7 @@ public abstract class ScCachedEntity
     
     @PrePersist
     @SuppressWarnings("unchecked")
-    public <T extends ScCachedEntity> void internaliseRelationships()
+    public <T extends OCachedEntity> void internaliseRelationships()
     {
         try {
             Field[] fields = this.getClass().getFields();
@@ -63,12 +63,12 @@ public abstract class ScCachedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == ScCachedEntity.class) {
-                    ScCachedEntity referencedEntity = (ScCachedEntity)field.get(this);
+                if (classOfField.getSuperclass() == OCachedEntity.class) {
+                    OCachedEntity referencedEntity = (OCachedEntity)field.get(this);
                     
                     if (referencedEntity != null) {
                         Field keyField = this.getClass().getField(field.getName() + "Key");
-                        keyField.set(this, new Key<T>(scolaKey, (Class<T>)classOfField, referencedEntity.entityId));
+                        keyField.set(this, new Key<T>(origoKey, (Class<T>)classOfField, referencedEntity.entityId));
                     }
                 }
             }
@@ -82,15 +82,15 @@ public abstract class ScCachedEntity
     
     @PostLoad
     @SuppressWarnings("unchecked")
-    public <T extends ScCachedEntity> void externaliseRelationships()
+    public <T extends OCachedEntity> void externaliseRelationships()
     {
         try {
-            scolaId = scolaKey.getRaw().getName();
+            origoId = origoKey.getRaw().getName();
             
-            Field scolaRefField = getScolaRefField();
+            Field origoRefField = getOrigoRefField();
             
-            if (scolaRefField != null) {
-                scolaRefField.set(this, createEntityRef("ScScola", scolaId));
+            if (origoRefField != null) {
+                origoRefField.set(this, createEntityRef("OOrigo", origoId));
             }
 
             Field[] fields = this.getClass().getFields();
@@ -98,7 +98,7 @@ public abstract class ScCachedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == ScCachedEntity.class) {
+                if (classOfField.getSuperclass() == OCachedEntity.class) {
                     Field keyField = this.getClass().getField(field.getName() + "Key");
                     Key<T> referencedEntityKey = (Key<T>)keyField.get(this);
                     
@@ -122,10 +122,10 @@ public abstract class ScCachedEntity
     }
 
     
-    private Field getScolaRefField()
+    private Field getOrigoRefField()
     {
         try {
-            return this.getClass().getField("scolaRef");
+            return this.getClass().getField("origoRef");
         } catch (NoSuchFieldException e) {
             return null;
         }
@@ -148,8 +148,8 @@ public abstract class ScCachedEntity
     {
         boolean areEqual = false;
         
-        if (ScCachedEntity.class.isAssignableFrom(other.getClass())) {
-            areEqual = (((ScCachedEntity)other).hashCode() == this.hashCode());
+        if (OCachedEntity.class.isAssignableFrom(other.getClass())) {
+            areEqual = (((OCachedEntity)other).hashCode() == this.hashCode());
         }
         
         return areEqual;
@@ -159,6 +159,6 @@ public abstract class ScCachedEntity
     @Override
     public int hashCode()
     {
-        return String.format("%s$%s", scolaId, entityId).hashCode();
+        return String.format("%s$%s", origoId, entityId).hashCode();
     }
 }

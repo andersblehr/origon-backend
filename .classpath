@@ -28,5 +28,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="output" path="target/scolaapp-api-1/WEB-INF/classes"/>
+	<classpathentry kind="output" path="target/origoapp-api-1/WEB-INF/classes"/>
 </classpath>

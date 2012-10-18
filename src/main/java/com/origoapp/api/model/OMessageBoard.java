@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.util.Map;
 
@@ -19,17 +19,17 @@ import com.googlecode.objectify.condition.IfNull;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
-public class ScMessageBoard extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
+public class OMessageBoard extends OCachedEntity
 {
-    public @NotSaved Map<String, String> scolaRef;
+    public @NotSaved Map<String, String> origoRef;
     
     public @NotSaved(IfFalse.class) boolean isAdmin = false;
     public @NotSaved({IfNull.class, IfEmptyString.class}) String roleRestriction;
     public String title;
     
     
-    public ScMessageBoard()
+    public OMessageBoard()
     {
         super();
     }

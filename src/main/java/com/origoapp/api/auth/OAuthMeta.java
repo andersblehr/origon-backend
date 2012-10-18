@@ -1,4 +1,4 @@
-package com.scolaapp.api.auth;
+package com.origoapp.api.auth;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -13,7 +13,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds = 600)
-public class ScAuthMeta
+public class OAuthMeta
 {
     public @Id String authToken;
     
@@ -24,10 +24,10 @@ public class ScAuthMeta
     public Date dateExpires;
     
     
-    public ScAuthMeta() {}
+    public OAuthMeta() {}
     
     
-    public ScAuthMeta(String authToken, String userId, String deviceId, String deviceType)
+    public OAuthMeta(String authToken, String userId, String deviceId, String deviceType)
     {
         this.authToken = authToken;
         

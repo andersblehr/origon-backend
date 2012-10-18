@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.util.Date;
 
@@ -19,8 +19,8 @@ import com.googlecode.objectify.condition.IfNull;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
-public class ScMember extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
+public class OMember extends OCachedEntity
 {
     public String name;
     public String gender;
@@ -34,7 +34,7 @@ public class ScMember extends ScCachedEntity
     public @NotSaved(IfNull.class) String passwordHash;
     
     
-    public ScMember()
+    public OMember()
     {
         super();
     }

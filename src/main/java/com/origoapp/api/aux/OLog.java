@@ -1,19 +1,19 @@
-package com.scolaapp.api.aux;
+package com.origoapp.api.aux;
 
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import com.scolaapp.api.ScScolaApplication;
+import com.origoapp.api.OOrigoApplication;
 
 
-public class ScLog
+public class OLog
 {
-    private static final Logger log = Logger.getLogger(ScScolaApplication.class.getName());
+    private static final Logger log = Logger.getLogger(OOrigoApplication.class.getName());
 
     
-    protected ScLog() {}
+    protected OLog() {}
     
     
     public static Logger log()

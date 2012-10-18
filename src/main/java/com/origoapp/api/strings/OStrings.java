@@ -1,19 +1,19 @@
-package com.scolaapp.api.strings;
+package com.origoapp.api.strings;
 
 
-public class ScStrings
+public class OStrings
 {
     public static final String LANG_ENGLISH = "en";
     public static final String LANG_NORWEGIAN_BOKMAL = "nb";
     
     
-    public ScStrings()
+    public OStrings()
     {
         this(LANG_ENGLISH);
     }
     
     
-    public ScStrings(String language)
+    public OStrings(String language)
     {
         setMeta(language);
         
@@ -32,10 +32,10 @@ public class ScStrings
     
     /* ==== META ==== */
     
-    public String strScolaTypeSchoolClass;
-    public String strScolaTypePreschoolClass;
-    public String strScolaTypeSportsTeam;
-    public String strScolaTypeOther;
+    public String strOrigoTypeSchoolClass;
+    public String strOrigoTypePreschoolClass;
+    public String strOrigoTypeSportsTeam;
+    public String strOrigoTypeOther;
     
     public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
     public String schoolClassTeacher;
@@ -56,10 +56,10 @@ public class ScStrings
     private void setMeta(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strScolaTypeSchoolClass = "Skoleklasse";
-            strScolaTypePreschoolClass = "Barnehage/avdeling";
-            strScolaTypeSportsTeam = "Lag";
-            strScolaTypeOther = "Annet";
+            strOrigoTypeSchoolClass = "Skoleklasse";
+            strOrigoTypePreschoolClass = "Barnehage/avdeling";
+            strOrigoTypeSportsTeam = "Lag";
+            strOrigoTypeOther = "Annet";
             
             schoolClassTeacher = "Kontaktlærer";
             schoolTopicTeacher = "Faglærer";
@@ -74,10 +74,10 @@ public class ScStrings
             teamCoach = "Trener";
             teamAssistantCoach = "Assistenttrener";
         } else {
-            strScolaTypeSchoolClass = "School class";
-            strScolaTypePreschoolClass = "Preschool/daycare";
-            strScolaTypeSportsTeam = "Sports team";
-            strScolaTypeOther = "Other";
+            strOrigoTypeSchoolClass = "School class";
+            strOrigoTypePreschoolClass = "Preschool/daycare";
+            strOrigoTypeSportsTeam = "Sports team";
+            strOrigoTypeOther = "Other";
             
             schoolClassTeacher = "Teacher";
             schoolTopicTeacher = "Topic teacher";
@@ -106,13 +106,13 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strEULA    = "– MELLOM OSS –\n" +
                          "\n" +
-                         "Du er nå nesten klar til å begynne å bruke Scola. Men for at Scola skal være til nytte for deg og dine, må vi be deg gi noen opplysninger om husstanden din. Vi lover derfor at:\n" +
+                         "Du er nå nesten klar til å begynne å bruke Origo. Men for at Origo skal være til nytte for deg og dine, må vi be deg gi noen opplysninger om husstanden din. Vi lover derfor at:\n" +
                          "\n" +
                          "- Opplysningene forblir dine og bare dine.\n" +
                          "- Vi forbeholder oss absolutt ingen rett til dem.\n" +
                          "- Vi selger dem ikke videre.\n" + 
                          "- Vi analyserer dem ikke for å finne ut hva du og dine nærmeste liker og mener.\n" +
-                         "- Vi har dem bare til låns, for uten dem har Scola ingen nytteverdi.\n" +
+                         "- Vi har dem bare til låns, for uten dem har Origo ingen nytteverdi.\n" +
                          "\n" +
                          "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
             strAccept  = "Godta";
@@ -120,13 +120,13 @@ public class ScStrings
         } else {
             strEULA    = "– BETWEEN US –\n" +
                          "\n" +
-                         "You are now almost ready to start using Scola. But for Scola to be of use to you and your family, we need you to provide some information about your household. We promise that:\n" +
+                         "You are now almost ready to start using Origo. But for Origo to be of use to you and your family, we need you to provide some information about your household. We promise that:\n" +
                          "\n" +
                          "- The information remains yours and yours only.\n" +
                          "- We claim no rights to it whatsoever.\n" +
                          "- We do not sell it to third parties.\n" + 
                          "- We do not analyse it in order to figure out what you and your family may like.\n" +
-                         "- We are only borrowing it, for without it, Scola has no use.\n" +
+                         "- We are only borrowing it, for without it, Origo has no use.\n" +
                          "\n" +
                          "If you accept this, you will receive an email from us that documents the above.";
             strAccept    = "Accept";
@@ -275,11 +275,11 @@ public class ScStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strSignInOrRegisterFooter    = "Når du registrerer ny bruker, vil du motta en epost med en aktiveringskode som du må oppgi for å aktivere medlemskapet ditt.";
             strActivateFooter            = "Oppgi aktiveringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
-            strHouseholdMemberListFooter = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Scola-invitasjon fra deg.";
+            strHouseholdMemberListFooter = "Her kan du legge til eller ta bort medlemmer i husstanden din. Nye medlemmer vil motta en Origo-invitasjon fra deg.";
         } else {
             strSignInOrRegisterFooter    = "When you register, you will receive an email with an activation code that you must provide in order to activate your membership.";
             strActivateFooter            = "Please provide the activation code that was emailed to you, or come back later if you don't have access to your email at this time.";
-            strHouseholdMemberListFooter = "Here you may add or remove members of your household. New members will receive a Scola invitation from you.";
+            strHouseholdMemberListFooter = "Here you may add or remove members of your household. New members will receive a Origo invitation from you.";
         }
     }
     
@@ -341,7 +341,7 @@ public class ScStrings
             strWelcomeBackTitle            = "Velkommen tilbake!";
             strWelcomeBackAlert            = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
             strIncompleteRegistrationTitle = "Ufullstendig registrering";
-            strIncompleteRegistrationAlert = "Du må fullføre registreringen før du kan begynne å bruke Scola.";
+            strIncompleteRegistrationAlert = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
             strMemberExistsTitle           = "Medlem eksisterer";
             strMemberExistsAlert           = "Epost-adressen '%@' er allerede registrert i '@%'. Vennligst oppgi en annen adresse (eller avbryt registreringen).";
             strExistingResidenceAlert      = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
@@ -353,7 +353,7 @@ public class ScStrings
             strWelcomeBackTitle            = "Welcome back!";
             strWelcomeBackAlert            = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
             strIncompleteRegistrationTitle = "Incomplete registration";
-            strIncompleteRegistrationAlert = "You must complete your registration before you can start using Scola.";
+            strIncompleteRegistrationAlert = "You must complete your registration before you can start using Origo.";
             strMemberExistsTitle           = "Member exists";
             strMemberExistsAlert           = "The email address '%@' is already registered in '%@'. Please enter a different address (or cancel the registration).";
             strExistingResidenceAlert      = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
@@ -361,7 +361,7 @@ public class ScStrings
     }
     
     
-    /* ==== ScMembershipView STRINGS ==== */
+    /* ==== OMemberListView strings ==== */
     
     public String strMemberListViewTitleDefault;
     public String strMemberListViewTitleHousehold;
@@ -384,7 +384,7 @@ public class ScStrings
     }
     
     
-    /* ==== ScMemberView STRINGS ==== */
+    /* ==== OMemberView strings ==== */
     
     public String strMemberViewTitleAboutYou;
     public String strMemberViewTitleNewMember;

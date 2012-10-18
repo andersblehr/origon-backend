@@ -1,4 +1,4 @@
-package com.scolaapp.api.auth;
+package com.origoapp.api.auth;
 
 import java.util.Date;
 import java.util.List;
@@ -16,58 +16,58 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.scolaapp.api.aux.ScDAO;
-import com.scolaapp.api.aux.ScLog;
-import com.scolaapp.api.aux.ScMemberProxy;
-import com.scolaapp.api.aux.ScMeta;
-import com.scolaapp.api.aux.ScURLParams;
-import com.scolaapp.api.model.ScCachedEntity;
+import com.origoapp.api.aux.ODAO;
+import com.origoapp.api.aux.OLog;
+import com.origoapp.api.aux.OMemberProxy;
+import com.origoapp.api.aux.OMeta;
+import com.origoapp.api.aux.OURLParams;
+import com.origoapp.api.model.OCachedEntity;
 
 
 @Path("auth")
-public class ScAuthHandler
+public class OAuthHandler
 {
-    private ScMeta m;
+    private OMeta m;
     
     
     @GET
     @Path("activate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response activateUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                 @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
-                                 @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
-                                 @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
-                                 @QueryParam(ScURLParams.APP_VERSION) String appVersion)
+                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                 @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                                 @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new ScMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.ACTIVATION);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATION);
         m.validateAuthToken(authToken);
         
         Date fetchDate = new Date();
-        List<ScCachedEntity> scolaEntities = null;
+        List<OCachedEntity> origoEntities = null;
         
         if (m.isValid()) {
-            ScAuthInfo authInfo = m.getAuthInfo();
+            OAuthInfo authInfo = m.getAuthInfo();
             
             if (authInfo.passwordHash.equals(m.getPasswordHash())) {
-                ScDAO DAO = m.getDAO();
+                ODAO DAO = m.getDAO();
                 
                 DAO.ofy().delete(authInfo);
                 DAO.putAuthToken(authToken);
                 
-                scolaEntities = DAO.fetchEntities(null);
+                origoEntities = DAO.fetchEntities(null);
             } else {
-                ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if (scolaEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(scolaEntities).lastModified(fetchDate).build();
+        if (origoEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).entity(origoEntities).lastModified(fetchDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(fetchDate).build();
         }
@@ -79,22 +79,22 @@ public class ScAuthHandler
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
-                              @QueryParam(ScURLParams.AUTH_TOKEN) String authToken,
-                              @QueryParam(ScURLParams.DEVICE_ID) String deviceId,
-                              @QueryParam(ScURLParams.DEVICE_TYPE) String deviceType,
-                              @QueryParam(ScURLParams.APP_VERSION) String appVersion)
+                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                              @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                              @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new ScMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, ScAuthPhase.LOGIN);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
         
-        ScAuthInfo authInfo = null;
-        List<ScCachedEntity> fetchedEntities = null;
+        OAuthInfo authInfo = null;
+        List<OCachedEntity> fetchedEntities = null;
         Date fetchDate = new Date(); 
         
         if (m.isValid()) {
-            ScMemberProxy memberProxy = m.getMemberProxy();
+            OMemberProxy memberProxy = m.getMemberProxy();
             
             if ((memberProxy == null) || !memberProxy.didRegister) {
                 authInfo = m.getAuthInfo();
@@ -109,14 +109,14 @@ public class ScAuthHandler
                     // TODO: Provide URL directly to app on device
                     message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
                     message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-                    message.setSubject("Complete your registration with Scola");
+                    message.setSubject("Complete your registration with Origo");
                     message.setText(String.format("Activation code: %s", m.getActivationCode()));
                     
                     Transport.send(message);
                     
-                    ScLog.log().fine(m.meta() + "Sent activation code to new Scola user.");
+                    OLog.log().fine(m.meta() + "Sent activation code to new Origo user.");
                 } catch (MessagingException e) {
-                    ScLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                    OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 }
             } else {
                 if ((memberProxy != null) && memberProxy.didRegister) {
@@ -125,17 +125,17 @@ public class ScAuthHandler
                         
                         fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
                     } else {
-                        ScLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                        ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                        OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                        OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                     }
                 } else {
-                    ScLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
-                    ScLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
+                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             }
         } else {
-            ScLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            ScLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         if (authInfo != null) {

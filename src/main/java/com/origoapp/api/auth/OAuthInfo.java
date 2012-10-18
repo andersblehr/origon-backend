@@ -1,4 +1,4 @@
-package com.scolaapp.api.auth;
+package com.origoapp.api.auth;
 
 import javax.persistence.Id;
 
@@ -10,7 +10,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Entity
 @Unindexed
 @Cached(expirationSeconds = 600)
-public class ScAuthInfo
+public class OAuthInfo
 {
     public @Id String userId;
     
@@ -22,10 +22,10 @@ public class ScAuthInfo
     public boolean didRegister;
     
     
-    public ScAuthInfo() {}
+    public OAuthInfo() {}
     
     
-    public ScAuthInfo(String userId, String deviceId, String passwordHash, String activationCode)
+    public OAuthInfo(String userId, String deviceId, String passwordHash, String activationCode)
     {
         this.userId = userId;
         this.deviceId = deviceId;

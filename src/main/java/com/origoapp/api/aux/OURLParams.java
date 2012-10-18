@@ -1,7 +1,7 @@
-package com.scolaapp.api.aux;
+package com.origoapp.api.aux;
 
 
-public final class ScURLParams
+public final class OURLParams
 {
     public static final String AUTH_TOKEN = "token";
     public static final String DEVICE_ID = "duid";

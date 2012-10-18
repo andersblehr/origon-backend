@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.scolaapp.api</groupId>
-	<artifactId>scolaapp-api</artifactId>
+	<groupId>com.origoapp.api</groupId>
+	<artifactId>origoapp-api</artifactId>
 	<version>1</version>
 	<packaging>war</packaging>
 
-	<name>Scola backend API</name>
-	<description>Backend API for Scola apps</description>
+	<name>Origo backend API</name>
+	<description>Backend API for the Origo app</description>
 
 	<build>
 		<plugins>

@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.util.Map;
 
@@ -18,8 +18,8 @@ import com.googlecode.objectify.condition.IfFalse;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey", "memberKey"}, ignoreUnknown = true)
-public class ScMemberResidency extends ScMembership
+@JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
+public class OMemberResidency extends OMembership
 {
     public @NotSaved(IfFalse.class) boolean presentOn01Jan = true;
     public @NotSaved(IfDefault.class) int daysAtATime = 0;
@@ -30,7 +30,7 @@ public class ScMemberResidency extends ScMembership
     public @NotSaved Map<String, String> residenceRef;
     
     
-    public ScMemberResidency()
+    public OMemberResidency()
     {
         super();
     }

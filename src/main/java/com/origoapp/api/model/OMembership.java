@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.util.Map;
 
@@ -11,24 +11,29 @@ import com.googlecode.objectify.annotation.Cached;
 import com.googlecode.objectify.annotation.NotSaved;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.condition.IfFalse;
 
 
 @Subclass(unindexed = true)
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey", "memberKey"}, ignoreUnknown = true)
-public class ScDevice extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
+public class OMembership extends OCachedEntity
 {
-    public String type;
-    public String displayName;
+    public @NotSaved(IfFalse.class) boolean isActive = false;
+    public @NotSaved(IfFalse.class) boolean isAdmin = false;
+    public @NotSaved(IfFalse.class) boolean isCoach = false;
+    public @NotSaved(IfFalse.class) boolean isTeacher = false;
     
-    public @NotSaved ScMember member;
+    public @NotSaved Map<String, String> origoRef;
+    
+    public @NotSaved OMember member;
     public @NotSaved Map<String, String> memberRef;
-    public Key<ScMember> memberKey;
-
+    public Key<OMember> memberKey;
     
-    public ScDevice()
+
+    public OMembership()
     {
         super();
     }

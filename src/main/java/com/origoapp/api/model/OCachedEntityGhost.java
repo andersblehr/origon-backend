@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
@@ -14,14 +14,14 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey"}, ignoreUnknown = true)
-public class ScCachedEntityGhost extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
+public class OCachedEntityGhost extends OCachedEntity
 {
     public @NotSaved String ghostedEntityClass;
     public @NotSaved boolean hasExpired = false;
     
     
-    public ScCachedEntityGhost()
+    public OCachedEntityGhost()
     {
         super();
     }

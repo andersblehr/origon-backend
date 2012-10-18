@@ -1,4 +1,4 @@
-package com.scolaapp.api.aux;
+package com.origoapp.api.aux;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -11,23 +11,23 @@ import org.apache.commons.codec.binary.Base64;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.NotFoundException;
-import com.scolaapp.api.auth.ScAuthInfo;
-import com.scolaapp.api.auth.ScAuthPhase;
-import com.scolaapp.api.auth.ScAuthMeta;
-import com.scolaapp.api.model.ScMember;
+import com.origoapp.api.auth.OAuthInfo;
+import com.origoapp.api.auth.OAuthMeta;
+import com.origoapp.api.auth.OAuthPhase;
+import com.origoapp.api.model.OMember;
 
 
-public class ScMeta
+public class OMeta
 {
     private static final char[] symbols = new char[16];
     
     private static final int kMinimumPasswordLength = 6;
     private static final int kActivationCodeLength = 6;
     
-    private ScAuthPhase authPhase = ScAuthPhase.NONE;
+    private OAuthPhase authPhase = OAuthPhase.NONE;
     
-    private ScDAO DAO;
-    private ScMemberProxy memberProxy;
+    private ODAO DAO;
+    private OMemberProxy memberProxy;
     
     private boolean isValid = true;
     
@@ -53,7 +53,7 @@ public class ScMeta
     }
     
     
-    public ScMeta(String deviceId, String deviceType, String appVersion)
+    public OMeta(String deviceId, String deviceType, String appVersion)
     {
         validateDeviceId(deviceId);
         
@@ -61,21 +61,21 @@ public class ScMeta
             this.deviceType = deviceType;
             this.appVersion = appVersion;            
         } else if (deviceType == null) {
-            ScLog.log().warning(meta(false) + "Device type is missing.");
+            OLog.log().warning(meta(false) + "Device type is missing.");
         } else {
-            ScLog.log().warning(meta(false) + "App version is missing.");
+            OLog.log().warning(meta(false) + "App version is missing.");
         }
     }
     
     
-    public ScMeta(String authToken, String appVersion)
+    public OMeta(String authToken, String appVersion)
     {
         validateAuthToken(authToken);
         
         if (appVersion != null) {
             this.appVersion = appVersion;
         } else {
-            ScLog.log().warning(meta(false) + "App version is missing.");
+            OLog.log().warning(meta(false) + "App version is missing.");
         }
     }
     
@@ -128,20 +128,20 @@ public class ScMeta
     }
     
     
-    public ScDAO getDAO()
+    public ODAO getDAO()
     {
         return DAO;
     }
     
     
-    public ScMemberProxy getMemberProxy()
+    public OMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = DAO.get(new Key<ScMemberProxy>(ScMemberProxy.class, userId));
+            memberProxy = DAO.get(new Key<OMemberProxy>(OMemberProxy.class, userId));
             
-            if (authPhase == ScAuthPhase.ACTIVATION) {
+            if (authPhase == OAuthPhase.ACTIVATION) {
                 if (memberProxy == null) {
-                    memberProxy = new ScMemberProxy(userId);
+                    memberProxy = new OMemberProxy(userId);
                 }
                 
                 memberProxy.passwordHash = passwordHash;
@@ -152,21 +152,21 @@ public class ScMeta
     }
     
     
-    public ScAuthInfo getAuthInfo()
+    public OAuthInfo getAuthInfo()
     {
-        ScAuthInfo authInfo = null;
+        OAuthInfo authInfo = null;
         
         if (isValid) {
-            if (authPhase != ScAuthPhase.ACTIVATION) {
+            if (authPhase != OAuthPhase.ACTIVATION) {
                 activationCode = generateActivationCode();
                 
-                authInfo = new ScAuthInfo(userId, deviceId, passwordHash, activationCode);
+                authInfo = new OAuthInfo(userId, deviceId, passwordHash, activationCode);
                 
-                ScMemberProxy memberProxy = getMemberProxy();
-                ScMember member = null;
+                OMemberProxy memberProxy = getMemberProxy();
+                OMember member = null;
                 
                 if (memberProxy != null) {
-                    member = (ScMember)DAO.get(memberProxy.memberKey);
+                    member = (OMember)DAO.get(memberProxy.memberKey);
                 }
                 
                 if (member != null) {
@@ -176,8 +176,8 @@ public class ScMeta
                     authInfo.isListed = false;
                     authInfo.didRegister = false;
                 }
-            } else if (authPhase == ScAuthPhase.ACTIVATION) {
-                authInfo = DAO.get(new Key<ScAuthInfo>(ScAuthInfo.class, userId));
+            } else if (authPhase == OAuthPhase.ACTIVATION) {
+                authInfo = DAO.get(new Key<OAuthInfo>(OAuthInfo.class, userId));
             }
         }
         
@@ -185,7 +185,7 @@ public class ScMeta
     }
     
     
-    public void validateAuthorizationHeader(String authorizationHeader, ScAuthPhase authPhase)
+    public void validateAuthorizationHeader(String authorizationHeader, OAuthPhase authPhase)
     {
         if ((authorizationHeader != null) && (authorizationHeader.indexOf("Basic ") == 0)) {
             String base64EncodedAuthString = authorizationHeader.split(" ")[1];
@@ -200,28 +200,28 @@ public class ScMeta
                     
                     if (isValid) {
                         this.authPhase = authPhase;
-                        this.DAO = new ScDAO(this);
+                        this.DAO = new ODAO(this);
                     }
                 } else {
-                    ScLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
+                    OLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
                 }
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
             }
         } else {
-            ScLog.log().warning(meta(false) + String.format("Authorization header '%s' is not a valid basic auth header.", authorizationHeader));
+            OLog.log().warning(meta(false) + String.format("Authorization header '%s' is not a valid basic auth header.", authorizationHeader));
         }
     }
     
     
     public void validateAuthToken(String authToken)
     {
-        DAO = new ScDAO(this);
+        DAO = new ODAO(this);
         
-        if (authPhase == ScAuthPhase.NONE) {
+        if (authPhase == OAuthPhase.NONE) {
             try {
                 Date now = new Date();
-                ScAuthMeta tokenMeta = DAO.ofy().get(ScAuthMeta.class, authToken); 
+                OAuthMeta tokenMeta = DAO.ofy().get(OAuthMeta.class, authToken); 
 
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
@@ -230,16 +230,16 @@ public class ScMeta
                     deviceId = tokenMeta.deviceId;
                     deviceType = tokenMeta.deviceType;
                 } else {
-                    ScLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
+                    OLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
                 }
             } catch (NotFoundException e) {
-                ScLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
+                OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
-        } else if (authPhase != ScAuthPhase.REGISTRATION) {
+        } else if (authPhase != OAuthPhase.REGISTRATION) {
             if (authToken != null) {
                 this.authToken = authToken;
             } else {
-                ScLog.log().warning(meta(false) + "Auth token is missing.");
+                OLog.log().warning(meta(false) + "Auth token is missing.");
             }
         }
     }
@@ -248,7 +248,7 @@ public class ScMeta
     public void validateLastFetchDate(Date lastFetchDate)
     {
         if (lastFetchDate == null) {
-            ScLog.log().warning(meta(false) + "Last fetch date is missing.");
+            OLog.log().warning(meta(false) + "Last fetch date is missing.");
         }
     }
     
@@ -291,7 +291,7 @@ public class ScMeta
         if (isValidUUID(deviceId)) {
             this.deviceId = deviceId;
         } else {
-            ScLog.log().warning(meta(false) + String.format("Device id %s is not a valid UUID.", deviceId));
+            OLog.log().warning(meta(false) + String.format("Device id %s is not a valid UUID.", deviceId));
         }
     }
     
@@ -303,7 +303,7 @@ public class ScMeta
                 this.emailAddress = new InternetAddress(userId);
                 this.userId = userId;
             } catch (AddressException e) {
-                ScLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
+                OLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
             }
         }
     }
@@ -312,12 +312,12 @@ public class ScMeta
     private void validatePassword(String password)
     {
         if ((password != null) && (password.length() >= kMinimumPasswordLength)) {
-            this.passwordHash = ScCrypto.generatePasswordHash(password, userId);
+            this.passwordHash = OCrypto.generatePasswordHash(password, userId);
         } else {
             if (password == null) {
-                ScLog.log().warning(meta(false) + String.format("User password is null."));
+                OLog.log().warning(meta(false) + String.format("User password is null."));
             } else {
-                ScLog.log().warning(meta(false) + String.format("User password is too short (minmum length: %d; actual length: %d).", kMinimumPasswordLength, password.length()));
+                OLog.log().warning(meta(false) + String.format("User password is too short (minmum length: %d; actual length: %d).", kMinimumPasswordLength, password.length()));
             }
         }
     }

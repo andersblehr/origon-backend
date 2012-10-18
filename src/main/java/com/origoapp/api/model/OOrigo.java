@@ -1,4 +1,4 @@
-package com.scolaapp.api.model;
+package com.origoapp.api.model;
 
 import java.util.Map;
 
@@ -19,8 +19,8 @@ import com.googlecode.objectify.condition.IfNull;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"scolaKey", "parentScolaKey"}, ignoreUnknown = true)
-public class ScScola extends ScCachedEntity
+@JsonIgnoreProperties(value = {"origoKey", "parentOrigoKey"}, ignoreUnknown = true)
+public class OOrigo extends OCachedEntity
 {
     public String name;
     public @NotSaved(IfNull.class) String descriptionText;
@@ -30,12 +30,12 @@ public class ScScola extends ScCachedEntity
     public @NotSaved(IfNull.class) String telephone;
     public @NotSaved(IfNull.class) Blob photo;
     
-    public @NotSaved ScScola parentScola;
-    public @NotSaved Map<String, String> parentScolaRef;
-    public @NotSaved(IfNull.class) Key<ScScola> parentScolaKey;
+    public @NotSaved OOrigo parentOrigo;
+    public @NotSaved Map<String, String> parentOrigoRef;
+    public @NotSaved(IfNull.class) Key<OOrigo> parentOrigoKey;
 
 
-    public ScScola()
+    public OOrigo()
     {
         super();
     }

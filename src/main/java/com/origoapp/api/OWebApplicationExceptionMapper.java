@@ -1,4 +1,4 @@
-package com.scolaapp.api;
+package com.origoapp.api;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -7,7 +7,7 @@ import javax.ws.rs.ext.Provider;
 
 
 @Provider
-public class ScWebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException>
+public class OWebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException>
 {
 	@Override
 	public Response toResponse(WebApplicationException exception)

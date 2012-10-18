@@ -1,7 +1,7 @@
-package com.scolaapp.api.auth;
+package com.origoapp.api.auth;
 
 
-public enum ScAuthPhase
+public enum OAuthPhase
 {
     NONE,
     REGISTRATION,

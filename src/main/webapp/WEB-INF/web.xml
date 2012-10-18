@@ -4,17 +4,17 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-    <display-name>RESTful API for the Scola backend</display-name>
+    <display-name>RESTful API for the Origo backend</display-name>
     <context-param>
         <param-name>resteasy.providers</param-name>
-        <param-value>com.scolaapp.api.ScWebApplicationExceptionMapper</param-value>
+        <param-value>com.origoapp.api.OWebApplicationExceptionMapper</param-value>
     </context-param>
     <servlet>
-        <servlet-name>scolaapp-api</servlet-name>
+        <servlet-name>origoapp-api</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>com.scolaapp.api.ScScolaApplication</param-value>
+            <param-value>com.origoapp.api.OOrigoApplication</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.feature.DisableWADL</param-name>
@@ -22,12 +22,12 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>scolaapp-api</servlet-name>
+        <servlet-name>origoapp-api</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>scolaapp-auth</web-resource-name>
+            <web-resource-name>origoapp-auth</web-resource-name>
             <url-pattern>/auth/*</url-pattern>
         </web-resource-collection>
         <user-data-constraint>
