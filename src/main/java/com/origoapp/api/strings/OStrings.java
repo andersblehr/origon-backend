@@ -15,6 +15,7 @@ public class OStrings
     
     public OStrings(String language)
     {
+        setTabBarTitles(language);
         setMeta(language);
         
         setEULA(language);
@@ -25,12 +26,38 @@ public class OStrings
         setButtonTitles(language);
         setAlertsAndErrorMessages(language);
         
-        setMembershipViewStrings(language);
+        setMemberListViewStrings(language);
         setMemberViewStrings(language);
     }
     
     
-    /* ==== META ==== */
+    /* ==== Tab bar titles ==== */
+    
+    public String strTabBarTitleOrigo;
+    public String strTabBarTitleCalendar;
+    public String strTabBarTitleTasks;
+    public String strTabBarTitleMessages;
+    public String strTabBarTitleSettings;
+    
+    private void setTabBarTitles(String language)
+    {
+        strTabBarTitleOrigo = "Origo";
+        
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strTabBarTitleCalendar = "Kalender";
+            strTabBarTitleTasks = "Oppgaver";
+            strTabBarTitleMessages = "Meldinger";
+            strTabBarTitleSettings = "Innstillinger";
+        } else {
+            strTabBarTitleCalendar = "Calendar";
+            strTabBarTitleTasks = "Tasks";
+            strTabBarTitleMessages = "Messages";
+            strTabBarTitleSettings = "Settings";
+        }
+    }
+    
+    
+    /* ==== Meta ==== */
     
     public String strOrigoTypeSchoolClass;
     public String strOrigoTypePreschoolClass;
@@ -135,11 +162,10 @@ public class OStrings
     }
     
     
-    /* ==== GENERIC STRINGS ==== */
+    /* ==== Generic strings ==== */
     
     public String strPleaseWait;
     public String strAboutYou;
-    public String strAboutMember;
     public String strFemale;
     public String strFemaleMinor;
     public String strMale;
@@ -153,7 +179,6 @@ public class OStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strPleaseWait      = "Vent litt...";
             strAboutYou        = "Om deg";
-            strAboutMember     = "Om %@";
             strFemale          = "Kvinne";
             strFemaleMinor     = "Jente";
             strMale            = "Mann";
@@ -164,7 +189,6 @@ public class OStrings
         } else {
             strPleaseWait      = "Please wait...";
             strAboutYou        = "About you";
-            strAboutMember     = "About %@";
             strFemale          = "Woman";
             strFemaleMinor     = "Girl";
             strMale            = "Man";
@@ -176,7 +200,7 @@ public class OStrings
     }
     
     
-    /* ==== PROMTPS ==== */
+    /* ==== Prompts ==== */
     
     public String strAuthEmailPrompt;
     public String strPasswordPrompt;
@@ -226,14 +250,14 @@ public class OStrings
     }
     
     
-    /* ==== LABELS ==== */
+    /* ==== Labels ==== */
     
     public String strSignInOrRegisterLabel;
     public String strActivateLabel;
-    public String strSingleLetterEmailLabel;
-    public String strSingleLetterMobilePhoneLabel;
-    public String strSingleLetterDateOfBirthLabel;
-    public String strSingleLetterTelephoneLabel;
+    public String strAbbreviatedEmailLabel;
+    public String strAbbreviatedMobilePhoneLabel;
+    public String strAbbreviatedDateOfBirthLabel;
+    public String strAbbreviatedTelephoneLabel;
     public String strAddressLabel;
     public String strAddressesLabel;
     public String strTelephoneLabel;
@@ -241,30 +265,30 @@ public class OStrings
     private void setLabels(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strSignInOrRegisterLabel        = "Logg på eller registrer ny bruker";
-            strActivateLabel                = "Oppgi aktiveringskoden din";
-            strSingleLetterEmailLabel       = "e";
-            strSingleLetterMobilePhoneLabel = "m";
-            strSingleLetterDateOfBirthLabel = "f";
-            strSingleLetterTelephoneLabel   = "t";
-            strAddressLabel                 = "Adresse";
-            strAddressesLabel               = "Adresser";
-            strTelephoneLabel               = "Telefon";
+            strSignInOrRegisterLabel       = "Logg på eller registrer ny bruker";
+            strActivateLabel               = "Oppgi aktiveringskoden din";
+            strAbbreviatedEmailLabel       = "e";
+            strAbbreviatedMobilePhoneLabel = "m";
+            strAbbreviatedDateOfBirthLabel = "f";
+            strAbbreviatedTelephoneLabel   = "t";
+            strAddressLabel                = "Adresse";
+            strAddressesLabel              = "Adresser";
+            strTelephoneLabel              = "Telefon";
         } else {
-            strSignInOrRegisterLabel        = "Sign in or register new user";
-            strActivateLabel                = "Provide your activation code";
-            strSingleLetterEmailLabel       = "e:";
-            strSingleLetterMobilePhoneLabel = "m:";
-            strSingleLetterDateOfBirthLabel = "b:";
-            strSingleLetterTelephoneLabel   = "t:";
-            strAddressLabel                 = "Address";
-            strAddressesLabel               = "Addresses";
-            strTelephoneLabel               = "Telephone";
+            strSignInOrRegisterLabel       = "Sign in or register new user";
+            strActivateLabel               = "Provide your activation code";
+            strAbbreviatedEmailLabel       = "e:";
+            strAbbreviatedMobilePhoneLabel = "m:";
+            strAbbreviatedDateOfBirthLabel = "b:";
+            strAbbreviatedTelephoneLabel   = "t:";
+            strAddressLabel                = "Address";
+            strAddressesLabel              = "Addresses";
+            strTelephoneLabel              = "Telephone";
         }
     }
     
     
-    /* ==== HEADER & FOOTER STRINGS ==== */
+    /* ==== Header & footer strings ==== */
     
     public String strSignInOrRegisterFooter;
     public String strActivateFooter;
@@ -284,7 +308,7 @@ public class OStrings
     }
     
     
-    /* ==== BUTTON TITLES ==== */
+    /* ==== Button titles ==== */
     
     public String strOK;
     public String strCancel;
@@ -316,7 +340,7 @@ public class OStrings
     }
     
     
-    /* ==== ALERTS & ERROR MESSAGES ==== */
+    /* ==== Alerts & error messages ==== */
     
     public String strNoInternetError;
     public String strServerErrorAlert;
@@ -368,7 +392,7 @@ public class OStrings
     public String strHouseholdMembers;
     public String strDeleteConfirmation;
     
-    private void setMembershipViewStrings(String language)
+    private void setMemberListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strMemberListViewTitleDefault   = "Medlemmer";
