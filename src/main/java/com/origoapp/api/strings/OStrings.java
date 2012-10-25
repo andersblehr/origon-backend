@@ -26,6 +26,7 @@ public class OStrings
         setButtonTitles(language);
         setAlertsAndErrorMessages(language);
         
+        setOrigoListViewStrings(language);
         setMemberListViewStrings(language);
         setMemberViewStrings(language);
     }
@@ -165,7 +166,7 @@ public class OStrings
     /* ==== Generic strings ==== */
     
     public String strPleaseWait;
-    public String strAboutYou;
+    public String strAboutMe;
     public String strFemale;
     public String strFemaleMinor;
     public String strMale;
@@ -173,29 +174,32 @@ public class OStrings
     public String strMyHousehold;
     public String strMyMessageBoard;
     public String strOurMessageBoard;
+    public String strDeleteConfirmation;
     
     private void setGenericStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strPleaseWait      = "Vent litt...";
-            strAboutYou        = "Om deg";
-            strFemale          = "Kvinne";
-            strFemaleMinor     = "Jente";
-            strMale            = "Mann";
-            strMaleMinor       = "Gutt";
-            strMyHousehold     = "Min husstand";
-            strMyMessageBoard  = "Min oppslagstavle";
-            strOurMessageBoard = "Vår oppslagstavle";
+            strPleaseWait         = "Vent litt...";
+            strAboutMe            = "Om meg";
+            strFemale             = "Kvinne";
+            strFemaleMinor        = "Jente";
+            strMale               = "Mann";
+            strMaleMinor          = "Gutt";
+            strMyHousehold        = "Min husstand";
+            strMyMessageBoard     = "Min oppslagstavle";
+            strOurMessageBoard    = "Vår oppslagstavle";
+            strDeleteConfirmation = "Ta bort";
         } else {
-            strPleaseWait      = "Please wait...";
-            strAboutYou        = "About you";
-            strFemale          = "Woman";
-            strFemaleMinor     = "Girl";
-            strMale            = "Man";
-            strMaleMinor       = "Boy";
-            strMyHousehold     = "My place";
-            strMyMessageBoard  = "My message board";
-            strOurMessageBoard = "Our message board";
+            strPleaseWait         = "Please wait...";
+            strAboutMe            = "About me";
+            strFemale             = "Woman";
+            strFemaleMinor        = "Girl";
+            strMale               = "Man";
+            strMaleMinor          = "Boy";
+            strMyHousehold        = "My place";
+            strMyMessageBoard     = "My message board";
+            strOurMessageBoard    = "Our message board";
+            strDeleteConfirmation = "Remove";
         }
     }
     
@@ -385,57 +389,77 @@ public class OStrings
     }
     
     
+    /* ==== OOrigoListView strings ==== */
+    
+    public String strViewTitleWardOrigos;
+    public String strSectionHeaderWards;
+    public String strSectionHeaderMyOrigos;
+    
+    private void setOrigoListViewStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strViewTitleWardOrigos   = "Origo: %@";
+            strSectionHeaderWards    = "Barnas origo";
+            strSectionHeaderMyOrigos = "Mine origo";
+        } else {
+            strViewTitleWardOrigos   = "Origo: %@";
+            strSectionHeaderWards    = "The kids' origos";
+            strSectionHeaderMyOrigos = "My origos";
+        }
+    }
+    
+    
     /* ==== OMemberListView strings ==== */
     
-    public String strMemberListViewTitleDefault;
-    public String strMemberListViewTitleHousehold;
-    public String strHouseholdMembers;
-    public String strDeleteConfirmation;
+    public String strViewTitleMembers;
+    public String strViewTitleHousehold;
+    public String strSectionHeaderContacts;
+    public String strSectionHeaderHouseholdMembers;
+    public String strSectionHeaderOrigoMembers;
     
     private void setMemberListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strMemberListViewTitleDefault   = "Medlemmer";
-            strMemberListViewTitleHousehold = "I husstanden";
-            strHouseholdMembers             = "Medlemmer i husstanden";
-            strDeleteConfirmation           = "Ta bort";
+            strViewTitleMembers              = "Medlemmer";
+            strViewTitleHousehold            = "I husstanden";
+            strSectionHeaderContacts         = "Kontaktpersoner";
+            strSectionHeaderHouseholdMembers = "Medlemmer i husstanden";
+            strSectionHeaderOrigoMembers     = "Medlemmer";
         } else {
-            strMemberListViewTitleDefault   = "Members";
-            strMemberListViewTitleHousehold = "In the household";
-            strHouseholdMembers             = "Household members";
-            strDeleteConfirmation           = "Remove";
+            strViewTitleMembers              = "Members";
+            strViewTitleHousehold            = "In the household";
+            strSectionHeaderContacts         = "Contacts";
+            strSectionHeaderHouseholdMembers = "Household members";
+            strSectionHeaderOrigoMembers     = "Members";
         }
     }
     
     
     /* ==== OMemberView strings ==== */
     
-    public String strMemberViewTitleAboutYou;
-    public String strMemberViewTitleNewMember;
-    public String strMemberViewTitleNewHouseholdMember;
-    public String strGenderActionSheetTitleSelf;
-    public String strGenderActionSheetTitleSelfMinor;
-    public String strGenderActionSheetTitleMember;
-    public String strGenderActionSheetTitleMemberMinor;
+    public String strViewTitleNewMember;
+    public String strViewTitleNewHouseholdMember;
+    public String strGenderSheetTitleSelf;
+    public String strGenderSheetTitleSelfMinor;
+    public String strGenderSheetTitleMember;
+    public String strGenderSheetTitleMemberMinor;
     
     private void setMemberViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strMemberViewTitleAboutYou           = "Om deg";
-            strMemberViewTitleNewMember          = "Nytt medlem";
-            strMemberViewTitleNewHouseholdMember = "I husstanden";
-            strGenderActionSheetTitleSelf        = "Er du kvinne eller mann?";
-            strGenderActionSheetTitleSelfMinor   = "Er du jente eller gutt?";
-            strGenderActionSheetTitleMember      = "Er %@ kvinne eller mann?";
-            strGenderActionSheetTitleMemberMinor = "Er %@ jente eller gutt?";
+            strViewTitleNewMember          = "Nytt medlem";
+            strViewTitleNewHouseholdMember = "I husstanden";
+            strGenderSheetTitleSelf        = "Er du kvinne eller mann?";
+            strGenderSheetTitleSelfMinor   = "Er du jente eller gutt?";
+            strGenderSheetTitleMember      = "Er %@ kvinne eller mann?";
+            strGenderSheetTitleMemberMinor = "Er %@ jente eller gutt?";
         } else {
-            strMemberViewTitleAboutYou           = "About you";
-            strMemberViewTitleNewMember          = "New member";
-            strMemberViewTitleNewHouseholdMember = "In the household";
-            strGenderActionSheetTitleSelf        = "Are you a woman or a man?";
-            strGenderActionSheetTitleSelfMinor   = "Are you a girl or a boy?";
-            strGenderActionSheetTitleMember      = "Is %@ a woman or a man?";
-            strGenderActionSheetTitleMemberMinor = "Is %@ a girl or a boy?";
+            strViewTitleNewMember          = "New member";
+            strViewTitleNewHouseholdMember = "In the household";
+            strGenderSheetTitleSelf        = "Are you a woman or a man?";
+            strGenderSheetTitleSelfMinor   = "Are you a girl or a boy?";
+            strGenderSheetTitleMember      = "Is %@ a woman or a man?";
+            strGenderSheetTitleMemberMinor = "Is %@ a girl or a boy?";
         }
     }
 }
