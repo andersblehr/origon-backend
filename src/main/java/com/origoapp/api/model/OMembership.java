@@ -25,6 +25,7 @@ public class OMembership extends OCachedEntity
     public @NotSaved(IfFalse.class) boolean isActive = false;
     public @NotSaved(IfFalse.class) boolean isAdmin = false;
     public @NotSaved(IfNull.class) String contactRole;
+    public @NotSaved(IfNull.class) String contactType;
     
     public @NotSaved Map<String, String> origoRef;
     
