@@ -17,7 +17,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
 public class OCachedEntityGhost extends OCachedEntity
 {
-    public @NotSaved String ghostedEntityClass;
+    public String ghostedEntityClass;
     public @NotSaved boolean hasExpired = false;
     
     
