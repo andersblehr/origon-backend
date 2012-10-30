@@ -21,7 +21,7 @@ import com.origoapp.api.aux.OLog;
 import com.origoapp.api.aux.OMemberProxy;
 import com.origoapp.api.aux.OMeta;
 import com.origoapp.api.aux.OURLParams;
-import com.origoapp.api.model.OCachedEntity;
+import com.origoapp.api.model.OReplicatedEntity;
 
 
 @Path("auth")
@@ -44,8 +44,8 @@ public class OAuthHandler
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATION);
         m.validateAuthToken(authToken);
         
-        Date fetchDate = new Date();
-        List<OCachedEntity> origoEntities = null;
+        Date replicationDate = new Date();
+        List<OReplicatedEntity> origoEntities = null;
         
         if (m.isValid()) {
             OAuthInfo authInfo = m.getAuthInfo();
@@ -67,9 +67,9 @@ public class OAuthHandler
         }
         
         if (origoEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(origoEntities).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(origoEntities).lastModified(replicationDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(replicationDate).build();
         }
     }
     
@@ -78,7 +78,7 @@ public class OAuthHandler
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
@@ -90,8 +90,8 @@ public class OAuthHandler
         m.validateAuthToken(authToken);
         
         OAuthInfo authInfo = null;
-        List<OCachedEntity> fetchedEntities = null;
-        Date fetchDate = new Date(); 
+        List<OReplicatedEntity> fetchedEntities = null;
+        Date replicationDate = new Date(); 
         
         if (m.isValid()) {
             OMemberProxy memberProxy = m.getMemberProxy();
@@ -123,7 +123,7 @@ public class OAuthHandler
                     if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                         m.getDAO().putAuthToken(authToken);
                         
-                        fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
+                        fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
                     } else {
                         OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                         OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -141,9 +141,9 @@ public class OAuthHandler
         if (authInfo != null) {
             return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
         } else if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
 }

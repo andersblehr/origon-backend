@@ -20,7 +20,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
-public class OMessageBoard extends OCachedEntity
+public class OMessageBoard extends OReplicatedEntity
 {
     public @NotSaved Map<String, String> origoRef;
     

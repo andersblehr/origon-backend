@@ -15,13 +15,13 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
-public class OCachedEntityGhost extends OCachedEntity
+public class OReplicatedEntityGhost extends OReplicatedEntity
 {
-    public String ghostedEntityClass;
+    public @NotSaved String ghostedEntityClass;
     public @NotSaved boolean hasExpired = false;
     
     
-    public OCachedEntityGhost()
+    public OReplicatedEntityGhost()
     {
         super();
     }

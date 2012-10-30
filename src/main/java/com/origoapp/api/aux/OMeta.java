@@ -245,10 +245,10 @@ public class OMeta
     }
     
     
-    public void validateLastFetchDate(Date lastFetchDate)
+    public void validateLastReplicationDate(Date lastReplicationDate)
     {
-        if (lastFetchDate == null) {
-            OLog.log().warning(meta(false) + "Last fetch date is missing.");
+        if (lastReplicationDate == null) {
+            OLog.log().warning(meta(false) + "Last replication date is missing.");
         }
     }
     

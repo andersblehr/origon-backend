@@ -30,15 +30,15 @@ import com.googlecode.objectify.condition.IfNull;
     include = JsonTypeInfo.As.PROPERTY,
     property = "entityClass")
 @JsonSubTypes({
-    @Type(value = OCachedEntityGhost.class, name = "OCachedEntityGhost"),
     @Type(value = ODevice.class, name = "ODevice"),
+    @Type(value = OLinkedEntityRef.class, name = "OLinkedEntityRef"),
     @Type(value = OMember.class, name = "OMember"),
     @Type(value = OMemberResidency.class, name = "OMemberResidency"),
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OMessageBoard.class, name = "OMessageBoard"),
     @Type(value = OOrigo.class, name = "OOrigo"),
-    @Type(value = OSharedEntityRef.class, name = "OSharedEntityRef")})
-public abstract class OCachedEntity
+    @Type(value = OReplicatedEntityGhost.class, name = "OReplicatedEntityGhost")})
+public abstract class OReplicatedEntity
 {
     public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
@@ -47,15 +47,15 @@ public abstract class OCachedEntity
     public @NotSaved String entityClass;
     
     public Date dateCreated;
-    public @Indexed Date dateModified;
+    public @Indexed Date dateReplicated;
     public @NotSaved(IfNull.class) Date dateExpires;
     
-    public @NotSaved(IfFalse.class) boolean isShared = false;
+    public @NotSaved(IfFalse.class) boolean isLinked = false;
     
     
     @PrePersist
     @SuppressWarnings("unchecked")
-    public <T extends OCachedEntity> void internaliseRelationships()
+    public <T extends OReplicatedEntity> void internaliseRelationships()
     {
         try {
             Field[] fields = this.getClass().getFields();
@@ -63,8 +63,8 @@ public abstract class OCachedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == OCachedEntity.class) {
-                    OCachedEntity referencedEntity = (OCachedEntity)field.get(this);
+                if (classOfField.getSuperclass() == OReplicatedEntity.class) {
+                    OReplicatedEntity referencedEntity = (OReplicatedEntity)field.get(this);
                     
                     if (referencedEntity != null) {
                         Field keyField = this.getClass().getField(field.getName() + "Key");
@@ -82,7 +82,7 @@ public abstract class OCachedEntity
     
     @PostLoad
     @SuppressWarnings("unchecked")
-    public <T extends OCachedEntity> void externaliseRelationships()
+    public <T extends OReplicatedEntity> void externaliseRelationships()
     {
         try {
             origoId = origoKey.getRaw().getName();
@@ -98,7 +98,7 @@ public abstract class OCachedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == OCachedEntity.class) {
+                if (classOfField.getSuperclass() == OReplicatedEntity.class) {
                     Field keyField = this.getClass().getField(field.getName() + "Key");
                     Key<T> referencedEntityKey = (Key<T>)keyField.get(this);
                     
@@ -148,8 +148,8 @@ public abstract class OCachedEntity
     {
         boolean areEqual = false;
         
-        if (OCachedEntity.class.isAssignableFrom(other.getClass())) {
-            areEqual = (((OCachedEntity)other).hashCode() == this.hashCode());
+        if (OReplicatedEntity.class.isAssignableFrom(other.getClass())) {
+            areEqual = (((OReplicatedEntity)other).hashCode() == this.hashCode());
         }
         
         return areEqual;

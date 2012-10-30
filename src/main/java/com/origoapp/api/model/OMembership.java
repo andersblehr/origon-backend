@@ -20,7 +20,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
-public class OMembership extends OCachedEntity
+public class OMembership extends OReplicatedEntity
 {
     public @NotSaved(IfFalse.class) boolean isActive = false;
     public @NotSaved(IfFalse.class) boolean isAdmin = false;

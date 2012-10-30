@@ -16,7 +16,7 @@ import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
 
 import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.model.OCachedEntity;
+import com.origoapp.api.model.OReplicatedEntity;
 import com.origoapp.api.model.OMember;
 import com.origoapp.api.model.OMemberResidency;
 import com.origoapp.api.model.OMembership;
@@ -36,10 +36,10 @@ public class OMemberProxy
     public @NotSaved(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
     public @NotSaved(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
 
-    public @NotSaved Key<OCachedEntity> origoKey;
-    public @NotSaved Key<OCachedEntity> memberKey;
-    public @NotSaved Set<Key<OCachedEntity>> residencyKeys;
-    public @NotSaved Set<Key<OCachedEntity>> residenceKeys;
+    public @NotSaved Key<OReplicatedEntity> origoKey;
+    public @NotSaved Key<OReplicatedEntity> memberKey;
+    public @NotSaved Set<Key<OReplicatedEntity>> residencyKeys;
+    public @NotSaved Set<Key<OReplicatedEntity>> residenceKeys;
     
     
     public OMemberProxy() {}
@@ -49,8 +49,8 @@ public class OMemberProxy
     {
         this.userId = userId;
         
-        origoKey = new Key<OCachedEntity>(OOrigo.class, userId);
-        memberKey = new Key<OCachedEntity>(origoKey, OMember.class, userId);
+        origoKey = new Key<OReplicatedEntity>(OOrigo.class, userId);
+        memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, userId);
         
         authMetaKeys = new HashSet<Key<OAuthMeta>>();
         membershipKeys = new HashSet<Key<OMembership>>();
@@ -60,8 +60,8 @@ public class OMemberProxy
     @PostLoad
     public void populateNonSavedValues()
     {
-        origoKey = new Key<OCachedEntity>(OOrigo.class, userId);
-        memberKey = new Key<OCachedEntity>(origoKey, OMember.class, userId);
+        origoKey = new Key<OReplicatedEntity>(OOrigo.class, userId);
+        memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, userId);
         
         if (authMetaKeys == null) {
             authMetaKeys = new HashSet<Key<OAuthMeta>>();
@@ -71,16 +71,16 @@ public class OMemberProxy
             membershipKeys = new HashSet<Key<OMembership>>();
         }
         
-        residencyKeys = new HashSet<Key<OCachedEntity>>();
-        residenceKeys = new HashSet<Key<OCachedEntity>>();
+        residencyKeys = new HashSet<Key<OReplicatedEntity>>();
+        residenceKeys = new HashSet<Key<OReplicatedEntity>>();
         
         for (Key<OMembership> membershipKey : membershipKeys) {
             Key<OOrigo> origoKey = new Key<OOrigo>(OOrigo.class, membershipKey.getRaw().getParent().getName());
             String membershipId = membershipKey.getRaw().getName();
             
             if (membershipId.startsWith(userId)) {
-                residencyKeys.add(new Key<OCachedEntity>(origoKey, OMemberResidency.class, membershipId));
-                residenceKeys.add(new Key<OCachedEntity>(origoKey, OOrigo.class, membershipId.substring(membershipId.indexOf("$") + 1)));
+                residencyKeys.add(new Key<OReplicatedEntity>(origoKey, OMemberResidency.class, membershipId));
+                residenceKeys.add(new Key<OReplicatedEntity>(origoKey, OOrigo.class, membershipId.substring(membershipId.indexOf("$") + 1)));
             }
         }
     }

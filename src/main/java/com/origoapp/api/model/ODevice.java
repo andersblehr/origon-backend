@@ -18,7 +18,7 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
-public class ODevice extends OCachedEntity
+public class ODevice extends OReplicatedEntity
 {
     public String type;
     public String displayName;

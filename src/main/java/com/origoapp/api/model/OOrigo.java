@@ -20,7 +20,7 @@ import com.googlecode.objectify.condition.IfNull;
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "parentOrigoKey"}, ignoreUnknown = true)
-public class OOrigo extends OCachedEntity
+public class OOrigo extends OReplicatedEntity
 {
     public String name;
     public String type;
