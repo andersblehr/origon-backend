@@ -99,12 +99,15 @@ public class ODAO extends DAOBase
     {
         Set<OReplicatedEntity> entitiesToReplicate = new HashSet<OReplicatedEntity>();
         
-        Set<String> newMemberIds = new HashSet<String>();
-        Set<OMemberProxy> memberProxies = new HashSet<OMemberProxy>();
+        Set<String> addedMemberIds = new HashSet<String>();
+        Set<String> modifiedMemberIds = new HashSet<String>();
         Map<String, Set<Key<OMembership>>> addedMembershipKeys = new HashMap<String, Set<Key<OMembership>>>();
+        Map<String, Set<Key<OMembership>>> deletedMembershipKeys = new HashMap<String, Set<Key<OMembership>>>();
+        
+        Set<OMemberProxy> memberProxies = new HashSet<OMemberProxy>();
         Set<Key<OReplicatedEntity>> entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
         
-        Date dateModified = new Date();
+        Date dateReplicated = new Date();
         
         for (OReplicatedEntity entity : entityList) {
             entity.origoKey = new Key<OOrigo>(OOrigo.class, entity.origoId);
@@ -118,14 +121,34 @@ public class ODAO extends DAOBase
                     entitiesToReplicate.add(entity);
                     
                     if (entityGhost.ghostedEntityClass.equals(OMembership.class.getSimpleName()) || entityGhost.ghostedEntityClass.equals(OMemberResidency.class.getSimpleName())) {
-                        entityKeysForDeletion.add(new Key<OReplicatedEntity>(entity.origoKey, OReplicatedEntity.class, entityGhost.entityId.replace("$", "#")));
+                        String memberId;
+                        
+                        if (entityGhost.ghostedEntityClass.equals(OMembership.class.getSimpleName())) {
+                            memberId = entityGhost.entityId.substring(0, entityGhost.entityId.indexOf("$"));
+                            entityKeysForDeletion.add(new Key<OReplicatedEntity>(entity.origoKey, OReplicatedEntity.class, entityGhost.entityId.replace("$", "#")));
+                        } else {
+                            memberId = entityGhost.entityId.substring(0, entityGhost.entityId.indexOf("^"));
+                            entityKeysForDeletion.add(new Key<OReplicatedEntity>(entity.origoKey, OReplicatedEntity.class, entityGhost.entityId.replace("^", "#")));
+                        }
+                        
+                        modifiedMemberIds.add(memberId);
+                        
+                        Set<Key<OMembership>> deletedMembershipKeysForMember = deletedMembershipKeys.get(memberId);
+                        
+                        if (deletedMembershipKeysForMember == null) {
+                            deletedMembershipKeysForMember = new HashSet<Key<OMembership>>();
+                        }
+                        
+                        if (deletedMembershipKeysForMember.add(new Key<OMembership>(entityGhost.origoKey, OMembership.class, entityGhost.entityId))) {
+                            deletedMembershipKeys.put(memberId, deletedMembershipKeysForMember);
+                        }
                     }
                 }
             } else {
                 entitiesToReplicate.add(entity);
                 
                 if (entity.getClass().equals(OMember.class) && (entity.dateReplicated == null)) {
-                    newMemberIds.add(entity.entityId);
+                    addedMemberIds.add(entity.entityId);
                     
                     if (entity.entityId.equals(m.getUserId())) {
                         OMemberProxy memberProxy = m.getMemberProxy();
@@ -152,15 +175,19 @@ public class ODAO extends DAOBase
                 }
             }
             
-            entity.dateReplicated = dateModified;
+            entity.dateReplicated = dateReplicated;
         }
         
         Set<Key<OMemberProxy>> missingMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
         
         for (String memberId : addedMembershipKeys.keySet()) {
-            if (!newMemberIds.contains(memberId)) {
+            if (!addedMemberIds.contains(memberId)) {
                 missingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, memberId));
             }
+        }
+        
+        for (String memberId : deletedMembershipKeys.keySet()) {
+            missingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, memberId));
         }
 
         if (missingMemberProxyKeys.size() > 0) {
@@ -168,7 +195,16 @@ public class ODAO extends DAOBase
         }
 
         for (OMemberProxy memberProxy : memberProxies) {
-            memberProxy.membershipKeys.addAll(addedMembershipKeys.get(memberProxy.userId));
+            Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeys.get(memberProxy.userId);
+            Set<Key<OMembership>> deletedMembershipKeysForMember = deletedMembershipKeys.get(memberProxy.userId);
+            
+            if (addedMembershipKeysForMember != null) {
+                memberProxy.membershipKeys.addAll(addedMembershipKeys.get(memberProxy.userId));
+            }
+            
+            if (deletedMembershipKeysForMember != null) {
+                memberProxy.membershipKeys.removeAll(deletedMembershipKeysForMember);
+            }
         }
         
         if (memberProxies.size() > 0) {
@@ -199,7 +235,7 @@ public class ODAO extends DAOBase
                 Iterable<OReplicatedEntity> membershipEntities = null;
                 
                 if (lastReplicationDate != null) {
-                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateModified >", lastReplicationDate);
+                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", lastReplicationDate);
                 } else {
                     membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey);
                 }
@@ -228,8 +264,8 @@ public class ODAO extends DAOBase
     {
         OLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
         
-        OMemberProxy memberProxy = get(new Key<OMemberProxy>(OMemberProxy.class, memberId));
         ArrayList<OReplicatedEntity> memberEntities = new ArrayList<OReplicatedEntity>();
+        OMemberProxy memberProxy = get(new Key<OMemberProxy>(OMemberProxy.class, memberId));
         
         if (memberProxy != null) {
             Set<Key<OReplicatedEntity>> memberEntityKeys = new HashSet<Key<OReplicatedEntity>>();
