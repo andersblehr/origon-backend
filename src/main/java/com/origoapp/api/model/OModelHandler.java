@@ -24,30 +24,30 @@ public class OModelHandler
     
     
     @POST
-    @Path("sync")
+    @Path("replicate")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response synchroniseEntities(List<OCachedEntity> entitiesToPersist,
-                                        @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
-                                        @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                        @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response replicate(List<OReplicatedEntity> entitiesToReplicate,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
+                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        m.validateLastFetchDate(lastFetchDate);
+        m.validateLastReplicationDate(lastReplicationDate);
         
-        Date fetchDate = null;
+        Date replicationDate = null;
         
-        Set<String> persistedEntityIds = new HashSet<String>();
-        List<OCachedEntity> entitiesToReturn = new ArrayList<OCachedEntity>();
+        Set<String> replicatedEntityIds = new HashSet<String>();
+        List<OReplicatedEntity> entitiesToReturn = new ArrayList<OReplicatedEntity>();
         
         if (m.isValid()) {
-            if (entitiesToPersist.size() > 0) {
-                for (OCachedEntity entity : entitiesToPersist) {
-                    persistedEntityIds.add(entity.entityId);
+            if (entitiesToReplicate.size() > 0) {
+                for (OReplicatedEntity entity : entitiesToReplicate) {
+                    replicatedEntityIds.add(entity.entityId);
                 }
                 
-                m.getDAO().persistEntities(entitiesToPersist);
+                m.getDAO().replicateEntities(entitiesToReplicate);
                 
                 try {
                     Thread.sleep(1000);
@@ -56,13 +56,13 @@ public class OModelHandler
                 }
             }
 
-            fetchDate = new Date();
+            replicationDate = new Date();
 
-            List<OCachedEntity> fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
+            List<OReplicatedEntity> fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
             
-            if (entitiesToPersist.size() > 0) {
-                for (OCachedEntity entity : fetchedEntities) {
-                    if (!persistedEntityIds.contains(entity.entityId)) {
+            if (entitiesToReplicate.size() > 0) {
+                for (OReplicatedEntity entity : fetchedEntities) {
+                    if (!replicatedEntityIds.contains(entity.entityId)) {
                         entitiesToReturn.add(entity);
                     }
                 }
@@ -74,14 +74,14 @@ public class OModelHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if ((entitiesToPersist.size() > 0) && (entitiesToReturn.size() > 0)) {
-            return Response.status(SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(fetchDate).build();
-        } else if (entitiesToPersist.size() > 0) {
-            return Response.status(HttpServletResponse.SC_CREATED).lastModified(fetchDate).build();
+        if ((entitiesToReplicate.size() > 0) && (entitiesToReturn.size() > 0)) {
+            return Response.status(SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
+        } else if (entitiesToReplicate.size() > 0) {
+            return Response.status(HttpServletResponse.SC_CREATED).lastModified(replicationDate).build();
         } else if (entitiesToReturn.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(entitiesToReturn).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
     
@@ -89,28 +89,28 @@ public class OModelHandler
     @GET
     @Path("fetch")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastFetchDate,
+    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        m.validateLastFetchDate(lastFetchDate);
+        m.validateLastReplicationDate(lastReplicationDate);
         
-        Date fetchDate = new Date();
-        List<OCachedEntity> fetchedEntities = null;
+        Date replicationDate = new Date();
+        List<OReplicatedEntity> fetchedEntities = null;
         
         if (m.isValid()) {
-            fetchedEntities = m.getDAO().fetchEntities(lastFetchDate);
+            fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(fetchDate).build();
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
     
@@ -124,7 +124,7 @@ public class OModelHandler
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        List<OCachedEntity> memberEntities = null;
+        List<OReplicatedEntity> memberEntities = null;
         
         if (m.isValid()) {
             memberEntities = m.getDAO().lookupMember(memberId);
