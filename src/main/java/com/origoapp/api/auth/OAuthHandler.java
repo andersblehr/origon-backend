@@ -78,7 +78,7 @@ public class OAuthHandler
     @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
     public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
@@ -123,7 +123,7 @@ public class OAuthHandler
                     if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                         m.getDAO().putAuthToken(authToken);
                         
-                        fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
+                        fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
                     } else {
                         OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                         OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);

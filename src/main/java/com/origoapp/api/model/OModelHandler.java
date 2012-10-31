@@ -28,13 +28,13 @@ public class OModelHandler
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response replicate(List<OReplicatedEntity> entitiesToReplicate,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        m.validateLastReplicationDate(lastReplicationDate);
+        m.validateReplicationDate(deviceReplicationDate);
         
         Date replicationDate = null;
         
@@ -58,7 +58,7 @@ public class OModelHandler
 
             replicationDate = new Date();
 
-            List<OReplicatedEntity> fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
+            List<OReplicatedEntity> fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
             
             if (entitiesToReplicate.size() > 0) {
                 for (OReplicatedEntity entity : fetchedEntities) {
@@ -89,19 +89,19 @@ public class OModelHandler
     @GET
     @Path("fetch")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date lastReplicationDate,
+    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        m.validateLastReplicationDate(lastReplicationDate);
+        m.validateReplicationDate(deviceReplicationDate);
         
         Date replicationDate = new Date();
         List<OReplicatedEntity> fetchedEntities = null;
         
         if (m.isValid()) {
-            fetchedEntities = m.getDAO().fetchEntities(lastReplicationDate);
+            fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
