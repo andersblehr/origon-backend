@@ -60,7 +60,7 @@ public class OMemberProxy
     @PostLoad
     public void populateNonSavedValues()
     {
-        origoKey = new Key<OReplicatedEntity>(OOrigo.class, "^" + userId);
+        origoKey = new Key<OReplicatedEntity>(OOrigo.class, String.format("~%s", userId));
         memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, userId);
         
         if (authMetaKeys == null) {
@@ -78,7 +78,7 @@ public class OMemberProxy
             Key<OOrigo> origoKey = new Key<OOrigo>(OOrigo.class, membershipKey.getRaw().getParent().getName());
             String membershipId = membershipKey.getRaw().getName();
             
-            if ((membershipId.indexOf("$^") < 0) && (membershipId.indexOf("^") > 0)) {
+            if (membershipId.indexOf("^") > 0) {
                 residencyKeys.add(new Key<OReplicatedEntity>(origoKey, OMemberResidency.class, membershipId));
                 residenceKeys.add(new Key<OReplicatedEntity>(origoKey, OOrigo.class, membershipId.substring(membershipId.indexOf("^") + 1)));
             }

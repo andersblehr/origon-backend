@@ -196,11 +196,12 @@ public class ODAO extends DAOBase
 
         for (OMemberProxy memberProxy : memberProxies) {
             Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeys.get(memberProxy.userId);
-            Set<Key<OMembership>> deletedMembershipKeysForMember = deletedMembershipKeys.get(memberProxy.userId);
             
             if (addedMembershipKeysForMember != null) {
                 memberProxy.membershipKeys.addAll(addedMembershipKeys.get(memberProxy.userId));
             }
+            
+            Set<Key<OMembership>> deletedMembershipKeysForMember = deletedMembershipKeys.get(memberProxy.userId);
             
             if (deletedMembershipKeysForMember != null) {
                 memberProxy.membershipKeys.removeAll(deletedMembershipKeysForMember);
@@ -216,14 +217,14 @@ public class ODAO extends DAOBase
 
         if (entityKeysForDeletion.size() > 0) {
             ofy().delete(entityKeysForDeletion);
-            OLog.log().fine(m.meta() + "Permanently deleted ghosted entities: " + entityKeysForDeletion);
+            OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
         }
     }
     
     
-    public List<OReplicatedEntity> fetchEntities(Date lastReplicationDate)
+    public List<OReplicatedEntity> fetchEntities(Date deviceReplicationDate)
     {
-        OLog.log().fine(m.meta() + "Fetching entities modified since: " + ((lastReplicationDate != null) ? lastReplicationDate.toString() : "<dawn of time>"));
+        OLog.log().fine(m.meta() + "Fetching entities modified since: " + ((deviceReplicationDate != null) ? deviceReplicationDate.toString() : "<dawn of time>"));
         
         Collection<OMembership> memberships = ofy().get(m.getMemberProxy().membershipKeys).values();
         
@@ -231,11 +232,11 @@ public class ODAO extends DAOBase
         Set<Key<OReplicatedEntity>> additionalEntityKeys = new HashSet<Key<OReplicatedEntity>>();
         
         for (OMembership membership : memberships) {
-            if (membership.isActive || (membership.getClass().equals(OMemberResidency.class))) {
+            if (membership.isActive || membership.entityId.startsWith("~") || (membership.getClass().equals(OMemberResidency.class))) {
                 Iterable<OReplicatedEntity> membershipEntities = null;
                 
-                if (lastReplicationDate != null) {
-                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", lastReplicationDate);
+                if (deviceReplicationDate != null) {
+                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", deviceReplicationDate);
                 } else {
                     membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey);
                 }
@@ -248,6 +249,7 @@ public class ODAO extends DAOBase
                     fetchedEntities.add(entity);
                 }
             } else {
+                fetchedEntities.add(membership);
                 additionalEntityKeys.add(new Key<OReplicatedEntity>(membership.origoKey, OReplicatedEntity.class, membership.origoId));
             }
         }
