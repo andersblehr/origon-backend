@@ -188,22 +188,46 @@ public class OStrings
     /* ==== OOrigoListView strings ==== */
     
     public String strTabBarTitleOrigo;
-    public String strViewTitleOrigoList;
+    public String strViewTitleWardOrigoList;
     
-    public String strHeaderWards;
+    public String strHeaderWardsOrigos;
     public String strHeaderMyOrigos;
+    
+    public String strFooterOrigoCreation;
+    public String strFooterOrigoCreationWards;
+    
+    public String strTermYourChild;
+    public String strTermHim;
+    public String strTermHer;
+    public String strTermHimOrHer;
     
     private void setOrigoListViewStrings(String language)
     {
-        strTabBarTitleOrigo   = "Origo";
-        strViewTitleOrigoList = "Origo • %@";
+        strTabBarTitleOrigo              = "Origo";
+        strViewTitleWardOrigoList        = "Origo • %@";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strHeaderWards    = "Barnas origo";
-            strHeaderMyOrigos = "Mine origo";
+            strHeaderWardsOrigos         = "Barnas origo";
+            strHeaderMyOrigos            = "Mine origo";
+            
+            strFooterOrigoCreation       = "Trykk [+] for å opprette et nytt origo";
+            strFooterOrigoCreationWards  = "for deg selv. Velg %@ for å opprette et origo for %@.";
+            
+            strTermYourChild             = "et av barna";
+            strTermHim                   = "ham";
+            strTermHer                   = "henne";
+            strTermHimOrHer              = "ham eller henne";
         } else {
-            strHeaderWards    = "The kids' origos";
-            strHeaderMyOrigos = "My origos";
+            strHeaderWardsOrigos         = "The kids' origos";
+            strHeaderMyOrigos            = "My origos";
+            
+            strFooterOrigoCreation       = "Tap [+] to create a new origo";
+            strFooterOrigoCreationWards  = "for yourself. Select %@ to create an origo for %@.";
+            
+            strTermYourChild             = "your child";
+            strTermHim                   = "him";
+            strTermHer                   = "her";
+            strTermHimOrHer              = "him or her";
         }
     }
     
