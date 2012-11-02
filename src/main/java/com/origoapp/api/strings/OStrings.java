@@ -193,6 +193,7 @@ public class OStrings
     public String strHeaderWardsOrigos;
     public String strHeaderMyOrigos;
     
+    public String strFooterOrigoCreationFirst;
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
@@ -200,6 +201,7 @@ public class OStrings
     public String strTermHim;
     public String strTermHer;
     public String strTermHimOrHer;
+    public String strTermForName;
     
     private void setOrigoListViewStrings(String language)
     {
@@ -210,6 +212,7 @@ public class OStrings
             strHeaderWardsOrigos         = "Barnas origo";
             strHeaderMyOrigos            = "Mine origo";
             
+            strFooterOrigoCreationFirst  = "Trykk [+] for å opprette et origo";
             strFooterOrigoCreation       = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards  = "for deg selv. Velg %@ for å opprette et origo for %@.";
             
@@ -217,10 +220,12 @@ public class OStrings
             strTermHim                   = "ham";
             strTermHer                   = "henne";
             strTermHimOrHer              = "ham eller henne";
+            strTermForName               = "for %@.";
         } else {
             strHeaderWardsOrigos         = "The kids' origos";
             strHeaderMyOrigos            = "My origos";
             
+            strFooterOrigoCreationFirst  = "Tap [+] to create an origo";
             strFooterOrigoCreation       = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards  = "for yourself. Select %@ to create an origo for %@.";
             
@@ -228,6 +233,7 @@ public class OStrings
             strTermHim                   = "him";
             strTermHer                   = "her";
             strTermHimOrHer              = "him or her";
+            strTermForName               = "for %@.";
         }
     }
     
@@ -255,7 +261,7 @@ public class OStrings
             strHeaderHouseholdMembers = "Medlemmer i husstanden";
             strHeaderOrigoMembers     = "Medlemmer";
             
-            strFooterHousehold        = "Trykk [+] for legge til nye medlemmer, og sveip mot høyre for å melde et medlem ut av husstanden din.";
+            strFooterHousehold        = "Trykk [+] for å legge til medlemmer i husstanden.";
             
             strButtonDeleteMember     = "Meld ut";
         } else {
@@ -266,7 +272,7 @@ public class OStrings
             strHeaderHouseholdMembers = "Household members";
             strHeaderOrigoMembers     = "Members";
             
-            strFooterHousehold        = "Tap [+] to add members, and swipe right to remove a member from your household.";
+            strFooterHousehold        = "Tap [+] to add members to the household.";
             
             strButtonDeleteMember     = "Remove";
         }
