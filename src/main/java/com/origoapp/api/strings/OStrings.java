@@ -43,6 +43,7 @@ public class OStrings
     public String strButtonEdit;
     public String strButtonDone;
     public String strButtonCancel;
+    public String strButtonSignOut;
     
     public String strAlertTextNoInternet;
     public String strAlertTextServerError;
@@ -59,6 +60,7 @@ public class OStrings
             strButtonEdit           = "Endre";
             strButtonDone           = "Ferdig";
             strButtonCancel         = "Avbryt";
+            strButtonSignOut        = "Logg ut";
             
             strAlertTextNoInternet  = "Ingen internettforbindelse.";
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
@@ -72,6 +74,7 @@ public class OStrings
             strButtonEdit           = "Edit";
             strButtonDone           = "Done";
             strButtonCancel         = "Cancel";
+            strButtonSignOut        = "Sign out";
             
             strAlertTextNoInternet  = "No internet connection.";
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
@@ -466,26 +469,24 @@ public class OStrings
     /* ==== OSettingsView strings ==== */
     
     public String strTabBarTitleSettings;
-    public String strButtonSignOut;
     
     private void setSettingsViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strTabBarTitleSettings = "Innstillinger";
-            strButtonSignOut       = "Logg ut";
         } else {
             strTabBarTitleSettings = "Settings";
-            strButtonSignOut       = "Sign out";
         }
     }
     
     
     /* ==== Meta strings ==== */
     
-    public String strOrigoTypeSchoolClass;
-    public String strOrigoTypePreschoolClass;
-    public String strOrigoTypeSportsTeam;
-    public String strOrigoTypeOther;
+    public String xstrOrigoTypes = "origoTypeSchoolClass|origoTypePreschoolClass|origoTypeSportsTeam|origoTypeOther";
+    public String origoTypeSchoolClass;
+    public String origoTypePreschoolClass;
+    public String origoTypeSportsTeam;
+    public String origoTypeOther;
     
     public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
     public String schoolClassTeacher;
@@ -506,10 +507,10 @@ public class OStrings
     private void setMeta(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOrigoTypeSchoolClass = "Skoleklasse";
-            strOrigoTypePreschoolClass = "Barnehage/avdeling";
-            strOrigoTypeSportsTeam = "Lag";
-            strOrigoTypeOther = "Annet";
+            origoTypeSchoolClass = "Skoleklasse";
+            origoTypePreschoolClass = "Barnehage/avdeling";
+            origoTypeSportsTeam = "Sportslag";
+            origoTypeOther = "Annet";
             
             schoolClassTeacher = "Kontaktlærer";
             schoolTopicTeacher = "Faglærer";
@@ -524,10 +525,10 @@ public class OStrings
             teamCoach = "Trener";
             teamAssistantCoach = "Assistenttrener";
         } else {
-            strOrigoTypeSchoolClass = "School class";
-            strOrigoTypePreschoolClass = "Preschool/daycare";
-            strOrigoTypeSportsTeam = "Sports team";
-            strOrigoTypeOther = "Other";
+            origoTypeSchoolClass = "School class";
+            origoTypePreschoolClass = "Preschool/daycare";
+            origoTypeSportsTeam = "Sports team";
+            origoTypeOther = "Other";
             
             schoolClassTeacher = "Teacher";
             schoolTopicTeacher = "Topic teacher";
