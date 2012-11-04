@@ -48,6 +48,8 @@ public class OStrings
     public String strAlertTextNoInternet;
     public String strAlertTextServerError;
     
+    public String strTermAddress;
+    
     private void setCrossViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
@@ -64,6 +66,8 @@ public class OStrings
             
             strAlertTextNoInternet  = "Ingen internettforbindelse.";
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
+            
+            strTermAddress          = "Adresse";
         } else {
             strNameMyHousehold      = "My place";
             strNameOurHousehold     = "Our place";
@@ -78,6 +82,8 @@ public class OStrings
             
             strAlertTextNoInternet  = "No internet connection.";
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
+            
+            strTermAddress          = "Address";
         }
     }
     
@@ -139,7 +145,7 @@ public class OStrings
             
             strSheetTitleEULA                   = "– MELLOM OSS –\n" +
                                                   "\n" +
-                                                  "Du er nå nesten klar til å begynne å bruke Origo. Men for at Origo skal være til nytte for deg og dine, må vi be deg gi noen opplysninger om husstanden din. Vi lover derfor at:\n" +
+                                                  "Du er nå nesten klar til å begynne å bruke Origo. Men for at Origo skal være til nytte for deg og dine, må vi be om noen opplysninger om husstanden din. Vi lover at:\n" +
                                                   "\n" +
                                                   "- Opplysningene forblir dine og bare dine.\n" +
                                                   "- Vi forbeholder oss absolutt ingen rett til dem.\n" +
@@ -200,6 +206,8 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
+    public String strSheetTitleOrigoType;
+    
     public String strTermYourChild;
     public String strTermHim;
     public String strTermHer;
@@ -219,11 +227,13 @@ public class OStrings
             strFooterOrigoCreation       = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards  = "for deg selv. Velg %@ for å opprette et origo for %@.";
             
+            strSheetTitleOrigoType       = "Hva slags origo ønsker du å opprette";
+            
             strTermYourChild             = "et av barna";
             strTermHim                   = "ham";
             strTermHer                   = "henne";
             strTermHimOrHer              = "ham eller henne";
-            strTermForName               = "for %@.";
+            strTermForName               = "for %@";
         } else {
             strHeaderWardsOrigos         = "The kids' origos";
             strHeaderMyOrigos            = "My origos";
@@ -232,11 +242,13 @@ public class OStrings
             strFooterOrigoCreation       = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards  = "for yourself. Select %@ to create an origo for %@.";
             
+            strSheetTitleOrigoType       = "What sort of origo du you want to create";
+            
             strTermYourChild             = "your child";
             strTermHim                   = "him";
             strTermHer                   = "her";
             strTermHimOrHer              = "him or her";
-            strTermForName               = "for %@.";
+            strTermForName               = "for %@";
         }
     }
     
@@ -284,10 +296,10 @@ public class OStrings
     
     /* ==== OOrigoView strings ==== */
     
-    public String strLabelAddress;
+    public String strViewTitleNewOrigo;
+    
     public String strLabelTelephone;
     
-    public String strHeaderAddress;
     public String strHeaderAddresses;
     
     public String strPromptAddressLine1;
@@ -297,25 +309,25 @@ public class OStrings
     private void setOrigoViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelAddress       = "Adresse";
-            strLabelTelephone     = "Telefon";
+            strViewTitleNewOrigo   = "Nytt origo";
             
-            strHeaderAddress      = strLabelAddress;
-            strHeaderAddresses    = "Adresser";
+            strLabelTelephone      = "Telefon";
             
-            strPromptAddressLine1 = "Gateadresse";
-            strPromptAddressLine2 = "Postnummer og -sted";
-            strPromptTelephone    = "Telefonnummer";
+            strHeaderAddresses     = "Adresser";
+            
+            strPromptAddressLine1  = "Gateadresse";
+            strPromptAddressLine2  = "Postnummer og -sted";
+            strPromptTelephone     = "Telefonnummer";
         } else {
-            strLabelAddress       = "Address";
-            strLabelTelephone     = "Telephone";
+            strViewTitleNewOrigo   = "New origo";
             
-            strHeaderAddress      = strLabelAddress;
-            strHeaderAddresses    = "Addresses";
+            strLabelTelephone      = "Telephone";
             
-            strPromptAddressLine1 = "Street address";
-            strPromptAddressLine2 = "Postal code and city/town";
-            strPromptTelephone    = "Telephone number";
+            strHeaderAddresses     = "Addresses";
+            
+            strPromptAddressLine1  = "Street address";
+            strPromptAddressLine2  = "Postal code and city/town";
+            strPromptTelephone     = "Telephone number";
         }
     }
     
@@ -482,11 +494,12 @@ public class OStrings
     
     /* ==== Meta strings ==== */
     
-    public String xstrOrigoTypes = "origoTypeSchoolClass|origoTypePreschoolClass|origoTypeSportsTeam|origoTypeOther";
+    public String origoTypeMemberRoot;
+    public String origoTypeResidence;
     public String origoTypeSchoolClass;
     public String origoTypePreschoolClass;
     public String origoTypeSportsTeam;
-    public String origoTypeOther;
+    public String origoTypeDefault;
     
     public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
     public String schoolClassTeacher;
@@ -507,10 +520,12 @@ public class OStrings
     private void setMeta(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            origoTypeMemberRoot = "Medlemsrot";
+            origoTypeResidence = "Bolig";
             origoTypeSchoolClass = "Skoleklasse";
             origoTypePreschoolClass = "Barnehage/avdeling";
             origoTypeSportsTeam = "Sportslag";
-            origoTypeOther = "Annet";
+            origoTypeDefault = "Annet";
             
             schoolClassTeacher = "Kontaktlærer";
             schoolTopicTeacher = "Faglærer";
@@ -525,10 +540,12 @@ public class OStrings
             teamCoach = "Trener";
             teamAssistantCoach = "Assistenttrener";
         } else {
+            origoTypeMemberRoot = "Member root";
+            origoTypeResidence = "Residence";
             origoTypeSchoolClass = "School class";
             origoTypePreschoolClass = "Preschool/daycare";
             origoTypeSportsTeam = "Sports team";
-            origoTypeOther = "Other";
+            origoTypeDefault = "Other";
             
             schoolClassTeacher = "Teacher";
             schoolTopicTeacher = "Topic teacher";
