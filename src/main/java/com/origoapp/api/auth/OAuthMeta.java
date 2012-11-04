@@ -37,7 +37,7 @@ public class OAuthMeta
         
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, 14);
+        calendar.add(Calendar.DATE, 31);
         
         dateExpires = calendar.getTime();
     }
