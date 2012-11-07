@@ -122,7 +122,7 @@ public class OStrings
             strLabelSignInOrRegister            = "Logg på eller registrer ny bruker";
             strLabelActivate                    = "Oppgi aktiveringskoden din";
             
-            strFooterSignInOrRegister           = "Når du registrerer ny bruker, vil du motta en epost med en aktiveringskode som du må oppgi for å aktivere medlemskapet ditt.";
+            strFooterSignInOrRegister           = "Om du registrerer ny bruker, vil du motta en aktiveringskode som du oppgir i neste steg.";
             strFooterActivate                   = "Oppgi aktiveringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
             
             strPromptAuthEmail                  = "Epostadressen din";
@@ -158,7 +158,7 @@ public class OStrings
             strLabelSignInOrRegister            = "Sign in or register new user";
             strLabelActivate                    = "Enter your activation code";
             
-            strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must provide in order to activate your membership.";
+            strFooterSignInOrRegister           = "If you are registering a new user, you will receive an activation code that you must enter in the next step.";
             strFooterActivate                   = "Please provide the activation code that was emailed to you, or come back later if you don't have access to your email at this time.";
             
             strPromptAuthEmail                  = "Your email address";
@@ -338,6 +338,9 @@ public class OStrings
     public String strViewTitleNewMember;
     public String strViewTitleNewHouseholdMember;
     
+    public String strLabelEmail;
+    public String strLabelMobilePhone;
+    public String strLabelDateOfBirth;
     public String strLabelAbbreviatedEmail;
     public String strLabelAbbreviatedMobilePhone;
     public String strLabelAbbreviatedDateOfBirth;
@@ -373,6 +376,9 @@ public class OStrings
             strViewTitleNewMember          = "Nytt medlem";
             strViewTitleNewHouseholdMember = "I husstanden";
             
+            strLabelEmail                  = "Epost";
+            strLabelMobilePhone            = "Mobil";
+            strLabelDateOfBirth            = "Født";
             strLabelAbbreviatedEmail       = "e";
             strLabelAbbreviatedMobilePhone = "m";
             strLabelAbbreviatedDateOfBirth = "f";
@@ -405,6 +411,9 @@ public class OStrings
             strViewTitleNewMember          = "New member";
             strViewTitleNewHouseholdMember = "In the household";
             
+            strLabelEmail                  = "Email";
+            strLabelMobilePhone            = "Mobile";
+            strLabelDateOfBirth            = "Born";
             strLabelAbbreviatedEmail       = "e:";
             strLabelAbbreviatedMobilePhone = "m:";
             strLabelAbbreviatedDateOfBirth = "b:";
