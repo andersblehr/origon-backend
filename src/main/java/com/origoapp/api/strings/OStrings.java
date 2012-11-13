@@ -90,7 +90,7 @@ public class OStrings
     
     /* ==== OAuthView strings ==== */
     
-    public String strLabelSignInOrRegister;
+    public String strLabelSignIn;
     public String strLabelActivate;
     
     public String strFooterSignInOrRegister;
@@ -119,7 +119,7 @@ public class OStrings
     private void setAuthViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelSignInOrRegister            = "Logg på eller registrer ny bruker";
+            strLabelSignIn                      = "Logg på eller registrer ny bruker";
             strLabelActivate                    = "Oppgi aktiveringskoden din";
             
             strFooterSignInOrRegister           = "Om du registrerer ny bruker, vil du motta en aktiveringskode som du oppgir i neste steg.";
@@ -155,7 +155,7 @@ public class OStrings
                                                   "\n" +
                                                   "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
         } else {
-            strLabelSignInOrRegister            = "Sign in or register new user";
+            strLabelSignIn                      = "Sign in or register new user";
             strLabelActivate                    = "Enter your activation code";
             
             strFooterSignInOrRegister           = "If you are registering a new user, you will receive an activation code that you must enter in the next step.";
