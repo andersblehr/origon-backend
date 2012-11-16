@@ -302,8 +302,7 @@ public class OStrings
     
     public String strHeaderAddresses;
     
-    public String strPromptAddressLine1;
-    public String strPromptAddressLine2;
+    public String strPromptAddress;
     public String strPromptTelephone;
     
     private void setOrigoViewStrings(String language)
@@ -315,8 +314,7 @@ public class OStrings
             
             strHeaderAddresses     = "Adresser";
             
-            strPromptAddressLine1  = "Gateadresse";
-            strPromptAddressLine2  = "Postnummer og -sted";
+            strPromptAddress       = "Gateadresse\nPostnummer og -sted";
             strPromptTelephone     = "Telefonnummer";
         } else {
             strViewTitleNewOrigo   = "New origo";
@@ -325,8 +323,7 @@ public class OStrings
             
             strHeaderAddresses     = "Addresses";
             
-            strPromptAddressLine1  = "Street address";
-            strPromptAddressLine2  = "Postal code and city/town";
+            strPromptAddress       = "Street address\nPostal code and city/town";
             strPromptTelephone     = "Telephone number";
         }
     }
