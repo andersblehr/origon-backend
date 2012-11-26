@@ -91,16 +91,16 @@ public class OStrings
     /* ==== OAuthView strings ==== */
     
     public String strLabelSignIn;
-    public String strLabelActivate;
+    public String strLabelActivation;
     
     public String strFooterSignInOrRegister;
     public String strFooterActivate;
     
-    public String strPromptAuthEmail;
-    public String strPromptPassword;
-    public String strPromptActivationCode;
-    public String strPromptRepeatPassword;
-    public String strPromptPleaseWait;
+    public String strPlaceholderAuthEmail;
+    public String strPlaceholderPassword;
+    public String strPlaceholderActivationCode;
+    public String strPlaceholderRepeatPassword;
+    public String strPlaceholderPleaseWait;
     
     public String strButtonHaveCode;
     public String strButtonStartOver;
@@ -120,16 +120,16 @@ public class OStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strLabelSignIn                      = "Logg på eller registrer ny bruker";
-            strLabelActivate                    = "Oppgi aktiveringskoden din";
+            strLabelActivation                  = "Oppgi aktiveringskoden din";
             
             strFooterSignInOrRegister           = "Om du registrerer ny bruker, vil du motta en aktiveringskode som du oppgir i neste steg.";
             strFooterActivate                   = "Oppgi aktiveringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
             
-            strPromptAuthEmail                  = "Epostadressen din";
-            strPromptPassword                   = "Passordet ditt";
-            strPromptActivationCode             = "Aktiveringskode fra epost";
-            strPromptRepeatPassword             = "Gjenta passordet ditt";
-            strPromptPleaseWait                 = "Vent litt...";
+            strPlaceholderAuthEmail             = "Epostadressen din";
+            strPlaceholderPassword              = "Passordet ditt";
+            strPlaceholderActivationCode        = "Aktiveringskode fra epost";
+            strPlaceholderRepeatPassword        = "Gjenta passordet ditt";
+            strPlaceholderPleaseWait            = "Vent litt...";
             
             strButtonHaveCode                   = "Har kode";
             strButtonStartOver                  = "Gå tilbake";
@@ -156,16 +156,16 @@ public class OStrings
                                                   "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
         } else {
             strLabelSignIn                      = "Sign in or register new user";
-            strLabelActivate                    = "Enter your activation code";
+            strLabelActivation                  = "Enter your activation code";
             
             strFooterSignInOrRegister           = "If you are registering a new user, you will receive an activation code that you must enter in the next step.";
             strFooterActivate                   = "Please provide the activation code that was emailed to you, or come back later if you don't have access to your email at this time.";
             
-            strPromptAuthEmail                  = "Your email address";
-            strPromptPassword                   = "Your password";
-            strPromptActivationCode             = "Activation code from email";
-            strPromptRepeatPassword             = "Repeat your password";
-            strPromptPleaseWait                 = "Please wait...";
+            strPlaceholderAuthEmail             = "Your email address";
+            strPlaceholderPassword              = "Your password";
+            strPlaceholderActivationCode        = "Activation code from email";
+            strPlaceholderRepeatPassword        = "Repeat your password";
+            strPlaceholderPleaseWait            = "Please wait...";
             
             strButtonHaveCode                   = "Have code";
             strButtonStartOver                  = "Start over";
@@ -298,33 +298,36 @@ public class OStrings
     
     public String strViewTitleNewOrigo;
     
+    public String strLabelAddress;
     public String strLabelTelephone;
     
     public String strHeaderAddresses;
     
-    public String strPromptAddress;
-    public String strPromptTelephone;
+    public String strPlaceholderAddress;
+    public String strPlaceholderTelephone;
     
     private void setOrigoViewStrings(String language)
     {
+        strLabelAddress = strTermAddress;
+        
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strViewTitleNewOrigo   = "Nytt origo";
+            strViewTitleNewOrigo    = "Nytt origo";
             
-            strLabelTelephone      = "Telefon";
+            strLabelTelephone       = "Telefon";
             
-            strHeaderAddresses     = "Adresser";
+            strHeaderAddresses      = "Adresser";
             
-            strPromptAddress       = "Gateadresse\nPostnummer og -sted";
-            strPromptTelephone     = "Telefonnummer";
+            strPlaceholderAddress   = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderTelephone = "Telefonnummer";
         } else {
-            strViewTitleNewOrigo   = "New origo";
+            strViewTitleNewOrigo    = "New origo";
             
-            strLabelTelephone      = "Telephone";
+            strLabelTelephone       = "Telephone";
             
-            strHeaderAddresses     = "Addresses";
+            strHeaderAddresses      = "Addresses";
             
-            strPromptAddress       = "Street address\nPostal code and city/town";
-            strPromptTelephone     = "Telephone number";
+            strPlaceholderAddress   = "Street address\nPostal code and city/town";
+            strPlaceholderTelephone = "Telephone number";
         }
     }
     
@@ -343,11 +346,11 @@ public class OStrings
     public String strLabelAbbreviatedDateOfBirth;
     public String strLabelAbbreviatedTelephone;
     
-    public String strPromptPhoto;
-    public String strPromptName;
-    public String strPromptEmail;
-    public String strPromptDateOfBirth;
-    public String strPromptMobilePhone;
+    public String strPlaceholderPhoto;
+    public String strPlaceholderName;
+    public String strPlaceholderEmail;
+    public String strPlaceholderDateOfBirth;
+    public String strPlaceholderMobilePhone;
     
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
@@ -381,11 +384,11 @@ public class OStrings
             strLabelAbbreviatedDateOfBirth = "f";
             strLabelAbbreviatedTelephone   = "t";
             
-            strPromptPhoto                 = "Bilde";
-            strPromptName                  = "Fullt navn";
-            strPromptEmail                 = "En gyldig epostadresse";
-            strPromptDateOfBirth           = "Fødselsdato";
-            strPromptMobilePhone           = "Mobilnummer";
+            strPlaceholderPhoto            = "Bilde";
+            strPlaceholderName             = "Fullt navn";
+            strPlaceholderEmail            = "En gyldig epostadresse";
+            strPlaceholderDateOfBirth      = "Fødselsdato";
+            strPlaceholderMobilePhone      = "Mobilnummer";
             
             strButtonInviteToHousehold     = "Inviter til husstanden";
             strButtonMergeHouseholds       = "Slå sammen husstandene";
@@ -416,11 +419,11 @@ public class OStrings
             strLabelAbbreviatedDateOfBirth = "b:";
             strLabelAbbreviatedTelephone   = "t:";
             
-            strPromptPhoto                 = "Photo";
-            strPromptName                  = "Full name";
-            strPromptEmail                 = "A valid email address";
-            strPromptDateOfBirth           = "Date of birth";
-            strPromptMobilePhone           = "Mobile phone number";
+            strPlaceholderPhoto            = "Photo";
+            strPlaceholderName             = "Full name";
+            strPlaceholderEmail            = "A valid email address";
+            strPlaceholderDateOfBirth      = "Date of birth";
+            strPlaceholderMobilePhone      = "Mobile phone number";
             
             strButtonInviteToHousehold     = "Invite to household";
             strButtonMergeHouseholds       = "Merge households";
