@@ -414,10 +414,10 @@ public class OStrings
             strLabelEmail                  = "Email";
             strLabelMobilePhone            = "Mobile";
             strLabelDateOfBirth            = "Born";
-            strLabelAbbreviatedEmail       = "e:";
-            strLabelAbbreviatedMobilePhone = "m:";
-            strLabelAbbreviatedDateOfBirth = "b:";
-            strLabelAbbreviatedTelephone   = "t:";
+            strLabelAbbreviatedEmail       = "e";
+            strLabelAbbreviatedMobilePhone = "m";
+            strLabelAbbreviatedDateOfBirth = "b";
+            strLabelAbbreviatedTelephone   = "t";
             
             strPlaceholderPhoto            = "Photo";
             strPlaceholderName             = "Full name";
