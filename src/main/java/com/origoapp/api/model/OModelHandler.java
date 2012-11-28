@@ -113,28 +113,4 @@ public class OModelHandler
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
-    
-    
-    @GET
-    @Path("member/{memberId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchMember(@PathParam("memberId") String memberId,
-                                @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        OMeta m = new OMeta(authToken, appVersion);
-        
-        List<OReplicatedEntity> memberEntities = null;
-        
-        if (m.isValid()) {
-            memberEntities = m.getDAO().lookupMember(memberId);
-        }
-        
-        if (memberEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
-        } else {
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
-        }
-    }
-
 }
