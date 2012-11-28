@@ -260,25 +260,4 @@ public class ODAO extends DAOBase
         
         return new ArrayList<OReplicatedEntity>(fetchedEntities);
     }
-    
-    
-    public List<OReplicatedEntity> lookupMember(String memberId)
-    {
-        OLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
-        
-        ArrayList<OReplicatedEntity> memberEntities = new ArrayList<OReplicatedEntity>();
-        OMemberProxy memberProxy = get(new Key<OMemberProxy>(OMemberProxy.class, memberId));
-        
-        if (memberProxy != null) {
-            Set<Key<OReplicatedEntity>> memberEntityKeys = new HashSet<Key<OReplicatedEntity>>();
-            
-            memberEntityKeys.add(memberProxy.memberKey);
-            memberEntityKeys.addAll(memberProxy.residencyKeys);
-            memberEntityKeys.addAll(memberProxy.residenceKeys);
-            
-            memberEntities.addAll(ofy().get(memberEntityKeys).values());
-        }
-        
-        return memberEntities;
-    }
 }
