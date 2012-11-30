@@ -31,6 +31,7 @@ public class OMeta
     
     private boolean isValid = true;
     
+    private String email = null;
     private String userId = null;
     private String authToken = null;
     private String passwordHash = null;
@@ -86,6 +87,12 @@ public class OMeta
     }
 
     
+    public String getEmail()
+    {
+        return email;
+    }
+    
+    
     public String getUserId()
     {
         return userId;
@@ -137,11 +144,11 @@ public class OMeta
     public OMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = DAO.get(new Key<OMemberProxy>(OMemberProxy.class, userId));
+            memberProxy = DAO.get(new Key<OMemberProxy>(OMemberProxy.class, email));
             
             if (authPhase == OAuthPhase.ACTIVATION) {
                 if (memberProxy == null) {
-                    memberProxy = new OMemberProxy(userId);
+                    memberProxy = new OMemberProxy(email, userId);
                 }
                 
                 memberProxy.passwordHash = passwordHash;
@@ -157,10 +164,12 @@ public class OMeta
         OAuthInfo authInfo = null;
         
         if (isValid) {
-            if (authPhase != OAuthPhase.ACTIVATION) {
+            if (authPhase == OAuthPhase.ACTIVATION) {
+                authInfo = DAO.get(new Key<OAuthInfo>(OAuthInfo.class, email));
+            } else {
                 activationCode = generateActivationCode();
                 
-                authInfo = new OAuthInfo(userId, deviceId, passwordHash, activationCode);
+                authInfo = new OAuthInfo(email, /*deviceId,*/ passwordHash, activationCode);
                 
                 OMemberProxy memberProxy = getMemberProxy();
                 OMember member = null;
@@ -176,8 +185,6 @@ public class OMeta
                     authInfo.isListed = false;
                     authInfo.didRegister = false;
                 }
-            } else if (authPhase == OAuthPhase.ACTIVATION) {
-                authInfo = DAO.get(new Key<OAuthInfo>(OAuthInfo.class, userId));
             }
         }
         
@@ -226,7 +233,7 @@ public class OMeta
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
                     
-                    userId = tokenMeta.userId;
+                    email = tokenMeta.userId;
                     deviceId = tokenMeta.deviceId;
                     deviceType = tokenMeta.deviceType;
                 } else {
@@ -301,7 +308,7 @@ public class OMeta
         if (userId != null) {
             try {
                 this.emailAddress = new InternetAddress(userId);
-                this.userId = userId;
+                this.email = userId;
             } catch (AddressException e) {
                 OLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
             }
@@ -312,7 +319,7 @@ public class OMeta
     private void validatePassword(String password)
     {
         if ((password != null) && (password.length() >= kMinimumPasswordLength)) {
-            this.passwordHash = OCrypto.generatePasswordHash(password, userId);
+            this.passwordHash = OCrypto.generatePasswordHash(password, email);
         } else {
             if (password == null) {
                 OLog.log().warning(meta(false) + String.format("User password is null."));

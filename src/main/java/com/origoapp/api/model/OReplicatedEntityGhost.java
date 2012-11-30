@@ -18,6 +18,8 @@ import com.googlecode.objectify.annotation.Unindexed;
 public class OReplicatedEntityGhost extends OReplicatedEntity
 {
     public @NotSaved String ghostedEntityClass;
+    public @NotSaved String ghostedMembershipMemberId;
+    public @NotSaved String ghostedMembershipMemberEmail;
     public @NotSaved boolean hasExpired = false;
     
     

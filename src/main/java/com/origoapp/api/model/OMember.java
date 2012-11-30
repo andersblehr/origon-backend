@@ -27,6 +27,7 @@ public class OMember extends OReplicatedEntity
     public Date dateOfBirth;
     public @NotSaved(IfNull.class) String givenName;
     public @NotSaved(IfNull.class) String mobilePhone;
+    public @NotSaved(IfNull.class) String email;
     public @NotSaved(IfNull.class) Blob photo;
     
     public @NotSaved(IfFalse.class) boolean didRegister = false;
