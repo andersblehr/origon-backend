@@ -12,9 +12,9 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Cached(expirationSeconds = 600)
 public class OAuthInfo
 {
-    public @Id String userId;
+    public @Id String email;
     
-    public String deviceId;
+    //public String deviceId; // TODO: Delete if not needed
     public String passwordHash;
     public String activationCode;
     
@@ -25,10 +25,10 @@ public class OAuthInfo
     public OAuthInfo() {}
     
     
-    public OAuthInfo(String userId, String deviceId, String passwordHash, String activationCode)
+    public OAuthInfo(String email, /*String deviceId,*/ String passwordHash, String activationCode)
     {
-        this.userId = userId;
-        this.deviceId = deviceId;
+        this.email = email;
+        //this.deviceId = deviceId;
         this.passwordHash = passwordHash;
         this.activationCode = activationCode;
     }

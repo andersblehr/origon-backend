@@ -28,7 +28,8 @@ import com.origoapp.api.model.OOrigo;
 @Cached(expirationSeconds=600)
 public class OMemberProxy
 {
-    public @Id String userId;
+    public @Id String email;
+    public String memberId;
     
     public @NotSaved(IfDefault.class) boolean didRegister = false;
     public @NotSaved(IfNull.class) String passwordHash;
@@ -45,23 +46,30 @@ public class OMemberProxy
     public OMemberProxy() {}
     
     
-    public OMemberProxy(String userId)
+    public OMemberProxy(String email)
     {
-        this.userId = userId;
-        
-        origoKey = new Key<OReplicatedEntity>(OOrigo.class, userId);
-        memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, userId);
+        this.email = email;
         
         authMetaKeys = new HashSet<Key<OAuthMeta>>();
         membershipKeys = new HashSet<Key<OMembership>>();
     }
     
     
+    public OMemberProxy(String email, String userId)
+    {
+        this(email);
+        
+        this.memberId = userId;
+    }
+    
+    
     @PostLoad
     public void populateNonSavedValues()
     {
-        origoKey = new Key<OReplicatedEntity>(OOrigo.class, String.format("~%s", userId));
-        memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, userId);
+        if (memberId != null) {
+            origoKey = new Key<OReplicatedEntity>(OOrigo.class, String.format("~%s", memberId));
+            memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, memberId);
+        }
         
         if (authMetaKeys == null) {
             authMetaKeys = new HashSet<Key<OAuthMeta>>();
