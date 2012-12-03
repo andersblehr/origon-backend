@@ -393,8 +393,8 @@ public class OStrings
             strButtonInviteToHousehold     = "Inviter til husstanden";
             strButtonMergeHouseholds       = "Slå sammen husstandene";
             
-            strAlertTitleMemberExists      = "Medlem eksisterer";
-            strAlertTextMemberExists       = "Epost-adressen '%@' er allerede registrert i '@%'. Vennligst oppgi en annen adresse (eller avbryt registreringen).";
+            strAlertTitleMemberExists      = "Allerede registrert";
+            strAlertTextMemberExists       = "%@ (%@) er allerede registrert i \"%@\". Vennligst oppgi en annen epost-adresse, eller avbryt registreringen.";
             
             strSheetTitleGenderSelf        = "Er du kvinne eller mann?";
             strSheetTitleGenderSelfMinor   = "Er du jente eller gutt?";
@@ -428,8 +428,8 @@ public class OStrings
             strButtonInviteToHousehold     = "Invite to household";
             strButtonMergeHouseholds       = "Merge households";
             
-            strAlertTitleMemberExists      = "Member exists";
-            strAlertTextMemberExists       = "The email address '%@' is already registered in '%@'. Please enter a different address (or cancel the registration).";
+            strAlertTitleMemberExists      = "Already registered";
+            strAlertTextMemberExists       = "%@ (%@) is already registered in '%@'. Please enter a different email address, or cancel the registration.";
             
             strSheetTitleGenderSelf        = "Are you a woman or a man?";
             strSheetTitleGenderSelfMinor   = "Are you a girl or a boy?";

@@ -155,17 +155,17 @@ public class ODAO extends DAOBase
                         }
                     }
                 } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
-                    OMember member = ((OMembership)entity).member;
+                    String memberEmail = ((OMembership)entity).member.email;
                     
-                    if ((member.email != null) && (member.email.equals(m.getEmail()) || (member.dateReplicated == null))) {
-                        Set<Key<OMembership>> membershipKeysToAddForEmail = membershipKeysToAddByEmail.get(member.email);
+                    if ((memberEmail != null) && (memberEmail.equals(m.getEmail()) || (entity.dateReplicated == null))) {
+                        Set<Key<OMembership>> membershipKeysToAddForEmail = membershipKeysToAddByEmail.get(memberEmail);
                         
                         if (membershipKeysToAddForEmail == null) {
                             membershipKeysToAddForEmail = new HashSet<Key<OMembership>>();
-                            membershipKeysToAddByEmail.put(member.email, membershipKeysToAddForEmail);
+                            membershipKeysToAddByEmail.put(memberEmail, membershipKeysToAddForEmail);
                         }
                         
-                        membershipKeysToAddForEmail.add(new Key<OMembership>(member.origoKey, OMembership.class, member.entityId));
+                        membershipKeysToAddForEmail.add(new Key<OMembership>(entity.origoKey, OMembership.class, entity.entityId));
                     }
                 }
             }
