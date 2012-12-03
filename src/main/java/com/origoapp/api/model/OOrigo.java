@@ -26,8 +26,7 @@ public class OOrigo extends OReplicatedEntity
     public String type;
     
     public @NotSaved(IfNull.class) String descriptionText;
-    public @NotSaved(IfNull.class) String addressLine1;
-    public @NotSaved(IfNull.class) String addressLine2;
+    public @NotSaved(IfNull.class) String address;
     public @NotSaved(IfNull.class) String telephone;
     public @NotSaved(IfNull.class) Blob photo;
     
