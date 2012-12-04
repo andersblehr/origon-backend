@@ -18,15 +18,15 @@ import com.googlecode.objectify.annotation.Unindexed;
 @Unindexed
 @Cached(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"origoKey", "linkedEntityKey"}, ignoreUnknown = true)
-public class OLinkedEntityRef extends OReplicatedEntity
+@JsonIgnoreProperties(value = {"origoKey", "referencedEntityKey"}, ignoreUnknown = true)
+public class OReplicatedEntityRef extends OReplicatedEntity
 {
-    public @NotSaved String linkedEntityId;
-    public @NotSaved String linkedEntityOrigoId;
-    public Key<OReplicatedEntity> linkedEntityKey;
+    public @NotSaved String referencedEntityId;
+    public @NotSaved String referencedEntityOrigoId;
+    public Key<OReplicatedEntity> referencedEntityKey;
 
 
-    public OLinkedEntityRef()
+    public OReplicatedEntityRef()
     {
         super();
     }
@@ -38,7 +38,7 @@ public class OLinkedEntityRef extends OReplicatedEntity
     {
         super.internaliseRelationships();
         
-        linkedEntityKey = new Key<OReplicatedEntity>(new Key<OOrigo>(OOrigo.class, linkedEntityOrigoId), OReplicatedEntity.class, linkedEntityId);
+        referencedEntityKey = new Key<OReplicatedEntity>(new Key<OOrigo>(OOrigo.class, referencedEntityOrigoId), OReplicatedEntity.class, referencedEntityId);
     }
     
     
@@ -48,7 +48,7 @@ public class OLinkedEntityRef extends OReplicatedEntity
     {
         super.externaliseRelationships();
         
-        linkedEntityId = linkedEntityKey.getRaw().getName();
-        linkedEntityOrigoId = linkedEntityKey.getParent().getRaw().getName();
+        referencedEntityId = referencedEntityKey.getRaw().getName();
+        referencedEntityOrigoId = referencedEntityKey.getParent().getRaw().getName();
     }
 }

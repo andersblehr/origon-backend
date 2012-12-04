@@ -30,13 +30,13 @@ import com.googlecode.objectify.condition.IfNull;
     property = "entityClass")
 @JsonSubTypes({
     @Type(value = ODevice.class, name = "ODevice"),
-    @Type(value = OLinkedEntityRef.class, name = "OLinkedEntityRef"),
     @Type(value = OMember.class, name = "OMember"),
     @Type(value = OMemberResidency.class, name = "OMemberResidency"),
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OMessageBoard.class, name = "OMessageBoard"),
     @Type(value = OOrigo.class, name = "OOrigo"),
-    @Type(value = OReplicatedEntityGhost.class, name = "OReplicatedEntityGhost")})
+    @Type(value = OReplicatedEntityGhost.class, name = "OReplicatedEntityGhost"),
+    @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")})
 public abstract class OReplicatedEntity
 {
     public @Parent Key<OOrigo> origoKey;
