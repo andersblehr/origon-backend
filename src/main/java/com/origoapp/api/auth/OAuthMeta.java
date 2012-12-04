@@ -17,7 +17,7 @@ public class OAuthMeta
 {
     public @Id String authToken;
     
-    public String userId;
+    public String email;
     public String deviceId;
     public String deviceType;
     
@@ -27,11 +27,11 @@ public class OAuthMeta
     public OAuthMeta() {}
     
     
-    public OAuthMeta(String authToken, String userId, String deviceId, String deviceType)
+    public OAuthMeta(String authToken, String email, String deviceId, String deviceType)
     {
         this.authToken = authToken;
         
-        this.userId = userId;
+        this.email = email;
         this.deviceId = deviceId;
         this.deviceType = deviceType;
         

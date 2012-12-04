@@ -14,7 +14,6 @@ import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
-import com.origoapp.api.model.OMember;
 
 
 public class OMeta
@@ -32,7 +31,6 @@ public class OMeta
     private boolean isValid = true;
     
     private String email = null;
-    private String userId = null;
     private String authToken = null;
     private String passwordHash = null;
     private String deviceId = null;
@@ -93,12 +91,6 @@ public class OMeta
     }
     
     
-    public String getUserId()
-    {
-        return userId;
-    }
-    
-    
     public String getAuthToken()
     {
         return authToken;
@@ -148,7 +140,7 @@ public class OMeta
             
             if (authPhase == OAuthPhase.ACTIVATION) {
                 if (memberProxy == null) {
-                    memberProxy = new OMemberProxy(email, userId);
+                    memberProxy = new OMemberProxy(email);
                 }
                 
                 memberProxy.passwordHash = passwordHash;
@@ -169,18 +161,13 @@ public class OMeta
             } else {
                 activationCode = generateActivationCode();
                 
-                authInfo = new OAuthInfo(email, /*deviceId,*/ passwordHash, activationCode);
+                authInfo = new OAuthInfo(email, passwordHash, activationCode);
                 
                 OMemberProxy memberProxy = getMemberProxy();
-                OMember member = null;
                 
                 if (memberProxy != null) {
-                    member = (OMember)DAO.get(memberProxy.memberKey);
-                }
-                
-                if (member != null) {
                     authInfo.isListed = true;
-                    authInfo.didRegister = member.didRegister;
+                    authInfo.didRegister = memberProxy.didRegister;
                 } else {
                     authInfo.isListed = false;
                     authInfo.didRegister = false;
@@ -202,7 +189,7 @@ public class OMeta
                 String[] authElements = authString.split(":");
                 
                 if (authElements.length == 2) {
-                    validateUserId(authElements[0]);
+                    validateEmail(authElements[0]);
                     validatePassword(authElements[1]);
                     
                     if (isValid) {
@@ -233,7 +220,7 @@ public class OMeta
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
                     
-                    email = tokenMeta.userId;
+                    email = tokenMeta.email;
                     deviceId = tokenMeta.deviceId;
                     deviceType = tokenMeta.deviceType;
                 } else {
@@ -242,13 +229,7 @@ public class OMeta
             } catch (NotFoundException e) {
                 OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
-        } else if (authPhase != OAuthPhase.REGISTRATION) {
-            if (authToken != null) {
-                this.authToken = authToken;
-            } else {
-                OLog.log().warning(meta(false) + "Auth token is missing.");
-            }
-        }
+        } 
     }
     
     
@@ -303,14 +284,14 @@ public class OMeta
     }
     
     
-    private void validateUserId(String userId)
+    private void validateEmail(String email)
     {
-        if (userId != null) {
+        if (email != null) {
             try {
-                this.emailAddress = new InternetAddress(userId);
-                this.email = userId;
+                this.emailAddress = new InternetAddress(email);
+                this.email = email;
             } catch (AddressException e) {
-                OLog.log().warning(meta(false) + String.format("User id %s is not a valid email address.", userId));
+                OLog.log().warning(meta(false) + String.format("'%s' is not a valid email address.", email));
             }
         }
     }
