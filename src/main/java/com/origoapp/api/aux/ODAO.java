@@ -145,13 +145,9 @@ public class ODAO extends DAOBase
                         emailAddressesOfAddedMembers.add(member.email);
                         
                         if (member.email.equals(m.getEmail())) {
-                            OMemberProxy memberProxy = m.getMemberProxy();
-                            memberProxy.memberId = member.entityId;
-                            memberProxy.didRegister = true;
-                            
-                            affectedMemberProxies.add(memberProxy);
+                            affectedMemberProxies.add(m.getMemberProxy());
                         } else {
-                            affectedMemberProxies.add(new OMemberProxy(member.email, member.entityId));
+                            affectedMemberProxies.add(new OMemberProxy(member.email));
                         }
                     }
                 } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {

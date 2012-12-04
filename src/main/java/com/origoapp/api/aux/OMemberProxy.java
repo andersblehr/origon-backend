@@ -17,7 +17,6 @@ import com.googlecode.objectify.condition.IfNull;
 
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.model.OReplicatedEntity;
-import com.origoapp.api.model.OMember;
 import com.origoapp.api.model.OMemberResidency;
 import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OOrigo;
@@ -29,7 +28,6 @@ import com.origoapp.api.model.OOrigo;
 public class OMemberProxy
 {
     public @Id String email;
-    public String memberId;
     
     public @NotSaved(IfDefault.class) boolean didRegister = false;
     public @NotSaved(IfNull.class) String passwordHash;
@@ -37,8 +35,6 @@ public class OMemberProxy
     public @NotSaved(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
     public @NotSaved(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
 
-    public @NotSaved Key<OReplicatedEntity> origoKey;
-    public @NotSaved Key<OReplicatedEntity> memberKey;
     public @NotSaved Set<Key<OReplicatedEntity>> residencyKeys;
     public @NotSaved Set<Key<OReplicatedEntity>> residenceKeys;
     
@@ -55,22 +51,9 @@ public class OMemberProxy
     }
     
     
-    public OMemberProxy(String email, String userId)
-    {
-        this(email);
-        
-        this.memberId = userId;
-    }
-    
-    
     @PostLoad
     public void populateNonSavedValues()
     {
-        if (memberId != null) {
-            origoKey = new Key<OReplicatedEntity>(OOrigo.class, String.format("~%s", memberId));
-            memberKey = new Key<OReplicatedEntity>(origoKey, OMember.class, memberId);
-        }
-        
         if (authMetaKeys == null) {
             authMetaKeys = new HashSet<Key<OAuthMeta>>();
         }
