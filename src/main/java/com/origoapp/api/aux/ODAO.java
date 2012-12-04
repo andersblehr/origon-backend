@@ -24,7 +24,7 @@ import com.origoapp.api.model.OMemberResidency;
 import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OMessageBoard;
 import com.origoapp.api.model.OOrigo;
-import com.origoapp.api.model.OLinkedEntityRef;
+import com.origoapp.api.model.OReplicatedEntityRef;
 
 
 public class ODAO extends DAOBase
@@ -36,17 +36,16 @@ public class ODAO extends DAOBase
     {
         ObjectifyService.register(OAuthInfo.class);
         ObjectifyService.register(OAuthMeta.class);
+        ObjectifyService.register(OMemberProxy.class);
         
-        ObjectifyService.register(OReplicatedEntityGhost.class);
         ObjectifyService.register(ODevice.class);
-        ObjectifyService.register(OMessageBoard.class);
         ObjectifyService.register(OMember.class);
         ObjectifyService.register(OMemberResidency.class);
         ObjectifyService.register(OMembership.class);
+        ObjectifyService.register(OMessageBoard.class);
         ObjectifyService.register(OOrigo.class);
-        ObjectifyService.register(OLinkedEntityRef.class);
-        
-        ObjectifyService.register(OMemberProxy.class);
+        ObjectifyService.register(OReplicatedEntityGhost.class);
+        ObjectifyService.register(OReplicatedEntityRef.class);
     }
     
     
@@ -102,9 +101,9 @@ public class ODAO extends DAOBase
         Map<String, Set<Key<OMembership>>> membershipKeysToAddByEmail = new HashMap<String, Set<Key<OMembership>>>();
         Map<String, Set<Key<OMembership>>> membershipKeysToDeleteByEmail = new HashMap<String, Set<Key<OMembership>>>();
         
-        Set<String> emailAddressesOfAddedMembers = new HashSet<String>();
+        Set<String> addedMemberEmails = new HashSet<String>();
         Set<OMemberProxy> affectedMemberProxies = new HashSet<OMemberProxy>();
-        Set<Key<OReplicatedEntity>> keysForEntitiesToDelete = new HashSet<Key<OReplicatedEntity>>();
+        Set<Key<OReplicatedEntity>> entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
         
         Date dateReplicated = new Date();
         
@@ -115,13 +114,13 @@ public class ODAO extends DAOBase
                 OReplicatedEntityGhost entityGhost = (OReplicatedEntityGhost)entity;
                 
                 if (entityGhost.hasExpired) {
-                    keysForEntitiesToDelete.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
+                    entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
                 } else {
                     entitiesToReplicate.add(entityGhost);
                     
                     if (entityGhost.ghostedEntityClass.equals(OMembership.class.getSimpleName()) || entityGhost.ghostedEntityClass.equals(OMemberResidency.class.getSimpleName())) {
-                        String linkedEntityId = String.format("%s#%s", entityGhost.ghostedMembershipMemberId, entityGhost.origoKey.getRaw().getName());
-                        keysForEntitiesToDelete.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, linkedEntityId));
+                        String memberRefId = String.format("%s#%s", entityGhost.ghostedMembershipMemberId, entityGhost.origoId);
+                        entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, memberRefId));
                         
                         if (entityGhost.ghostedMembershipMemberEmail != null) {
                             Set<Key<OMembership>> membershipKeysToDeleteForEmail = membershipKeysToDeleteByEmail.get(entityGhost.ghostedMembershipMemberEmail);
@@ -139,29 +138,29 @@ public class ODAO extends DAOBase
                 entitiesToReplicate.add(entity);
                 
                 if (entity.getClass().equals(OMember.class)) {
-                    OMember member = (OMember)entity;
+                    String memberEmail = ((OMember)entity).email;
                     
-                    if ((member.email != null) && (entity.dateReplicated == null)) {
-                        emailAddressesOfAddedMembers.add(member.email);
+                    if ((memberEmail != null) && (entity.dateReplicated == null)) {
+                        addedMemberEmails.add(memberEmail);
                         
-                        if (member.email.equals(m.getEmail())) {
+                        if (memberEmail.equals(m.getEmail())) {
                             affectedMemberProxies.add(m.getMemberProxy());
                         } else {
-                            affectedMemberProxies.add(new OMemberProxy(member.email));
+                            affectedMemberProxies.add(new OMemberProxy(memberEmail));
                         }
                     }
                 } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
                     String memberEmail = ((OMembership)entity).member.email;
                     
                     if ((memberEmail != null) && (memberEmail.equals(m.getEmail()) || (entity.dateReplicated == null))) {
-                        Set<Key<OMembership>> membershipKeysToAddForEmail = membershipKeysToAddByEmail.get(memberEmail);
+                        Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByEmail.get(memberEmail);
                         
-                        if (membershipKeysToAddForEmail == null) {
-                            membershipKeysToAddForEmail = new HashSet<Key<OMembership>>();
-                            membershipKeysToAddByEmail.put(memberEmail, membershipKeysToAddForEmail);
+                        if (membershipKeysToAddForMember == null) {
+                            membershipKeysToAddForMember = new HashSet<Key<OMembership>>();
+                            membershipKeysToAddByEmail.put(memberEmail, membershipKeysToAddForMember);
                         }
                         
-                        membershipKeysToAddForEmail.add(new Key<OMembership>(entity.origoKey, OMembership.class, entity.entityId));
+                        membershipKeysToAddForMember.add(new Key<OMembership>(entity.origoKey, OMembership.class, entity.entityId));
                     }
                 }
             }
@@ -169,33 +168,32 @@ public class ODAO extends DAOBase
             entity.dateReplicated = dateReplicated;
         }
         
-        Set<Key<OMemberProxy>> missingMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
+        Set<Key<OMemberProxy>> additionalAffectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
         
         for (String email : membershipKeysToAddByEmail.keySet()) {
-            if (!emailAddressesOfAddedMembers.contains(email)) {
-                missingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, email));
+            if (!addedMemberEmails.contains(email)) {
+                additionalAffectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, email));
             }
         }
         
         for (String email : membershipKeysToDeleteByEmail.keySet()) {
-            missingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, email));
+            additionalAffectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, email));
         }
 
-        if (missingMemberProxyKeys.size() > 0) {
-            affectedMemberProxies.addAll(ofy().get(missingMemberProxyKeys).values());
+        if (additionalAffectedMemberProxyKeys.size() > 0) {
+            affectedMemberProxies.addAll(ofy().get(additionalAffectedMemberProxyKeys).values());
         }
 
         for (OMemberProxy memberProxy : affectedMemberProxies) {
-            Set<Key<OMembership>> addedMembershipKeysForMember = membershipKeysToAddByEmail.get(memberProxy.email);
+            Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByEmail.get(memberProxy.email);
+            Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByEmail.get(memberProxy.email);
             
-            if (addedMembershipKeysForMember != null) {
-                memberProxy.membershipKeys.addAll(membershipKeysToAddByEmail.get(memberProxy.email));
+            if (membershipKeysToAddForMember != null) {
+                memberProxy.membershipKeys.addAll(membershipKeysToAddForMember);
             }
             
-            Set<Key<OMembership>> deletedMembershipKeysForMember = membershipKeysToDeleteByEmail.get(memberProxy.email);
-            
-            if (deletedMembershipKeysForMember != null) {
-                memberProxy.membershipKeys.removeAll(deletedMembershipKeysForMember);
+            if (membershipKeysToDeleteForMember != null) {
+                memberProxy.membershipKeys.removeAll(membershipKeysToDeleteForMember);
             }
         }
         
@@ -206,9 +204,9 @@ public class ODAO extends DAOBase
         ofy().put(entitiesToReplicate);
         OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
 
-        if (keysForEntitiesToDelete.size() > 0) {
-            ofy().delete(keysForEntitiesToDelete);
-            OLog.log().fine(m.meta() + "Permanently deleted entities: " + keysForEntitiesToDelete);
+        if (entityKeysForDeletion.size() > 0) {
+            ofy().delete(entityKeysForDeletion);
+            OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
         }
     }
     
@@ -233,8 +231,8 @@ public class ODAO extends DAOBase
                 }
                 
                 for (OReplicatedEntity entity : membershipEntities) {
-                    if (entity.getClass().equals(OLinkedEntityRef.class)) {
-                        additionalEntityKeys.add(((OLinkedEntityRef)entity).linkedEntityKey);
+                    if (entity.getClass().equals(OReplicatedEntityRef.class)) {
+                        additionalEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
                     }
                     
                     fetchedEntities.add(entity);

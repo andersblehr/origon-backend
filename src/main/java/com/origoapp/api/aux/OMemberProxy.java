@@ -16,10 +16,7 @@ import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
 
 import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.model.OReplicatedEntity;
-import com.origoapp.api.model.OMemberResidency;
 import com.origoapp.api.model.OMembership;
-import com.origoapp.api.model.OOrigo;
 
 
 @Entity
@@ -34,9 +31,6 @@ public class OMemberProxy
     
     public @NotSaved(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
     public @NotSaved(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
-
-    public @NotSaved Set<Key<OReplicatedEntity>> residencyKeys;
-    public @NotSaved Set<Key<OReplicatedEntity>> residenceKeys;
     
     
     public OMemberProxy() {}
@@ -52,7 +46,7 @@ public class OMemberProxy
     
     
     @PostLoad
-    public void populateNonSavedValues()
+    public void instantiateNullSets()
     {
         if (authMetaKeys == null) {
             authMetaKeys = new HashSet<Key<OAuthMeta>>();
@@ -60,19 +54,6 @@ public class OMemberProxy
         
         if (membershipKeys == null) {
             membershipKeys = new HashSet<Key<OMembership>>();
-        }
-        
-        residencyKeys = new HashSet<Key<OReplicatedEntity>>();
-        residenceKeys = new HashSet<Key<OReplicatedEntity>>();
-        
-        for (Key<OMembership> membershipKey : membershipKeys) {
-            Key<OOrigo> origoKey = new Key<OOrigo>(OOrigo.class, membershipKey.getRaw().getParent().getName());
-            String membershipId = membershipKey.getRaw().getName();
-            
-            if (membershipId.indexOf("^") > 0) {
-                residencyKeys.add(new Key<OReplicatedEntity>(origoKey, OMemberResidency.class, membershipId));
-                residenceKeys.add(new Key<OReplicatedEntity>(origoKey, OOrigo.class, membershipId.substring(membershipId.indexOf("^") + 1)));
-            }
         }
     }
 }
