@@ -123,14 +123,14 @@ public class ODAO extends DAOBase
                         entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, memberRefId));
                         
                         if (entityGhost.ghostedMembershipMemberEmail != null) {
-                            Set<Key<OMembership>> membershipKeysToDeleteForEmail = membershipKeysToDeleteByEmail.get(entityGhost.ghostedMembershipMemberEmail);
+                            Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByEmail.get(entityGhost.ghostedMembershipMemberEmail);
                             
-                            if (membershipKeysToDeleteForEmail == null) {
-                                membershipKeysToDeleteForEmail = new HashSet<Key<OMembership>>();
-                                membershipKeysToDeleteByEmail.put(entityGhost.ghostedMembershipMemberEmail, membershipKeysToDeleteForEmail);
+                            if (membershipKeysToDeleteForMember == null) {
+                                membershipKeysToDeleteForMember = new HashSet<Key<OMembership>>();
+                                membershipKeysToDeleteByEmail.put(entityGhost.ghostedMembershipMemberEmail, membershipKeysToDeleteForMember);
                             }
                             
-                            membershipKeysToDeleteForEmail.add(new Key<OMembership>(entityGhost.origoKey, OMembership.class, entityGhost.entityId));
+                            membershipKeysToDeleteForMember.add(new Key<OMembership>(entityGhost.origoKey, OMembership.class, entityGhost.entityId));
                         }
                     }
                 }
