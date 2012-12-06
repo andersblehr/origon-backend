@@ -35,11 +35,22 @@ public class OCrypto
         String passwordHash = null;
         
         if ((password != null) && (email != null)) {
-            String saltyDiff = OCrypto.diffStrings(password, email);
-            passwordHash = OCrypto.hashUsingSHA1(saltyDiff); 
+            passwordHash = OCrypto.hashUsingSHA1(OCrypto.diffStrings(password, email)); 
         }
         
         return passwordHash; 
+    }
+    
+    
+    public static String generateTimestampHash(String timestamp)
+    {
+        String timestampHash = null;
+        
+        if (timestamp != null) {
+            timestampHash = OCrypto.hashUsingSHA1(OCrypto.diffStrings(timestamp, "ogiro"));
+        }
+        
+        return timestampHash;
     }
 
 

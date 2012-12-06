@@ -1,6 +1,7 @@
 package com.origoapp.api.aux;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Date;
 import java.util.Random;
 
@@ -230,6 +231,25 @@ public class OMeta
                 OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
         } 
+    }
+    
+    
+    public void validateTimestampToken(String URLEncodedTimestampToken)
+    {
+        try {
+            String timestampToken = URLDecoder.decode(URLEncodedTimestampToken, "UTF-8");
+            String base64EncodedTimestamp = timestampToken.substring(0, timestampToken.indexOf("=") + 1);
+            String timestamp = new String(Base64.decodeBase64(base64EncodedTimestamp.getBytes("UTF-8")), "UTF-8");
+            
+            String saltedAndHashedTimestamp = timestampToken.substring(timestampToken.indexOf("=") + 1);
+            String resaltedAndRehashedTimestamp = OCrypto.generateTimestampHash(timestamp);
+            
+            if (!resaltedAndRehashedTimestamp.equals(saltedAndHashedTimestamp)) {
+                OLog.log().warning(meta(false) + "Timestamp does not match provided hash.");
+            }
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
     }
     
     

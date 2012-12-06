@@ -42,10 +42,7 @@ public class OLog
     
     public static void throwWebApplicationException(Exception exception, int statusCode, Class<?> clazz)
     {
-        String[] pathElements = clazz.getName().split("\\.");
-        String className = pathElements[pathElements.length - 1];
-        
-        throwWebApplicationException(exception, statusCode, className);
+        throwWebApplicationException(exception, statusCode, clazz.getSimpleName());
     }
     
     
