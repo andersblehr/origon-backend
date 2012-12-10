@@ -41,6 +41,7 @@ public class OStrings
     
     public String strButtonOK;
     public String strButtonEdit;
+    public String strButtonNext;
     public String strButtonDone;
     public String strButtonCancel;
     public String strButtonSignOut;
@@ -60,6 +61,7 @@ public class OStrings
             
             strButtonOK             = "OK";
             strButtonEdit           = "Endre";
+            strButtonNext           = "Neste";
             strButtonDone           = "Ferdig";
             strButtonCancel         = "Avbryt";
             strButtonSignOut        = "Logg ut";
@@ -76,6 +78,7 @@ public class OStrings
             
             strButtonOK             = "OK";
             strButtonEdit           = "Edit";
+            strButtonNext           = "Next";
             strButtonDone           = "Done";
             strButtonCancel         = "Cancel";
             strButtonSignOut        = "Sign out";
