@@ -43,6 +43,7 @@ public class OStrings
     public String strButtonEdit;
     public String strButtonNext;
     public String strButtonDone;
+    public String strButtonContinue;
     public String strButtonCancel;
     public String strButtonSignOut;
     
@@ -63,6 +64,7 @@ public class OStrings
             strButtonEdit           = "Endre";
             strButtonNext           = "Neste";
             strButtonDone           = "Ferdig";
+            strButtonContinue       = "Fortsett";
             strButtonCancel         = "Avbryt";
             strButtonSignOut        = "Logg ut";
             
@@ -80,6 +82,7 @@ public class OStrings
             strButtonEdit           = "Edit";
             strButtonNext           = "Next";
             strButtonDone           = "Done";
+            strButtonContinue       = "Continue";
             strButtonCancel         = "Cancel";
             strButtonSignOut        = "Sign out";
             
@@ -366,6 +369,7 @@ public class OStrings
     public String strSheetTitleGenderMember;
     public String strSheetTitleGenderMinor;
     public String strSheetTitleExistingResidence;
+    public String strSheetTitleUserEmailChange;
     
     public String strTermFemale;
     public String strTermFemaleMinor;
@@ -404,6 +408,7 @@ public class OStrings
             strSheetTitleGenderMember      = "Er %@ kvinne eller mann?";
             strSheetTitleGenderMinor       = "Er %@ jente eller gutt?";
             strSheetTitleExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
+            strSheetTitleUserEmailChange   = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å kunne foreta denne endringen. Ønsker du å fortsette?";
             
             strTermFemale                  = "Kvinne";
             strTermFemaleMinor             = "Jente";
@@ -439,6 +444,7 @@ public class OStrings
             strSheetTitleGenderMember      = "Is %@ a woman or a man?";
             strSheetTitleGenderMinor       = "Is %@ a girl or a boy?";
             strSheetTitleExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
+            strSheetTitleUserEmailChange   = "You are about to change your email address from %@ to %@. You need access to the new address in order to make this change. Do you want to continue?";
             
             strTermFemale                  = "Woman";
             strTermFemaleMinor             = "Girl";
