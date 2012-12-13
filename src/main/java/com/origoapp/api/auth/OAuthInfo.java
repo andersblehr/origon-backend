@@ -16,9 +16,7 @@ public class OAuthInfo
     
     public String passwordHash;
     public String activationCode;
-    
     public boolean isListed;
-    public boolean didRegister;
     
     
     public OAuthInfo() {}

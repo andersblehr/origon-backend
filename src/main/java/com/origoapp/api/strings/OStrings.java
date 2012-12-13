@@ -101,6 +101,7 @@ public class OStrings
     
     public String strFooterSignInOrRegister;
     public String strFooterActivate;
+    public String strFooterActivateEmail;
     
     public String strPlaceholderAuthEmail;
     public String strPlaceholderPassword;
@@ -125,11 +126,12 @@ public class OStrings
     private void setAuthViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelSignIn                      = "Logg på eller registrer ny bruker";
-            strLabelActivation                  = "Oppgi aktiveringskoden din";
+            strLabelSignIn                      = "Logg på eller registrer deg";
+            strLabelActivation                  = "Oppgi aktiveringskode";
             
-            strFooterSignInOrRegister           = "Om du registrerer ny bruker, vil du motta en aktiveringskode som du oppgir i neste steg.";
-            strFooterActivate                   = "Oppgi aktiveringskoden som du har mottatt på epost, eller kom tilbake senere om ikke du har tilgang til eposten din her og nå.";
+            strFooterSignInOrRegister           = "Når du registrerer deg, vil du motta en epost med en aktiveringskode som du må oppgi i neste steg.";
+            strFooterActivate                   = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
+            strFooterActivateEmail              = "Aktiveringskoden er sendt til %@.";
             
             strPlaceholderAuthEmail             = "Epostadressen din";
             strPlaceholderPassword              = "Passordet ditt";
@@ -161,11 +163,12 @@ public class OStrings
                                                   "\n" +
                                                   "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
         } else {
-            strLabelSignIn                      = "Sign in or register new user";
-            strLabelActivation                  = "Enter your activation code";
+            strLabelSignIn                      = "Sign in or register";
+            strLabelActivation                  = "Enter activation code";
             
-            strFooterSignInOrRegister           = "If you are registering a new user, you will receive an activation code that you must enter in the next step.";
-            strFooterActivate                   = "Please provide the activation code that was emailed to you, or come back later if you don't have access to your email at this time.";
+            strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must enter in the next step.";
+            strFooterActivate                   = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
+            strFooterActivateEmail              = "The activation code has been sent to %@.";
             
             strPlaceholderAuthEmail             = "Your email address";
             strPlaceholderPassword              = "Your password";
@@ -363,13 +366,16 @@ public class OStrings
     
     public String strAlertTitleMemberExists;
     public String strAlertTextMemberExists;
+    public String strAlertTitleUserEmailChange;
+    public String strAlertTextUserEmailChange;
+    public String strAlertTitleFailedEmailChange;
+    public String strAlertTextFailedEmailChange;
 
     public String strSheetTitleGenderSelf;
     public String strSheetTitleGenderSelfMinor;
     public String strSheetTitleGenderMember;
     public String strSheetTitleGenderMinor;
     public String strSheetTitleExistingResidence;
-    public String strSheetTitleUserEmailChange;
     
     public String strTermFemale;
     public String strTermFemaleMinor;
@@ -402,13 +408,16 @@ public class OStrings
             
             strAlertTitleMemberExists      = "Allerede registrert";
             strAlertTextMemberExists       = "%@ (%@) er allerede registrert i \"%@\". Vennligst oppgi en annen epost-adresse, eller avbryt registreringen.";
+            strAlertTitleUserEmailChange   = "Ny epost-adresse";
+            strAlertTextUserEmailChange    = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å aktivere endringen. Ønsker du å fortsette?";
+            strAlertTitleFailedEmailChange = "Aktivering mislyktes";
+            strAlertTextFailedEmailChange  = "Aktivering av epost-adressen %@ mislyktes. Prøv igjen, eller trykk Avbryt for avbryte endringen.";
             
             strSheetTitleGenderSelf        = "Er du kvinne eller mann?";
             strSheetTitleGenderSelfMinor   = "Er du jente eller gutt?";
             strSheetTitleGenderMember      = "Er %@ kvinne eller mann?";
             strSheetTitleGenderMinor       = "Er %@ jente eller gutt?";
             strSheetTitleExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
-            strSheetTitleUserEmailChange   = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å kunne foreta denne endringen. Ønsker du å fortsette?";
             
             strTermFemale                  = "Kvinne";
             strTermFemaleMinor             = "Jente";
@@ -438,13 +447,16 @@ public class OStrings
             
             strAlertTitleMemberExists      = "Already registered";
             strAlertTextMemberExists       = "%@ (%@) is already registered in '%@'. Please enter a different email address, or cancel the registration.";
+            strAlertTitleUserEmailChange   = "New email address";
+            strAlertTextUserEmailChange    = "You are about to change your email address from %@ to %@. You need access to the new address to activate this change. Do you want to continue?";
+            strAlertTitleFailedEmailChange = "Activation failed";
+            strAlertTextFailedEmailChange  = "The email address %@ could not be activated. Please try again, or tap Cancel to cancel the change.";
             
             strSheetTitleGenderSelf        = "Are you a woman or a man?";
             strSheetTitleGenderSelfMinor   = "Are you a girl or a boy?";
             strSheetTitleGenderMember      = "Is %@ a woman or a man?";
             strSheetTitleGenderMinor       = "Is %@ a girl or a boy?";
             strSheetTitleExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
-            strSheetTitleUserEmailChange   = "You are about to change your email address from %@ to %@. You need access to the new address in order to make this change. Do you want to continue?";
             
             strTermFemale                  = "Woman";
             strTermFemaleMinor             = "Girl";

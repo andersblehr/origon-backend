@@ -8,6 +8,9 @@ import javax.ws.rs.WebApplicationException;
 
 public class OCrypto
 {
+    private static final String kOrigoSeasoning = "socroilgao";
+    
+    
     public static String hashUsingSHA1(String inputString)
     {
         String output = new String();
@@ -35,7 +38,7 @@ public class OCrypto
         String passwordHash = null;
         
         if ((password != null) && (email != null)) {
-            passwordHash = OCrypto.hashUsingSHA1(OCrypto.diffStrings(password, email)); 
+            passwordHash = OCrypto.hashUsingSHA1(OCrypto.seasonedString(password)); 
         }
         
         return passwordHash; 
@@ -47,35 +50,35 @@ public class OCrypto
         String timestampHash = null;
         
         if (timestamp != null) {
-            timestampHash = OCrypto.hashUsingSHA1(OCrypto.diffStrings(timestamp, "ogiro"));
+            timestampHash = OCrypto.hashUsingSHA1(OCrypto.seasonedString(timestamp));
         }
         
         return timestampHash;
     }
 
 
-    private static String diffStrings(String string1, String string2)
+    private static String seasonedString(String string)
     {
-        String string1Hash = hashUsingSHA1(string1);
-        String string2Hash = hashUsingSHA1(string2);
+        String stringHash = hashUsingSHA1(string);
+        String seasoningHash = hashUsingSHA1(kOrigoSeasoning);
         
-        int hashLength = string1Hash.length();
+        int hashLength = stringHash.length();
         
-        byte[] byteString1 = string1Hash.getBytes();
-        byte[] byteString2 = string2Hash.getBytes();
-        byte[] diffedBytes = new byte[hashLength];
+        byte[] stringBytes = stringHash.getBytes();
+        byte[] seasoningBytes = seasoningHash.getBytes();
+        byte[] seasonedBytes = new byte[hashLength];
         
         for (int i = 0; i < hashLength; i++) {
-            byte char1 = byteString1[i];
-            byte char2 = byteString2[hashLength - (i + 1)];
+            byte char1 = stringBytes[i];
+            byte char2 = seasoningBytes[hashLength - (i + 1)];
             
             if (char1 >= char2) {
-                diffedBytes[i] = (byte)(char1 - char2 + 33); // ASCII 33 = '!'
+                seasonedBytes[i] = (byte)(char1 - char2 + 33); // ASCII 33 = '!'
             } else {
-                diffedBytes[i] = (byte)(char2 - char1 + 33);
+                seasonedBytes[i] = (byte)(char2 - char1 + 33);
             }
         }
         
-        return new String(diffedBytes);
+        return new String(seasonedBytes);
     }
 }
