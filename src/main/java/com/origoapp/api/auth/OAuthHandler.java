@@ -41,11 +41,11 @@ public class OAuthHandler
     {
         m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATION);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATE);
         m.validateAuthToken(authToken);
         
+        List<OReplicatedEntity> fetchedEntities = null;
         Date replicationDate = new Date();
-        List<OReplicatedEntity> origoEntities = null;
         
         if (m.isValid()) {
             OAuthInfo authInfo = m.getAuthInfo();
@@ -56,7 +56,7 @@ public class OAuthHandler
                 DAO.ofy().delete(authInfo);
                 DAO.putAuthToken(authToken);
                 
-                origoEntities = DAO.fetchEntities(null);
+                fetchedEntities = DAO.fetchEntities(null);
             } else {
                 OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                 OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -66,8 +66,8 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        if (origoEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(origoEntities).lastModified(replicationDate).build();
+        if (fetchedEntities.size() > 0) {
+            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(replicationDate).build();
         }
@@ -96,30 +96,13 @@ public class OAuthHandler
         if (m.isValid()) {
             OMemberProxy memberProxy = m.getMemberProxy();
             
-            if ((memberProxy == null) || !memberProxy.didRegister) {
+            if ((memberProxy == null) || !memberProxy.didSignUp) {
                 authInfo = m.getAuthInfo();
                 m.getDAO().ofy().put(authInfo);
                 
-                Session session = Session.getInstance(new Properties());
-
-                try {
-                    Message message = new MimeMessage(session);
-                    
-                    // TODO: Localise message
-                    // TODO: Provide URL directly to app on device
-                    message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
-                    message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-                    message.setSubject("Complete your registration with Origo");
-                    message.setText(String.format("Activation code: %s", m.getActivationCode()));
-                    
-                    Transport.send(message);
-                    
-                    OLog.log().fine(m.meta() + "Sent activation code to new Origo user.");
-                } catch (MessagingException e) {
-                    OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-                }
+                emailCode(OAuthPhase.SIGNUP);
             } else {
-                if ((memberProxy != null) && memberProxy.didRegister) {
+                if ((memberProxy != null) && memberProxy.didSignUp) {
                     if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                         m.getDAO().putAuthToken(authToken);
                         
@@ -141,9 +124,65 @@ public class OAuthHandler
         if (authInfo != null) {
             return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
         } else if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
+            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
+        }
+    }
+    
+    
+    @GET
+    @Path("emailcode")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response emailActivationCode(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                        @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                        @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        m = new OMeta(authToken, appVersion);
+        
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.EMAIL_CODE);
+        
+        OAuthInfo authInfo = null;
+        
+        if (m.isValid()) {
+            authInfo = m.getAuthInfo();
+            emailCode(OAuthPhase.EMAIL_CODE);
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+        }
+        
+        return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
+    }
+
+
+    private void emailCode(OAuthPhase authPhase)
+    {
+        Session session = Session.getInstance(new Properties());
+    
+        try {
+            Message message = new MimeMessage(session);
+            
+            // TODO: Localise message
+            // TODO: Provide URL directly to app on device
+            message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
+            message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
+            
+            if (authPhase == OAuthPhase.SIGNUP) {
+                message.setSubject("Complete your registration with Origo");
+                message.setText(String.format("Activation code: %s", m.getActivationCode()));
+                
+                OLog.log().fine(m.meta() + "Sent activation code to new Origo user.");
+            } else if (authPhase == OAuthPhase.EMAIL_CODE) {
+                message.setSubject("Activate your email address for use with Origo");
+                message.setText(String.format("Activation code: %s", m.getActivationCode()));
+                
+                OLog.log().fine(m.meta() + "Sent email activation code to " + m.getEmail() + ".");
+            }
+            
+            Transport.send(message);
+        } catch (MessagingException e) {
+            OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 }

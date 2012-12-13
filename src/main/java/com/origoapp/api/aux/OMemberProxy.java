@@ -24,9 +24,9 @@ import com.origoapp.api.model.OMembership;
 @Cached(expirationSeconds=600)
 public class OMemberProxy
 {
-    public @Id String email;
+    public @Id String proxyId;
     
-    public @NotSaved(IfDefault.class) boolean didRegister = false;
+    public @NotSaved(IfDefault.class) boolean didSignUp = false;
     public @NotSaved(IfNull.class) String passwordHash;
     
     public @NotSaved(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
@@ -36,12 +36,24 @@ public class OMemberProxy
     public OMemberProxy() {}
     
     
-    public OMemberProxy(String email)
+    public OMemberProxy(String proxyId)
     {
-        this.email = email;
+        this.proxyId = proxyId;
         
         authMetaKeys = new HashSet<Key<OAuthMeta>>();
         membershipKeys = new HashSet<Key<OMembership>>();
+    }
+
+    
+    public OMemberProxy(String proxyId, OMemberProxy obsoleteInstance)
+    {
+        this.proxyId = proxyId;
+        
+        didSignUp = obsoleteInstance.didSignUp;
+        passwordHash = obsoleteInstance.passwordHash;
+        
+        authMetaKeys = obsoleteInstance.authMetaKeys;
+        membershipKeys = obsoleteInstance.membershipKeys;
     }
     
     

@@ -3,7 +3,6 @@ package com.origoapp.api.aux;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
-import java.util.Random;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -15,12 +14,11 @@ import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
+import com.origoapp.api.model.OMember;
 
 
 public class OMeta
 {
-    private static final char[] symbols = new char[16];
-    
     private static final int kMinimumPasswordLength = 6;
     private static final int kActivationCodeLength = 6;
     
@@ -32,6 +30,7 @@ public class OMeta
     private boolean isValid = true;
     
     private String email = null;
+    private String userId = null;
     private String authToken = null;
     private String passwordHash = null;
     private String deviceId = null;
@@ -39,18 +38,6 @@ public class OMeta
     private String appVersion = null;
     private String activationCode = null;
     private InternetAddress emailAddress = null;
-    
-    
-    static
-    {
-        for (int i = 0; i < 10; i++) {
-            symbols[i] = (char)('0' + i);
-        }
-        
-        for (int i = 10; i < 16; i++) {
-            symbols[i] = (char)('a' + (i - 10));
-        }
-    }
     
     
     public OMeta(String deviceId, String deviceType, String appVersion)
@@ -84,7 +71,14 @@ public class OMeta
     {
         return isValid;
     }
+    
+    
 
+    public String getAuthToken()
+    {
+        return authToken;
+    }
+    
     
     public String getEmail()
     {
@@ -92,9 +86,9 @@ public class OMeta
     }
     
     
-    public String getAuthToken()
+    public String getUserId()
     {
-        return authToken;
+        return userId;
     }
     
     
@@ -130,16 +124,27 @@ public class OMeta
     
     public ODAO getDAO()
     {
+        if (DAO == null) {
+            DAO = new ODAO(this);
+        }
+        
         return DAO;
+    }
+    
+    
+    public void setMemberProxy(OMemberProxy memberProxy)
+    {
+        this.memberProxy = memberProxy;
+        this.email = memberProxy.proxyId;
     }
     
     
     public OMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = DAO.get(new Key<OMemberProxy>(OMemberProxy.class, email));
+            memberProxy = getDAO().get(new Key<OMemberProxy>(OMemberProxy.class, email));
             
-            if (authPhase == OAuthPhase.ACTIVATION) {
+            if (authPhase == OAuthPhase.ACTIVATE) {
                 if (memberProxy == null) {
                     memberProxy = new OMemberProxy(email);
                 }
@@ -157,21 +162,16 @@ public class OMeta
         OAuthInfo authInfo = null;
         
         if (isValid) {
-            if (authPhase == OAuthPhase.ACTIVATION) {
-                authInfo = DAO.get(new Key<OAuthInfo>(OAuthInfo.class, email));
+            if (authPhase == OAuthPhase.ACTIVATE) {
+                authInfo = getDAO().get(new Key<OAuthInfo>(OAuthInfo.class, email));
             } else {
-                activationCode = generateActivationCode();
-                
-                authInfo = new OAuthInfo(email, passwordHash, activationCode);
-                
-                OMemberProxy memberProxy = getMemberProxy();
-                
-                if (memberProxy != null) {
-                    authInfo.isListed = true;
-                    authInfo.didRegister = memberProxy.didRegister;
+                if (authPhase == OAuthPhase.EMAIL_CODE) {
+                    authInfo = new OAuthInfo(email, "n/a", activationCode);
                 } else {
-                    authInfo.isListed = false;
-                    authInfo.didRegister = false;
+                    activationCode = deviceId.substring(0, kActivationCodeLength);
+                    
+                    authInfo = new OAuthInfo(email, passwordHash, activationCode);
+                    authInfo.isListed = (getMemberProxy() != null);
                 }
             }
         }
@@ -191,11 +191,15 @@ public class OMeta
                 
                 if (authElements.length == 2) {
                     validateEmail(authElements[0]);
-                    validatePassword(authElements[1]);
                     
                     if (isValid) {
                         this.authPhase = authPhase;
-                        this.DAO = new ODAO(this);
+                        
+                        if (authPhase == OAuthPhase.EMAIL_CODE) {
+                            this.activationCode = authElements[1];
+                        } else {
+                            validatePassword(authElements[1]);
+                        }
                     }
                 } else {
                     OLog.log().warning(meta(false) + String.format("Decoded authorization string '%s' is not a valid basic auth string.", authString));
@@ -211,12 +215,10 @@ public class OMeta
     
     public void validateAuthToken(String authToken)
     {
-        DAO = new ODAO(this);
-        
         if (authPhase == OAuthPhase.NONE) {
             try {
                 Date now = new Date();
-                OAuthMeta tokenMeta = DAO.ofy().get(OAuthMeta.class, authToken); 
+                OAuthMeta tokenMeta = getDAO().ofy().get(OAuthMeta.class, authToken); 
 
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
@@ -241,10 +243,10 @@ public class OMeta
             String base64EncodedTimestamp = timestampToken.substring(0, timestampToken.indexOf("=") + 1);
             String timestamp = new String(Base64.decodeBase64(base64EncodedTimestamp.getBytes("UTF-8")), "UTF-8");
             
-            String saltedAndHashedTimestamp = timestampToken.substring(timestampToken.indexOf("=") + 1);
-            String resaltedAndRehashedTimestamp = OCrypto.generateTimestampHash(timestamp);
+            String seasonedAndHashedTimestamp = timestampToken.substring(timestampToken.indexOf("=") + 1);
+            String reseasonedAndRehashedTimestamp = OCrypto.generateTimestampHash(timestamp);
             
-            if (!resaltedAndRehashedTimestamp.equals(saltedAndHashedTimestamp)) {
+            if (!reseasonedAndRehashedTimestamp.equals(seasonedAndHashedTimestamp)) {
                 OLog.log().warning(meta(false) + "Timestamp does not match provided hash.");
             }
         } catch (UnsupportedEncodingException e) {
@@ -258,6 +260,20 @@ public class OMeta
         if (replicationDate == null) {
             OLog.log().warning(meta(false) + "Replication date is missing.");
         }
+    }
+    
+    
+    public void validateIfUser(OMember member)
+    {
+        if ((member.email != null) && member.email.equals(email)) {
+            userId = member.entityId;
+        }
+    }
+    
+    
+    public boolean isAuthenticating()
+    {
+        return ((authPhase == OAuthPhase.LOGIN) || (authPhase == OAuthPhase.ACTIVATE));
     }
     
     
@@ -328,18 +344,5 @@ public class OMeta
                 OLog.log().warning(meta(false) + String.format("User password is too short (minmum length: %d; actual length: %d).", kMinimumPasswordLength, password.length()));
             }
         }
-    }
-    
-    
-    private String generateActivationCode()
-    {
-        Random randomiser = new Random();
-        char[] randomCharacters = new char[kActivationCodeLength];
-        
-        for (int i=0; i < kActivationCodeLength; i++) {
-            randomCharacters[i] = symbols[randomiser.nextInt(symbols.length)];
-        }
-        
-        return new String(randomCharacters);
     }
 }
