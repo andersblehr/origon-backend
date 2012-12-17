@@ -145,235 +145,6 @@ public class ODAO extends DAOBase
     public void replicateEntities(List<OReplicatedEntity> entityList)
     {
         new OEntityReplicator().replicate(entityList);
-        //replicateEntities_old(entityList);
-    }
-    
-    
-    public void replicateEntities_old(List<OReplicatedEntity> entityList)
-    {
-        Set<OReplicatedEntity> entitiesToReplicate = new HashSet<OReplicatedEntity>();
-        
-        Map<String, Set<Key<OMembership>>> membershipKeysToAddByProxyId = new HashMap<String, Set<Key<OMembership>>>();
-        Map<String, Set<Key<OMembership>>> membershipKeysToDeleteByProxyId = new HashMap<String, Set<Key<OMembership>>>();
-        
-        Map<String, OMember> modifiedMembersByMemberId = new HashMap<String, OMember>();
-        Map<String, OMember> modifiedMembersByEmail = new HashMap<String, OMember>();
-        
-        Set<String> addedMemberProxyIds = new HashSet<String>();
-        Set<OMemberProxy> affectedMemberProxies = new HashSet<OMemberProxy>();
-        Set<Key<OReplicatedEntity>> entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
-        
-        Date dateReplicated = new Date();
-        
-        for (OReplicatedEntity entity : entityList) {
-            entity.origoKey = new Key<OOrigo>(OOrigo.class, entity.origoId);
-            
-            if (entity.getClass().equals(OReplicatedEntityGhost.class)) {
-                OReplicatedEntityGhost entityGhost = (OReplicatedEntityGhost)entity;
-                
-                if (entityGhost.hasExpired) {
-                    entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
-                } else {
-                    entitiesToReplicate.add(entityGhost);
-                    
-                    if (entityGhost.ghostedEntityClass.equals(OMembership.class.getSimpleName()) || entityGhost.ghostedEntityClass.equals(OMemberResidency.class.getSimpleName())) {
-                        String memberRefId = String.format("%s#%s", entityGhost.ghostedMembershipMemberId, entityGhost.origoId);
-                        entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, memberRefId));
-                        
-                        String ghostedMembershipProxyId = (entityGhost.ghostedMembershipMemberEmail != null) ? entityGhost.ghostedMembershipMemberEmail : entityGhost.ghostedMembershipMemberId; 
-                        Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByProxyId.get(ghostedMembershipProxyId);
-                        
-                        if (membershipKeysToDeleteForMember == null) {
-                            membershipKeysToDeleteForMember = new HashSet<Key<OMembership>>();
-                            membershipKeysToDeleteByProxyId.put(ghostedMembershipProxyId, membershipKeysToDeleteForMember);
-                        }
-                        
-                        membershipKeysToDeleteForMember.add(new Key<OMembership>(entityGhost.origoKey, OMembership.class, entityGhost.entityId));
-                    }
-                }
-            } else {
-                entitiesToReplicate.add(entity);
-                
-                if (entity.getClass().equals(OMember.class)) {
-                    OMember member = (OMember)entity;
-                    
-                    if (entity.dateReplicated == null) {
-                        String proxyId = (member.email != null) ? member.email : member.entityId;
-                        addedMemberProxyIds.add(proxyId);
-                        
-                        if (proxyId.equals(m.getEmail())) {
-                            affectedMemberProxies.add(m.getMemberProxy());
-                        } else {
-                            affectedMemberProxies.add(new OMemberProxy(proxyId));
-                        }
-                    } else {
-                        modifiedMembersByMemberId.put(member.entityId, member);
-                        
-                        if (member.email != null) {
-                            modifiedMembersByEmail.put(member.email, member);
-                        }
-                    }
-                } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
-                    OMember member = ((OMembership)entity).member;
-                    String proxyId = (member.email != null) ? member.email : member.entityId;
-                    
-                    if (proxyId.equals(m.getEmail()) || (entity.dateReplicated == null)) {
-                        Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByProxyId.get(proxyId);
-                        
-                        if (membershipKeysToAddForMember == null) {
-                            membershipKeysToAddForMember = new HashSet<Key<OMembership>>();
-                            membershipKeysToAddByProxyId.put(proxyId, membershipKeysToAddForMember);
-                        }
-                        
-                        membershipKeysToAddForMember.add(new Key<OMembership>(entity.origoKey, OMembership.class, entity.entityId));
-                    }
-                }
-            }
-            
-            entity.dateReplicated = dateReplicated;
-        }
-        
-        Set<Key<OMemberProxy>> additionalAffectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
-        
-        for (String memberId : modifiedMembersByMemberId.keySet()) {
-            additionalAffectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, memberId));
-        }
-        
-        for (String proxyId : membershipKeysToAddByProxyId.keySet()) {
-            if (!addedMemberProxyIds.contains(proxyId)) {
-                additionalAffectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
-            }
-        }
-        
-        for (String proxyId : membershipKeysToDeleteByProxyId.keySet()) {
-            additionalAffectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
-        }
-
-        if (additionalAffectedMemberProxyKeys.size() > 0) {
-            affectedMemberProxies.addAll(ofy().get(additionalAffectedMemberProxyKeys).values());
-        }
-
-        // Recreate orphaned member proxies after email change
-        
-        Set<String> anchoredProxyIds = new HashSet<String>();
-        
-        for (OMemberProxy memberProxy : affectedMemberProxies) {
-            anchoredProxyIds.add(memberProxy.proxyId);
-        }
-        
-        Set<Key<OMember>> driftingMemberKeys = new HashSet<Key<OMember>>();
-        
-        for (String email : modifiedMembersByEmail.keySet()) {
-            if (!anchoredProxyIds.contains(email)) {
-                String memberId = modifiedMembersByEmail.get(email).entityId;
-                driftingMemberKeys.add(new Key<OMember>(new Key<OOrigo>(OOrigo.class, "~" + memberId), OMember.class, memberId));
-            }
-        }
-        
-        if (driftingMemberKeys.size() > 0) {
-            Collection<OMember> driftingMembers = ofy().get(driftingMemberKeys).values();
-            
-            Set<Key<OMemberProxy>> driftingMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
-            Set<OAuthMeta> reanchoredAuthMetaItems = new HashSet<OAuthMeta>();
-            
-            for (OMember member : driftingMembers) {
-                String driftingProxyId = (member.email != null) ? member.email : member.entityId;
-                driftingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, driftingProxyId));
-            }
-            
-            Map<String, OMemberProxy> driftingMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
-            
-            for (OMemberProxy memberProxy : ofy().get(driftingMemberProxyKeys).values()) {
-                driftingMemberProxiesByProxyId.put(memberProxy.proxyId, memberProxy);
-            }
-            
-            Set<OMemberProxy> driftingMemberProxies = new HashSet<OMemberProxy>();
-            
-            for (OMember member : driftingMembers) {
-                String driftingProxyId = (member.email != null) ? member.email : member.entityId;
-                String modifiedEmail = modifiedMembersByMemberId.get(member.entityId).email; 
-                
-                OMemberProxy driftingMemberProxy = driftingMemberProxiesByProxyId.get(driftingProxyId);
-                OMemberProxy reanchoredMemberProxy = new OMemberProxy(modifiedEmail, driftingMemberProxy);
-                
-                for (OAuthMeta authMetaItem : ofy().get(reanchoredMemberProxy.authMetaKeys).values()) {
-                    authMetaItem.email = modifiedEmail;
-                    reanchoredAuthMetaItems.add(authMetaItem);
-                }
-                
-                driftingMemberProxies.add(driftingMemberProxy);
-                affectedMemberProxies.add(reanchoredMemberProxy);
-                
-                if (driftingProxyId.equals(m.getEmail())) {
-                    m.setMemberProxy(reanchoredMemberProxy);
-                }
-            }
-            
-            if (reanchoredAuthMetaItems.size() > 0) {
-                ofy().put(reanchoredAuthMetaItems);
-            }
-            
-            if (driftingMemberProxies.size() > 0) {
-                ofy().delete(driftingMemberProxies);
-            }
-        }
-        
-        // Update linked references for modified member entities
-        
-        Map<String, OMemberProxy> affectedMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
-        Set<Key<OReplicatedEntityRef>> affectedEntityRefKeys = new HashSet<Key<OReplicatedEntityRef>>();
-        
-        for (OMemberProxy memberProxy : affectedMemberProxies) {
-            affectedMemberProxiesByProxyId.put(memberProxy.proxyId, memberProxy);
-        }
-        
-        for (OMember member : modifiedMembersByMemberId.values()) {
-            String proxyId = (member.email != null) ? member.email : member.entityId;
-            OMemberProxy memberProxy = affectedMemberProxiesByProxyId.get(proxyId);
-            
-            for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
-                Key<OOrigo> origoKey = membershipKey.getParent();
-                String origoId = origoKey.getRaw().getName();
-                String entityRefId = member.entityId + "#" + origoId;
-                
-                affectedEntityRefKeys.add(new Key<OReplicatedEntityRef>(origoKey, OReplicatedEntityRef.class, entityRefId));
-            }
-        }
-        
-        Collection<OReplicatedEntityRef> affectedEntityRefs = ofy().get(affectedEntityRefKeys).values();
-        
-        for (OReplicatedEntityRef entityRef : affectedEntityRefs) {
-            entityRef.dateReplicated = dateReplicated;
-        }
-        
-        entitiesToReplicate.addAll(affectedEntityRefs);
-        
-        // Update member proxy relationship keys
-        
-        for (OMemberProxy memberProxy : affectedMemberProxies) {
-            Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByProxyId.get(memberProxy.proxyId);
-            Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByProxyId.get(memberProxy.proxyId);
-            
-            if (membershipKeysToAddForMember != null) {
-                memberProxy.membershipKeys.addAll(membershipKeysToAddForMember);
-            }
-            
-            if (membershipKeysToDeleteForMember != null) {
-                memberProxy.membershipKeys.removeAll(membershipKeysToDeleteForMember);
-            }
-        }
-        
-        if (affectedMemberProxies.size() > 0) {
-            ofy().put(affectedMemberProxies);
-        }
-        
-        ofy().put(entitiesToReplicate);
-        OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
-
-        if (entityKeysForDeletion.size() > 0) {
-            ofy().delete(entityKeysForDeletion);
-            OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
-        }
     }
     
     
@@ -410,7 +181,46 @@ public class ODAO extends DAOBase
         }
         
         
-        private void processGhostedEntity(OReplicatedEntityGhost entityGhost)
+        private void replicate(List<OReplicatedEntity> entityList)
+        {
+            for (OReplicatedEntity entity : entityList) {
+                entity.origoKey = new Key<OOrigo>(OOrigo.class, entity.origoId);
+                
+                if (entity.getClass().equals(OReplicatedEntityGhost.class)) {
+                    _processGhostedEntity((OReplicatedEntityGhost)entity);
+                } else {
+                    entitiesToReplicate.add(entity);
+                    
+                    if (entity.getClass().equals(OMember.class)) {
+                        _processMemberEntity((OMember)entity);
+                    } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
+                        _processMembershipEntity((OMembership)entity);
+                    }
+                }
+                
+                entity.dateReplicated = dateReplicated;
+            }
+            
+            _fetchAdditionalAffectedMemberProxies();
+            _reanchorDriftingMemberProxies();
+            _updateAffectedEntityReferences();
+            _updateAffectedRelationshipKeys();
+            
+            if (affectedMemberProxies.size() > 0) {
+                ofy().put(affectedMemberProxies);
+            }
+            
+            ofy().put(entitiesToReplicate);
+            OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
+
+            if (entityKeysForDeletion.size() > 0) {
+                ofy().delete(entityKeysForDeletion);
+                OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
+            }
+        }
+        
+        
+        private void _processGhostedEntity(OReplicatedEntityGhost entityGhost)
         {
             if (entityGhost.hasExpired) {
                 entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
@@ -435,7 +245,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void processMemberEntity(OMember member)
+        private void _processMemberEntity(OMember member)
         {
             if (member.dateReplicated == null) {
                 String proxyId = (member.email != null) ? member.email : member.entityId;
@@ -456,7 +266,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void processMembershipEntity(OMembership membership)
+        private void _processMembershipEntity(OMembership membership)
         {
             String proxyId = (membership.member.email != null) ? membership.member.email : membership.member.entityId;
             
@@ -473,7 +283,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void fetchAffectedMemberProxies()
+        private void _fetchAdditionalAffectedMemberProxies()
         {
             Set<Key<OMemberProxy>> affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
             
@@ -497,7 +307,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void reanchorDriftingMemberProxies()
+        private void _reanchorDriftingMemberProxies()
         {
             Set<String> anchoredProxyIds = new HashSet<String>();
             
@@ -564,7 +374,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void updateAffectedEntityReferences()
+        private void _updateAffectedEntityReferences()
         {
             Map<String, OMemberProxy> affectedMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
             Set<Key<OReplicatedEntityRef>> affectedEntityRefKeys = new HashSet<Key<OReplicatedEntityRef>>();
@@ -596,7 +406,7 @@ public class ODAO extends DAOBase
         }
         
         
-        private void updateAffectedRelationshipKeys()
+        private void _updateAffectedRelationshipKeys()
         {
             for (OMemberProxy memberProxy : affectedMemberProxies) {
                 Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByProxyId.get(memberProxy.proxyId);
@@ -609,45 +419,6 @@ public class ODAO extends DAOBase
                 if (membershipKeysToDeleteForMember != null) {
                     memberProxy.membershipKeys.removeAll(membershipKeysToDeleteForMember);
                 }
-            }
-        }
-        
-        
-        protected void replicate(List<OReplicatedEntity> entityList)
-        {
-            for (OReplicatedEntity entity : entityList) {
-                entity.origoKey = new Key<OOrigo>(OOrigo.class, entity.origoId);
-                
-                if (entity.getClass().equals(OReplicatedEntityGhost.class)) {
-                    processGhostedEntity((OReplicatedEntityGhost)entity);
-                } else {
-                    entitiesToReplicate.add(entity);
-                    
-                    if (entity.getClass().equals(OMember.class)) {
-                        processMemberEntity((OMember)entity);
-                    } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
-                        processMembershipEntity((OMembership)entity);
-                    }
-                }
-                
-                entity.dateReplicated = dateReplicated;
-            }
-            
-            fetchAffectedMemberProxies();
-            reanchorDriftingMemberProxies();
-            updateAffectedEntityReferences();
-            updateAffectedRelationshipKeys();
-            
-            if (affectedMemberProxies.size() > 0) {
-                ofy().put(affectedMemberProxies);
-            }
-            
-            ofy().put(entitiesToReplicate);
-            OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
-
-            if (entityKeysForDeletion.size() > 0) {
-                ofy().delete(entityKeysForDeletion);
-                OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
             }
         }
     }
