@@ -5,6 +5,8 @@ public class OStrings
 {
     public static final String LANG_ENGLISH = "en";
     public static final String LANG_NORWEGIAN_BOKMAL = "nb";
+    public static final String LANG_DANISH = "da";
+    public static final String LANG_SWEDISH = "sv";
     
     
     public OStrings()
@@ -15,6 +17,10 @@ public class OStrings
     
     public OStrings(String language)
     {
+        if (language.equals(LANG_DANISH) || language.equals(LANG_SWEDISH)) {
+            language = LANG_NORWEGIAN_BOKMAL;
+        }
+        
         setCrossViewStrings(language);
         
         setAuthViewStrings(language);
