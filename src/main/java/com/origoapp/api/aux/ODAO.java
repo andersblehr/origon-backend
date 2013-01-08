@@ -135,7 +135,7 @@ public class ODAO
         private Set<OMemberProxy> affectedMemberProxies;
         
         
-        private OEntityReplicator()
+        public OEntityReplicator()
         {
             entitiesToReplicate = new HashSet<OReplicatedEntity>();
             entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
@@ -152,30 +152,30 @@ public class ODAO
         }
         
         
-        private void replicate(List<OReplicatedEntity> entityList)
+        public void replicate(List<OReplicatedEntity> entityList)
         {
             for (OReplicatedEntity entity : entityList) {
                 entity.origoKey = Key.create(OOrigo.class, entity.origoId);
                 
                 if (entity.getClass().equals(OReplicatedEntityGhost.class)) {
-                    _processGhostedEntity((OReplicatedEntityGhost)entity);
+                    processGhostedEntity((OReplicatedEntityGhost)entity);
                 } else {
                     entitiesToReplicate.add(entity);
                     
                     if (entity.getClass().equals(OMember.class)) {
-                        _processMemberEntity((OMember)entity);
+                        processMemberEntity((OMember)entity);
                     } else if (entity.getClass().equals(OMembership.class) || entity.getClass().equals(OMemberResidency.class)) {
-                        _processMembershipEntity((OMembership)entity);
+                        processMembershipEntity((OMembership)entity);
                     }
                 }
                 
                 entity.dateReplicated = dateReplicated;
             }
             
-            _fetchAdditionalAffectedMemberProxies();
-            _reanchorDriftingMemberProxies();
-            _updateAffectedEntityReferences();
-            _updateAffectedRelationshipKeys();
+            fetchAdditionalAffectedMemberProxies();
+            reanchorDriftingMemberProxies();
+            updateAffectedEntityReferences();
+            updateAffectedRelationshipKeys();
             
             if (affectedMemberProxies.size() > 0) {
                 ofy().save().entities(affectedMemberProxies).now();
@@ -191,7 +191,7 @@ public class ODAO
         }
         
         
-        private void _processGhostedEntity(OReplicatedEntityGhost entityGhost)
+        private void processGhostedEntity(OReplicatedEntityGhost entityGhost)
         {
             if (entityGhost.hasExpired) {
                 entityKeysForDeletion.add(Key.create(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
@@ -216,7 +216,7 @@ public class ODAO
         }
         
         
-        private void _processMemberEntity(OMember member)
+        private void processMemberEntity(OMember member)
         {
             String proxyId = (member.email != null) ? member.email : member.entityId;
             
@@ -240,7 +240,7 @@ public class ODAO
         }
         
         
-        private void _processMembershipEntity(OMembership membership)
+        private void processMembershipEntity(OMembership membership)
         {
             String proxyId = (membership.member.email != null) ? membership.member.email : membership.member.entityId;
             
@@ -257,7 +257,7 @@ public class ODAO
         }
         
         
-        private void _fetchAdditionalAffectedMemberProxies()
+        private void fetchAdditionalAffectedMemberProxies()
         {
             Set<Key<OMemberProxy>> affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
             
@@ -281,7 +281,7 @@ public class ODAO
         }
         
         
-        private void _reanchorDriftingMemberProxies()
+        private void reanchorDriftingMemberProxies()
         {
             Set<String> anchoredProxyIds = new HashSet<String>();
             
@@ -348,7 +348,7 @@ public class ODAO
         }
         
         
-        private void _updateAffectedEntityReferences()
+        private void updateAffectedEntityReferences()
         {
             Map<String, OMemberProxy> affectedMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
             Set<Key<OReplicatedEntityRef>> affectedEntityRefKeys = new HashSet<Key<OReplicatedEntityRef>>();
@@ -380,7 +380,7 @@ public class ODAO
         }
         
         
-        private void _updateAffectedRelationshipKeys()
+        private void updateAffectedRelationshipKeys()
         {
             for (OMemberProxy memberProxy : affectedMemberProxies) {
                 Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByProxyId.get(memberProxy.proxyId);
