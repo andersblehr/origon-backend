@@ -5,25 +5,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.persistence.Id;
-import javax.persistence.PostLoad;
-import javax.persistence.PrePersist;
-
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.annotate.JsonSubTypes.Type;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Indexed;
-import com.googlecode.objectify.annotation.NotSaved;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.OnLoad;
+import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
-import com.googlecode.objectify.annotation.Unindexed;
 import com.googlecode.objectify.condition.IfNull;
 
 
 @Entity
-@Unindexed
 @JsonTypeInfo (
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -42,15 +39,15 @@ public abstract class OReplicatedEntity
     public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
     
-    public @NotSaved String origoId;
-    public @NotSaved String entityClass;
+    public @IgnoreSave String origoId;
+    public @IgnoreSave String entityClass;
     
     public Date dateCreated;
-    public @Indexed Date dateReplicated;
-    public @NotSaved(IfNull.class) Date dateExpires;
+    public @Index Date dateReplicated;
+    public @IgnoreSave(IfNull.class) Date dateExpires;
     
     
-    @PrePersist
+    @OnSave
     @SuppressWarnings("unchecked")
     public <T extends OReplicatedEntity> void internaliseRelationships()
     {
@@ -65,7 +62,7 @@ public abstract class OReplicatedEntity
                     
                     if (referencedEntity != null) {
                         Field keyField = this.getClass().getField(field.getName() + "Key");
-                        keyField.set(this, new Key<T>(origoKey, (Class<T>)classOfField, referencedEntity.entityId));
+                        keyField.set(this, Key.create(origoKey, (Class<T>)classOfField, referencedEntity.entityId));
                     }
                 }
             }
@@ -77,7 +74,7 @@ public abstract class OReplicatedEntity
     }
     
     
-    @PostLoad
+    @OnLoad
     @SuppressWarnings("unchecked")
     public <T extends OReplicatedEntity> void externaliseRelationships()
     {
@@ -95,7 +92,7 @@ public abstract class OReplicatedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == OReplicatedEntity.class) {
+                if (OReplicatedEntity.class.isAssignableFrom(classOfField)) {
                     Field keyField = this.getClass().getField(field.getName() + "Key");
                     Key<T> referencedEntityKey = (Key<T>)keyField.get(this);
                     

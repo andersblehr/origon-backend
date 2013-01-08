@@ -4,23 +4,21 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import com.googlecode.objectify.annotation.Cached;
-import com.googlecode.objectify.annotation.NotSaved;
-import com.googlecode.objectify.annotation.Subclass;
-import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.EntitySubclass;
+import com.googlecode.objectify.annotation.IgnoreSave;
 
 
-@Subclass(unindexed = true)
-@Unindexed
-@Cached(expirationSeconds = 600)
+@EntitySubclass
+@Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
 public class OReplicatedEntityGhost extends OReplicatedEntity
 {
-    public @NotSaved String ghostedEntityClass;
-    public @NotSaved String ghostedMembershipMemberId;
-    public @NotSaved String ghostedMembershipMemberEmail;
-    public @NotSaved boolean hasExpired = false;
+    public @IgnoreSave String ghostedEntityClass;
+    public @IgnoreSave String ghostedMembershipMemberId;
+    public @IgnoreSave String ghostedMembershipMemberEmail;
+    public @IgnoreSave boolean hasExpired = false;
     
     
     public OReplicatedEntityGhost()

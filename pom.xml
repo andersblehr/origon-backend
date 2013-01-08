@@ -156,7 +156,7 @@ warSrcDirIsOutput=true]]>
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
-		<repository>
+		<!--  repository>
 			<id>objectify-appengine</id>
 			<url>http://objectify-appengine.googlecode.com/svn/maven</url>
 			<releases>
@@ -165,7 +165,7 @@ warSrcDirIsOutput=true]]>
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
-		</repository>
+		</repository -->
 	</repositories>
 	<pluginRepositories>
 		<pluginRepository>
@@ -205,13 +205,13 @@ warSrcDirIsOutput=true]]>
             <type>jar</type>
             <scope>runtime</scope>
 		</dependency>
-		<dependency>
+		<!--  dependency>
 			<groupId>org.apache.geronimo.specs</groupId>
 			<artifactId>geronimo-jpa_3.0_spec</artifactId>
 			<version>1.1.1</version>
 			<type>jar</type>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency -->
 		<dependency>
 			<groupId>taglibs</groupId>
 			<artifactId>standard</artifactId>
@@ -232,7 +232,7 @@ warSrcDirIsOutput=true]]>
         <dependency>
 			<groupId>com.googlecode.objectify</groupId>
 			<artifactId>objectify</artifactId>
-			<version>3.1</version>
+			<version>${objectify.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -246,6 +246,7 @@ warSrcDirIsOutput=true]]>
 		<maven.executable>mvn</maven.executable>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resteasy.version>2.3.0.GA</resteasy.version>
+		<objectify.version>4.0b1</objectify.version>
 		<gae.version>1.7.4</gae.version>
 	</properties>
 </project>

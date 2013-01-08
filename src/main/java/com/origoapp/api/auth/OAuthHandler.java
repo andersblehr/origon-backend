@@ -16,12 +16,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.origoapp.api.aux.ODAO;
 import com.origoapp.api.aux.OLog;
 import com.origoapp.api.aux.OMemberProxy;
 import com.origoapp.api.aux.OMeta;
 import com.origoapp.api.aux.OURLParams;
 import com.origoapp.api.model.OReplicatedEntity;
+
+import static com.origoapp.api.aux.OObjectifyService.ofy;
 
 
 @Path("auth")
@@ -51,12 +52,10 @@ public class OAuthHandler
             OAuthInfo authInfo = m.getAuthInfo();
             
             if (authInfo.passwordHash.equals(m.getPasswordHash())) {
-                ODAO DAO = m.getDAO();
+                ofy().delete().entity(authInfo);
+                m.getDAO().putAuthToken(authToken);
                 
-                DAO.ofy().delete(authInfo);
-                DAO.putAuthToken(authToken);
-                
-                fetchedEntities = DAO.fetchEntities(null);
+                fetchedEntities = m.getDAO().fetchEntities(null);
             } else {
                 OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
                 OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -98,9 +97,9 @@ public class OAuthHandler
             
             if ((memberProxy == null) || !memberProxy.didSignUp) {
                 authInfo = m.getAuthInfo();
-                m.getDAO().ofy().put(authInfo);
+                ofy().save().entity(authInfo).now();
                 
-                emailCode(OAuthPhase.SIGNUP);
+                sendEmail(OAuthPhase.SIGNUP);
             } else {
                 if ((memberProxy != null) && memberProxy.didSignUp) {
                     if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
@@ -146,7 +145,7 @@ public class OAuthHandler
         
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
-            emailCode(OAuthPhase.EMAIL_CODE);
+            sendEmail(OAuthPhase.EMAIL_CODE);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
@@ -156,7 +155,7 @@ public class OAuthHandler
     }
 
 
-    private void emailCode(OAuthPhase authPhase)
+    private void sendEmail(OAuthPhase authPhase)
     {
         Session session = Session.getInstance(new Properties());
     
