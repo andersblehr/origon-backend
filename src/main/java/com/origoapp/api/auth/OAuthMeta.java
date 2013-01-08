@@ -3,16 +3,13 @@ package com.origoapp.api.auth;
 import java.util.Calendar;
 import java.util.Date;
 
-import javax.persistence.Id;
-
-import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.annotation.Id;
 
 
 @Entity
-@Unindexed
-@Cached(expirationSeconds = 600)
+@Cache(expirationSeconds = 600)
 public class OAuthMeta
 {
     public @Id String authToken;

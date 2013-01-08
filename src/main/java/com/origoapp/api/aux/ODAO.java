@@ -10,9 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.ObjectifyService;
-import com.googlecode.objectify.util.DAOBase;
 
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
@@ -26,26 +24,28 @@ import com.origoapp.api.model.OMessageBoard;
 import com.origoapp.api.model.OOrigo;
 import com.origoapp.api.model.OReplicatedEntityRef;
 
+import static com.origoapp.api.aux.OObjectifyService.ofy;
 
-public class ODAO extends DAOBase
+
+public class ODAO
 {
     public OMeta m;
 
     
     static
     {
-        ObjectifyService.register(OAuthInfo.class);
-        ObjectifyService.register(OAuthMeta.class);
-        ObjectifyService.register(OMemberProxy.class);
+        ObjectifyService.factory().register(OAuthInfo.class);
+        ObjectifyService.factory().register(OAuthMeta.class);
+        ObjectifyService.factory().register(OMemberProxy.class);
         
-        ObjectifyService.register(ODevice.class);
-        ObjectifyService.register(OMember.class);
-        ObjectifyService.register(OMemberResidency.class);
-        ObjectifyService.register(OMembership.class);
-        ObjectifyService.register(OMessageBoard.class);
-        ObjectifyService.register(OOrigo.class);
-        ObjectifyService.register(OReplicatedEntityGhost.class);
-        ObjectifyService.register(OReplicatedEntityRef.class);
+        ObjectifyService.factory().register(ODevice.class);
+        ObjectifyService.factory().register(OMember.class);
+        ObjectifyService.factory().register(OMemberResidency.class);
+        ObjectifyService.factory().register(OMembership.class);
+        ObjectifyService.factory().register(OMessageBoard.class);
+        ObjectifyService.factory().register(OOrigo.class);
+        ObjectifyService.factory().register(OReplicatedEntityGhost.class);
+        ObjectifyService.factory().register(OReplicatedEntityRef.class);
     }
     
     
@@ -57,26 +57,16 @@ public class ODAO extends DAOBase
     }
     
     
-    public <T> T get(Key<T> key)
-    {
-        try {
-            return ofy().get(key);
-        } catch (NotFoundException e) {
-            return null;
-        }
-    }
-    
-    
     public void putAuthToken(String authToken)
     {
         OMemberProxy memberProxy = m.getMemberProxy();
-        Collection<OAuthMeta> authMetaItems = ofy().get(memberProxy.authMetaKeys).values();
+        Collection<OAuthMeta> authMetaItems = ofy().load().keys(memberProxy.authMetaKeys).values();
         
         if (authMetaItems.size() > 0) {
             for (OAuthMeta authMeta : authMetaItems) {
                 if (authMeta.deviceId.equals(m.getDeviceId())) {
-                    memberProxy.authMetaKeys.remove(new Key<OAuthMeta>(OAuthMeta.class, authMeta.authToken));
-                    ofy().delete(authMeta);
+                    memberProxy.authMetaKeys.remove(Key.create(OAuthMeta.class, authMeta.authToken));
+                    ofy().delete().entity(authMeta);
                     
                     OLog.log().fine(m.meta() + String.format("Deleted old auth token (token: %s; user: %s).", authMeta.authToken, m.getEmail()));
                 }
@@ -86,9 +76,9 @@ public class ODAO extends DAOBase
         }
         
         OAuthMeta authMeta = new OAuthMeta(authToken, m.getEmail(), m.getDeviceId(), m.getDeviceType());
-        memberProxy.authMetaKeys.add(new Key<OAuthMeta>(OAuthMeta.class, authToken));
+        memberProxy.authMetaKeys.add(Key.create(OAuthMeta.class, authToken));
         
-        ofy().put(authMeta, memberProxy);
+        ofy().save().entities(authMeta, memberProxy).now();
         
         OLog.log().fine(m.meta() + String.format("Persisted new auth token (token: %s; user: %s).", authToken, m.getEmail()));
     }
@@ -98,19 +88,19 @@ public class ODAO extends DAOBase
     {
         OLog.log().fine(m.meta() + "Fetching entities modified since: " + ((deviceReplicationDate != null) ? deviceReplicationDate.toString() : "<dawn of time>"));
         
-        Collection<OMembership> memberships = ofy().get(m.getMemberProxy().membershipKeys).values();
+        Collection<OMembership> memberships = ofy().load().keys(m.getMemberProxy().membershipKeys).values();
         
         Set<OReplicatedEntity> fetchedEntities = new HashSet<OReplicatedEntity>();
         Set<Key<OReplicatedEntity>> additionalEntityKeys = new HashSet<Key<OReplicatedEntity>>();
         
         for (OMembership membership : memberships) {
             if (membership.isActive || (membership.getClass().equals(OMemberResidency.class))) {
-                Iterable<OReplicatedEntity> membershipEntities = null;
+                List<OReplicatedEntity> membershipEntities = null;
                 
                 if (deviceReplicationDate != null) {
-                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", deviceReplicationDate);
+                    membershipEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", deviceReplicationDate).list();
                 } else {
-                    membershipEntities = ofy().query(OReplicatedEntity.class).ancestor(membership.origoKey);
+                    membershipEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).list();
                 }
                 
                 for (OReplicatedEntity entity : membershipEntities) {
@@ -122,11 +112,11 @@ public class ODAO extends DAOBase
                 }
             } else {
                 fetchedEntities.add(membership);
-                additionalEntityKeys.add(new Key<OReplicatedEntity>(membership.origoKey, OReplicatedEntity.class, membership.origoId));
+                additionalEntityKeys.add(Key.create(membership.origoKey, OReplicatedEntity.class, membership.origoId));
             }
         }
         
-        fetchedEntities.addAll(ofy().get(additionalEntityKeys).values());
+        fetchedEntities.addAll(ofy().load().keys(additionalEntityKeys).values());
         
         if (m.isAuthenticating()) {
             for (OReplicatedEntity entity : fetchedEntities) {
@@ -162,6 +152,7 @@ public class ODAO extends DAOBase
         private Map<String, OMember> modifiedMembersByEmail;
         
         private Set<String> addedMemberProxyIds;
+        //private Set<Key<OMemberProxy>> affectedMemberProxyKeys;
         private Set<OMemberProxy> affectedMemberProxies;
         
         
@@ -177,6 +168,7 @@ public class ODAO extends DAOBase
             modifiedMembersByEmail = new HashMap<String, OMember>();
             
             addedMemberProxyIds = new HashSet<String>();
+            //affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
             affectedMemberProxies = new HashSet<OMemberProxy>();
         }
         
@@ -184,7 +176,7 @@ public class ODAO extends DAOBase
         private void replicate(List<OReplicatedEntity> entityList)
         {
             for (OReplicatedEntity entity : entityList) {
-                entity.origoKey = new Key<OOrigo>(OOrigo.class, entity.origoId);
+                entity.origoKey = Key.create(OOrigo.class, entity.origoId);
                 
                 if (entity.getClass().equals(OReplicatedEntityGhost.class)) {
                     _processGhostedEntity((OReplicatedEntityGhost)entity);
@@ -207,14 +199,14 @@ public class ODAO extends DAOBase
             _updateAffectedRelationshipKeys();
             
             if (affectedMemberProxies.size() > 0) {
-                ofy().put(affectedMemberProxies);
+                ofy().save().entities(affectedMemberProxies).now();
             }
             
-            ofy().put(entitiesToReplicate);
+            ofy().save().entities(entitiesToReplicate).now();
             OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
 
             if (entityKeysForDeletion.size() > 0) {
-                ofy().delete(entityKeysForDeletion);
+                ofy().delete().keys(entityKeysForDeletion);
                 OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
             }
         }
@@ -223,13 +215,13 @@ public class ODAO extends DAOBase
         private void _processGhostedEntity(OReplicatedEntityGhost entityGhost)
         {
             if (entityGhost.hasExpired) {
-                entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
+                entityKeysForDeletion.add(Key.create(entityGhost.origoKey, OReplicatedEntity.class, entityGhost.entityId)); // TODO: Decide whether to support expiration
             } else {
                 entitiesToReplicate.add(entityGhost);
                 
                 if (entityGhost.ghostedEntityClass.equals(OMembership.class.getSimpleName()) || entityGhost.ghostedEntityClass.equals(OMemberResidency.class.getSimpleName())) {
                     String memberRefId = entityGhost.ghostedMembershipMemberId + "#" + entityGhost.origoId;
-                    entityKeysForDeletion.add(new Key<OReplicatedEntity>(entityGhost.origoKey, OReplicatedEntity.class, memberRefId));
+                    entityKeysForDeletion.add(Key.create(entityGhost.origoKey, OReplicatedEntity.class, memberRefId));
                     
                     String ghostedMembershipProxyId = (entityGhost.ghostedMembershipMemberEmail != null) ? entityGhost.ghostedMembershipMemberEmail : entityGhost.ghostedMembershipMemberId; 
                     Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByProxyId.get(ghostedMembershipProxyId);
@@ -239,7 +231,7 @@ public class ODAO extends DAOBase
                         membershipKeysToDeleteByProxyId.put(ghostedMembershipProxyId, membershipKeysToDeleteForMember);
                     }
                     
-                    membershipKeysToDeleteForMember.add(new Key<OMembership>(entityGhost.origoKey, OMembership.class, entityGhost.entityId));
+                    membershipKeysToDeleteForMember.add(Key.create(entityGhost.origoKey, OMembership.class, entityGhost.entityId));
                 }
             }
         }
@@ -247,8 +239,9 @@ public class ODAO extends DAOBase
         
         private void _processMemberEntity(OMember member)
         {
+            String proxyId = (member.email != null) ? member.email : member.entityId;
+            
             if (member.dateReplicated == null) {
-                String proxyId = (member.email != null) ? member.email : member.entityId;
                 addedMemberProxyIds.add(proxyId);
                 
                 if (proxyId.equals(m.getEmail())) {
@@ -257,6 +250,8 @@ public class ODAO extends DAOBase
                     affectedMemberProxies.add(new OMemberProxy(proxyId));
                 }
             } else {
+                //affectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
+                
                 modifiedMembersByMemberId.put(member.entityId, member);
                 
                 if (member.email != null) {
@@ -278,7 +273,7 @@ public class ODAO extends DAOBase
                     membershipKeysToAddByProxyId.put(proxyId, membershipKeysToAddForMember);
                 }
                 
-                membershipKeysToAddForMember.add(new Key<OMembership>(membership.origoKey, OMembership.class, membership.entityId));
+                membershipKeysToAddForMember.add(Key.create(membership.origoKey, OMembership.class, membership.entityId));
             }
         }
         
@@ -287,22 +282,22 @@ public class ODAO extends DAOBase
         {
             Set<Key<OMemberProxy>> affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
             
-            for (String memberId : modifiedMembersByMemberId.keySet()) {
-                affectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, memberId));
+            for (String memberId : modifiedMembersByMemberId.keySet()) { // Comment out?
+                affectedMemberProxyKeys.add(Key.create(OMemberProxy.class, memberId));
             }
             
             for (String proxyId : membershipKeysToAddByProxyId.keySet()) {
                 if (!addedMemberProxyIds.contains(proxyId)) {
-                    affectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
+                    affectedMemberProxyKeys.add(Key.create(OMemberProxy.class, proxyId));
                 }
             }
             
             for (String proxyId : membershipKeysToDeleteByProxyId.keySet()) {
-                affectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
+                affectedMemberProxyKeys.add(Key.create(OMemberProxy.class, proxyId));
             }
 
             if (affectedMemberProxyKeys.size() > 0) {
-                affectedMemberProxies.addAll(ofy().get(affectedMemberProxyKeys).values());
+                affectedMemberProxies.addAll(ofy().load().keys(affectedMemberProxyKeys).values());
             }
         }
         
@@ -320,24 +315,24 @@ public class ODAO extends DAOBase
             for (String email : modifiedMembersByEmail.keySet()) {
                 if (!anchoredProxyIds.contains(email)) {
                     String memberId = modifiedMembersByEmail.get(email).entityId;
-                    driftingMemberKeys.add(new Key<OMember>(new Key<OOrigo>(OOrigo.class, "~" + memberId), OMember.class, memberId));
+                    driftingMemberKeys.add(Key.create(Key.create(OOrigo.class, "~" + memberId), OMember.class, memberId));
                 }
             }
             
             if (driftingMemberKeys.size() > 0) {
-                Collection<OMember> driftingMembers = ofy().get(driftingMemberKeys).values();
+                Collection<OMember> driftingMembers = ofy().load().keys(driftingMemberKeys).values();
                 
                 Set<Key<OMemberProxy>> driftingMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
                 Set<OAuthMeta> reanchoredAuthMetaItems = new HashSet<OAuthMeta>();
                 
                 for (OMember member : driftingMembers) {
                     String driftingProxyId = (member.email != null) ? member.email : member.entityId;
-                    driftingMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, driftingProxyId));
+                    driftingMemberProxyKeys.add(Key.create(OMemberProxy.class, driftingProxyId));
                 }
                 
                 Map<String, OMemberProxy> driftingMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
                 
-                for (OMemberProxy memberProxy : ofy().get(driftingMemberProxyKeys).values()) {
+                for (OMemberProxy memberProxy : ofy().load().keys(driftingMemberProxyKeys).values()) {
                     driftingMemberProxiesByProxyId.put(memberProxy.proxyId, memberProxy);
                 }
                 
@@ -350,7 +345,7 @@ public class ODAO extends DAOBase
                     OMemberProxy driftingMemberProxy = driftingMemberProxiesByProxyId.get(driftingProxyId);
                     OMemberProxy reanchoredMemberProxy = new OMemberProxy(modifiedEmail, driftingMemberProxy);
                     
-                    for (OAuthMeta authMetaItem : ofy().get(reanchoredMemberProxy.authMetaKeys).values()) {
+                    for (OAuthMeta authMetaItem : ofy().load().keys(reanchoredMemberProxy.authMetaKeys).values()) {
                         authMetaItem.email = modifiedEmail;
                         reanchoredAuthMetaItems.add(authMetaItem);
                     }
@@ -364,11 +359,11 @@ public class ODAO extends DAOBase
                 }
                 
                 if (reanchoredAuthMetaItems.size() > 0) {
-                    ofy().put(reanchoredAuthMetaItems);
+                    ofy().save().entities(reanchoredAuthMetaItems).now();
                 }
                 
                 if (driftingMemberProxies.size() > 0) {
-                    ofy().delete(driftingMemberProxies);
+                    ofy().delete().entities(driftingMemberProxies);
                 }
             }
         }
@@ -392,11 +387,11 @@ public class ODAO extends DAOBase
                     String origoId = origoKey.getRaw().getName();
                     String entityRefId = member.entityId + "#" + origoId;
                     
-                    affectedEntityRefKeys.add(new Key<OReplicatedEntityRef>(origoKey, OReplicatedEntityRef.class, entityRefId));
+                    affectedEntityRefKeys.add(Key.create(origoKey, OReplicatedEntityRef.class, entityRefId));
                 }
             }
             
-            Collection<OReplicatedEntityRef> affectedEntityRefs = ofy().get(affectedEntityRefKeys).values();
+            Collection<OReplicatedEntityRef> affectedEntityRefs = ofy().load().keys(affectedEntityRefKeys).values();
             
             for (OReplicatedEntityRef entityRef : affectedEntityRefs) {
                 entityRef.dateReplicated = dateReplicated;

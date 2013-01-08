@@ -1,15 +1,12 @@
 package com.origoapp.api.auth;
 
-import javax.persistence.Id;
-
-import com.googlecode.objectify.annotation.Cached;
+import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
-import com.googlecode.objectify.annotation.Unindexed;
+import com.googlecode.objectify.annotation.Id;
 
 
 @Entity
-@Unindexed
-@Cached(expirationSeconds = 600)
+@Cache(expirationSeconds = 600)
 public class OAuthInfo
 {
     public @Id String email;

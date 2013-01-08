@@ -16,6 +16,8 @@ import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
 import com.origoapp.api.model.OMember;
 
+import static com.origoapp.api.aux.OObjectifyService.ofy;
+
 
 public class OMeta
 {
@@ -142,7 +144,7 @@ public class OMeta
     public OMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = getDAO().get(new Key<OMemberProxy>(OMemberProxy.class, email));
+            memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).get();
             
             if (authPhase == OAuthPhase.ACTIVATE) {
                 if (memberProxy == null) {
@@ -163,7 +165,7 @@ public class OMeta
         
         if (isValid) {
             if (authPhase == OAuthPhase.ACTIVATE) {
-                authInfo = getDAO().get(new Key<OAuthInfo>(OAuthInfo.class, email));
+                authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).get();
             } else {
                 if (authPhase == OAuthPhase.EMAIL_CODE) {
                     authInfo = new OAuthInfo(email, "n/a", activationCode);
@@ -218,7 +220,8 @@ public class OMeta
         if (authPhase == OAuthPhase.NONE) {
             try {
                 Date now = new Date();
-                OAuthMeta tokenMeta = getDAO().ofy().get(OAuthMeta.class, authToken); 
+                OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).get(); 
+                //OAuthMeta tokenMeta = getDAO().ofy().get(OAuthMeta.class, authToken); 
 
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;

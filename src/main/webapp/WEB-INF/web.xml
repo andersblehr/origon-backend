@@ -4,7 +4,7 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-    <display-name>RESTful API for the Origo backend</display-name>
+    <display-name>REST API for the Origo backend</display-name>
     <context-param>
         <param-name>resteasy.providers</param-name>
         <param-value>com.origoapp.api.OWebApplicationExceptionMapper</param-value>
@@ -25,6 +25,14 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
         <servlet-name>origoapp-api</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+    <filter>
+        <filter-name>ObjectifyFilter</filter-name>
+        <filter-class>com.googlecode.objectify.ObjectifyFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ObjectifyFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>origoapp-auth</web-resource-name>
