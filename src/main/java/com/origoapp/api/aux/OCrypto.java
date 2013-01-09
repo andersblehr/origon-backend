@@ -33,11 +33,11 @@ public class OCrypto
     }
     
     
-    public static String generatePasswordHash(String password, String email)
+    public static String generatePasswordHash(String password)
     {
         String passwordHash = null;
         
-        if ((password != null) && (email != null)) {
+        if (password != null) {
             passwordHash = OCrypto.hashUsingSHA1(OCrypto.seasonedString(password)); 
         }
         
