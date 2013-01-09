@@ -42,15 +42,15 @@ public class OMemberProxy
     }
 
     
-    public OMemberProxy(String proxyId, OMemberProxy obsoleteInstance)
+    public OMemberProxy(String proxyId, OMemberProxy instanceToClone)
     {
         this.proxyId = proxyId;
         
-        didSignUp = obsoleteInstance.didSignUp;
-        passwordHash = obsoleteInstance.passwordHash;
+        didSignUp = instanceToClone.didSignUp;
+        passwordHash = instanceToClone.passwordHash;
         
-        authMetaKeys = obsoleteInstance.authMetaKeys;
-        membershipKeys = obsoleteInstance.membershipKeys;
+        authMetaKeys = instanceToClone.authMetaKeys;
+        membershipKeys = instanceToClone.membershipKeys;
     }
     
     

@@ -73,7 +73,7 @@ public class ODAO
         Set<Key<OReplicatedEntity>> additionalEntityKeys = new HashSet<Key<OReplicatedEntity>>();
         
         for (OMembership membership : memberships) {
-            if (membership.isActive || (membership.getClass().equals(OMemberResidency.class))) {
+            if (membership.isActive || membership.getClass().equals(OMemberResidency.class)) {
                 List<OReplicatedEntity> membershipEntities = null;
                 
                 if (deviceReplicationDate != null) {
@@ -130,9 +130,9 @@ public class ODAO
         private Map<String, OMember> modifiedMembersByMemberId;
         private Map<String, OMember> modifiedMembersByEmail;
         
-        private Set<String> addedMemberProxyIds;
-        //private Set<Key<OMemberProxy>> affectedMemberProxyKeys;
-        private Set<OMemberProxy> affectedMemberProxies;
+        private Map<Key<OMemberProxy>, OMemberProxy> affectedMemberProxiesByKey;
+        private Set<Key<OMemberProxy>> affectedMemberProxyKeys;
+        private Set<OMemberProxy> driftingMemberProxies;
         
         
         public OEntityReplicator()
@@ -146,9 +146,9 @@ public class ODAO
             modifiedMembersByMemberId = new HashMap<String, OMember>();
             modifiedMembersByEmail = new HashMap<String, OMember>();
             
-            addedMemberProxyIds = new HashSet<String>();
-            //affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
-            affectedMemberProxies = new HashSet<OMemberProxy>();
+            affectedMemberProxiesByKey = new HashMap<Key<OMemberProxy>, OMemberProxy>();
+            affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
+            driftingMemberProxies = new HashSet<OMemberProxy>();
         }
         
         
@@ -177,8 +177,12 @@ public class ODAO
             updateAffectedEntityReferences();
             updateAffectedRelationshipKeys();
             
-            if (affectedMemberProxies.size() > 0) {
-                ofy().save().entities(affectedMemberProxies).now();
+            if (affectedMemberProxiesByKey.size() > 0) {
+                ofy().save().entities(affectedMemberProxiesByKey.values()).now();
+            }
+            
+            if (driftingMemberProxies.size() > 0) {
+                ofy().delete().entities(driftingMemberProxies);
             }
             
             ofy().save().entities(entitiesToReplicate).now();
@@ -219,22 +223,20 @@ public class ODAO
         private void processMemberEntity(OMember member)
         {
             String proxyId = (member.email != null) ? member.email : member.entityId;
+            Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
             
-            if (member.dateReplicated == null) {
-                addedMemberProxyIds.add(proxyId);
-                
-                if (proxyId.equals(m.getEmail())) {
-                    affectedMemberProxies.add(m.getMemberProxy());
-                } else {
-                    affectedMemberProxies.add(new OMemberProxy(proxyId));
-                }
+            if (proxyId.equals(m.getEmail())) {
+                affectedMemberProxiesByKey.put(proxyKey, m.getMemberProxy());
             } else {
-                //affectedMemberProxyKeys.add(new Key<OMemberProxy>(OMemberProxy.class, proxyId));
-                
-                modifiedMembersByMemberId.put(member.entityId, member);
-                
-                if (member.email != null) {
-                    modifiedMembersByEmail.put(member.email, member);
+                if (member.dateReplicated == null) {
+                    affectedMemberProxiesByKey.put(proxyKey, new OMemberProxy(proxyId));
+                } else {
+                    affectedMemberProxyKeys.add(proxyKey);
+                    modifiedMembersByMemberId.put(member.entityId, member);
+                    
+                    if (member.email != null) {
+                        modifiedMembersByEmail.put(member.email, member);
+                    }
                 }
             }
         }
@@ -261,13 +263,11 @@ public class ODAO
         {
             Set<Key<OMemberProxy>> affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
             
-            for (String memberId : modifiedMembersByMemberId.keySet()) { // Comment out?
-                affectedMemberProxyKeys.add(Key.create(OMemberProxy.class, memberId));
-            }
-            
             for (String proxyId : membershipKeysToAddByProxyId.keySet()) {
-                if (!addedMemberProxyIds.contains(proxyId)) {
-                    affectedMemberProxyKeys.add(Key.create(OMemberProxy.class, proxyId));
+                Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
+                
+                if (!affectedMemberProxiesByKey.keySet().contains(proxyKey)) {
+                    affectedMemberProxyKeys.add(proxyKey);
                 }
             }
             
@@ -276,7 +276,7 @@ public class ODAO
             }
 
             if (affectedMemberProxyKeys.size() > 0) {
-                affectedMemberProxies.addAll(ofy().load().keys(affectedMemberProxyKeys).values());
+                affectedMemberProxiesByKey.putAll(ofy().load().keys(affectedMemberProxyKeys));
             }
         }
         
@@ -285,7 +285,7 @@ public class ODAO
         {
             Set<String> anchoredProxyIds = new HashSet<String>();
             
-            for (OMemberProxy memberProxy : affectedMemberProxies) {
+            for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
                 anchoredProxyIds.add(memberProxy.proxyId);
             }
             
@@ -299,10 +299,10 @@ public class ODAO
             }
             
             if (driftingMemberKeys.size() > 0) {
-                Collection<OMember> driftingMembers = ofy().load().keys(driftingMemberKeys).values();
-                
                 Set<Key<OMemberProxy>> driftingMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
                 Set<OAuthMeta> reanchoredAuthMetaItems = new HashSet<OAuthMeta>();
+                
+                Collection<OMember> driftingMembers = ofy().load().keys(driftingMemberKeys).values();
                 
                 for (OMember member : driftingMembers) {
                     String driftingProxyId = (member.email != null) ? member.email : member.entityId;
@@ -314,8 +314,6 @@ public class ODAO
                 for (OMemberProxy memberProxy : ofy().load().keys(driftingMemberProxyKeys).values()) {
                     driftingMemberProxiesByProxyId.put(memberProxy.proxyId, memberProxy);
                 }
-                
-                Set<OMemberProxy> driftingMemberProxies = new HashSet<OMemberProxy>();
                 
                 for (OMember member : driftingMembers) {
                     String driftingProxyId = (member.email != null) ? member.email : member.entityId;
@@ -330,7 +328,7 @@ public class ODAO
                     }
                     
                     driftingMemberProxies.add(driftingMemberProxy);
-                    affectedMemberProxies.add(reanchoredMemberProxy);
+                    affectedMemberProxiesByKey.put(Key.create(OMemberProxy.class, modifiedEmail), reanchoredMemberProxy);
                     
                     if (driftingProxyId.equals(m.getEmail())) {
                         m.setMemberProxy(reanchoredMemberProxy);
@@ -340,26 +338,17 @@ public class ODAO
                 if (reanchoredAuthMetaItems.size() > 0) {
                     ofy().save().entities(reanchoredAuthMetaItems).now();
                 }
-                
-                if (driftingMemberProxies.size() > 0) {
-                    ofy().delete().entities(driftingMemberProxies);
-                }
             }
         }
         
         
         private void updateAffectedEntityReferences()
         {
-            Map<String, OMemberProxy> affectedMemberProxiesByProxyId = new HashMap<String, OMemberProxy>();
             Set<Key<OReplicatedEntityRef>> affectedEntityRefKeys = new HashSet<Key<OReplicatedEntityRef>>();
-            
-            for (OMemberProxy memberProxy : affectedMemberProxies) {
-                affectedMemberProxiesByProxyId.put(memberProxy.proxyId, memberProxy);
-            }
             
             for (OMember member : modifiedMembersByMemberId.values()) {
                 String proxyId = (member.email != null) ? member.email : member.entityId;
-                OMemberProxy memberProxy = affectedMemberProxiesByProxyId.get(proxyId);
+                OMemberProxy memberProxy = affectedMemberProxiesByKey.get(Key.create(OMemberProxy.class, proxyId));
                 
                 for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
                     Key<OOrigo> origoKey = membershipKey.getParent();
@@ -382,7 +371,7 @@ public class ODAO
         
         private void updateAffectedRelationshipKeys()
         {
-            for (OMemberProxy memberProxy : affectedMemberProxies) {
+            for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
                 Set<Key<OMembership>> membershipKeysToAddForMember = membershipKeysToAddByProxyId.get(memberProxy.proxyId);
                 Set<Key<OMembership>> membershipKeysToDeleteForMember = membershipKeysToDeleteByProxyId.get(memberProxy.proxyId);
                 
@@ -392,6 +381,18 @@ public class ODAO
                 
                 if (membershipKeysToDeleteForMember != null) {
                     memberProxy.membershipKeys.removeAll(membershipKeysToDeleteForMember);
+                    
+                    if ((memberProxy.membershipKeys.size() == 1) && !memberProxy.didSignUp) {
+                        Key<OMembership> rootMembershipKey = memberProxy.membershipKeys.iterator().next();
+                        String rootOrigoId = rootMembershipKey.getParent().getName();
+                        Key<OOrigo> rootOrigoKey = Key.create(OOrigo.class, rootOrigoId);
+                        
+                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootMembershipKey.getName()));
+                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootOrigoId));
+                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootOrigoId.substring(1)));
+                        
+                        driftingMemberProxies.add(memberProxy);
+                    }
                 }
             }
         }

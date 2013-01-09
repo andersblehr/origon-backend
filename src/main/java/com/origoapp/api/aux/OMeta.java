@@ -339,7 +339,7 @@ public class OMeta
     private void validatePassword(String password)
     {
         if ((password != null) && (password.length() >= kMinimumPasswordLength)) {
-            this.passwordHash = OCrypto.generatePasswordHash(password, email);
+            this.passwordHash = OCrypto.generatePasswordHash(password);
         } else {
             if (password == null) {
                 OLog.log().warning(meta(false) + String.format("User password is null."));

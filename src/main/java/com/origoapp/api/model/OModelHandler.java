@@ -75,7 +75,7 @@ public class OModelHandler
         }
         
         if ((entitiesToReplicate.size() > 0) && (entitiesToReturn.size() > 0)) {
-            return Response.status(SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
+            return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else if (entitiesToReplicate.size() > 0) {
             return Response.status(HttpServletResponse.SC_CREATED).lastModified(replicationDate).build();
         } else if (entitiesToReturn.size() > 0) {
