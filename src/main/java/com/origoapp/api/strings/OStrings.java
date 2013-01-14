@@ -223,6 +223,7 @@ public class OStrings
     
     public String strSheetTitleOrigoType;
     
+    public String strTermMe;
     public String strTermYourChild;
     public String strTermHim;
     public String strTermHer;
@@ -244,6 +245,7 @@ public class OStrings
             
             strSheetTitleOrigoType       = "Hva slags origo ønsker du å opprette";
             
+            strTermMe                    = "Meg";
             strTermYourChild             = "et av barna";
             strTermHim                   = "ham";
             strTermHer                   = "henne";
@@ -259,6 +261,7 @@ public class OStrings
             
             strSheetTitleOrigoType       = "What sort of origo du you want to create";
             
+            strTermMe                    = "Me";
             strTermYourChild             = "your child";
             strTermHim                   = "him";
             strTermHer                   = "her";

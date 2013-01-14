@@ -221,7 +221,6 @@ public class OMeta
             try {
                 Date now = new Date();
                 OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).get(); 
-                //OAuthMeta tokenMeta = getDAO().ofy().get(OAuthMeta.class, authToken); 
 
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
@@ -282,7 +281,7 @@ public class OMeta
     
     public String meta()
     {
-        return String.format("[%s] %s/%s: ", deviceId, deviceType, appVersion);
+        return meta(true);
     }
     
     
@@ -290,7 +289,7 @@ public class OMeta
     {
         this.isValid = isValid;
         
-        return meta();
+        return String.format("[%s] %s/%s: ", deviceId, deviceType, appVersion);
     }
     
     
