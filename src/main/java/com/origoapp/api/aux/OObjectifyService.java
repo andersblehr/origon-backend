@@ -13,7 +13,6 @@ import com.origoapp.api.model.OMemberResidency;
 import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OMessageBoard;
 import com.origoapp.api.model.OOrigo;
-import com.origoapp.api.model.OReplicatedEntityGhost;
 import com.origoapp.api.model.OReplicatedEntityRef;
 
 
@@ -31,7 +30,6 @@ public class OObjectifyService
         ObjectifyService.factory().register(OMembership.class);
         ObjectifyService.factory().register(OMessageBoard.class);
         ObjectifyService.factory().register(OOrigo.class);
-        ObjectifyService.factory().register(OReplicatedEntityGhost.class);
         ObjectifyService.factory().register(OReplicatedEntityRef.class);
     }
     

@@ -17,6 +17,7 @@ import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
+import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -32,7 +33,6 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OMessageBoard.class, name = "OMessageBoard"),
     @Type(value = OOrigo.class, name = "OOrigo"),
-    @Type(value = OReplicatedEntityGhost.class, name = "OReplicatedEntityGhost"),
     @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")})
 public abstract class OReplicatedEntity
 {
@@ -41,6 +41,7 @@ public abstract class OReplicatedEntity
     
     public @IgnoreSave String origoId;
     public @IgnoreSave String entityClass;
+    public @IgnoreSave(IfFalse.class) boolean isGhost;
     
     public Date dateCreated;
     public @Index Date dateReplicated;
