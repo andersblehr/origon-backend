@@ -20,11 +20,11 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(value = {"origoKey", "parentOrigoKey"}, ignoreUnknown = true)
 public class OOrigo extends OReplicatedEntity
 {
-    public String name;
+    public @IgnoreSave(IfNull.class) String name;
     public String type;
     
     public @IgnoreSave(IfNull.class) String descriptionText;
-    public String address;
+    public @IgnoreSave(IfNull.class) String address;
     public @IgnoreSave(IfNull.class) String telephone;
     public @IgnoreSave(IfNull.class) Blob photo;
     
