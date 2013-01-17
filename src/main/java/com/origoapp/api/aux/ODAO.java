@@ -210,8 +210,6 @@ public class ODAO
         
         private void fetchAdditionalAffectedMemberProxies()
         {
-            Set<Key<OMemberProxy>> affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
-            
             for (String proxyId : addedMembershipKeysByProxyId.keySet()) {
                 Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
                 
