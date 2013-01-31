@@ -181,11 +181,14 @@ public class ODAO
                     affectedMemberProxiesByKey.put(proxyKey, new OMemberProxy(proxyId));
                 } else {
                     affectedMemberProxyKeys.add(proxyKey);
-                    modifiedMembersByMemberId.put(member.entityId, member);
-                    
-                    if (member.email != null) {
-                        modifiedMembersByEmail.put(member.email, member);
-                    }
+                }
+            }
+            
+            if (member.dateReplicated != null) {
+                modifiedMembersByMemberId.put(member.entityId, member);
+                
+                if (member.email != null) {
+                    modifiedMembersByEmail.put(member.email, member);
                 }
             }
         }
