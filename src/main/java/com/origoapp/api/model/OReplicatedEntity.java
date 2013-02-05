@@ -44,6 +44,7 @@ public abstract class OReplicatedEntity
     public @IgnoreSave(IfFalse.class) boolean isGhost;
     
     public Date dateCreated;
+    public String createdBy;
     public @Index Date dateReplicated;
     public @IgnoreSave(IfNull.class) Date dateExpires;
     
