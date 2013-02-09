@@ -1,5 +1,6 @@
 package com.origoapp.api.aux;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +27,11 @@ public class OMemberProxy
     public @IgnoreSave(IfDefault.class) boolean didSignUp = false;
     public @IgnoreSave(IfNull.class) String passwordHash;
     
-    public @IgnoreSave(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
-    public @IgnoreSave(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
+    private @IgnoreSave(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
+    private @IgnoreSave(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
+    
+    private @IgnoreSave Set<String> membershipOrigoIds;
+    private @IgnoreSave(IfEmpty.class) Set<String> associatedOrigoIds;
     
     
     public OMemberProxy() {}
@@ -39,6 +43,8 @@ public class OMemberProxy
         
         authMetaKeys = new HashSet<Key<OAuthMeta>>();
         membershipKeys = new HashSet<Key<OMembership>>();
+        membershipOrigoIds = new HashSet<String>();
+        associatedOrigoIds = new HashSet<String>();
     }
 
     
@@ -51,6 +57,84 @@ public class OMemberProxy
         
         authMetaKeys = instanceToClone.authMetaKeys;
         membershipKeys = instanceToClone.membershipKeys;
+        
+        membershipOrigoIds = instanceToClone.membershipOrigoIds;
+        associatedOrigoIds = instanceToClone.associatedOrigoIds;
+    }
+    
+    
+    public Set<Key<OAuthMeta>> getAuthMetaKeys()
+    {
+        return authMetaKeys;
+    }
+    
+    
+    public void addAuthMetaKey(Key<OAuthMeta> authMetaKey)
+    {
+        authMetaKeys.add(authMetaKey);
+    }
+    
+    
+    public void removeAuthMetaKey(Key<OAuthMeta> authMetaKey)
+    {
+        authMetaKeys.remove(authMetaKey);
+    }
+    
+    
+    public Set<Key<OMembership>> getMembershipKeys()
+    {
+        return membershipKeys;
+    }
+    
+    
+    public void addMembershipKeys(Collection<Key<OMembership>> membershipKeys)
+    {
+        this.membershipKeys.addAll(membershipKeys);
+        
+        for (Key<OMembership> membershipKey : membershipKeys) {
+            membershipOrigoIds.add(membershipKey.getParent().getRaw().getName());
+        }
+    }
+    
+    
+    public void removeMembershipKey(Key<OMembership> membershipKey)
+    {
+        membershipKeys.remove(membershipKey);
+        membershipOrigoIds.remove(membershipKey.getParent().getRaw().getName());
+    }
+    
+    
+    public void removeMembershipKeys(Collection<Key<OMembership>> membershipKeys)
+    {
+        this.membershipKeys.removeAll(membershipKeys);
+        
+        for (Key<OMembership> membershipKey : membershipKeys) {
+            membershipOrigoIds.remove(membershipKey.getParent().getRaw().getName());
+        }
+    }
+    
+    
+    public Set<String> getAssociatedOrigoIds()
+    {
+        return associatedOrigoIds;
+    }
+    
+    
+    public void addAssociatedOrigoId(String origoId)
+    {
+        associatedOrigoIds.add(origoId);
+    }
+    
+    
+    public boolean isMemberOfOrigoWithId(String origoId)
+    {
+        return membershipOrigoIds.contains(origoId);
+    }
+    
+    
+    public boolean isAssociatedWithOrigoWithId(String origoId)
+    {
+        return associatedOrigoIds.contains(origoId);
     }
     
     
@@ -61,8 +145,18 @@ public class OMemberProxy
             authMetaKeys = new HashSet<Key<OAuthMeta>>();
         }
         
+        membershipOrigoIds = new HashSet<String>();
+        
         if (membershipKeys == null) {
             membershipKeys = new HashSet<Key<OMembership>>();
+        } else {
+            for (Key<OMembership> membershipKey : membershipKeys) {
+                membershipOrigoIds.add(membershipKey.getParent().getRaw().getName());
+            }
+        }
+        
+        if (associatedOrigoIds == null) {
+            associatedOrigoIds = new HashSet<String>();
         }
     }
 }
