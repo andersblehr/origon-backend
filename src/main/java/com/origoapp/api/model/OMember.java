@@ -34,4 +34,10 @@ public class OMember extends OReplicatedEntity
     {
         super();
     }
+    
+    
+    public String getProxyId()
+    {
+        return (email != null) ? email : entityId;
+    }
 }

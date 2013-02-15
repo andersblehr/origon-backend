@@ -65,6 +65,8 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
+        
         if (fetchedEntities.size() > 0) {
             return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
@@ -122,10 +124,14 @@ public class OAuthHandler
         
         if (authInfo != null) {
             return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
-        } else if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
+            OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
+            
+            if (fetchedEntities.size() > 0) {
+                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
+            } else {
+                return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
+            }
         }
     }
     

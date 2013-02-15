@@ -74,6 +74,9 @@ public class OModelHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
+        OLog.log().fine(m.meta() + "Fetched entities: " + entitiesToReturn.toString());
+        
         if ((entitiesToReplicate.size() > 0) && (entitiesToReturn.size() > 0)) {
             return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else if (entitiesToReplicate.size() > 0) {
@@ -106,6 +109,8 @@ public class OModelHandler
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
+        
+        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
         
         if (fetchedEntities.size() > 0) {
             return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();

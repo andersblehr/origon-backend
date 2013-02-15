@@ -18,7 +18,6 @@ import com.googlecode.objectify.annotation.OnSave;
 @JsonIgnoreProperties(value = {"origoKey", "referencedEntityKey"}, ignoreUnknown = true)
 public class OReplicatedEntityRef extends OReplicatedEntity
 {
-    public @IgnoreSave String memberProxyId;
     public @IgnoreSave String referencedEntityId;
     public @IgnoreSave String referencedEntityOrigoId;
     public Key<OReplicatedEntity> referencedEntityKey;
