@@ -370,6 +370,7 @@ public class OStrings
     public String strPlaceholderDateOfBirth;
     public String strPlaceholderMobilePhone;
     
+    public String strButtonNewAddress;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
@@ -412,6 +413,7 @@ public class OStrings
             strPlaceholderDateOfBirth      = "Fødselsdato";
             strPlaceholderMobilePhone      = "Mobilnummer";
             
+            strButtonNewAddress            = "Ny adresse";
             strButtonInviteToHousehold     = "Inviter til husstanden";
             strButtonMergeHouseholds       = "Slå sammen husstandene";
             
@@ -451,6 +453,7 @@ public class OStrings
             strPlaceholderDateOfBirth      = "Date of birth";
             strPlaceholderMobilePhone      = "Mobile phone number";
             
+            strButtonNewAddress            = "New address";
             strButtonInviteToHousehold     = "Invite to household";
             strButtonMergeHouseholds       = "Merge households";
             
