@@ -127,8 +127,6 @@ public class OStrings
     public String strAlertTitleIncompleteRegistration;
     public String strAlertTextIncompleteRegistration;
     
-    public String strSheetTitleEULA;
-    
     private void setAuthViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
@@ -156,18 +154,6 @@ public class OStrings
             strAlertTextWelcomeBack             = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
             strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
-            
-            strSheetTitleEULA                   = "– MELLOM OSS –\n" +
-                                                  "\n" +
-                                                  "Du er nå nesten klar til å begynne å bruke Origo. Men for at Origo skal være til nytte for deg og dine, må vi be om noen opplysninger om husstanden din. Vi lover at:\n" +
-                                                  "\n" +
-                                                  "- Opplysningene forblir dine og bare dine.\n" +
-                                                  "- Vi forbeholder oss absolutt ingen rett til dem.\n" +
-                                                  "- Vi selger dem ikke videre.\n" + 
-                                                  "- Vi analyserer dem ikke for å finne ut hva du og dine nærmeste liker og mener.\n" +
-                                                  "- Vi har dem bare til låns, for uten dem har Origo ingen nytteverdi.\n" +
-                                                  "\n" +
-                                                  "Om du godtar dette, vil du motta en epost fra oss som dokumenterer ovenstående.";
         } else {
             strLabelSignIn                      = "Sign in or register";
             strLabelActivation                  = "Enter activation code";
@@ -193,18 +179,6 @@ public class OStrings
             strAlertTextWelcomeBack             = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
             strAlertTitleIncompleteRegistration = "Incomplete registration";
             strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
-            
-            strSheetTitleEULA                   = "– BETWEEN US –\n" +
-                                                  "\n" +
-                                                  "You are now almost ready to start using Origo. But for Origo to be of use to you and your family, we need you to provide some information about your household. We promise that:\n" +
-                                                  "\n" +
-                                                  "- The information remains yours and yours only.\n" +
-                                                  "- We claim no rights to it whatsoever.\n" +
-                                                  "- We do not sell it to third parties.\n" + 
-                                                  "- We do not analyse it in order to figure out what you and your family may like.\n" +
-                                                  "- We are only borrowing it, for without it, Origo has no use.\n" +
-                                                  "\n" +
-                                                  "If you accept this, you will receive an email from us that documents the above.";
         }
     }
     
@@ -280,8 +254,13 @@ public class OStrings
     public String strHeaderHouseholdMembers;
     public String strHeaderOrigoMembers;
     
-    public String strFooterHousehold;
+    public String strFooterResidence;
+    public String strFooterSchoolClass;
+    public String strFooterPreschoolClass;
+    public String strFooterSportsTeam;
+    public String strFooterOtherOrigo;
     
+    public String strButtonNewHousemate;
     public String strButtonDeleteMember;
     
     private void setMemberListViewStrings(String language)
@@ -294,8 +273,13 @@ public class OStrings
             strHeaderHouseholdMembers = "Medlemmer i husstanden";
             strHeaderOrigoMembers     = "Medlemmer";
             
-            strFooterHousehold        = "Trykk [+] for å legge til medlemmer i husstanden.";
+            strFooterResidence        = "Trykk [+] for å legge til medlemmer i husstanden.";
+            strFooterSchoolClass      = "Trykk [+] for å legge til klassekamerater";
+            strFooterPreschoolClass   = "Trykk [+] for å legge til barn i avdelingen";
+            strFooterSportsTeam       = "Trykk [+] for å legge til spillere på laget";
+            strFooterOtherOrigo       = "Trykk [+] for å legge til origomedlemmer";
             
+            strButtonNewHousemate     = "Ny bofelle";   
             strButtonDeleteMember     = "Meld ut";
         } else {
             strViewTitleMembers       = "Members";
@@ -305,8 +289,13 @@ public class OStrings
             strHeaderHouseholdMembers = "Household members";
             strHeaderOrigoMembers     = "Members";
             
-            strFooterHousehold        = "Tap [+] to add members to the household.";
+            strFooterResidence        = "Tap [+] to add members to the household.";
+            strFooterSchoolClass      = "Tap [+] to add classmates";
+            strFooterPreschoolClass   = "Tap [+] to add children";
+            strFooterSportsTeam       = "Tap [+] to add team members";
+            strFooterOtherOrigo       = "Tap [+] to add origo members";
             
+            strButtonNewHousemate     = "New housemate";
             strButtonDeleteMember     = "Remove";
         }
     }
@@ -370,6 +359,8 @@ public class OStrings
     public String strPlaceholderDateOfBirth;
     public String strPlaceholderMobilePhone;
     
+    public String strFooterMember;
+    
     public String strButtonNewAddress;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
@@ -413,6 +404,8 @@ public class OStrings
             strPlaceholderDateOfBirth      = "Fødselsdato";
             strPlaceholderMobilePhone      = "Mobilnummer";
             
+            strFooterMember                = "Trykk [+] for å legge til en adresse.";
+            
             strButtonNewAddress            = "Ny adresse";
             strButtonInviteToHousehold     = "Inviter til husstanden";
             strButtonMergeHouseholds       = "Slå sammen husstandene";
@@ -452,6 +445,8 @@ public class OStrings
             strPlaceholderEmail            = "A valid email address";
             strPlaceholderDateOfBirth      = "Date of birth";
             strPlaceholderMobilePhone      = "Mobile phone number";
+            
+            strFooterMember                = "Tap [+] to add an address.";
             
             strButtonNewAddress            = "New address";
             strButtonInviteToHousehold     = "Invite to household";
