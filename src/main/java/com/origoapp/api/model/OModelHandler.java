@@ -1,5 +1,7 @@
 package com.origoapp.api.model;
 
+import static com.origoapp.api.aux.OObjectifyService.ofy;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -12,7 +14,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.googlecode.objectify.Key;
 import com.origoapp.api.aux.OLog;
+import com.origoapp.api.aux.OMemberProxy;
 import com.origoapp.api.aux.OMeta;
 import com.origoapp.api.aux.OURLParams;
 
@@ -116,6 +120,48 @@ public class OModelHandler
             return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
+        }
+    }
+    
+    
+    @GET
+    @Path("lookup")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response lookupMember(@QueryParam(OURLParams.EMAIL) String email,
+                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        OMeta m = new OMeta(authToken, appVersion);
+        
+        OMember member = null;
+        
+        if (m.isValid()) {
+            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).get();
+            
+            if (memberProxy != null) {
+                Key<OOrigo> memberRootKey = null;
+                String memberId = null;
+                
+                for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
+                    Key<OOrigo> origoKey = membershipKey.getParent();
+                    String origoId = origoKey.getRaw().getName();
+                    
+                    if (origoId.substring(0, 1).equals("~")) {
+                        memberRootKey = origoKey;
+                        memberId = origoId.substring(1);
+                    }
+                }
+                
+                member = ofy().load().key(Key.create(memberRootKey, OMember.class, memberId)).get();
+            }
+        }
+        
+        if (member != null) {
+            OLog.log().fine(m.meta() + "Found member with email " + email + " (id: " + member.entityId + ").");
+            return Response.status(HttpServletResponse.SC_OK).entity(member).build();
+        } else {
+            OLog.log().fine(m.meta() + "No member with email " + email + ".");
+            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }
     }
 }
