@@ -103,7 +103,7 @@ public class OStrings
     /* ==== OAuthView strings ==== */
     
     public String strLabelSignIn;
-    public String strLabelActivation;
+    public String strLabelActivate;
     
     public String strFooterSignInOrRegister;
     public String strFooterActivate;
@@ -131,7 +131,7 @@ public class OStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strLabelSignIn                      = "Logg på eller registrer deg";
-            strLabelActivation                  = "Oppgi aktiveringskode";
+            strLabelActivate                    = "Oppgi aktiveringskode";
             
             strFooterSignInOrRegister           = "Når du registrerer deg, vil du motta en epost med en aktiveringskode som du må oppgi i neste steg.";
             strFooterActivate                   = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
@@ -156,7 +156,7 @@ public class OStrings
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
         } else {
             strLabelSignIn                      = "Sign in or register";
-            strLabelActivation                  = "Enter activation code";
+            strLabelActivate                  = "Enter activation code";
             
             strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must enter in the next step.";
             strFooterActivate                   = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
@@ -306,34 +306,40 @@ public class OStrings
     public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
+    public String strLabelCountry;
     public String strLabelTelephone;
     
     public String strHeaderAddresses;
     
     public String strPlaceholderAddress;
+    public String strPlaceholderCountry;
     public String strPlaceholderTelephone;
     
     private void setOrigoViewStrings(String language)
     {
-        strLabelAddress = strTermAddress;
-        
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleNewOrigo    = "Nytt origo";
             
+            strLabelAddress         = strTermAddress;
+            strLabelCountry         = "Land";
             strLabelTelephone       = "Telefon";
             
             strHeaderAddresses      = "Adresser";
             
             strPlaceholderAddress   = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderCountry   = strLabelCountry;
             strPlaceholderTelephone = "Telefonnummer";
         } else {
             strViewTitleNewOrigo    = "New origo";
             
+            strLabelAddress         = strTermAddress;
+            strLabelCountry         = "Country";
             strLabelTelephone       = "Telephone";
             
             strHeaderAddresses      = "Addresses";
             
             strPlaceholderAddress   = "Street address\nPostal code and city/town";
+            strPlaceholderCountry   = strLabelCountry;
             strPlaceholderTelephone = "Telephone number";
         }
     }
