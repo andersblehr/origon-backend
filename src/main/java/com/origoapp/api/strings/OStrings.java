@@ -40,11 +40,6 @@ public class OStrings
     
     /* ==== Cross-view strings ==== */
     
-    public String strNameMyHousehold;
-    public String strNameOurHousehold;
-    public String strNameMyMessageBoard;
-    public String strNameOurMessageBoard;
-    
     public String strButtonOK;
     public String strButtonEdit;
     public String strButtonNext;
@@ -61,11 +56,6 @@ public class OStrings
     private void setCrossViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strNameMyHousehold      = "Min husstand";
-            strNameOurHousehold     = "Min husstand";
-            strNameMyMessageBoard   = "Min oppslagstavle";
-            strNameOurMessageBoard  = "Vår oppslagstavle";
-            
             strButtonOK             = "OK";
             strButtonEdit           = "Endre";
             strButtonNext           = "Neste";
@@ -79,11 +69,6 @@ public class OStrings
             
             strTermAddress          = "Adresse";
         } else {
-            strNameMyHousehold      = "My place";
-            strNameOurHousehold     = "Our place";
-            strNameMyMessageBoard   = "My message board";
-            strNameOurMessageBoard  = "Our message board";
-            
             strButtonOK             = "OK";
             strButtonEdit           = "Edit";
             strButtonNext           = "Next";
@@ -303,6 +288,8 @@ public class OStrings
     
     /* ==== OOrigoView strings ==== */
     
+    public String strDefaultResidenceName;
+    
     public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
@@ -318,29 +305,33 @@ public class OStrings
     private void setOrigoViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strViewTitleNewOrigo    = "Nytt origo";
+            strDefaultResidenceName  = "Min husstand";
             
-            strLabelAddress         = strTermAddress;
-            strLabelCountry         = "Land";
-            strLabelTelephone       = "Telefon";
+            strViewTitleNewOrigo     = "Nytt origo";
             
-            strHeaderAddresses      = "Adresser";
+            strLabelAddress          = strTermAddress;
+            strLabelCountry          = "Land";
+            strLabelTelephone        = "Telefon";
             
-            strPlaceholderAddress   = "Gateadresse\nPostnummer og -sted";
-            strPlaceholderCountry   = strLabelCountry;
-            strPlaceholderTelephone = "Telefonnummer";
+            strHeaderAddresses       = "Adresser";
+            
+            strPlaceholderAddress    = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderCountry    = strLabelCountry;
+            strPlaceholderTelephone  = "Telefonnummer";
         } else {
-            strViewTitleNewOrigo    = "New origo";
+            strDefaultResidenceName  = "My place";
             
-            strLabelAddress         = strTermAddress;
-            strLabelCountry         = "Country";
-            strLabelTelephone       = "Telephone";
+            strViewTitleNewOrigo     = "New origo";
             
-            strHeaderAddresses      = "Addresses";
+            strLabelAddress          = strTermAddress;
+            strLabelCountry          = "Country";
+            strLabelTelephone        = "Telephone";
             
-            strPlaceholderAddress   = "Street address\nPostal code and city/town";
-            strPlaceholderCountry   = strLabelCountry;
-            strPlaceholderTelephone = "Telephone number";
+            strHeaderAddresses       = "Addresses";
+            
+            strPlaceholderAddress    = "Street address\nPostal code and city/town";
+            strPlaceholderCountry    = strLabelCountry;
+            strPlaceholderTelephone  = "Telephone number";
         }
     }
     
@@ -511,12 +502,18 @@ public class OStrings
     
     public String strTabBarTitleMessages;
     
+    public String strDefaultMessageBoardName;
+    
     private void setMessageBoardViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleMessages = "Meldinger";
+            strTabBarTitleMessages      = "Meldinger";
+            
+            strDefaultMessageBoardName  = "Oppslagstavle";
         } else {
-            strTabBarTitleMessages = "Messages";
+            strTabBarTitleMessages      = "Messages";
+            
+            strDefaultMessageBoardName  = "Message board";
         }
     }
     

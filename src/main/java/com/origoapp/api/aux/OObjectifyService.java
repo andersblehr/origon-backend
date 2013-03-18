@@ -9,7 +9,7 @@ import com.origoapp.api.aux.OMemberProxy;
 
 import com.origoapp.api.model.ODevice;
 import com.origoapp.api.model.OMember;
-import com.origoapp.api.model.OMemberResidency;
+import com.origoapp.api.model.OResidencySchedule;
 import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OMessageBoard;
 import com.origoapp.api.model.OOrigo;
@@ -26,7 +26,7 @@ public class OObjectifyService
         
         ObjectifyService.factory().register(ODevice.class);
         ObjectifyService.factory().register(OMember.class);
-        ObjectifyService.factory().register(OMemberResidency.class);
+        ObjectifyService.factory().register(OResidencySchedule.class);
         ObjectifyService.factory().register(OMembership.class);
         ObjectifyService.factory().register(OMessageBoard.class);
         ObjectifyService.factory().register(OOrigo.class);

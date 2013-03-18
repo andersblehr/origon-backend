@@ -2,6 +2,7 @@ package com.origoapp.api.model;
 
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -25,18 +26,13 @@ public class OMembership extends OReplicatedEntity
     
     public @IgnoreSave(IfNull.class) String contactRole;
     public @IgnoreSave(IfNull.class) String contactType;
+    public String type;
     
     public @IgnoreSave OMember member;
     public @IgnoreSave Map<String, String> memberRef;
     public @IgnoreSave(IfNull.class) Key<OMember> memberKey;
     
     public @IgnoreSave Map<String, String> origoRef;
-    
-    public @IgnoreSave OMember associateMember;
-    public @IgnoreSave Map<String, String> associateMemberRef;
-    public @IgnoreSave(IfNull.class) Key<OMember> associateMemberKey;
-    
-    public @IgnoreSave Map<String, String> associateOrigoRef;
     
 
     public OMembership()
@@ -45,26 +41,23 @@ public class OMembership extends OReplicatedEntity
     }
     
     
+    @JsonIgnore
     public boolean isRootMembership()
     {
-        return (entityId.substring(0, 1).equals("~"));
+        return (origoId.substring(0, 1).equals("~"));
     }
     
     
+    @JsonIgnore
     public boolean isResidency()
     {
-        return this.getClass().equals(OMemberResidency.class);
+        return type.equals("R");
     }
     
     
+    @JsonIgnore
     public boolean isAssociate()
     {
-        return ((associateMember != null) || (associateMemberKey != null));
-    }
-    
-    
-    public OMember getMember()
-    {
-        return isAssociate() ? associateMember : member;
+        return type.equals("A");
     }
 }

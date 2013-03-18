@@ -31,4 +31,11 @@ public class OMessageBoard extends OReplicatedEntity
     {
         super();
     }
+    
+    
+    @Override
+    public boolean isReplicatedForMembership(OMembership membership)
+    {
+        return membership.isAssociate() ? false : true;
+    }
 }

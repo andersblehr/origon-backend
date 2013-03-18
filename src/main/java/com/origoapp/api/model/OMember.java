@@ -2,6 +2,7 @@ package com.origoapp.api.model;
 
 import java.util.Date;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
@@ -36,6 +37,7 @@ public class OMember extends OReplicatedEntity
     }
     
     
+    @JsonIgnore
     public String getProxyId()
     {
         return (email != null) ? email : entityId;
