@@ -14,7 +14,6 @@ import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
-import com.origoapp.api.model.OMember;
 
 import static com.origoapp.api.aux.OObjectifyService.ofy;
 
@@ -85,6 +84,12 @@ public class OMeta
     public String getEmail()
     {
         return email;
+    }
+    
+    
+    public void setUserId(String userId)
+    {
+        this.userId = userId;
     }
     
     
@@ -261,14 +266,6 @@ public class OMeta
     {
         if (replicationDate == null) {
             OLog.log().warning(meta(false) + "Replication date is missing.");
-        }
-    }
-    
-    
-    public void validateIfUser(OMember member)
-    {
-        if ((member.email != null) && member.email.equals(email)) {
-            userId = member.entityId;
         }
     }
     

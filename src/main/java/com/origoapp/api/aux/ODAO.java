@@ -71,10 +71,8 @@ public class ODAO
         Set<Key<OReplicatedEntity>> additionalEntityKeys = new HashSet<Key<OReplicatedEntity>>();
         Set<OReplicatedEntity> fetchedEntities = new HashSet<OReplicatedEntity>();
         
-        boolean memberProxyNeedsSaving = false;
-        
         for (OMembership membership : memberships) {
-            if ((membership.isActive || membership.isResidency() || membership.isAssociate()) && !membership.isGhost) {
+            if ((membership.isActive || membership.isRootMembership() || membership.isResidency() || membership.isAssociate()) && !membership.isExpired) {
                 List<OReplicatedEntity> membershipEntities = null;
                 
                 if (deviceReplicationDate != null) {
@@ -87,34 +85,29 @@ public class ODAO
                     if (entity.getClass().equals(OReplicatedEntityRef.class)) {
                         additionalEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
                     } else {
-                        fetchedEntities.add(entity);
+                        if (entity.isReplicatedForMembership(membership)) {
+                            fetchedEntities.add(entity);
+                        }
+                        
+                        if (m.isAuthenticating() && entity.getClass().equals(OMember.class)) {
+                            OMember member = (OMember)entity;
+                            
+                            if ((member.email != null) && member.email.equals(m.getEmail())) {
+                                m.setUserId(member.entityId);
+                            }
+                        }
                     }
                 }
             } else {
                 fetchedEntities.add(membership);
                 
-                if (membership.isGhost) {
-                    memberProxy.membershipKeys.remove(Key.create(membership.origoKey, OMembership.class, membership.entityId));
-                    memberProxyNeedsSaving = true;
-                } else {
+                if (!membership.isExpired) {
                     additionalEntityKeys.add(Key.create(membership.origoKey, OReplicatedEntity.class, membership.origoId));
                 }
             }
         }
         
         fetchedEntities.addAll(ofy().load().keys(additionalEntityKeys).values());
-        
-        if (memberProxyNeedsSaving) {
-            ofy().save().entity(memberProxy);
-        }
-        
-        if (m.isAuthenticating()) {
-            for (OReplicatedEntity entity : fetchedEntities) {
-                if (entity.getClass().equals(OMember.class)) {
-                    m.validateIfUser((OMember)entity);
-                }
-            }
-        }
         
         return new ArrayList<OReplicatedEntity>(fetchedEntities);
     }
@@ -146,16 +139,15 @@ public class ODAO
         private Set<OMemberProxy> touchedMemberProxies;
         
         
-        private void processEntityGhost(OReplicatedEntity entityGhost)
+        private void processExpiredEntity(OReplicatedEntity expiredEntity)
         {
-            if (OMembership.class.isAssignableFrom(entityGhost.getClass())) {
-                entitiesToReplicate.add(entityGhost);
+            if (OMembership.class.isAssignableFrom(expiredEntity.getClass())) {
+                OMembership revokedMembership = (OMembership)expiredEntity;
                 
-                OMembership revokedMembership = (OMembership)entityGhost;
-                String memberRefId = revokedMembership.getMember().entityId + "#" + revokedMembership.origoId;
+                String memberRefId = revokedMembership.member.entityId + "#" + revokedMembership.origoId;
                 entityKeysForDeletion.add(Key.create(revokedMembership.origoKey, OReplicatedEntity.class, memberRefId));
                 
-                String revokedMembershipProxyId = revokedMembership.getMember().getProxyId(); 
+                String revokedMembershipProxyId = revokedMembership.member.getProxyId(); 
                 Set<Key<OMembership>> revokedMembershipKeysForMember = revokedMembershipKeysByProxyId.get(revokedMembershipProxyId);
                 
                 if (revokedMembershipKeysForMember == null) {
@@ -195,7 +187,7 @@ public class ODAO
         {
             touchedMemberships.add(membership);
             
-            String proxyId = membership.getMember().getProxyId();
+            String proxyId = membership.member.getProxyId();
             Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
             
             if (proxyId.equals(m.getEmail()) || (membership.dateReplicated == null)) {
@@ -285,6 +277,7 @@ public class ODAO
                     }
                     
                     driftingMemberProxies.add(driftingMemberProxy);
+                    touchedMemberProxies.add(reanchoredMemberProxy);
                     affectedMemberProxiesByKey.put(Key.create(OMemberProxy.class, currentEmail), reanchoredMemberProxy);
                     
                     if (driftingProxyId.equals(m.getEmail())) {
@@ -349,7 +342,7 @@ public class ODAO
             
             for (OMembership membership : touchedMemberships) {
                 if (!membership.isRootMembership()) {
-                    OMemberProxy memberProxy = affectedMemberProxiesByKey.get(Key.create(OMemberProxy.class, membership.getMember().getProxyId()));
+                    OMemberProxy memberProxy = affectedMemberProxiesByKey.get(Key.create(OMemberProxy.class, membership.member.getProxyId()));
                     
                     for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
                         Key<OOrigo> origoKey = membershipKey.getParent();
@@ -395,19 +388,16 @@ public class ODAO
             for (OReplicatedEntity entity : entityList) {
                 entity.origoKey = Key.create(OOrigo.class, entity.origoId);
                 
-                if (entity.isGhost) {
-                    processEntityGhost(entity);
-                } else {
-                    entitiesToReplicate.add(entity);
-                    
-                    if (entity.getClass().equals(OMember.class)) {
-                        processMemberEntity((OMember)entity);
-                    } else if (OMembership.class.isAssignableFrom(entity.getClass())) {
-                        processMembershipEntity((OMembership)entity);
-                    }
+                if (entity.isExpired) {
+                    processExpiredEntity(entity);
+                } else if (entity.getClass().equals(OMember.class)) {
+                    processMemberEntity((OMember)entity);
+                } else if (OMembership.class.isAssignableFrom(entity.getClass())) {
+                    processMembershipEntity((OMembership)entity);
                 }
                 
                 entity.dateReplicated = dateReplicated;
+                entitiesToReplicate.add(entity);
             }
             
             fetchAdditionalAffectedMemberProxies();

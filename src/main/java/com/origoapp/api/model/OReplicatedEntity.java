@@ -29,7 +29,7 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonSubTypes({
     @Type(value = ODevice.class, name = "ODevice"),
     @Type(value = OMember.class, name = "OMember"),
-    @Type(value = OMemberResidency.class, name = "OMemberResidency"),
+    @Type(value = OResidencySchedule.class, name = "OMemberResidency"),
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OMessageBoard.class, name = "OMessageBoard"),
     @Type(value = OOrigo.class, name = "OOrigo"),
@@ -41,7 +41,7 @@ public abstract class OReplicatedEntity
     
     public @IgnoreSave String origoId;
     public @IgnoreSave String entityClass;
-    public @IgnoreSave(IfFalse.class) boolean isGhost;
+    public @IgnoreSave(IfFalse.class) boolean isExpired;
     
     public Date dateCreated;
     public String createdBy;
@@ -59,7 +59,7 @@ public abstract class OReplicatedEntity
             for (Field field : fields) {
                 Class<?> classOfField = field.getType();
                 
-                if (classOfField.getSuperclass() == OReplicatedEntity.class) {
+                if (OReplicatedEntity.class.isAssignableFrom(classOfField)) {
                     OReplicatedEntity referencedEntity = (OReplicatedEntity)field.get(this);
                     
                     if (referencedEntity != null) {
@@ -117,6 +117,12 @@ public abstract class OReplicatedEntity
         }
     }
 
+    
+    public boolean isReplicatedForMembership(OMembership membership)
+    {
+        return true;
+    }
+    
     
     private Field getOrigoRefField()
     {
