@@ -144,8 +144,8 @@ public class ODAO
             if (OMembership.class.isAssignableFrom(expiredEntity.getClass())) {
                 OMembership revokedMembership = (OMembership)expiredEntity;
                 
-                String memberRefId = revokedMembership.member.entityId + "#" + revokedMembership.origoId;
-                entityKeysForDeletion.add(Key.create(revokedMembership.origoKey, OReplicatedEntity.class, memberRefId));
+                //String memberRefId = revokedMembership.member.entityId + "#" + revokedMembership.origoId;
+                //entityKeysForDeletion.add(Key.create(revokedMembership.origoKey, OReplicatedEntity.class, memberRefId));
                 
                 String revokedMembershipProxyId = revokedMembership.member.getProxyId(); 
                 Set<Key<OMembership>> revokedMembershipKeysForMember = revokedMembershipKeysByProxyId.get(revokedMembershipProxyId);
@@ -156,6 +156,8 @@ public class ODAO
                 }
                 
                 revokedMembershipKeysForMember.add(Key.create(revokedMembership.origoKey, OMembership.class, revokedMembership.entityId));
+            } else if (OReplicatedEntityRef.class.isAssignableFrom(expiredEntity.getClass())) {
+                entityKeysForDeletion.add(Key.create(expiredEntity));
             }
         }
         
