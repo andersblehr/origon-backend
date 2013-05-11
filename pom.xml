@@ -230,6 +230,6 @@ warSrcDirIsOutput=true]]>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<resteasy.version>2.3.0.GA</resteasy.version>
 		<objectify.version>4.0b1</objectify.version>
-		<gae.version>1.7.5</gae.version>
+		<gae.version>1.7.7</gae.version>
 	</properties>
 </project>
