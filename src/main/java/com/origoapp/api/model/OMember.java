@@ -28,7 +28,6 @@ public class OMember extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String email;
     public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfNull.class) Date activeSince;
-    public @IgnoreSave(IfNull.class) String passwordHash;
     
     
     public OMember()

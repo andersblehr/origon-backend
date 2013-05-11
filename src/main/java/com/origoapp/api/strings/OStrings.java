@@ -34,6 +34,7 @@ public class OStrings
         setMessageBoardViewStrings(language);
         setSettingsViewStrings(language);
         
+        setOrigoTypeStrings(language);
         setMeta(language);
     }
     
@@ -52,6 +53,7 @@ public class OStrings
     public String strAlertTextServerError;
     
     public String strTermAddress;
+    public String strTermCountry;
     
     private void setCrossViewStrings(String language)
     {
@@ -68,6 +70,7 @@ public class OStrings
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
             
             strTermAddress          = "Adresse";
+            strTermCountry          = "Land";
         } else {
             strButtonOK             = "OK";
             strButtonEdit           = "Edit";
@@ -81,6 +84,7 @@ public class OStrings
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
             
             strTermAddress          = "Address";
+            strTermCountry          = "Country";
         }
     }
     
@@ -140,8 +144,8 @@ public class OStrings
             strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
         } else {
-            strLabelSignIn                      = "Sign in or register";
-            strLabelActivate                  = "Enter activation code";
+            strLabelSignIn                      = "Sign in or sign up";
+            strLabelActivate                    = "Enter activation code";
             
             strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must enter in the next step.";
             strFooterActivate                   = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
@@ -180,7 +184,15 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
+    public String strButtonCountryOfLocation;
+    public String strButtonCountryOther;
+    
+    public String strAlertTitleOrigoCountry;
+    public String strAlertTextOrigoCountry;
+    
     public String strSheetTitleOrigoType;
+    public String strSheetTitleOrigoCountryLocate;
+    public String strSheetTitleOrigoCountryNoLocate;
     
     public String strTermMe;
     public String strTermYourChild;
@@ -191,41 +203,57 @@ public class OStrings
     
     private void setOrigoListViewStrings(String language)
     {
-        strTabBarTitleOrigo              = "Origo";
-        strViewTitleWardOrigoList        = "Origo • %@";
+        strTabBarTitleOrigo                   = "Origo";
+        strViewTitleWardOrigoList             = "Origo • %@";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strHeaderWardsOrigos         = "Barnas origo";
-            strHeaderMyOrigos            = "Mine origo";
+            strHeaderWardsOrigos              = "Barnas origo";
+            strHeaderMyOrigos                 = "Mine origo";
             
-            strFooterOrigoCreationFirst  = "Trykk [+] for å opprette et origo";
-            strFooterOrigoCreation       = "Trykk [+] for å opprette et nytt origo";
-            strFooterOrigoCreationWards  = "for deg selv. Velg %@ for å opprette et origo for %@.";
+            strFooterOrigoCreationFirst       = "Trykk [+] for å opprette et origo";
+            strFooterOrigoCreation            = "Trykk [+] for å opprette et nytt origo";
+            strFooterOrigoCreationWards       = "for deg selv. Velg %@ for å opprette et origo for %@.";
             
-            strSheetTitleOrigoType       = "Hva slags origo ønsker du å opprette";
+            strButtonCountryOfLocation        = "Dette landet";
+            strButtonCountryOther             = "Et annet land";
             
-            strTermMe                    = "Meg";
-            strTermYourChild             = "et av barna";
-            strTermHim                   = "ham";
-            strTermHer                   = "henne";
-            strTermHimOrHer              = "ham eller henne";
-            strTermForName               = "for %@";
+            strAlertTitleOrigoCountry         = "Origo-land: %@";
+            strAlertTextOrigoCountry          = "Nye origo som du oppretter vil bli tilpasset %@. Du kan endre origo-landet ditt under Innstillinger.";
+            
+            strSheetTitleOrigoType            = "Hva slags origo ønsker du å opprette?";
+            strSheetTitleOrigoCountryLocate   = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@, landet du befinner deg i nå, eller et annet land?";
+            strSheetTitleOrigoCountryNoLocate = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@ eller et annet land?";
+            
+            strTermMe                         = "Meg";
+            strTermYourChild                  = "et av barna";
+            strTermHim                        = "ham";
+            strTermHer                        = "henne";
+            strTermHimOrHer                   = "ham eller henne";
+            strTermForName                    = "for %@";
         } else {
-            strHeaderWardsOrigos         = "The kids' origos";
-            strHeaderMyOrigos            = "My origos";
+            strHeaderWardsOrigos              = "The kids' origos";
+            strHeaderMyOrigos                 = "My origos";
             
-            strFooterOrigoCreationFirst  = "Tap [+] to create an origo";
-            strFooterOrigoCreation       = "Tap [+] to create a new origo";
-            strFooterOrigoCreationWards  = "for yourself. Select %@ to create an origo for %@.";
+            strFooterOrigoCreationFirst       = "Tap [+] to create an origo";
+            strFooterOrigoCreation            = "Tap [+] to create a new origo";
+            strFooterOrigoCreationWards       = "for yourself. Select %@ to create an origo for %@.";
             
-            strSheetTitleOrigoType       = "What sort of origo du you want to create";
+            strButtonCountryOfLocation        = "This country";
+            strButtonCountryOther             = "Other country";
             
-            strTermMe                    = "Me";
-            strTermYourChild             = "your child";
-            strTermHim                   = "him";
-            strTermHer                   = "her";
-            strTermHimOrHer              = "him or her";
-            strTermForName               = "for %@";
+            strAlertTitleOrigoCountry         = "Origo country: %@";
+            strAlertTextOrigoCountry          = "New origos that you create will be adapted for %@. You can change your origo country under Settings.";
+            
+            strSheetTitleOrigoType            = "What sort of origo du you want to create?";
+            strSheetTitleOrigoCountryLocate   = "The new origo will be adapted for your country of residence. Is your country of residence %@, the country you're currently in, or another country?";
+            strSheetTitleOrigoCountryNoLocate = "The new origo will be adapted for your country of residence. Is your country of residence %@ or another country?";
+            
+            strTermMe                         = "Me";
+            strTermYourChild                  = "your child";
+            strTermHim                        = "him";
+            strTermHer                        = "her";
+            strTermHimOrHer                   = "him or her";
+            strTermForName                    = "for %@";
         }
     }
     
@@ -293,13 +321,11 @@ public class OStrings
     public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
-    public String strLabelCountry;
     public String strLabelTelephone;
     
     public String strHeaderAddresses;
     
     public String strPlaceholderAddress;
-    public String strPlaceholderCountry;
     public String strPlaceholderTelephone;
     
     private void setOrigoViewStrings(String language)
@@ -310,13 +336,11 @@ public class OStrings
             strViewTitleNewOrigo     = "Nytt origo";
             
             strLabelAddress          = strTermAddress;
-            strLabelCountry          = "Land";
             strLabelTelephone        = "Telefon";
             
             strHeaderAddresses       = "Adresser";
             
             strPlaceholderAddress    = "Gateadresse\nPostnummer og -sted";
-            strPlaceholderCountry    = strLabelCountry;
             strPlaceholderTelephone  = "Telefonnummer";
         } else {
             strDefaultResidenceName  = "My place";
@@ -324,13 +348,11 @@ public class OStrings
             strViewTitleNewOrigo     = "New origo";
             
             strLabelAddress          = strTermAddress;
-            strLabelCountry          = "Country";
             strLabelTelephone        = "Telephone";
             
             strHeaderAddresses       = "Addresses";
             
             strPlaceholderAddress    = "Street address\nPostal code and city/town";
-            strPlaceholderCountry    = strLabelCountry;
             strPlaceholderTelephone  = "Telephone number";
         }
     }
@@ -525,21 +547,70 @@ public class OStrings
     private void setSettingsViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleSettings = "Innstillinger";
+            strTabBarTitleSettings          = "Innstillinger";
         } else {
-            strTabBarTitleSettings = "Settings";
+            strTabBarTitleSettings          = "Settings";
+        }
+    }
+    
+    
+    /* ==== Origo type strings ==== */
+    
+    public String strOrigoTypeResidence;
+    public String strOrigoTypeOrganisation;
+    public String strOrigoTypeAssociation;
+    public String strOrigoTypeSchoolClass;
+    public String strOrigoTypePreschoolClass;
+    public String strOrigoTypeSportsTeam;
+    public String strOrigoTypeOther;
+    
+    public String strNewOrigoOfTypeResidence;
+    public String strNewOrigoOfTypeOrganisation;
+    public String strNewOrigoOfTypeAssociation;
+    public String strNewOrigoOfTypeSchoolClass;
+    public String strNewOrigoOfTypePreschoolClass;
+    public String strNewOrigoOfTypeSportsTeam;
+    public String strNewOrigoOfTypeOther;
+    
+    private void setOrigoTypeStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strOrigoTypeResidence           = "Adresse";
+            strOrigoTypeOrganisation        = "Organisasjon";
+            strOrigoTypeAssociation         = "Forening";
+            strOrigoTypeSchoolClass         = "Skoleklasse";
+            strOrigoTypePreschoolClass      = "Barnehageavdeling";
+            strOrigoTypeSportsTeam          = "Sportslag";
+            strOrigoTypeOther               = "Annet";
+            
+            strNewOrigoOfTypeResidence      = "Ny adresse";
+            strNewOrigoOfTypeOrganisation   = "Ny organisasjon";
+            strNewOrigoOfTypeAssociation    = "Ny forening";
+            strNewOrigoOfTypeSchoolClass    = "Ny skoleklasse";
+            strNewOrigoOfTypePreschoolClass = "Ny barnehageavdeling";
+            strNewOrigoOfTypeSportsTeam     = "Nytt lag";
+            strNewOrigoOfTypeOther          = "Ny origo";
+        } else {
+            strOrigoTypeResidence           = "Address";
+            strOrigoTypeOrganisation        = "Organisation";
+            strOrigoTypeAssociation         = "Association";
+            strOrigoTypeSchoolClass         = "School class";
+            strOrigoTypePreschoolClass      = "Preschool/daycare";
+            strOrigoTypeSportsTeam          = "Sports team";
+            strOrigoTypeOther               = "Other";
+            
+            strNewOrigoOfTypeResidence      = "New address";
+            strNewOrigoOfTypeOrganisation   = "New organisation";
+            strNewOrigoOfTypeAssociation    = "New association";
+            strNewOrigoOfTypeSchoolClass    = "New school class";
+            strNewOrigoOfTypePreschoolClass = "New preschool/daycare";
+            strNewOrigoOfTypeSportsTeam     = "New team";
+            strNewOrigoOfTypeOther          = "New origo";
         }
     }
     
     
     /* ==== Meta strings ==== */
-    
-    public String origoTypeMemberRoot;
-    public String origoTypeResidence;
-    public String origoTypeSchoolClass;
-    public String origoTypePreschoolClass;
-    public String origoTypeSportsTeam;
-    public String origoTypeDefault;
     
     public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
     public String schoolClassTeacher;
@@ -553,6 +624,11 @@ public class OStrings
     public String preschoolTeacher;
     public String preschoolAssistant;
     
+    public String xstrContactRolesAssociation = "associationChair|associationDeputyChair|associationTreasurer";
+    public String associationChair;
+    public String associationDeputyChair;
+    public String associationTreasurer;
+    
     public String xstrContactRolesSportsTeam = "teamCoach|teamAssistantCoach";
     public String teamCoach;
     public String teamAssistantCoach;
@@ -560,45 +636,39 @@ public class OStrings
     private void setMeta(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            origoTypeMemberRoot = "Medlemsrot";
-            origoTypeResidence = "Bolig";
-            origoTypeSchoolClass = "Skoleklasse";
-            origoTypePreschoolClass = "Barnehage/avdeling";
-            origoTypeSportsTeam = "Sportslag";
-            origoTypeDefault = "Annet";
-            
-            schoolClassTeacher = "Kontaktlærer";
-            schoolTopicTeacher = "Faglærer";
+            schoolClassTeacher            = "Kontaktlærer";
+            schoolTopicTeacher            = "Faglærer";
             schoolSpecialEducationTeacher = "Spesiallærer";
-            schoolAssistantTeacher = "Assistentlærer";
-            schoolHeadTeacher = "Rektor";
+            schoolAssistantTeacher        = "Assistentlærer";
+            schoolHeadTeacher             = "Rektor";
             
-            preschoolDepartmentHead = "Avdelingsleder";
-            preschoolTeacher = "Førskolelærer";
-            preschoolAssistant = "Assistent";
+            preschoolDepartmentHead       = "Avdelingsleder";
+            preschoolTeacher              = "Førskolelærer";
+            preschoolAssistant            = "Assistent";
             
-            teamCoach = "Trener";
-            teamAssistantCoach = "Assistenttrener";
+            associationChair              = "Formann";
+            associationDeputyChair        = "Varamann";
+            associationTreasurer          = "Kasserer";
+            
+            teamCoach                     = "Trener";
+            teamAssistantCoach            = "Assistenttrener";
         } else {
-            origoTypeMemberRoot = "Member root";
-            origoTypeResidence = "Residence";
-            origoTypeSchoolClass = "School class";
-            origoTypePreschoolClass = "Preschool/daycare";
-            origoTypeSportsTeam = "Sports team";
-            origoTypeDefault = "Other";
-            
-            schoolClassTeacher = "Teacher";
-            schoolTopicTeacher = "Topic teacher";
+            schoolClassTeacher            = "Teacher";
+            schoolTopicTeacher            = "Topic teacher";
             schoolSpecialEducationTeacher = "Special education teacher";
-            schoolAssistantTeacher = "Assistant teacher";
-            schoolHeadTeacher = "Head teacher";
+            schoolAssistantTeacher        = "Assistant teacher";
+            schoolHeadTeacher             = "Head teacher";
             
-            preschoolDepartmentHead = "Department head";
-            preschoolTeacher = "Teacher";
-            preschoolAssistant = "Assistant";
+            preschoolDepartmentHead       = "Department head";
+            preschoolTeacher              = "Teacher";
+            preschoolAssistant            = "Assistant";
             
-            teamCoach = "Coach";
-            teamAssistantCoach = "Assistant coach";
+            associationChair              = "Chair";
+            associationDeputyChair        = "Deputy chair";
+            associationTreasurer          = "Treasurer";
+            
+            teamCoach                     = "Coach";
+            teamAssistantCoach            = "Assistant coach";
         }
     }
 }
