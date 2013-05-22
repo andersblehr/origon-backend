@@ -32,7 +32,7 @@ public class OStrings
         setCalendarViewStrings(language);
         setTaskViewStrings(language);
         setMessageBoardViewStrings(language);
-        setSettingsViewStrings(language);
+        setSettingListViewStrings(language);
         
         setOrigoTypeStrings(language);
         setMeta(language);
@@ -540,16 +540,22 @@ public class OStrings
     }
     
     
-    /* ==== OSettingsView strings ==== */
+    /* ==== OSettingListView strings ==== */
     
     public String strTabBarTitleSettings;
     
-    private void setSettingsViewStrings(String language)
+    public String strSettingTitleOrigoCountry;
+    
+    private void setSettingListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleSettings          = "Innstillinger";
+            strTabBarTitleSettings      = "Innstillinger";
+            
+            strSettingTitleOrigoCountry = "Nye origo tilpasses";
         } else {
-            strTabBarTitleSettings          = "Settings";
+            strTabBarTitleSettings      = "Settings";
+            
+            strSettingTitleOrigoCountry = "New origos are adapted for";
         }
     }
     
