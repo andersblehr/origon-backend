@@ -187,12 +187,12 @@ public class OStrings
     public String strButtonCountryOfLocation;
     public String strButtonCountryOther;
     
-    public String strAlertTitleOrigoCountry;
-    public String strAlertTextOrigoCountry;
+    public String strAlertTitleCountry;
+    public String strAlertTextCountry;
     
+    public String strSheetTitleCountryLocate;
+    public String strSheetTitleCountryNoLocate;
     public String strSheetTitleOrigoType;
-    public String strSheetTitleOrigoCountryLocate;
-    public String strSheetTitleOrigoCountryNoLocate;
     
     public String strTermMe;
     public String strTermYourChild;
@@ -217,12 +217,12 @@ public class OStrings
             strButtonCountryOfLocation        = "Dette landet";
             strButtonCountryOther             = "Et annet land";
             
-            strAlertTitleOrigoCountry         = "Origo-land: %@";
-            strAlertTextOrigoCountry          = "Nye origo som du oppretter vil bli tilpasset %@. Du kan endre origo-landet ditt under Innstillinger.";
+            strAlertTitleCountry              = "Origo-land: %@";
+            strAlertTextCountry               = "Nye origo som du oppretter vil bli tilpasset %@. Du kan endre origo-landet ditt under Innstillinger.";
             
+            strSheetTitleCountryLocate        = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@, landet du befinner deg i nå, eller et annet land?";
+            strSheetTitleCountryNoLocate      = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@ eller et annet land?";
             strSheetTitleOrigoType            = "Hva slags origo ønsker du å opprette?";
-            strSheetTitleOrigoCountryLocate   = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@, landet du befinner deg i nå, eller et annet land?";
-            strSheetTitleOrigoCountryNoLocate = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@ eller et annet land?";
             
             strTermMe                         = "Meg";
             strTermYourChild                  = "et av barna";
@@ -241,12 +241,12 @@ public class OStrings
             strButtonCountryOfLocation        = "This country";
             strButtonCountryOther             = "Other country";
             
-            strAlertTitleOrigoCountry         = "Origo country: %@";
-            strAlertTextOrigoCountry          = "New origos that you create will be adapted for %@. You can change your origo country under Settings.";
+            strAlertTitleCountry              = "Origo country: %@";
+            strAlertTextCountry               = "New origos that you create will be adapted for %@. You can change your origo country under Settings.";
             
+            strSheetTitleCountryLocate        = "The new origo will be adapted for your country of residence. Is your country of residence %@, the country you're currently in, or another country?";
+            strSheetTitleCountryNoLocate      = "The new origo will be adapted for your country of residence. Is your country of residence %@ or another country?";
             strSheetTitleOrigoType            = "What sort of origo du you want to create?";
-            strSheetTitleOrigoCountryLocate   = "The new origo will be adapted for your country of residence. Is your country of residence %@, the country you're currently in, or another country?";
-            strSheetTitleOrigoCountryNoLocate = "The new origo will be adapted for your country of residence. Is your country of residence %@ or another country?";
             
             strTermMe                         = "Me";
             strTermYourChild                  = "your child";
@@ -544,18 +544,21 @@ public class OStrings
     
     public String strTabBarTitleSettings;
     
-    public String strSettingTitleOrigoCountry;
+    public String strSettingTitleCountry;
+    public String strSettingTextCountry;
     
     private void setSettingListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleSettings      = "Innstillinger";
+            strTabBarTitleSettings = "Innstillinger";
             
-            strSettingTitleOrigoCountry = "Nye origo tilpasses";
+            strSettingTitleCountry = "Land";
+            strSettingTextCountry  = "Nye origo tilpasses";
         } else {
-            strTabBarTitleSettings      = "Settings";
+            strTabBarTitleSettings = "Settings";
             
-            strSettingTitleOrigoCountry = "New origos are adapted for";
+            strSettingTitleCountry = "Country";
+            strSettingTextCountry  = "New origos are adapted for";
         }
     }
     
