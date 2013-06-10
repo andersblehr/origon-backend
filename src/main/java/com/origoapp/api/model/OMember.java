@@ -39,6 +39,12 @@ public class OMember extends OReplicatedEntity
     @JsonIgnore
     public String getProxyId()
     {
-        return (email != null) ? email : entityId;
+        return hasEmail() ? email : entityId;
+    }
+    
+    
+    public boolean hasEmail()
+    {
+        return ((email != null) && (email.length() > 0));
     }
 }

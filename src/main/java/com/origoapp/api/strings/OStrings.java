@@ -33,6 +33,7 @@ public class OStrings
         setTaskViewStrings(language);
         setMessageBoardViewStrings(language);
         setSettingListViewStrings(language);
+        setSettingViewStrings(language);
         
         setOrigoTypeStrings(language);
         setMeta(language);
@@ -214,7 +215,7 @@ public class OStrings
             strFooterOrigoCreation            = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards       = "for deg selv. Velg %@ for å opprette et origo for %@.";
             
-            strButtonCountryOfLocation        = "Dette landet";
+            strButtonCountryOfLocation        = "Landet jeg er i nå";
             strButtonCountryOther             = "Et annet land";
             
             strAlertTitleCountry              = "Origo-land: %@";
@@ -238,8 +239,8 @@ public class OStrings
             strFooterOrigoCreation            = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards       = "for yourself. Select %@ to create an origo for %@.";
             
-            strButtonCountryOfLocation        = "This country";
-            strButtonCountryOther             = "Other country";
+            strButtonCountryOfLocation        = "The country I'm in";
+            strButtonCountryOther             = "Another country";
             
             strAlertTitleCountry              = "Origo country: %@";
             strAlertTextCountry               = "New origos that you create will be adapted for %@. You can change your origo country under Settings.";
@@ -563,6 +564,32 @@ public class OStrings
     }
     
     
+    /* ==== OSettingView strings ==== */
+    
+    public String strLabelCountrySettings;
+    public String strLabelCountryLocation;
+    
+    public String strFooterCountryInfoParenthesis;
+    public String strFooterCountryInfoLocate;
+    
+    private void setSettingViewStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strLabelCountrySettings         = "Angitt i lokale innstillinger";
+            strLabelCountryLocation         = "Dette landet";
+            
+            strFooterCountryInfoParenthesis = "Tilpasninger er foreløpig ikke tilgjengelige for land angitt i parentes.";
+            strFooterCountryInfoLocate      = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
+        } else {
+            strLabelCountrySettings         = "Specified in local settings";
+            strLabelCountryLocation         = "This country";
+            
+            strFooterCountryInfoParenthesis = "Origo is not yet adapted for countries listed in parenthesis.";
+            strFooterCountryInfoLocate      = "If you wish to specify the country you're in, you must permit Origo to use Location Services.\n(Settings > Privacy > Location)";
+        }
+    }
+    
+    
     /* ==== Origo type strings ==== */
     
     public String strOrigoTypeResidence;
@@ -621,63 +648,65 @@ public class OStrings
     
     /* ==== Meta strings ==== */
     
-    public String xstrContactRolesSchoolClass = "schoolClassTeacher|schoolTopicTeacher|schoolSpecialEducationTeacher|schoolAssistantTeacher|schoolHeadTeacher";
-    public String schoolClassTeacher;
-    public String schoolTopicTeacher;
-    public String schoolSpecialEducationTeacher;
-    public String schoolAssistantTeacher;
-    public String schoolHeadTeacher;
+    public String metaSupportedCountryCodes = "NO";
     
-    public String xstrContactRolesPreschoolClass = "preschoolDepartmentHead|preschoolTeacher|preschoolAssistant";
-    public String preschoolDepartmentHead;
-    public String preschoolTeacher;
-    public String preschoolAssistant;
+    public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher";
+    public String strContactRoleClassTeacher;
+    public String strContactRoleTopicTeacher;
+    public String strContactRoleSpecialEducationTeacher;
+    public String strContactRoleAssistantTeacher;
+    public String strContactRoleHeadTeacher;
     
-    public String xstrContactRolesAssociation = "associationChair|associationDeputyChair|associationTreasurer";
-    public String associationChair;
-    public String associationDeputyChair;
-    public String associationTreasurer;
+    public String metaContactRolesPreschoolClass = "preschoolClassTeacher|preschoolTeacher|preschoolAssistantTeacher";
+    public String strContactRolePreschoolClassTeacher;
+    public String strContactRolePreschoolTeacher;
+    public String strContactRolePreschoolAssistantTeacher;
     
-    public String xstrContactRolesSportsTeam = "teamCoach|teamAssistantCoach";
-    public String teamCoach;
-    public String teamAssistantCoach;
+    public String metaContactRolesAssociation = "chair|deputyChair|treasurer";
+    public String strContactRoleChair;
+    public String strContactRoleDeputyChair;
+    public String strContactRoleTreasurer;
+    
+    public String metaContactRolesSportsTeam = "coach|assistantCoach";
+    public String strContactRoleCoach;
+    public String strContactRolessistantCoach;
     
     private void setMeta(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            schoolClassTeacher            = "Kontaktlærer";
-            schoolTopicTeacher            = "Faglærer";
-            schoolSpecialEducationTeacher = "Spesiallærer";
-            schoolAssistantTeacher        = "Assistentlærer";
-            schoolHeadTeacher             = "Rektor";
+            strContactRoleClassTeacher              = "Kontaktlærer";
+            strContactRoleTopicTeacher              = "Faglærer";
+            strContactRoleSpecialEducationTeacher   = "Spesiallærer";
+            strContactRoleAssistantTeacher          = "Assistentlærer";
+            strContactRoleHeadTeacher               = "Rektor";
             
-            preschoolDepartmentHead       = "Avdelingsleder";
-            preschoolTeacher              = "Førskolelærer";
-            preschoolAssistant            = "Assistent";
+            strContactRolePreschoolClassTeacher     = "Avdelingsleder";
+            strContactRolePreschoolTeacher          = "Førskolelærer";
+            strContactRolePreschoolAssistantTeacher = "Assistent";
             
-            associationChair              = "Formann";
-            associationDeputyChair        = "Varamann";
-            associationTreasurer          = "Kasserer";
+            strContactRoleChair                     = "Formann";
+            strContactRoleDeputyChair               = "Varamann";
+            strContactRoleTreasurer                 = "Kasserer";
             
-            teamCoach                     = "Trener";
-            teamAssistantCoach            = "Assistenttrener";
+            strContactRoleCoach                     = "Trener";
+            strContactRolessistantCoach             = "Assistenttrener";
         } else {
-            schoolClassTeacher            = "Teacher";
-            schoolTopicTeacher            = "Topic teacher";
-            schoolSpecialEducationTeacher = "Special education teacher";
-            schoolAssistantTeacher        = "Assistant teacher";
-            schoolHeadTeacher             = "Head teacher";
+            strContactRoleClassTeacher              = "Teacher";
+            strContactRoleTopicTeacher              = "Topic teacher";
+            strContactRoleSpecialEducationTeacher   = "Special education teacher";
+            strContactRoleAssistantTeacher          = "Assistant teacher";
+            strContactRoleHeadTeacher               = "Head teacher";
             
-            preschoolDepartmentHead       = "Department head";
-            preschoolTeacher              = "Teacher";
-            preschoolAssistant            = "Assistant";
+            strContactRolePreschoolClassTeacher     = "Department head";
+            strContactRolePreschoolTeacher          = "Teacher";
+            strContactRolePreschoolAssistantTeacher = "Assistant";
             
-            associationChair              = "Chair";
-            associationDeputyChair        = "Deputy chair";
-            associationTreasurer          = "Treasurer";
+            strContactRoleChair                     = "Chair";
+            strContactRoleDeputyChair               = "Deputy chair";
+            strContactRoleTreasurer                 = "Treasurer";
             
-            teamCoach                     = "Coach";
-            teamAssistantCoach            = "Assistant coach";
+            strContactRoleCoach                     = "Coach";
+            strContactRolessistantCoach             = "Assistant coach";
         }
     }
 }
