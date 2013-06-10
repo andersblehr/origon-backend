@@ -92,7 +92,7 @@ public class ODAO
                         if (m.isAuthenticating() && entity.getClass().equals(OMember.class)) {
                             OMember member = (OMember)entity;
                             
-                            if ((member.email != null) && member.email.equals(m.getEmail())) {
+                            if (member.hasEmail() && member.email.equals(m.getEmail())) {
                                 m.setUserId(member.entityId);
                             }
                         }
@@ -176,7 +176,7 @@ public class ODAO
                 }
             }
             
-            if ((member.dateReplicated != null) && (member.email != null)) {
+            if ((member.dateReplicated != null) && (member.hasEmail())) {
                 modifiedMembersByEmail.put(member.email, member);
             }
         }

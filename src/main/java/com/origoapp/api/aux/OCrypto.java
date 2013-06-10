@@ -11,12 +11,12 @@ public class OCrypto
     private static final String kOrigoSeasoning = "socroilgao";
     
     
-    public static String hashUsingSHA1(String inputString)
+    public static String hashUsingSHA1(String string)
     {
         String output = new String();
         
         try {
-            byte[] bytes = inputString.getBytes("UTF-8");
+            byte[] bytes = string.getBytes("UTF-8");
 
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
             byte[] digestOutput = digest.digest(bytes);
@@ -25,7 +25,7 @@ public class OCrypto
                 output = output.concat(String.format("%02x", digestOutput[i]));
             }
         } catch (Exception e) {
-            OLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", inputString));
+            OLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", string));
             throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
