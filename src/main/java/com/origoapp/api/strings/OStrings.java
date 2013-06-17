@@ -52,6 +52,7 @@ public class OStrings
     
     public String strAlertTextNoInternet;
     public String strAlertTextServerError;
+    public String strAlertTextLocating;
     
     public String strTermAddress;
     public String strTermCountry;
@@ -69,6 +70,7 @@ public class OStrings
             
             strAlertTextNoInternet  = "Ingen internettforbindelse.";
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
+            strAlertTextLocating    = "Lokaliserer...";
             
             strTermAddress          = "Adresse";
             strTermCountry          = "Land";
@@ -83,6 +85,7 @@ public class OStrings
             
             strAlertTextNoInternet  = "No internet connection.";
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
+            strAlertTextLocating    = "Locating...";
             
             strTermAddress          = "Address";
             strTermCountry          = "Country";
@@ -185,14 +188,15 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
-    public String strButtonCountryOfLocation;
+    public String strButtonCountryLocate;
     public String strButtonCountryOther;
     
-    public String strAlertTitleCountry;
-    public String strAlertTextCountry;
+    public String strAlertTitleCountryOther;
+    public String strAlertTextCountryOther;
+    public String strAlertTextCountrySupported;
+    public String strAlertTextCountryUnsupported;
     
-    public String strSheetTitleCountryLocate;
-    public String strSheetTitleCountryNoLocate;
+    public String strSheetTitleCountry;
     public String strSheetTitleOrigoType;
     
     public String strTermMe;
@@ -204,57 +208,59 @@ public class OStrings
     
     private void setOrigoListViewStrings(String language)
     {
-        strTabBarTitleOrigo                   = "Origo";
-        strViewTitleWardOrigoList             = "Origo • %@";
+        strTabBarTitleOrigo                = "Origo";
+        strViewTitleWardOrigoList          = "Origo • %@";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strHeaderWardsOrigos              = "Barnas origo";
-            strHeaderMyOrigos                 = "Mine origo";
+            strHeaderWardsOrigos           = "Barnas origo";
+            strHeaderMyOrigos              = "Mine origo";
             
-            strFooterOrigoCreationFirst       = "Trykk [+] for å opprette et origo";
-            strFooterOrigoCreation            = "Trykk [+] for å opprette et nytt origo";
-            strFooterOrigoCreationWards       = "for deg selv. Velg %@ for å opprette et origo for %@.";
+            strFooterOrigoCreationFirst    = "Trykk [+] for å opprette et origo";
+            strFooterOrigoCreation         = "Trykk [+] for å opprette et nytt origo";
+            strFooterOrigoCreationWards    = "for deg selv, eller velg %@ for å opprette et origo for %@.";
             
-            strButtonCountryOfLocation        = "Landet jeg er i nå";
-            strButtonCountryOther             = "Et annet land";
+            strButtonCountryLocate         = "Landet jeg er i nå";
+            strButtonCountryOther          = "Et annet land";
             
-            strAlertTitleCountry              = "Origo-land: %@";
-            strAlertTextCountry               = "Nye origo som du oppretter vil bli tilpasset %@. Du kan endre origo-landet ditt under Innstillinger.";
+            strAlertTitleCountryOther      = "Andre land";
+            strAlertTextCountryOther       = "For å kunne velge et annet land, må du først angi det som regionformat i systeminnstillingene.\n(Innstillinger > Generelt > Internasjonalt)";
+            strAlertTextCountrySupported   = "Nye origo vil bli tilpasset %@.";
+            strAlertTextCountryUnsupported = "Lokale tilpasninger er foreløpig ikke tilgjengelige for %@. Nye origo vil bli opprettet uten lokale tilpasninger.";
             
-            strSheetTitleCountryLocate        = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@, landet du befinner deg i nå, eller et annet land?";
-            strSheetTitleCountryNoLocate      = "Det nye origoet vil bli tilpasset landet du bor i. Er bostedslandet ditt %@ eller et annet land?";
-            strSheetTitleOrigoType            = "Hva slags origo ønsker du å opprette?";
+            strSheetTitleCountry           = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
+            strSheetTitleOrigoType         = "Hva slags origo ønsker du å opprette";
             
-            strTermMe                         = "Meg";
-            strTermYourChild                  = "et av barna";
-            strTermHim                        = "ham";
-            strTermHer                        = "henne";
-            strTermHimOrHer                   = "ham eller henne";
-            strTermForName                    = "for %@";
+            strTermMe                      = "Meg";
+            strTermYourChild               = "et av barna";
+            strTermHim                     = "ham";
+            strTermHer                     = "henne";
+            strTermHimOrHer                = "ham eller henne";
+            strTermForName                 = "for %@";
         } else {
-            strHeaderWardsOrigos              = "The kids' origos";
-            strHeaderMyOrigos                 = "My origos";
+            strHeaderWardsOrigos           = "The kids' origos";
+            strHeaderMyOrigos              = "My origos";
             
-            strFooterOrigoCreationFirst       = "Tap [+] to create an origo";
-            strFooterOrigoCreation            = "Tap [+] to create a new origo";
-            strFooterOrigoCreationWards       = "for yourself. Select %@ to create an origo for %@.";
+            strFooterOrigoCreationFirst    = "Tap [+] to create an origo";
+            strFooterOrigoCreation         = "Tap [+] to create a new origo";
+            strFooterOrigoCreationWards    = "for yourself. Select %@ to create an origo for %@.";
             
-            strButtonCountryOfLocation        = "The country I'm in";
-            strButtonCountryOther             = "Another country";
+            strButtonCountryLocate         = "The country I'm in";
+            strButtonCountryOther          = "Another country";
             
-            strAlertTitleCountry              = "Origo country: %@";
-            strAlertTextCountry               = "New origos that you create will be adapted for %@. You can change your origo country under Settings.";
+            strAlertTitleCountryOther      = "Other countries";
+            strAlertTextCountryOther       = "To choose another country, you must first specify it as region format in you system settings.\n(Settings > General > International)";
+            strAlertTextCountrySupported   = "New origos will be adapted for %@.";
+            strAlertTextCountryUnsupported = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
             
-            strSheetTitleCountryLocate        = "The new origo will be adapted for your country of residence. Is your country of residence %@, the country you're currently in, or another country?";
-            strSheetTitleCountryNoLocate      = "The new origo will be adapted for your country of residence. Is your country of residence %@ or another country?";
-            strSheetTitleOrigoType            = "What sort of origo du you want to create?";
+            strSheetTitleCountry           = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
+            strSheetTitleOrigoType         = "What sort of origo du you want to create?";
             
-            strTermMe                         = "Me";
-            strTermYourChild                  = "your child";
-            strTermHim                        = "him";
-            strTermHer                        = "her";
-            strTermHimOrHer                   = "him or her";
-            strTermForName                    = "for %@";
+            strTermMe                      = "Me";
+            strTermYourChild               = "your child";
+            strTermHim                     = "him";
+            strTermHer                     = "her";
+            strTermHimOrHer                = "him or her";
+            strTermForName                 = "for %@";
         }
     }
     
@@ -322,39 +328,45 @@ public class OStrings
     public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
+    public String strLabelDescriptionText;
     public String strLabelTelephone;
     
     public String strHeaderAddresses;
     
     public String strPlaceholderAddress;
+    public String strPlaceholderDescriptionText;
     public String strPlaceholderTelephone;
     
     private void setOrigoViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strDefaultResidenceName  = "Min husstand";
+            strDefaultResidenceName       = "Min husstand";
             
-            strViewTitleNewOrigo     = "Nytt origo";
+            strViewTitleNewOrigo          = "Nytt origo";
             
-            strLabelAddress          = strTermAddress;
-            strLabelTelephone        = "Telefon";
+            strLabelAddress               = "Adresse";
+            strLabelDescriptionText       = "Beskrivelse";
+            strLabelTelephone             = "Telefon";
             
-            strHeaderAddresses       = "Adresser";
+            strHeaderAddresses            = "Adresser";
             
-            strPlaceholderAddress    = "Gateadresse\nPostnummer og -sted";
-            strPlaceholderTelephone  = "Telefonnummer";
+            strPlaceholderAddress         = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderDescriptionText = "En kort beskrivelse";
+            strPlaceholderTelephone       = "Telefonnummer";
         } else {
-            strDefaultResidenceName  = "My place";
+            strDefaultResidenceName       = "My place";
             
-            strViewTitleNewOrigo     = "New origo";
+            strViewTitleNewOrigo          = "New origo";
             
-            strLabelAddress          = strTermAddress;
-            strLabelTelephone        = "Telephone";
+            strLabelAddress               = "Address";
+            strLabelDescriptionText       = "Description";
+            strLabelTelephone             = "Telephone";
             
-            strHeaderAddresses       = "Addresses";
+            strHeaderAddresses            = "Addresses";
             
-            strPlaceholderAddress    = "Street address\nPostal code and city/town";
-            strPlaceholderTelephone  = "Telephone number";
+            strPlaceholderAddress         = "Street address\nPostal code and city/town";
+            strPlaceholderDescriptionText = "A short description";
+            strPlaceholderTelephone       = "Telephone number";
         }
     }
     
@@ -419,7 +431,7 @@ public class OStrings
             strLabelAbbreviatedTelephone   = "t";
             
             strPlaceholderPhoto            = "Bilde";
-            strPlaceholderName             = "Fullt navn";
+            strPlaceholderName             = "Navn";
             strPlaceholderEmail            = "En gyldig epostadresse";
             strPlaceholderDateOfBirth      = "Fødselsdato";
             strPlaceholderMobilePhone      = "Mobilnummer";
@@ -461,7 +473,7 @@ public class OStrings
             strLabelAbbreviatedTelephone   = "t";
             
             strPlaceholderPhoto            = "Photo";
-            strPlaceholderName             = "Full name";
+            strPlaceholderName             = "Name";
             strPlaceholderEmail            = "A valid email address";
             strPlaceholderDateOfBirth      = "Date of birth";
             strPlaceholderMobilePhone      = "Mobile phone number";
@@ -578,14 +590,14 @@ public class OStrings
             strLabelCountrySettings         = "Angitt i lokale innstillinger";
             strLabelCountryLocation         = "Dette landet";
             
-            strFooterCountryInfoParenthesis = "Tilpasninger er foreløpig ikke tilgjengelige for land angitt i parentes.";
+            strFooterCountryInfoParenthesis = "Lokale tilpasninger er foreløpig ikke tilgjengelige for land angitt i parentes.";
             strFooterCountryInfoLocate      = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
         } else {
             strLabelCountrySettings         = "Specified in local settings";
             strLabelCountryLocation         = "This country";
             
             strFooterCountryInfoParenthesis = "Origo is not yet adapted for countries listed in parenthesis.";
-            strFooterCountryInfoLocate      = "If you wish to specify the country you're in, you must permit Origo to use Location Services.\n(Settings > Privacy > Location)";
+            strFooterCountryInfoLocate      = "If you wish to specify the country you're in, you must permit Origo to use location services.\n(Settings > Privacy > Location)";
         }
     }
     
