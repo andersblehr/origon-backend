@@ -297,7 +297,7 @@ public class OStrings
             strFooterSchoolClass      = "Trykk [+] for å legge til klassekamerater";
             strFooterPreschoolClass   = "Trykk [+] for å legge til barn i avdelingen";
             strFooterSportsTeam       = "Trykk [+] for å legge til spillere på laget";
-            strFooterOtherOrigo       = "Trykk [+] for å legge til origomedlemmer";
+            strFooterOtherOrigo       = "Trykk [+] for å legge til medlemmer";
             
             strButtonNewHousemate     = "Ny bofelle";   
             strButtonDeleteMember     = "Meld ut";
@@ -313,7 +313,7 @@ public class OStrings
             strFooterSchoolClass      = "Tap [+] to add classmates";
             strFooterPreschoolClass   = "Tap [+] to add children";
             strFooterSportsTeam       = "Tap [+] to add team members";
-            strFooterOtherOrigo       = "Tap [+] to add origo members";
+            strFooterOtherOrigo       = "Tap [+] to add members";
             
             strButtonNewHousemate     = "New housemate";
             strButtonDeleteMember     = "Remove";
