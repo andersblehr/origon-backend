@@ -637,7 +637,7 @@ public class OStrings
             strNewOrigoOfTypeSchoolClass    = "Ny skoleklasse";
             strNewOrigoOfTypePreschoolClass = "Ny barnehageavdeling";
             strNewOrigoOfTypeSportsTeam     = "Nytt lag";
-            strNewOrigoOfTypeOther          = "Ny origo";
+            strNewOrigoOfTypeOther          = "Nytt origo";
         } else {
             strOrigoTypeResidence           = "Address";
             strOrigoTypeOrganisation        = "Organisation";
