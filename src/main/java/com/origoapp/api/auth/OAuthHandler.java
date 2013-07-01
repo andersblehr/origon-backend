@@ -76,14 +76,14 @@ public class OAuthHandler
     
     
     @GET
-    @Path("login")
+    @Path("sign-in")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                              @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                              @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response signInUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
+                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion);
         
