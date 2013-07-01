@@ -173,11 +173,11 @@ public class OMeta
                 authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).get();
             } else {
                 if (authPhase == OAuthPhase.EMAIL_CODE) {
-                    authInfo = new OAuthInfo(email, "n/a", activationCode);
+                    authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
                 } else {
                     activationCode = deviceId.substring(0, kActivationCodeLength);
                     
-                    authInfo = new OAuthInfo(email, passwordHash, activationCode);
+                    authInfo = new OAuthInfo(email, deviceId, passwordHash, activationCode);
                     authInfo.isListed = (getMemberProxy() != null);
                 }
             }
