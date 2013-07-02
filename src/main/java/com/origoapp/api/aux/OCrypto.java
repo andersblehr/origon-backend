@@ -8,7 +8,7 @@ import javax.ws.rs.WebApplicationException;
 
 public class OCrypto
 {
-    private static final String kOrigoSeasoning = "socroilgao";
+    private static final String kDefaultSeasoning = "socroilgao";
     
     
     public static String hashUsingSHA1(String string)
@@ -60,7 +60,7 @@ public class OCrypto
     private static String seasonedString(String string)
     {
         String stringHash = hashUsingSHA1(string);
-        String seasoningHash = hashUsingSHA1(kOrigoSeasoning);
+        String seasoningHash = hashUsingSHA1(kDefaultSeasoning);
         
         int hashLength = stringHash.length();
         
