@@ -137,11 +137,11 @@ public class OAuthHandler
     
     
     @GET
-    @Path("emailcode")
+    @Path("sendcode")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response emailActivationCode(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                        @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                        @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response sendActivationCode(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                       @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                       @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(authToken, appVersion);
         

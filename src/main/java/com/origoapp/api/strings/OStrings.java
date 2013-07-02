@@ -99,7 +99,7 @@ public class OStrings
     public String strLabelActivate;
     
     public String strFooterSignInOrRegister;
-    public String strFooterActivate;
+    public String strFooterActivateUser;
     public String strFooterActivateEmail;
     
     public String strPlaceholderAuthEmail;
@@ -127,7 +127,7 @@ public class OStrings
             strLabelActivate                    = "Oppgi aktiveringskode";
             
             strFooterSignInOrRegister           = "Når du registrerer deg, vil du motta en epost med en aktiveringskode som du må oppgi i neste steg.";
-            strFooterActivate                   = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
+            strFooterActivateUser               = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
             strFooterActivateEmail              = "Aktiveringskoden er sendt til %@.";
             
             strPlaceholderAuthEmail             = "Epostadressen din";
@@ -152,7 +152,7 @@ public class OStrings
             strLabelActivate                    = "Enter activation code";
             
             strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must enter in the next step.";
-            strFooterActivate                   = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
+            strFooterActivateUser               = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
             strFooterActivateEmail              = "The activation code has been sent to %@.";
             
             strPlaceholderAuthEmail             = "Your email address";
