@@ -7,5 +7,5 @@ public enum OAuthPhase
     SIGNUP,
     LOGIN,
     ACTIVATE,
-    EMAIL_CODE,
+    SENDCODE,
 }
