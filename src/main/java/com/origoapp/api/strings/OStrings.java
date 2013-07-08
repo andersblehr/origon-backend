@@ -42,6 +42,8 @@ public class OStrings
     
     /* ==== Cross-view strings ==== */
     
+    public String strFooterTapToEdit;
+    
     public String strButtonOK;
     public String strButtonEdit;
     public String strButtonNext;
@@ -60,6 +62,8 @@ public class OStrings
     private void setCrossViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strFooterTapToEdit      = "Berør teksten for å gjøre endringer.";
+            
             strButtonOK             = "OK";
             strButtonEdit           = "Endre";
             strButtonNext           = "Neste";
@@ -75,6 +79,8 @@ public class OStrings
             strTermAddress          = "Adresse";
             strTermCountry          = "Land";
         } else {
+            strFooterTapToEdit      = "Tap text to edit.";
+            
             strButtonOK             = "OK";
             strButtonEdit           = "Edit";
             strButtonNext           = "Next";
@@ -110,68 +116,56 @@ public class OStrings
     
     public String strButtonHaveCode;
     public String strButtonStartOver;
-    public String strButtonAccept;
-    public String strButtonDecline;
     
     public String strAlertTitleActivationFailed;
     public String strAlertTextActivationFailed;
     public String strAlertTitleWelcomeBack;
     public String strAlertTextWelcomeBack;
-    public String strAlertTitleIncompleteRegistration;
-    public String strAlertTextIncompleteRegistration;
     
     private void setAuthViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelSignIn                      = "Logg på eller registrer deg";
-            strLabelActivate                    = "Oppgi aktiveringskode";
+            strLabelSignIn                = "Logg på eller registrer deg";
+            strLabelActivate              = "Oppgi aktiveringskode";
             
-            strFooterSignInOrRegister           = "Når du registrerer deg, vil du motta en epost med en aktiveringskode som du må oppgi i neste steg.";
-            strFooterActivateUser               = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
-            strFooterActivateEmail              = "Aktiveringskoden er sendt til %@.";
+            strFooterSignInOrRegister     = "Når du registrerer deg, vil du motta en epost med en aktiveringskode som du må oppgi i neste steg.";
+            strFooterActivateUser         = "Aktiveringskoden er sendt til %@. Du kan komme tilbake senere om du ikke har tilgang til eposten din her og nå.";
+            strFooterActivateEmail        = "Aktiveringskoden er sendt til %@.";
             
-            strPlaceholderAuthEmail             = "Epostadressen din";
-            strPlaceholderPassword              = "Passordet ditt";
-            strPlaceholderActivationCode        = "Aktiveringskode fra epost";
-            strPlaceholderRepeatPassword        = "Gjenta passordet ditt";
-            strPlaceholderPleaseWait            = "Vent litt...";
+            strPlaceholderAuthEmail       = "Epostadressen din";
+            strPlaceholderPassword        = "Passordet ditt";
+            strPlaceholderActivationCode  = "Aktiveringskode fra epost";
+            strPlaceholderRepeatPassword  = "Gjenta passordet ditt";
+            strPlaceholderPleaseWait      = "Vent litt...";
             
-            strButtonHaveCode                   = "Har kode";
-            strButtonStartOver                  = "Gå tilbake";
-            strButtonAccept                     = "Godta";
-            strButtonDecline                    = "Avslå";
+            strButtonHaveCode             = "Har kode";
+            strButtonStartOver            = "Gå tilbake";
             
-            strAlertTitleActivationFailed       = "Aktivering mislyktes";
-            strAlertTextActivationFailed        = "Det ser ut til at du enten har mistet aktiveringskoden som vi sendte deg på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
-            strAlertTitleWelcomeBack            = "Velkommen tilbake!";
-            strAlertTextWelcomeBack             = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
-            strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
-            strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
+            strAlertTitleActivationFailed = "Aktivering mislyktes";
+            strAlertTextActivationFailed  = "Det ser ut til at du enten har mistet aktiveringskoden som vi sendte deg på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
+            strAlertTitleWelcomeBack      = "Velkommen tilbake!";
+            strAlertTextWelcomeBack       = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
         } else {
-            strLabelSignIn                      = "Sign in or sign up";
-            strLabelActivate                    = "Enter activation code";
+            strLabelSignIn                = "Sign in or sign up";
+            strLabelActivate              = "Enter activation code";
             
-            strFooterSignInOrRegister           = "When you register, you will receive an email with an activation code that you must enter in the next step.";
-            strFooterActivateUser               = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
-            strFooterActivateEmail              = "The activation code has been sent to %@.";
+            strFooterSignInOrRegister     = "When you register, you will receive an email with an activation code that you must enter in the next step.";
+            strFooterActivateUser         = "The activation code has been sent to %@. You can come back later if you don't have access to your email at this time.";
+            strFooterActivateEmail        = "The activation code has been sent to %@.";
             
-            strPlaceholderAuthEmail             = "Your email address";
-            strPlaceholderPassword              = "Your password";
-            strPlaceholderActivationCode        = "Activation code from email";
-            strPlaceholderRepeatPassword        = "Repeat your password";
-            strPlaceholderPleaseWait            = "Please wait...";
+            strPlaceholderAuthEmail       = "Your email address";
+            strPlaceholderPassword        = "Your password";
+            strPlaceholderActivationCode  = "Activation code from email";
+            strPlaceholderRepeatPassword  = "Repeat your password";
+            strPlaceholderPleaseWait      = "Please wait...";
             
-            strButtonHaveCode                   = "Have code";
-            strButtonStartOver                  = "Start over";
-            strButtonAccept                     = "Accept";
-            strButtonDecline                    = "Decline";
+            strButtonHaveCode             = "Have code";
+            strButtonStartOver            = "Start over";
             
-            strAlertTitleActivationFailed       = "Activation failed";
-            strAlertTextActivationFailed        = "It looks like you may have lost the activation code that we sent to you by email, or forgotten the password you provided. Let's start over.";
-            strAlertTitleWelcomeBack            = "Welcome back!";
-            strAlertTextWelcomeBack             = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
-            strAlertTitleIncompleteRegistration = "Incomplete registration";
-            strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
+            strAlertTitleActivationFailed = "Activation failed";
+            strAlertTextActivationFailed  = "It looks like you may have lost the activation code that we sent to you by email, or forgotten the password you provided. Let's start over.";
+            strAlertTitleWelcomeBack      = "Welcome back!";
+            strAlertTextWelcomeBack       = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
         }
     }
     
@@ -191,6 +185,10 @@ public class OStrings
     public String strButtonCountryLocate;
     public String strButtonCountryOther;
     
+    public String strAlertTitleListedUserRegistration;
+    public String strAlertTextListedUserRegistration;
+    public String strAlertTitleIncompleteRegistration;
+    public String strAlertTextIncompleteRegistration;
     public String strAlertTitleCountryOther;
     public String strAlertTextCountryOther;
     public String strAlertTextCountrySupported;
@@ -201,66 +199,80 @@ public class OStrings
     
     public String strTermMe;
     public String strTermYourChild;
+    public String strTermHe;
     public String strTermHim;
+    public String strTermShe;
     public String strTermHer;
     public String strTermHimOrHer;
     public String strTermForName;
     
     private void setOrigoListViewStrings(String language)
     {
-        strTabBarTitleOrigo                = "Origo";
-        strViewTitleWardOrigoList          = "Origo • %@";
+        strTabBarTitleOrigo                     = "Origo";
+        strViewTitleWardOrigoList               = "Origo • %@";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strHeaderWardsOrigos           = "Barnas origo";
-            strHeaderMyOrigos              = "Mine origo";
+            strHeaderWardsOrigos                = "Barnas origo";
+            strHeaderMyOrigos                   = "Mine origo";
             
-            strFooterOrigoCreationFirst    = "Trykk [+] for å opprette et origo";
-            strFooterOrigoCreation         = "Trykk [+] for å opprette et nytt origo";
-            strFooterOrigoCreationWards    = "for deg selv, eller velg %@ for å opprette et origo for %@.";
+            strFooterOrigoCreationFirst         = "Trykk [+] for å opprette et origo.";
+            strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo.";
+            strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@.";
             
-            strButtonCountryLocate         = "Landet jeg er i nå";
-            strButtonCountryOther          = "Et annet land";
+            strButtonCountryLocate              = "Landet jeg er i nå";
+            strButtonCountryOther               = "Et annet land";
             
-            strAlertTitleCountryOther      = "Andre land";
-            strAlertTextCountryOther       = "For å kunne velge et annet land, må du først angi det som regionformat i systeminnstillingene.\n(Innstillinger > Generelt > Internasjonalt)";
-            strAlertTextCountrySupported   = "Nye origo vil bli tilpasset %@.";
-            strAlertTextCountryUnsupported = "Lokale tilpasninger er foreløpig ikke tilgjengelige for %@. Nye origo vil bli opprettet uten lokale tilpasninger.";
+            strAlertTitleListedUserRegistration = "Velkommen til Origo!";
+            strAlertTextListedUserRegistration  = "Kontroller at opplysningene dine er riktige, samt legg inn opplysningene som %@ ikke hadde tilgang til da %@ inviterte deg.";  
+            strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
+            strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
+            strAlertTitleCountryOther           = "Andre land";
+            strAlertTextCountryOther            = "For å kunne velge et annet land, må du først angi det som regionformat i systeminnstillingene.\n(Innstillinger > Generelt > Internasjonalt)";
+            strAlertTextCountrySupported        = "Nye origo vil bli tilpasset %@.";
+            strAlertTextCountryUnsupported      = "Lokale tilpasninger er foreløpig ikke tilgjengelige for %@. Nye origo vil bli opprettet uten lokale tilpasninger.";
             
-            strSheetTitleCountry           = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
-            strSheetTitleOrigoType         = "Hva slags origo ønsker du å opprette";
+            strSheetTitleCountry                = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
+            strSheetTitleOrigoType              = "Hva slags origo ønsker du å opprette";
             
-            strTermMe                      = "Meg";
-            strTermYourChild               = "et av barna";
-            strTermHim                     = "ham";
-            strTermHer                     = "henne";
-            strTermHimOrHer                = "ham eller henne";
-            strTermForName                 = "for %@";
+            strTermMe                           = "Meg";
+            strTermYourChild                    = "et av barna";
+            strTermHe                           = "han";
+            strTermHim                          = "ham";
+            strTermShe                          = "hun";
+            strTermHer                          = "henne";
+            strTermHimOrHer                     = "ham eller henne";
+            strTermForName                      = "for %@";
         } else {
-            strHeaderWardsOrigos           = "The kids' origos";
-            strHeaderMyOrigos              = "My origos";
+            strHeaderWardsOrigos                = "The kids' origos";
+            strHeaderMyOrigos                   = "My origos";
             
-            strFooterOrigoCreationFirst    = "Tap [+] to create an origo";
-            strFooterOrigoCreation         = "Tap [+] to create a new origo";
-            strFooterOrigoCreationWards    = "for yourself. Select %@ to create an origo for %@.";
+            strFooterOrigoCreationFirst         = "Tap [+] to create an origo.";
+            strFooterOrigoCreation              = "Tap [+] to create a new origo.";
+            strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@.";
             
-            strButtonCountryLocate         = "The country I'm in";
-            strButtonCountryOther          = "Another country";
+            strButtonCountryLocate              = "The country I'm in";
+            strButtonCountryOther               = "Another country";
             
-            strAlertTitleCountryOther      = "Other countries";
-            strAlertTextCountryOther       = "To choose another country, you must first specify it as region format in you system settings.\n(Settings > General > International)";
-            strAlertTextCountrySupported   = "New origos will be adapted for %@.";
-            strAlertTextCountryUnsupported = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
+            strAlertTitleListedUserRegistration = "Welcome to Origo!";
+            strAlertTextListedUserRegistration  = "Please verify your details and provide the information that %@ did not have access to when %@ invited you.";  
+            strAlertTitleIncompleteRegistration = "Incomplete registration";
+            strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
+            strAlertTitleCountryOther           = "Other countries";
+            strAlertTextCountryOther            = "To choose another country, you must first specify it as region format in you system settings.\n(Settings > General > International)";
+            strAlertTextCountrySupported        = "New origos will be adapted for %@.";
+            strAlertTextCountryUnsupported      = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
             
-            strSheetTitleCountry           = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
-            strSheetTitleOrigoType         = "What sort of origo du you want to create?";
+            strSheetTitleCountry                = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
+            strSheetTitleOrigoType              = "What sort of origo du you want to create?";
             
-            strTermMe                      = "Me";
-            strTermYourChild               = "your child";
-            strTermHim                     = "him";
-            strTermHer                     = "her";
-            strTermHimOrHer                = "him or her";
-            strTermForName                 = "for %@";
+            strTermMe                           = "Me";
+            strTermYourChild                    = "your child";
+            strTermHe                           = "he";
+            strTermHim                          = "him";
+            strTermShe                          = "she";
+            strTermHer                          = "her";
+            strTermHimOrHer                     = "him or her";
+            strTermForName                      = "for %@";
         }
     }
     
@@ -268,7 +280,7 @@ public class OStrings
     /* ==== OMemberListView strings ==== */
     
     public String strViewTitleMembers;
-    public String strViewTitleHousehold;
+    public String strViewTitleResidence;
     
     public String strHeaderContacts;
     public String strHeaderHouseholdMembers;
@@ -287,33 +299,33 @@ public class OStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleMembers       = "Medlemmer";
-            strViewTitleHousehold     = "I husstanden";
+            strViewTitleResidence     = "Hos %@";
             
             strHeaderContacts         = "Kontaktpersoner";
             strHeaderHouseholdMembers = "Medlemmer i husstanden";
             strHeaderOrigoMembers     = "Medlemmer";
             
             strFooterResidence        = "Trykk [+] for å legge til medlemmer i husstanden.";
-            strFooterSchoolClass      = "Trykk [+] for å legge til klassekamerater";
-            strFooterPreschoolClass   = "Trykk [+] for å legge til barn i avdelingen";
-            strFooterSportsTeam       = "Trykk [+] for å legge til spillere på laget";
-            strFooterOtherOrigo       = "Trykk [+] for å legge til medlemmer";
+            strFooterSchoolClass      = "Trykk [+] for å legge til klassekamerater.";
+            strFooterPreschoolClass   = "Trykk [+] for å legge til barn i avdelingen.";
+            strFooterSportsTeam       = "Trykk [+] for å legge til spillere på laget.";
+            strFooterOtherOrigo       = "Trykk [+] for å legge til medlemmer.";
             
             strButtonNewHousemate     = "Ny bofelle";   
             strButtonDeleteMember     = "Meld ut";
         } else {
             strViewTitleMembers       = "Members";
-            strViewTitleHousehold     = "In the household";
+            strViewTitleResidence     = "%@'s place";
             
             strHeaderContacts         = "Contacts";
             strHeaderHouseholdMembers = "Household members";
             strHeaderOrigoMembers     = "Members";
             
             strFooterResidence        = "Tap [+] to add members to the household.";
-            strFooterSchoolClass      = "Tap [+] to add classmates";
-            strFooterPreschoolClass   = "Tap [+] to add children";
-            strFooterSportsTeam       = "Tap [+] to add team members";
-            strFooterOtherOrigo       = "Tap [+] to add members";
+            strFooterSchoolClass      = "Tap [+] to add classmates.";
+            strFooterPreschoolClass   = "Tap [+] to add children.";
+            strFooterSportsTeam       = "Tap [+] to add team members.";
+            strFooterOtherOrigo       = "Tap [+] to add members.";
             
             strButtonNewHousemate     = "New housemate";
             strButtonDeleteMember     = "Remove";
@@ -391,7 +403,7 @@ public class OStrings
     public String strPlaceholderDateOfBirth;
     public String strPlaceholderMobilePhone;
     
-    public String strFooterMember;
+    public String strFooterTapToAddAddress;
     
     public String strButtonNewAddress;
     public String strButtonInviteToHousehold;
@@ -436,7 +448,7 @@ public class OStrings
             strPlaceholderDateOfBirth      = "Fødselsdato";
             strPlaceholderMobilePhone      = "Mobilnummer";
             
-            strFooterMember                = "Trykk [+] for å legge til en adresse.";
+            strFooterTapToAddAddress       = "Trykk [+] for å legge til en adresse.";
             
             strButtonNewAddress            = "Ny adresse";
             strButtonInviteToHousehold     = "Inviter til husstanden";
@@ -478,7 +490,7 @@ public class OStrings
             strPlaceholderDateOfBirth      = "Date of birth";
             strPlaceholderMobilePhone      = "Mobile phone number";
             
-            strFooterMember                = "Tap [+] to add an address.";
+            strFooterTapToAddAddress       = "Tap [+] to add an address.";
             
             strButtonNewAddress            = "New address";
             strButtonInviteToHousehold     = "Invite to household";
@@ -623,7 +635,7 @@ public class OStrings
     private void setOrigoTypeStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOrigoTypeResidence           = "Adresse";
+            strOrigoTypeResidence           = "Kart";
             strOrigoTypeOrganisation        = "Organisasjon";
             strOrigoTypeAssociation         = "Forening";
             strOrigoTypeSchoolClass         = "Skoleklasse";
@@ -639,7 +651,7 @@ public class OStrings
             strNewOrigoOfTypeSportsTeam     = "Nytt lag";
             strNewOrigoOfTypeOther          = "Nytt origo";
         } else {
-            strOrigoTypeResidence           = "Address";
+            strOrigoTypeResidence           = "Map";
             strOrigoTypeOrganisation        = "Organisation";
             strOrigoTypeAssociation         = "Association";
             strOrigoTypeSchoolClass         = "School class";

@@ -145,13 +145,13 @@ public class OAuthHandler
     {
         m = new OMeta(authToken, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.EMAIL_CODE);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SENDCODE);
         
         OAuthInfo authInfo = null;
         
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
-            sendEmail(OAuthPhase.EMAIL_CODE);
+            sendEmail(OAuthPhase.SENDCODE);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
@@ -178,7 +178,7 @@ public class OAuthHandler
                 message.setText(String.format("Activation code: %s", m.getActivationCode()));
                 
                 OLog.log().fine(m.meta() + "Sent activation code to new Origo user.");
-            } else if (authPhase == OAuthPhase.EMAIL_CODE) {
+            } else if (authPhase == OAuthPhase.SENDCODE) {
                 message.setSubject("Activate your email address for use with Origo");
                 message.setText(String.format("Activation code: %s", m.getActivationCode()));
                 

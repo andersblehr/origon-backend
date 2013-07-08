@@ -172,7 +172,7 @@ public class OMeta
             if (authPhase == OAuthPhase.ACTIVATE) {
                 authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).get();
             } else {
-                if (authPhase == OAuthPhase.EMAIL_CODE) {
+                if (authPhase == OAuthPhase.SENDCODE) {
                     authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
                 } else {
                     activationCode = deviceId.substring(0, kActivationCodeLength);
@@ -202,7 +202,7 @@ public class OMeta
                     if (isValid) {
                         this.authPhase = authPhase;
                         
-                        if (authPhase == OAuthPhase.EMAIL_CODE) {
+                        if (authPhase == OAuthPhase.SENDCODE) {
                             this.activationCode = authElements[1];
                         } else {
                             validatePassword(authElements[1]);
