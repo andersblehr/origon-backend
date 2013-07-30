@@ -23,9 +23,10 @@ public class OMember extends OReplicatedEntity
     public String name;
     public String gender;
     public Date dateOfBirth;
-    public @IgnoreSave(IfNull.class) String givenName;
     public @IgnoreSave(IfNull.class) String mobilePhone;
     public @IgnoreSave(IfNull.class) String email;
+    public @IgnoreSave(IfNull.class) String fatherId;
+    public @IgnoreSave(IfNull.class) String motherId;
     public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfNull.class) Date activeSince;
     
