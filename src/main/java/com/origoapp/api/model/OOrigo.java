@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.EmbedMap;
 import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.condition.IfNull;
@@ -29,7 +30,7 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) Blob photo;
     
     public @IgnoreSave OOrigo parentOrigo;
-    public @IgnoreSave Map<String, String> parentOrigoRef;
+    public @IgnoreSave @EmbedMap Map<String, String> parentOrigoRef;
     public @IgnoreSave(IfNull.class) Key<OOrigo> parentOrigoKey;
 
 

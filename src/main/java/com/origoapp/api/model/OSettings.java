@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.EmbedMap;
 import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
 
@@ -21,7 +22,7 @@ public class OSettings extends OReplicatedEntity
     public String countryCode;
     
     public @IgnoreSave OMember user;
-    public @IgnoreSave Map<String, String> userRef;
+    public @IgnoreSave @EmbedMap Map<String, String> userRef;
     public Key<OMember> userKey;
 
     

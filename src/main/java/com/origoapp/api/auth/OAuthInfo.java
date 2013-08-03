@@ -14,7 +14,6 @@ public class OAuthInfo
     public String deviceId;
     public String passwordHash;
     public String activationCode;
-    public boolean isListed;
     
     
     public OAuthInfo() {}

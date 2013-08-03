@@ -44,6 +44,6 @@ public class OStringHandler
         
         OLog.log().fine(m.meta() + "Fetched strings.");
         
-        return Response.status(HttpServletResponse.SC_OK).entity(new OStrings(language)).build();
+        return Response.status(HttpServletResponse.SC_OK).entity(new OStrings(language.substring(0, 2))).build();
     }
 }

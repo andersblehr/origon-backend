@@ -8,6 +8,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.EmbedMap;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.condition.IfDefault;
@@ -26,7 +27,7 @@ public class OResidencySchedule extends OReplicatedEntity
     public @IgnoreSave(IfDefault.class) int switchFrequency = 0;
     
     public @IgnoreSave OMembership residency;
-    public @IgnoreSave Map<String, String> residencyRef;
+    public @IgnoreSave @EmbedMap Map<String, String> residencyRef;
     public Key<OMembership> residencyKey;
 
     

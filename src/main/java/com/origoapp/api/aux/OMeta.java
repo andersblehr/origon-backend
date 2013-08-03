@@ -149,7 +149,7 @@ public class OMeta
     public OMemberProxy getMemberProxy()
     {
         if (memberProxy == null) {
-            memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).get();
+            memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).now();
             
             if (authPhase == OAuthPhase.ACTIVATE) {
                 if (memberProxy == null) {
@@ -170,7 +170,7 @@ public class OMeta
         
         if (isValid) {
             if (authPhase == OAuthPhase.ACTIVATE) {
-                authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).get();
+                authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).now();
             } else {
                 if (authPhase == OAuthPhase.SENDCODE) {
                     authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
@@ -178,7 +178,6 @@ public class OMeta
                     activationCode = deviceId.substring(0, kActivationCodeLength);
                     
                     authInfo = new OAuthInfo(email, deviceId, passwordHash, activationCode);
-                    authInfo.isListed = (getMemberProxy() != null);
                 }
             }
         }
@@ -225,7 +224,7 @@ public class OMeta
         if (authPhase == OAuthPhase.NONE) {
             try {
                 Date now = new Date();
-                OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).get(); 
+                OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).now(); 
 
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
