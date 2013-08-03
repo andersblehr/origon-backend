@@ -1,4 +1,5 @@
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
-warSrcDir=target/origoapp-api-1
-warSrcDirIsOutput=true
+lastWarOutDir=/Users/ablehr/Developer/Apps/OrigoApp/origoapp-api/target/origoapp-api-1
+warSrcDir=src/main/webapp
+warSrcDirIsOutput=false
