@@ -9,6 +9,7 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.EmbedMap;
 import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.condition.IfFalse;
@@ -29,10 +30,10 @@ public class OMembership extends OReplicatedEntity
     public String type;
     
     public @IgnoreSave OMember member;
-    public @IgnoreSave Map<String, String> memberRef;
+    public @IgnoreSave @EmbedMap Map<String, String> memberRef;
     public @IgnoreSave(IfNull.class) Key<OMember> memberKey;
     
-    public @IgnoreSave Map<String, String> origoRef;
+    public @IgnoreSave @EmbedMap Map<String, String> origoRef;
     
 
     public OMembership()

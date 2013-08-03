@@ -57,7 +57,6 @@ public class OStrings
     public String strAlertTextServerError;
     public String strAlertTextLocating;
     
-    public String strArgumentFormatAorB;
     public String strArgumentFormatAofB;
     
     public String strTermYes;
@@ -86,15 +85,14 @@ public class OStrings
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
             strAlertTextLocating    = "Lokaliserer...";
             
-            strArgumentFormatAorB   = "%@ eller %@";
             strArgumentFormatAofB   = "%@ til %@";
             
             strTermYes              = "Ja";
             strTermNo               = "Nei";
-            strTermMan              = "mann";
-            strTermBoy              = "gutt";
-            strTermWoman            = "kvinne";
-            strTermGirl             = "jente";
+            strTermMan              = "Mann";
+            strTermBoy              = "Gutt";
+            strTermWoman            = "Kvinne";
+            strTermGirl             = "Jente";
             
             strSeparatorAnd         = " og ";
         } else {
@@ -112,15 +110,14 @@ public class OStrings
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
             strAlertTextLocating    = "Locating...";
             
-            strArgumentFormatAorB   = "%@ or %@";
             strArgumentFormatAofB   = "%@ of %@";
             
             strTermYes              = "Yes";
             strTermNo               = "No";
-            strTermMan              = "man";
-            strTermBoy              = "boy";
-            strTermWoman            = "woman";
-            strTermGirl             = "girl";
+            strTermMan              = "Man";
+            strTermBoy              = "Boy";
+            strTermWoman            = "Woman";
+            strTermGirl             = "Girl";
             
             strSeparatorAnd         = " and ";
         }
@@ -238,9 +235,9 @@ public class OStrings
             strHeaderWardsOrigos                = "Barnas origo";
             strHeaderMyOrigos                   = "Mine origo";
             
-            strFooterOrigoCreationFirst         = "Trykk [+] for å opprette et origo.";
-            strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo.";
-            strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@.";
+            strFooterOrigoCreationFirst         = "Trykk [+] for å opprette et origo";
+            strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo";
+            strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@";
             
             strButtonCountryLocate              = "Landet jeg er i nå";
             strButtonCountryOther               = "Et annet land";
@@ -264,9 +261,9 @@ public class OStrings
             strHeaderWardsOrigos                = "The kids' origos";
             strHeaderMyOrigos                   = "My origos";
             
-            strFooterOrigoCreationFirst         = "Tap [+] to create an origo.";
-            strFooterOrigoCreation              = "Tap [+] to create a new origo.";
-            strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@.";
+            strFooterOrigoCreationFirst         = "Tap [+] to create an origo";
+            strFooterOrigoCreation              = "Tap [+] to create a new origo";
+            strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@";
             
             strButtonCountryLocate              = "The country I'm in";
             strButtonCountryOther               = "Another country";
@@ -306,6 +303,7 @@ public class OStrings
     public String strFooterOtherOrigo;
     
     public String strButtonNewHousemate;
+    public String strButtonOtherGuardian;
     public String strButtonDeleteMember;
     
     private void setMemberListViewStrings(String language)
@@ -325,6 +323,7 @@ public class OStrings
             strFooterOtherOrigo       = "Trykk [+] for å legge til medlemmer.";
             
             strButtonNewHousemate     = "Ny bofelle";   
+            strButtonOtherGuardian    = "Annen foresatt";   
             strButtonDeleteMember     = "Meld ut";
         } else {
             strViewTitleMembers       = "Members";
@@ -341,6 +340,7 @@ public class OStrings
             strFooterOtherOrigo       = "Tap [+] to add members.";
             
             strButtonNewHousemate     = "New housemate";
+            strButtonOtherGuardian    = "Other guardian";   
             strButtonDeleteMember     = "Remove";
         }
     }
@@ -431,11 +431,9 @@ public class OStrings
     public String strSheetTitleParenthood;
     public String strSheetTitleExistingResidence;
     
-    public String strTermTheParents;
-    public String strTermTheFather;
-    public String strTermTheMother;
-    public String strTermYourFather;
-    public String strTermYourMother;
+    public String strQuestionArgumentGender;
+    public String strQuestionArgumentGenderMinor;
+    
     public String strTermHisFather;
     public String strTermHerFather;
     public String strTermHisMother;
@@ -483,11 +481,9 @@ public class OStrings
             strSheetTitleParenthood        = "%@ %@ %@ til %@?";
             strSheetTitleExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
             
-            strTermTheParents              = "foreldrene";
-            strTermTheFather               = "faren";
-            strTermTheMother               = "moren";
-            strTermYourFather              = "faren din";
-            strTermYourMother              = "moren din";
+            strQuestionArgumentGender      = "kvinne eller mann";
+            strQuestionArgumentGenderMinor = "jente eller gutt";
+            
             strTermHisFather               = "faren hans";
             strTermHerFather               = "faren hennes";
             strTermHisMother               = "moren hans";
@@ -532,11 +528,9 @@ public class OStrings
             strSheetTitleParenthood        = "%@ %@ %@ of %@?";
             strSheetTitleExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
             
-            strTermTheParents              = "the parents";
-            strTermTheFather               = "the father";
-            strTermTheMother               = "the mother";
-            strTermYourFather              = "your father";
-            strTermYourMother              = "your mother";
+            strQuestionArgumentGender      = "a woman or a man";
+            strQuestionArgumentGenderMinor = "a girl or a boy";
+            
             strTermHisFather               = "his father";
             strTermHerFather               = "her father";
             strTermHisMother               = "his mother";
@@ -765,12 +759,17 @@ public class OStrings
     
     /* ==== Language strings ==== */
     
-    public String strQuestionTemplate; 
+    public String strQuestionTemplate;
     
-    public String verbs       = "be";
-    public String pronouns    = "I|you|he|she";
+    public String verbs    = "be";
+    public String nouns    = "father|mother|parents";
+    public String pronouns = "I|you|he|she";
     
     public String verbBe;
+    
+    public String nounFather;
+    public String nounMother;
+    public String nounParents;
     
     public String pronounI;
     public String pronounYou;
@@ -780,23 +779,31 @@ public class OStrings
     private void setLanguageStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strQuestionTemplate   = "{verb} {subject} {argument}?";
+            strQuestionTemplate    = "{verb} {subject} {argument}?";
             
-            verbBe                = "er|er|er|er|er|er";
+            verbBe                 = "er|er|er|er|er|er";
             
-            pronounI              = "jeg|meg|meg|meg";
-            pronounYou            = "du|deg|deg|deg";
-            pronounHe             = "han|ham|ham|ham";
-            pronounShe            = "hun|henne|henne|henne";
+            nounFather             = "faren|faren din|faren til %@";
+            nounMother             = "moren|moren din|moren til %@";
+            nounParents            = "foreldrene|foreldrene dine|foreldrene til %@";
+            
+            pronounI               = "jeg|meg|meg|meg";
+            pronounYou             = "du|deg|deg|deg";
+            pronounHe              = "han|ham|ham|ham";
+            pronounShe             = "hun|henne|henne|henne";
         } else {
-            strQuestionTemplate   = "{verb} {subject} {argument}?";
+            strQuestionTemplate    = "{verb} {subject} {argument}?";
             
-            verbBe                = "am|are|is|are|are|are";
+            verbBe                 = "am|are|is|are|are|are";
             
-            pronounI              = "I|me|me|me";
-            pronounYou            = "you|you|you|you";
-            pronounHe             = "he|him|him|him";
-            pronounShe            = "she|her|her|her";
+            nounFather             = "the father|your father|%@'s father";
+            nounMother             = "the mother|your mother|%@'s mother";
+            nounParents            = "the parents|your parents|%@'s parents";
+            
+            pronounI               = "I|me|me|me";
+            pronounYou             = "you|you|you|you";
+            pronounHe              = "he|him|him|him";
+            pronounShe             = "she|her|her|her";
         }
     }
 }

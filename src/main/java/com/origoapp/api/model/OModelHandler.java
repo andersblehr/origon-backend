@@ -136,7 +136,7 @@ public class OModelHandler
         OMember member = null;
         
         if (m.isValid()) {
-            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).get();
+            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).now();
             
             if (memberProxy != null) {
                 Key<OOrigo> memberRootKey = null;
@@ -152,7 +152,7 @@ public class OModelHandler
                     }
                 }
                 
-                member = ofy().load().key(Key.create(memberRootKey, OMember.class, memberId)).get();
+                member = ofy().load().key(Key.create(memberRootKey, OMember.class, memberId)).now();
             }
         }
         
