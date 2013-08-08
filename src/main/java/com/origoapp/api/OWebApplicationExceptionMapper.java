@@ -9,7 +9,6 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class OWebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException>
 {
-	@Override
 	public Response toResponse(WebApplicationException exception)
 	{
 		return exception.getResponse();
