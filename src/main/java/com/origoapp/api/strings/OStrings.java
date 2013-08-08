@@ -44,6 +44,7 @@ public class OStrings
     /* ==== Cross-view terms & strings ==== */
     
     public String strFooterTapToEdit;
+    public String strFooterOrigoSignature;
     
     public String strButtonOK;
     public String strButtonEdit;
@@ -72,6 +73,7 @@ public class OStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strFooterTapToEdit      = "Berør teksten for å gjøre endringer.";
+            strFooterOrigoSignature = "\n\nSendt fra Origo - http://origoapp.com";
             
             strButtonOK             = "OK";
             strButtonEdit           = "Endre";
@@ -97,6 +99,7 @@ public class OStrings
             strSeparatorAnd         = " og ";
         } else {
             strFooterTapToEdit      = "Tap text to edit.";
+            strFooterOrigoSignature = "\n\nSent from Origo - http://origoapp.com";
             
             strButtonOK             = "OK";
             strButtonEdit           = "Edit";
@@ -198,7 +201,6 @@ public class OStrings
     /* ==== OOrigoListView strings ==== */
     
     public String strTabBarTitleOrigo;
-    public String strViewTitleWardOrigoList;
     
     public String strHeaderWardsOrigos;
     public String strHeaderMyOrigos;
@@ -207,6 +209,7 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
+    public String strButtonSettings;
     public String strButtonCountryLocate;
     public String strButtonCountryOther;
     
@@ -229,7 +232,6 @@ public class OStrings
     private void setOrigoListViewStrings(String language)
     {
         strTabBarTitleOrigo                     = "Origo";
-        strViewTitleWardOrigoList               = "Origo • %@";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strHeaderWardsOrigos                = "Barnas origo";
@@ -239,6 +241,7 @@ public class OStrings
             strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@";
             
+            strButtonSettings                   = "Innstillinger";
             strButtonCountryLocate              = "Landet jeg er i nå";
             strButtonCountryOther               = "Et annet land";
             
@@ -265,6 +268,7 @@ public class OStrings
             strFooterOrigoCreation              = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@";
             
+            strButtonSettings                   = "Settings";
             strButtonCountryLocate              = "The country I'm in";
             strButtonCountryOther               = "Another country";
             
@@ -399,10 +403,7 @@ public class OStrings
     public String strLabelEmail;
     public String strLabelMobilePhone;
     public String strLabelDateOfBirth;
-    public String strLabelAbbreviatedEmail;
     public String strLabelAbbreviatedMobilePhone;
-    public String strLabelAbbreviatedDateOfBirth;
-    public String strLabelAbbreviatedTelephone;
     
     public String strPlaceholderPhoto;
     public String strPlaceholderName;
@@ -410,13 +411,13 @@ public class OStrings
     public String strPlaceholderDateOfBirth;
     public String strPlaceholderMobilePhone;
     
-    public String strHeaderAddress;
-    public String strHeaderAddresses;
-    
     public String strFooterTapToAddAddress;
     
     public String strButtonParentToSome;
     public String strButtonNewAddress;
+    public String strButtonAllContacts;
+    public String strButtonChangePassword;
+    public String strButtonEditGender;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
@@ -427,8 +428,9 @@ public class OStrings
     public String strAlertTitleFailedEmailChange;
     public String strAlertTextFailedEmailChange;
 
-    public String strSheetTitleGender;
-    public String strSheetTitleParenthood;
+    public String strSheetTitleEmailRecipient;
+    public String strSheetTitleTextRecipient;
+    public String strSheetTitlePhoneCallRecipient;
     public String strSheetTitleExistingResidence;
     
     public String strQuestionArgumentGender;
@@ -442,99 +444,95 @@ public class OStrings
     private void setMemberViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strViewTitleAboutMe            = "Om meg";
-            strViewTitleNewMember          = "Nytt medlem";
-            strViewTitleNewHouseholdMember = "I husstanden";
+            strViewTitleAboutMe             = "Om meg";
+            strViewTitleNewMember           = "Nytt medlem";
+            strViewTitleNewHouseholdMember  = "I husstanden";
             
-            strLabelEmail                  = "Epost";
-            strLabelMobilePhone            = "Mobil";
-            strLabelDateOfBirth            = "Født";
-            strLabelAbbreviatedEmail       = "e";
-            strLabelAbbreviatedMobilePhone = "m";
-            strLabelAbbreviatedDateOfBirth = "f";
-            strLabelAbbreviatedTelephone   = "t";
+            strLabelEmail                   = "Epost";
+            strLabelMobilePhone             = "Mobil";
+            strLabelDateOfBirth             = "Født";
+            strLabelAbbreviatedMobilePhone  = "m";
             
-            strPlaceholderPhoto            = "Bilde";
-            strPlaceholderName             = "Navn";
-            strPlaceholderEmail            = "En gyldig epostadresse";
-            strPlaceholderDateOfBirth      = "Fødselsdato";
-            strPlaceholderMobilePhone      = "Mobilnummer";
+            strPlaceholderPhoto             = "Bilde";
+            strPlaceholderName              = "Navn";
+            strPlaceholderEmail             = "En gyldig epostadresse";
+            strPlaceholderDateOfBirth       = "Fødselsdato";
+            strPlaceholderMobilePhone       = "Mobilnummer";
             
-            strHeaderAddress               = "Adresse";
-            strHeaderAddresses             = "Adresser";
+            strFooterTapToAddAddress        = "Trykk [+] for å legge til en adresse.";
             
-            strFooterTapToAddAddress       = "Trykk [+] for å legge til en adresse.";
+            strButtonParentToSome           = "Til noen av dem";
+            strButtonNewAddress             = "Ny adresse";
+            strButtonAllContacts            = "Alle kontaktpersoner";
+            strButtonChangePassword         = "Endre passord";
+            strButtonEditGender             = "Rediger kjønn";
+            strButtonInviteToHousehold      = "Inviter til husstanden";
+            strButtonMergeHouseholds        = "Slå sammen husstandene";
             
-            strButtonParentToSome          = "Til noen av dem";
-            strButtonNewAddress            = "Ny adresse";
-            strButtonInviteToHousehold     = "Inviter til husstanden";
-            strButtonMergeHouseholds       = "Slå sammen husstandene";
+            strAlertTitleMemberExists       = "Allerede registrert";
+            strAlertTextMemberExists        = "%@ (%@) er allerede registrert i \"%@\". Vennligst oppgi en annen epost-adresse, eller avbryt registreringen.";
+            strAlertTitleUserEmailChange    = "Ny epost-adresse";
+            strAlertTextUserEmailChange     = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å aktivere endringen. Ønsker du å fortsette?";
+            strAlertTitleFailedEmailChange  = "Aktivering mislyktes";
+            strAlertTextFailedEmailChange   = "Aktivering av epost-adressen %@ mislyktes. Prøv igjen, eller trykk Avbryt for avbryte endringen.";
             
-            strAlertTitleMemberExists      = "Allerede registrert";
-            strAlertTextMemberExists       = "%@ (%@) er allerede registrert i \"%@\". Vennligst oppgi en annen epost-adresse, eller avbryt registreringen.";
-            strAlertTitleUserEmailChange   = "Ny epost-adresse";
-            strAlertTextUserEmailChange    = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å aktivere endringen. Ønsker du å fortsette?";
-            strAlertTitleFailedEmailChange = "Aktivering mislyktes";
-            strAlertTextFailedEmailChange  = "Aktivering av epost-adressen %@ mislyktes. Prøv igjen, eller trykk Avbryt for avbryte endringen.";
+            strSheetTitleEmailRecipient     = "Hvem vil du sende epost til?";
+            strSheetTitleTextRecipient      = "Hvem vil du sende tekstmelding til?";
+            strSheetTitlePhoneCallRecipient = "Hvem vil du ringe?";
+            strSheetTitleExistingResidence  = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
             
-            strSheetTitleGender            = "%@ %@ %@ eller %@?";
-            strSheetTitleParenthood        = "%@ %@ %@ til %@?";
-            strSheetTitleExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
+            strQuestionArgumentGender       = "kvinne eller mann";
+            strQuestionArgumentGenderMinor  = "jente eller gutt";
             
-            strQuestionArgumentGender      = "kvinne eller mann";
-            strQuestionArgumentGenderMinor = "jente eller gutt";
-            
-            strTermHisFather               = "faren hans";
-            strTermHerFather               = "faren hennes";
-            strTermHisMother               = "moren hans";
-            strTermHerMother               = "moren hennes";
+            strTermHisFather                = "faren hans";
+            strTermHerFather                = "faren hennes";
+            strTermHisMother                = "moren hans";
+            strTermHerMother                = "moren hennes";
         } else {
-            strViewTitleAboutMe            = "About me";
-            strViewTitleNewMember          = "New member";
-            strViewTitleNewHouseholdMember = "In the household";
+            strViewTitleAboutMe             = "About me";
+            strViewTitleNewMember           = "New member";
+            strViewTitleNewHouseholdMember  = "In the household";
             
-            strLabelEmail                  = "Email";
-            strLabelMobilePhone            = "Mobile";
-            strLabelDateOfBirth            = "Born";
-            strLabelAbbreviatedEmail       = "e";
-            strLabelAbbreviatedMobilePhone = "m";
-            strLabelAbbreviatedDateOfBirth = "b";
-            strLabelAbbreviatedTelephone   = "t";
+            strLabelEmail                   = "Email";
+            strLabelMobilePhone             = "Mobile";
+            strLabelDateOfBirth             = "Born";
+            strLabelAbbreviatedMobilePhone  = "m";
             
-            strPlaceholderPhoto            = "Photo";
-            strPlaceholderName             = "Name";
-            strPlaceholderEmail            = "A valid email address";
-            strPlaceholderDateOfBirth      = "Date of birth";
-            strPlaceholderMobilePhone      = "Mobile phone number";
+            strPlaceholderPhoto             = "Photo";
+            strPlaceholderName              = "Name";
+            strPlaceholderEmail             = "A valid email address";
+            strPlaceholderDateOfBirth       = "Date of birth";
+            strPlaceholderMobilePhone       = "Mobile phone number";
             
-            strFooterTapToAddAddress       = "Tap [+] to add an address.";
+            strFooterTapToAddAddress        = "Tap [+] to add an address.";
             
-            strHeaderAddress               = "Address";
-            strHeaderAddresses             = "Addresses";
+            strButtonParentToSome           = "To some of them";
+            strButtonNewAddress             = "New address";
+            strButtonAllContacts            = "All contacts";
+            strButtonChangePassword         = "Change password";
+            strButtonEditGender             = "Edit gender";
+            strButtonInviteToHousehold      = "Invite to household";
+            strButtonMergeHouseholds        = "Merge households";
             
-            strButtonParentToSome          = "To some of them";
-            strButtonNewAddress            = "New address";
-            strButtonInviteToHousehold     = "Invite to household";
-            strButtonMergeHouseholds       = "Merge households";
+            strAlertTitleMemberExists       = "Already registered";
+            strAlertTextMemberExists        = "%@ (%@) is already registered in '%@'. Please enter a different email address, or cancel the registration.";
+            strAlertTitleUserEmailChange    = "New email address";
+            strAlertTextUserEmailChange     = "You are about to change your email address from %@ to %@. You need access to the new address to activate this change. Do you want to continue?";
+            strAlertTitleFailedEmailChange  = "Activation failed";
+            strAlertTextFailedEmailChange   = "The email address %@ could not be activated. Please try again, or tap Cancel to cancel the change.";
             
-            strAlertTitleMemberExists      = "Already registered";
-            strAlertTextMemberExists       = "%@ (%@) is already registered in '%@'. Please enter a different email address, or cancel the registration.";
-            strAlertTitleUserEmailChange   = "New email address";
-            strAlertTextUserEmailChange    = "You are about to change your email address from %@ to %@. You need access to the new address to activate this change. Do you want to continue?";
-            strAlertTitleFailedEmailChange = "Activation failed";
-            strAlertTextFailedEmailChange  = "The email address %@ could not be activated. Please try again, or tap Cancel to cancel the change.";
+            strSheetTitleEmailRecipient     = "Who do you want to email?";
+            strSheetTitleTextRecipient      = "Who do you want to text?";
+            strSheetTitlePhoneCallRecipient = "Who do you want to call?";
+            strSheetTitleExistingResidence  = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
             
-            strSheetTitleGender            = "%@ %@ a %@ or a %@?";
-            strSheetTitleParenthood        = "%@ %@ %@ of %@?";
-            strSheetTitleExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
+            strQuestionArgumentGender       = "a woman or a man";
+            strQuestionArgumentGenderMinor  = "a girl or a boy";
             
-            strQuestionArgumentGender      = "a woman or a man";
-            strQuestionArgumentGenderMinor = "a girl or a boy";
-            
-            strTermHisFather               = "his father";
-            strTermHerFather               = "her father";
-            strTermHisMother               = "his mother";
-            strTermHerMother               = "her mother";
+            strTermHisFather                = "his father";
+            strTermHerFather                = "her father";
+            strTermHisMother                = "his mother";
+            strTermHerMother                = "her mother";
         }
     }
     
@@ -615,23 +613,26 @@ public class OStrings
     public String strLabelCountrySettings;
     public String strLabelCountryLocation;
     
-    public String strFooterCountryInfoParenthesis;
+    public String strFooterCountryInfo;
+    public String strFooterCountryInfoNote;
     public String strFooterCountryInfoLocate;
     
     private void setSettingViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelCountrySettings         = "Angitt i lokale innstillinger";
-            strLabelCountryLocation         = "Dette landet";
+            strLabelCountrySettings    = "Angitt i lokale innstillinger";
+            strLabelCountryLocation    = "Dette landet";
             
-            strFooterCountryInfoParenthesis = "Lokale tilpasninger er foreløpig ikke tilgjengelige for land angitt i parentes.";
-            strFooterCountryInfoLocate      = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
+            strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@.";
+            strFooterCountryInfoNote   = "Generelle tilpasninger vil bli benyttet om du velger et annet land.";
+            strFooterCountryInfoLocate = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
         } else {
-            strLabelCountrySettings         = "Specified in local settings";
-            strLabelCountryLocation         = "This country";
+            strLabelCountrySettings    = "Specified in local settings";
+            strLabelCountryLocation    = "This country";
             
-            strFooterCountryInfoParenthesis = "Origo is not yet adapted for countries listed in parenthesis.";
-            strFooterCountryInfoLocate      = "If you wish to specify the country you're in, you must permit Origo to use location services.\n(Settings > Privacy > Location)";
+            strFooterCountryInfo       = "Local adaptations are currently only availbale for %@.";
+            strFooterCountryInfoNote   = "General adaptations will be used if you select a different country.";
+            strFooterCountryInfoLocate = "If you wish to specify the country you're in, you must permit Origo to use location services.\n(Settings > Privacy > Location)";
         }
     }
     
@@ -694,7 +695,7 @@ public class OStrings
     
     /* ==== Meta strings ==== */
     
-    public String metaSupportedCountryCodes = "NO";
+    public String metaSupportedCountryCodes = "no";
     
     public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher";
     public String strContactRoleClassTeacher;
@@ -762,14 +763,16 @@ public class OStrings
     public String strQuestionTemplate;
     
     public String verbs    = "be";
-    public String nouns    = "father|mother|parents";
+    public String nouns    = "father|mother|parent|contact|address";
     public String pronouns = "I|you|he|she";
     
     public String verbBe;
     
     public String nounFather;
     public String nounMother;
-    public String nounParents;
+    public String nounParent;
+    public String nounContact;
+    public String nounAddress;
     
     public String pronounI;
     public String pronounYou;
@@ -779,31 +782,35 @@ public class OStrings
     private void setLanguageStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strQuestionTemplate    = "{verb} {subject} {argument}?";
+            strQuestionTemplate = "{verb} {subject} {argument}?";
             
-            verbBe                 = "er|er|er|er|er|er";
+            verbBe              = "er|er|er|er|er|er";
             
-            nounFather             = "faren|faren din|faren til %@";
-            nounMother             = "moren|moren din|moren til %@";
-            nounParents            = "foreldrene|foreldrene dine|foreldrene til %@";
+            nounFather          = "far|faren|-|-|faren din|faren til %@";
+            nounMother          = "mor|moren|-|-|moren din|moren til %@";
+            nounParent          = "-|-|foreldre|foreldrene|foreldrene dine|foreldrene til %@";
+            nounContact         = "kontaktperson|-|kontaktpersoner|-|-|-";
+            nounAddress         = "adresse|-|adresser|-|-|-";
             
-            pronounI               = "jeg|meg|meg|meg";
-            pronounYou             = "du|deg|deg|deg";
-            pronounHe              = "han|ham|ham|ham";
-            pronounShe             = "hun|henne|henne|henne";
+            pronounI            = "jeg|meg|meg|meg";
+            pronounYou          = "du|deg|deg|deg";
+            pronounHe           = "han|ham|ham|ham";
+            pronounShe          = "hun|henne|henne|henne";
         } else {
-            strQuestionTemplate    = "{verb} {subject} {argument}?";
+            strQuestionTemplate = "{verb} {subject} {argument}?";
             
-            verbBe                 = "am|are|is|are|are|are";
+            verbBe              = "am|are|is|are|are|are";
             
-            nounFather             = "the father|your father|%@'s father";
-            nounMother             = "the mother|your mother|%@'s mother";
-            nounParents            = "the parents|your parents|%@'s parents";
+            nounFather          = "father|the father|-|-|your father|%@'s father";
+            nounMother          = "mother|the mother|-|-|your mother|%@'s mother";
+            nounParent          = "-|-|parents|the parents|your parents|%@'s parents";
+            nounContact         = "contact|-|contacts|-|-|-";
+            nounAddress         = "address|-|addresses|-|-|-";
             
-            pronounI               = "I|me|me|me";
-            pronounYou             = "you|you|you|you";
-            pronounHe              = "he|him|him|him";
-            pronounShe             = "she|her|her|her";
+            pronounI            = "I|me|me|me";
+            pronounYou          = "you|you|you|you";
+            pronounHe           = "he|him|him|him";
+            pronounShe          = "she|her|her|her";
         }
     }
 }

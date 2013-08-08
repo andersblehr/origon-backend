@@ -3,7 +3,7 @@
   <wb-module deploy-name="origoapp-api">
     <property name="context-root" value="origoapp-api"/>
     <property name="java-output-path" value="/target/origoapp-api-1/WEB-INF/classes"/>
-        <property name="component.exclusion.patterns" value="WEB-INF/lib/*.jar"/>
+        <property name="component.exclusion.patterns"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/java"/>
     <wb-resource deploy-path="/WEB-INF/classes" source-path="src/main/resources"/>
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
