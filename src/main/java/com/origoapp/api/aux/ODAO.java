@@ -88,14 +88,6 @@ public class ODAO
                         if (entity.isReplicatedForMembership(membership)) {
                             fetchedEntities.add(entity);
                         }
-                        
-                        if (m.isAuthenticating() && entity.getClass().equals(OMember.class)) {
-                            OMember member = (OMember)entity;
-                            
-                            if (member.hasEmail() && member.email.equals(m.getEmail())) {
-                                m.setUserId(member.entityId);
-                            }
-                        }
                     }
                 }
             } else {
@@ -167,10 +159,17 @@ public class ODAO
             Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
             
             if (proxyId.equals(m.getEmail())) {
-                affectedMemberProxiesByKey.put(proxyKey, m.getMemberProxy());
+                OMemberProxy memberProxy = m.getMemberProxy();
+                
+                if (memberProxy.userId == null) {
+                    memberProxy.userId = member.entityId;
+                    touchedMemberProxies.add(memberProxy);
+                }
+                
+                affectedMemberProxiesByKey.put(proxyKey, memberProxy);
             } else {
                 if (member.dateReplicated == null) {
-                    affectedMemberProxiesByKey.put(proxyKey, new OMemberProxy(proxyId));
+                    affectedMemberProxiesByKey.put(proxyKey, new OMemberProxy(member));
                 } else {
                     affectedMemberProxyKeys.add(proxyKey);
                 }

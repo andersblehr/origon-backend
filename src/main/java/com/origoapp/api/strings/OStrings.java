@@ -209,7 +209,6 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
-    public String strButtonSettings;
     public String strButtonCountryLocate;
     public String strButtonCountryOther;
     
@@ -241,11 +240,10 @@ public class OStrings
             strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@";
             
-            strButtonSettings                   = "Innstillinger";
             strButtonCountryLocate              = "Landet jeg er i nå";
             strButtonCountryOther               = "Et annet land";
             
-            strAlertTitleListedUserRegistration = "Velkommen til Origo!";
+            strAlertTitleListedUserRegistration = "Velkommen til Origo";
             strAlertTextListedUserRegistration  = "Kontroller at opplysningene dine er riktige, samt legg inn opplysningene som %@ ikke hadde tilgang til da %@ inviterte deg.";  
             strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
@@ -268,11 +266,10 @@ public class OStrings
             strFooterOrigoCreation              = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@";
             
-            strButtonSettings                   = "Settings";
             strButtonCountryLocate              = "The country I'm in";
             strButtonCountryOther               = "Another country";
             
-            strAlertTitleListedUserRegistration = "Welcome to Origo!";
+            strAlertTitleListedUserRegistration = "Welcome to Origo";
             strAlertTextListedUserRegistration  = "Please verify your details and provide the information that %@ did not have access to when %@ invited you.";  
             strAlertTitleIncompleteRegistration = "Incomplete registration";
             strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
@@ -411,13 +408,13 @@ public class OStrings
     public String strPlaceholderDateOfBirth;
     public String strPlaceholderMobilePhone;
     
-    public String strFooterTapToAddAddress;
-    
     public String strButtonParentToSome;
+    public String strButtonAddAddress;
+    public String strButtonChangePassword;
+    public String strButtonEditRelations;
+    public String strButtonCorrectGender;
     public String strButtonNewAddress;
     public String strButtonAllContacts;
-    public String strButtonChangePassword;
-    public String strButtonEditGender;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
@@ -459,13 +456,13 @@ public class OStrings
             strPlaceholderDateOfBirth       = "Fødselsdato";
             strPlaceholderMobilePhone       = "Mobilnummer";
             
-            strFooterTapToAddAddress        = "Trykk [+] for å legge til en adresse.";
-            
             strButtonParentToSome           = "Til noen av dem";
+            strButtonAddAddress             = "Legg til en adresse";
+            strButtonChangePassword         = "Endre passord";
+            strButtonEditRelations          = "Rediger relasjoner";
+            strButtonCorrectGender          = "Korriger kjønn";
             strButtonNewAddress             = "Ny adresse";
             strButtonAllContacts            = "Alle kontaktpersoner";
-            strButtonChangePassword         = "Endre passord";
-            strButtonEditGender             = "Rediger kjønn";
             strButtonInviteToHousehold      = "Inviter til husstanden";
             strButtonMergeHouseholds        = "Slå sammen husstandene";
             
@@ -504,13 +501,13 @@ public class OStrings
             strPlaceholderDateOfBirth       = "Date of birth";
             strPlaceholderMobilePhone       = "Mobile phone number";
             
-            strFooterTapToAddAddress        = "Tap [+] to add an address.";
-            
             strButtonParentToSome           = "To some of them";
+            strButtonAddAddress             = "Add an adress";
+            strButtonChangePassword         = "Change password";
+            strButtonEditRelations          = "Edit relations";
+            strButtonCorrectGender          = "Correct gender";
             strButtonNewAddress             = "New address";
             strButtonAllContacts            = "All contacts";
-            strButtonChangePassword         = "Change password";
-            strButtonEditGender             = "Edit gender";
             strButtonInviteToHousehold      = "Invite to household";
             strButtonMergeHouseholds        = "Merge households";
             

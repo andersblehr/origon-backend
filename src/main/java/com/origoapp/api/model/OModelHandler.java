@@ -74,8 +74,8 @@ public class OModelHandler
                 entitiesToReturn = fetchedEntities;
             }
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
@@ -110,8 +110,8 @@ public class OModelHandler
         if (m.isValid()) {
             fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
