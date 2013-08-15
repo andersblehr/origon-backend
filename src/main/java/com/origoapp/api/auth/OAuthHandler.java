@@ -61,14 +61,14 @@ public class OAuthHandler
                 OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
         
         if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
+            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getMemberProxy().userId).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(replicationDate).build();
         }
@@ -91,11 +91,12 @@ public class OAuthHandler
         m.validateAuthToken(authToken);
         
         OAuthInfo authInfo = null;
+        OMemberProxy memberProxy = null;
         List<OReplicatedEntity> fetchedEntities = null;
-        Date replicationDate = new Date(); 
+        Date replicationDate = new Date();
         
         if (m.isValid()) {
-            OMemberProxy memberProxy = m.getMemberProxy();
+            memberProxy = m.getMemberProxy();
             
             if ((memberProxy == null) || !memberProxy.didSignUp) {
                 authInfo = m.getAuthInfo();
@@ -118,8 +119,8 @@ public class OAuthHandler
                 }
             }
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         if (authInfo != null) {
@@ -128,7 +129,7 @@ public class OAuthHandler
             OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
             
             if (fetchedEntities.size() > 0) {
-                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getUserId()).entity(fetchedEntities).lastModified(replicationDate).build();
+                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.userId).entity(fetchedEntities).lastModified(replicationDate).build();
             } else {
                 return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
             }
@@ -153,8 +154,8 @@ public class OAuthHandler
             authInfo = m.getAuthInfo();
             sendEmail(OAuthPhase.SENDCODE);
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();

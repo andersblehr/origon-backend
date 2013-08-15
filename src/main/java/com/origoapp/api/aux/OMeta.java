@@ -14,6 +14,8 @@ import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
+import com.origoapp.api.model.ODevice;
+import com.origoapp.api.model.OOrigo;
 
 import static com.origoapp.api.aux.OObjectifyService.ofy;
 
@@ -31,7 +33,6 @@ public class OMeta
     private boolean isValid = true;
     
     private String email = null;
-    private String userId = null;
     private String authToken = null;
     private String passwordHash = null;
     private String deviceId = null;
@@ -84,18 +85,6 @@ public class OMeta
     public String getEmail()
     {
         return email;
-    }
-    
-    
-    public void setUserId(String userId)
-    {
-        this.userId = userId;
-    }
-    
-    
-    public String getUserId()
-    {
-        return userId;
     }
     
     

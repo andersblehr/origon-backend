@@ -12,8 +12,8 @@ import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.condition.IfDefault;
 import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
-
 import com.origoapp.api.auth.OAuthMeta;
+import com.origoapp.api.model.OMember;
 import com.origoapp.api.model.OMembership;
 
 
@@ -22,6 +22,7 @@ import com.origoapp.api.model.OMembership;
 public class OMemberProxy
 {
     public @Id String proxyId;
+    public String userId;
     
     public @IgnoreSave(IfDefault.class) boolean didSignUp = false;
     public @IgnoreSave(IfNull.class) String passwordHash;
@@ -31,6 +32,14 @@ public class OMemberProxy
     
     
     public OMemberProxy() {}
+    
+    
+    public OMemberProxy(OMember member)
+    {
+        this(member.getProxyId());
+        
+        this.userId = member.entityId;
+    }
     
     
     public OMemberProxy(String proxyId)
