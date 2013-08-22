@@ -14,8 +14,6 @@ import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
-import com.origoapp.api.model.ODevice;
-import com.origoapp.api.model.OOrigo;
 
 import static com.origoapp.api.aux.OObjectifyService.ofy;
 
