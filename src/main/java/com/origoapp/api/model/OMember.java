@@ -11,6 +11,7 @@ import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -22,7 +23,8 @@ public class OMember extends OReplicatedEntity
 {
     public String name;
     public String gender;
-    public Date dateOfBirth;
+    public @IgnoreSave(IfFalse.class) boolean isJuvenile;
+    public @IgnoreSave(IfNull.class) Date dateOfBirth;
     public @IgnoreSave(IfNull.class) String mobilePhone;
     public @IgnoreSave(IfNull.class) String email;
     public @IgnoreSave(IfNull.class) String fatherId;
