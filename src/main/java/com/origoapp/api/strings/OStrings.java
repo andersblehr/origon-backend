@@ -374,6 +374,7 @@ public class OStrings
     
     public String strViewTitleAboutMe;
     
+    public String strLabelAge;
     public String strLabelDateOfBirth;
     public String strLabelMobilePhone;
     public String strLabelEmail;
@@ -419,6 +420,7 @@ public class OStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleAboutMe             = "Om meg";
             
+            strLabelAge                     = "Alder";
             strLabelDateOfBirth             = "Født";
             strLabelMobilePhone             = "Mobil";
             strLabelEmail                   = "Epost";
@@ -461,6 +463,7 @@ public class OStrings
         } else {
             strViewTitleAboutMe             = "About me";
             
+            strLabelAge                     = "Age";
             strLabelDateOfBirth             = "Born";
             strLabelMobilePhone             = "Mobile";
             strLabelEmail                   = "Email";
