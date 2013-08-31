@@ -291,10 +291,14 @@ public class OStrings
     /* ==== OMemberListView strings ==== */
     
     public String strFooterResidence;
-    public String strFooterSchoolClass;
+    public String strFooterFriends;
+    public String strFooterTeam;
+    public String strFooterOrganisation;
     public String strFooterPreschoolClass;
-    public String strFooterSportsTeam;
-    public String strFooterOtherOrigo;
+    public String strFooterSchoolClass;
+    public String strFooterPlaymates;
+    public String strFooterTeamMinor;
+    public String strFooterOther;
     
     public String strButtonNewHousemate;
     public String strButtonOtherGuardian;
@@ -303,25 +307,33 @@ public class OStrings
     private void setMemberListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strFooterResidence        = "Trykk [+] for å legge til medlemmer i husstanden.";
-            strFooterSchoolClass      = "Trykk [+] for å legge til klassekamerater.";
-            strFooterPreschoolClass   = "Trykk [+] for å legge til barn i avdelingen.";
-            strFooterSportsTeam       = "Trykk [+] for å legge til spillere på laget.";
-            strFooterOtherOrigo       = "Trykk [+] for å legge til medlemmer.";
+            strFooterResidence      = "Trykk [+] for å legge til medlemmer i husstanden.";
+            strFooterFriends        = "Trykk [+] for å legge til venner.";
+            strFooterTeam           = "Trykk [+] for å legge til spillere på laget.";
+            strFooterOrganisation   = "Trykk [+] for å legge til medlemmer.";
+            strFooterPreschoolClass = "Trykk [+] for å legge til barn i avdelingen. Siden barna er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
+            strFooterSchoolClass    = "Trykk [+] for å legge til elever i klassen. Siden elevene er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
+            strFooterPlaymates      = "Trykk [+] for å legge til venner i gjengen. Siden vennene er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
+            strFooterTeamMinor      = "Trykk [+] for å legge til spillere på laget. Siden spillerne er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
+            strFooterOther          = "Trykk [+] for å legge til medlemmer.";
             
-            strButtonNewHousemate     = "Ny bofelle";   
-            strButtonOtherGuardian    = "Annen foresatt";   
-            strButtonDeleteMember     = "Meld ut";
+            strButtonNewHousemate   = "Ny bofelle";   
+            strButtonOtherGuardian  = "Annen foresatt";   
+            strButtonDeleteMember   = "Meld ut";
         } else {
-            strFooterResidence        = "Tap [+] to add members to the household.";
-            strFooterSchoolClass      = "Tap [+] to add classmates.";
-            strFooterPreschoolClass   = "Tap [+] to add children.";
-            strFooterSportsTeam       = "Tap [+] to add team members.";
-            strFooterOtherOrigo       = "Tap [+] to add members.";
+            strFooterResidence      = "Tap [+] to add members to the household.";
+            strFooterFriends        = "Tap [+] to add friends.";
+            strFooterTeam           = "Tap [+] to add players.";
+            strFooterOrganisation   = "Tap [+] to add members.";
+            strFooterPreschoolClass = "Tap [+] to add pupils to the class. Because the class consists of minors, you will first be asked to register guardian(s).";
+            strFooterSchoolClass    = "Tap [+] to add pupils to the class. Because the class consists of minors, you will first be asked to register guardian(s).";
+            strFooterPlaymates      = "Tap [+] to add friends to the flock. Because the friends are minors, you will first be asked to register guardian(s).";
+            strFooterTeamMinor      = "Tap [+] to add players. Because the players are minors, you will first be asked to register guardian(s).";
+            strFooterOther          = "Tap [+] to add members.";
             
-            strButtonNewHousemate     = "New housemate";
-            strButtonOtherGuardian    = "Other guardian";   
-            strButtonDeleteMember     = "Remove";
+            strButtonNewHousemate   = "New housemate";
+            strButtonOtherGuardian  = "Other guardian";   
+            strButtonDeleteMember   = "Remove";
         }
     }
     
@@ -333,6 +345,7 @@ public class OStrings
     public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
+    public String strLabelPurpose;
     public String strLabelDescriptionText;
     public String strLabelTelephone;
     
@@ -348,6 +361,7 @@ public class OStrings
             strViewTitleNewOrigo          = "Nytt origo";
             
             strLabelAddress               = "Adresse";
+            strLabelPurpose               = "Formål";
             strLabelDescriptionText       = "Beskrivelse";
             strLabelTelephone             = "Telefon";
             
@@ -360,6 +374,7 @@ public class OStrings
             strViewTitleNewOrigo          = "New origo";
             
             strLabelAddress               = "Address";
+            strLabelPurpose               = "Purpose";
             strLabelDescriptionText       = "Description";
             strLabelTelephone             = "Telephone";
             
@@ -739,19 +754,20 @@ public class OStrings
     
     public String metaSupportedCountryCodes = "no";
     
-    public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher";
+    public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher|parentRepresentative";
     public String strContactRoleClassTeacher;
     public String strContactRoleTopicTeacher;
     public String strContactRoleSpecialEducationTeacher;
     public String strContactRoleAssistantTeacher;
     public String strContactRoleHeadTeacher;
+    public String strContactRoleParentRepresentative;
     
     public String metaContactRolesPreschoolClass = "preschoolClassTeacher|preschoolTeacher|preschoolAssistantTeacher";
     public String strContactRolePreschoolClassTeacher;
     public String strContactRolePreschoolTeacher;
     public String strContactRolePreschoolAssistantTeacher;
     
-    public String metaContactRolesAssociation = "chair|deputyChair|treasurer";
+    public String metaContactRolesOrganisation = "chair|deputyChair|treasurer";
     public String strContactRoleChair;
     public String strContactRoleDeputyChair;
     public String strContactRoleTreasurer;
@@ -768,6 +784,7 @@ public class OStrings
             strContactRoleSpecialEducationTeacher   = "Spesiallærer";
             strContactRoleAssistantTeacher          = "Assistentlærer";
             strContactRoleHeadTeacher               = "Rektor";
+            strContactRoleParentRepresentative      = "Klassekontakt";
             
             strContactRolePreschoolClassTeacher     = "Avdelingsleder";
             strContactRolePreschoolTeacher          = "Førskolelærer";
@@ -785,6 +802,7 @@ public class OStrings
             strContactRoleSpecialEducationTeacher   = "Special education teacher";
             strContactRoleAssistantTeacher          = "Assistant teacher";
             strContactRoleHeadTeacher               = "Head teacher";
+            strContactRoleParentRepresentative      = "Parent representative";
             
             strContactRolePreschoolClassTeacher     = "Department head";
             strContactRolePreschoolTeacher          = "Teacher";
