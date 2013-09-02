@@ -624,6 +624,7 @@ public class OStrings
     
     /* ==== Origo type strings ==== */
     
+    public String strOrigoLabelContactList;
     public String strOrigoLabelResidence;
     public String strOrigoLabelFriends;
     public String strOrigoLabelTeam;
@@ -634,6 +635,7 @@ public class OStrings
     public String strOrigoLabelMinorTeam;
     public String strOrigoLabelOther;
     
+    public String strNewOrigoLabelContactList;
     public String strNewOrigoLabelResidence;
     public String strNewOrigoLabelFriends;
     public String strNewOrigoLabelTeam;
@@ -644,6 +646,7 @@ public class OStrings
     public String strNewOrigoLabelMinorTeam;
     public String strNewOrigoLabelOther;
     
+    public String strMemberListLabelContactList;
     public String strMemberListLabelResidence;
     public String strMemberListLabelFriends;
     public String strMemberListLabelTeam;
@@ -654,6 +657,7 @@ public class OStrings
     public String strMemberListLabelMinorTeam;
     public String strMemberListLabelOther;
     
+    public String strNewMemberLabelContactList;
     public String strNewMemberLabelResidence;
     public String strNewMemberLabelFriends;
     public String strNewMemberLabelTeam;
@@ -668,6 +672,7 @@ public class OStrings
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strOrigoLabelResidence           = "Adresse";
+            strOrigoLabelContactList         = "Personlig kontaktliste";
             strOrigoLabelFriends             = "Vennegruppe";
             strOrigoLabelTeam                = "Lag";
             strOrigoLabelOrganisation        = "Organisasjon";
@@ -678,6 +683,7 @@ public class OStrings
             strOrigoLabelOther               = "Annet";
             
             strNewOrigoLabelResidence        = "Ny adresse";
+            strNewOrigoLabelContactList      = "Ny kontaktliste";
             strNewOrigoLabelFriends          = "Ny vennegruppe";
             strNewOrigoLabelTeam             = "Nytt lag";
             strNewOrigoLabelOrganisation     = "Ny organisasjon";
@@ -688,6 +694,7 @@ public class OStrings
             strNewOrigoLabelOther            = "Nytt origo";
             
             strMemberListLabelResidence      = "I husstanden";
+            strMemberListLabelContactList    = "Kontakter";
             strMemberListLabelFriends        = "I gruppa";
             strMemberListLabelTeam           = "På laget";
             strMemberListLabelOrganisation   = "Medlemmer";
@@ -698,6 +705,7 @@ public class OStrings
             strMemberListLabelOther          = "Medlemmer";
             
             strNewMemberLabelResidence       = "I husstanden";
+            strNewMemberLabelContactList     = "Ny kontakt";
             strNewMemberLabelFriends         = "I gruppa";
             strNewMemberLabelTeam            = "På laget";
             strNewMemberLabelOrganisation    = "Nytt medlem";
@@ -708,6 +716,7 @@ public class OStrings
             strNewMemberLabelOther           = "Nytt medlem";
         } else {
             strOrigoLabelResidence           = "Address";
+            strOrigoLabelContactList         = "Personal contact list";
             strOrigoLabelFriends             = "Party of friends";
             strOrigoLabelTeam                = "Team";
             strOrigoLabelOrganisation        = "Organisation";
@@ -718,6 +727,7 @@ public class OStrings
             strOrigoLabelOther               = "Other";
             
             strNewOrigoLabelResidence        = "New address";
+            strNewOrigoLabelContactList      = "New contact list";
             strNewOrigoLabelFriends          = "New party of friends";
             strNewOrigoLabelTeam             = "New team";
             strNewOrigoLabelOrganisation     = "New organisation";
@@ -728,6 +738,7 @@ public class OStrings
             strNewOrigoLabelOther            = "New origo";
             
             strMemberListLabelResidence      = "In the household";
+            strMemberListLabelContactList    = "Contacts";
             strMemberListLabelFriends        = "In the party";
             strMemberListLabelTeam           = "On the team";
             strMemberListLabelOrganisation   = "Members";
@@ -738,6 +749,7 @@ public class OStrings
             strMemberListLabelOther          = "Members";
             
             strNewMemberLabelResidence       = "In the household";
+            strNewMemberLabelContactList     = "New contact";
             strNewMemberLabelFriends         = "In the party";
             strNewMemberLabelTeam            = "On the team";
             strNewMemberLabelOrganisation    = "New member";
