@@ -311,10 +311,10 @@ public class OStrings
             strFooterFriends        = "Trykk [+] for å legge til venner.";
             strFooterTeam           = "Trykk [+] for å legge til spillere på laget.";
             strFooterOrganisation   = "Trykk [+] for å legge til medlemmer.";
-            strFooterPreschoolClass = "Trykk [+] for å legge til barn i avdelingen. Siden barna er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
-            strFooterSchoolClass    = "Trykk [+] for å legge til elever i klassen. Siden elevene er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
-            strFooterPlaymates      = "Trykk [+] for å legge til venner i gjengen. Siden vennene er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
-            strFooterTeamMinor      = "Trykk [+] for å legge til spillere på laget. Siden spillerne er mindreårige, vil du først bli bedt om å registrere foresatt(e).";
+            strFooterPreschoolClass = "Trykk [+] for å legge til barn i avdelingen.";
+            strFooterSchoolClass    = "Trykk [+] for å legge til elever i klassen.";
+            strFooterPlaymates      = "Trykk [+] for å legge til venner i gjengen.";
+            strFooterTeamMinor      = "Trykk [+] for å legge til spillere på laget.";
             strFooterOther          = "Trykk [+] for å legge til medlemmer.";
             
             strButtonNewHousemate   = "Ny bofelle";   
@@ -325,10 +325,10 @@ public class OStrings
             strFooterFriends        = "Tap [+] to add friends.";
             strFooterTeam           = "Tap [+] to add players.";
             strFooterOrganisation   = "Tap [+] to add members.";
-            strFooterPreschoolClass = "Tap [+] to add pupils to the class. Because the class consists of minors, you will first be asked to register guardian(s).";
-            strFooterSchoolClass    = "Tap [+] to add pupils to the class. Because the class consists of minors, you will first be asked to register guardian(s).";
-            strFooterPlaymates      = "Tap [+] to add friends to the flock. Because the friends are minors, you will first be asked to register guardian(s).";
-            strFooterTeamMinor      = "Tap [+] to add players. Because the players are minors, you will first be asked to register guardian(s).";
+            strFooterPreschoolClass = "Tap [+] to add pupils to the class.";
+            strFooterSchoolClass    = "Tap [+] to add pupils to the class.";
+            strFooterPlaymates      = "Tap [+] to add friends to the flock.";
+            strFooterTeamMinor      = "Tap [+] to add players.";
             strFooterOther          = "Tap [+] to add members.";
             
             strButtonNewHousemate   = "New housemate";
@@ -400,6 +400,9 @@ public class OStrings
     public String strPlaceholderMobilePhone;
     public String strPlaceholderEmail;
     
+    public String strFooterOrigoInviteAlert;
+    public String strFooterJuvenileOrigoGuardian;
+    
     public String strButtonParentToSome;
     public String strButtonAddAddress;
     public String strButtonChangePassword;
@@ -446,6 +449,9 @@ public class OStrings
             strPlaceholderMobilePhone       = "Mobilnummer";
             strPlaceholderEmail             = "En gyldig epostadresse";
             
+            strFooterOrigoInviteAlert       = "En invitasjon vil bli sendt om du oppgir en epost-adresse.";
+            strFooterJuvenileOrigoGuardian  = "Før du kan registrere et mindreårig origo-medlem, må du registrere hans eller hennes foresatte.";
+            
             strButtonParentToSome           = "Til noen av dem";
             strButtonAddAddress             = "Legg til en adresse";
             strButtonChangePassword         = "Endre passord";
@@ -488,6 +494,9 @@ public class OStrings
             strPlaceholderDateOfBirth       = "Date of birth";
             strPlaceholderMobilePhone       = "Mobile phone number";
             strPlaceholderEmail             = "A valid email address";
+            
+            strFooterOrigoInviteAlert       = "An invitation will be sent if you provide an email address.";
+            strFooterJuvenileOrigoGuardian  = "Before you can register a minor origo member, you must register his or her parents/guardians.";
             
             strButtonParentToSome           = "To some of them";
             strButtonAddAddress             = "Add an adress";
@@ -674,13 +683,13 @@ public class OStrings
             strOrigoLabelResidence           = "Adresse";
             strOrigoLabelContactList         = "Personlig kontaktliste";
             strOrigoLabelFriends             = "Vennegruppe";
-            strOrigoLabelTeam                = "Lag";
+            strOrigoLabelTeam                = "Sportslag";
             strOrigoLabelOrganisation        = "Organisasjon";
             strOrigoLabelPreschoolClass      = "Barnehageavdeling";
             strOrigoLabelSchoolClass         = "Skoleklasse";
             strOrigoLabelPlaymates           = "Vennegjeng";
-            strOrigoLabelMinorTeam           = "Lag";
-            strOrigoLabelOther               = "Annet";
+            strOrigoLabelMinorTeam           = "Sportslag";
+            strOrigoLabelOther               = "Annet formål";
             
             strNewOrigoLabelResidence        = "Ny adresse";
             strNewOrigoLabelContactList      = "Ny kontaktliste";
@@ -718,13 +727,13 @@ public class OStrings
             strOrigoLabelResidence           = "Address";
             strOrigoLabelContactList         = "Personal contact list";
             strOrigoLabelFriends             = "Party of friends";
-            strOrigoLabelTeam                = "Team";
+            strOrigoLabelTeam                = "Sports team";
             strOrigoLabelOrganisation        = "Organisation";
             strOrigoLabelPreschoolClass      = "Preschool class";
             strOrigoLabelSchoolClass         = "School class";
-            strOrigoLabelPlaymates           = "Flock";
-            strOrigoLabelMinorTeam           = "Team";
-            strOrigoLabelOther               = "Other";
+            strOrigoLabelPlaymates           = "Flock of friends";
+            strOrigoLabelMinorTeam           = "Sports team";
+            strOrigoLabelOther               = "General purpose";
             
             strNewOrigoLabelResidence        = "New address";
             strNewOrigoLabelContactList      = "New contact list";
@@ -835,7 +844,7 @@ public class OStrings
     public String strQuestionTemplate;
     
     public String verbs    = "be";
-    public String nouns    = "origo|father|mother|parent|contact|address";
+    public String nouns    = "origo|father|mother|parent|guardian|contact|address";
     public String pronouns = "I|you|he|she";
     
     public String verbBe;
@@ -844,6 +853,7 @@ public class OStrings
     public String nounFather;
     public String nounMother;
     public String nounParent;
+    public String nounGuardian;
     public String nounContact;
     public String nounAddress;
     
@@ -863,6 +873,7 @@ public class OStrings
             nounFather          = "far|faren|-|-|faren din|faren til %@";
             nounMother          = "mor|moren|-|-|moren din|moren til %@";
             nounParent          = "-|-|foreldre|foreldrene|foreldrene dine|foreldrene til %@";
+            nounGuardian        = "foresatt|-|foresatte|-|-|-";
             nounContact         = "kontaktperson|-|kontaktpersoner|-|-|-";
             nounAddress         = "adresse|-|adresser|-|-|-";
             
@@ -879,6 +890,7 @@ public class OStrings
             nounFather          = "father|the father|-|-|your father|%@'s father";
             nounMother          = "mother|the mother|-|-|your mother|%@'s mother";
             nounParent          = "-|-|parents|the parents|your parents|%@'s parents";
+            nounGuardian        = "guardian|-|guardians|-|-|-";
             nounContact         = "contact|-|contacts|-|-|-";
             nounAddress         = "address|-|addresses|-|-|-";
             
