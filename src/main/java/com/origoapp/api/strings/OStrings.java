@@ -279,7 +279,7 @@ public class OStrings
             strAlertTextCountryUnsupported      = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
             
             strSheetTitleCountry                = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
-            strSheetTitleOrigoType              = "What sort of origo du you want to create?";
+            strSheetTitleOrigoType              = "What sort of origo du you want to create";
             
             strTermYourChild                    = "your child";
             strTermHimOrHer                     = "him or her";
@@ -350,6 +350,7 @@ public class OStrings
     public String strLabelTelephone;
     
     public String strPlaceholderAddress;
+    public String strPlaceholderPurpose;
     public String strPlaceholderDescriptionText;
     public String strPlaceholderTelephone;
     
@@ -366,6 +367,7 @@ public class OStrings
             strLabelTelephone             = "Telefon";
             
             strPlaceholderAddress         = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderPurpose         = "Hva er formålet med dette origoet?";
             strPlaceholderDescriptionText = "En valgfri beskrivelse";
             strPlaceholderTelephone       = "Telefonnummer";
         } else {
@@ -379,6 +381,7 @@ public class OStrings
             strLabelTelephone             = "Telephone";
             
             strPlaceholderAddress         = "Street address\nPostal code and city/town";
+            strPlaceholderPurpose         = "What is the purpose of this origo?";
             strPlaceholderDescriptionText = "An optional description";
             strPlaceholderTelephone       = "Telephone number";
         }
@@ -499,7 +502,7 @@ public class OStrings
             strFooterJuvenileOrigoGuardian  = "Before you can register a minor origo member, you must register his or her parents/guardians.";
             
             strButtonParentToSome           = "To some of them";
-            strButtonAddAddress             = "Add an adress";
+            strButtonAddAddress             = "Add an address";
             strButtonChangePassword         = "Change password";
             strButtonEditRelations          = "Edit relations";
             strButtonCorrectGender          = "Correct gender";
@@ -597,7 +600,7 @@ public class OStrings
             strTabBarTitleSettings = "Settings";
             
             strSettingTitleCountry = "Country";
-            strSettingTextCountry  = "New origos are adapted for";
+            strSettingTextCountry  = "Adapt origos for";
         }
     }
     
@@ -614,14 +617,14 @@ public class OStrings
     private void setSettingViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strLabelCountrySettings    = "Angitt i lokale innstillinger";
+            strLabelCountrySettings    = "Lokal innstilling";
             strLabelCountryLocation    = "Dette landet";
             
             strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@.";
             strFooterCountryInfoNote   = "Generelle tilpasninger vil bli benyttet om du velger et annet land.";
             strFooterCountryInfoLocate = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
         } else {
-            strLabelCountrySettings    = "Specified in local settings";
+            strLabelCountrySettings    = "Local setting";
             strLabelCountryLocation    = "This country";
             
             strFooterCountryInfo       = "Local adaptations are currently only availbale for %@.";
