@@ -200,7 +200,7 @@ public class OStrings
     
     /* ==== OOrigoListView strings ==== */
     
-    public String strTabBarTitleOrigo;
+    public String strViewTitleOrigo;
     
     public String strHeaderWardsOrigos;
     public String strHeaderMyOrigos;
@@ -230,7 +230,7 @@ public class OStrings
     
     private void setOrigoListViewStrings(String language)
     {
-        strTabBarTitleOrigo                     = "Origo";
+        strViewTitleOrigo                       = "Origo";
         
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strHeaderWardsOrigos                = "Barnas origo";
@@ -536,55 +536,55 @@ public class OStrings
     
     /* ==== OCalendarView strings ==== */
     
-    public String strTabBarTitleCalendar;
+    public String strViewTitleCalendar;
     
     private void setCalendarViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleCalendar = "Kalender";
+            strViewTitleCalendar = "Kalender";
         } else {
-            strTabBarTitleCalendar = "Calendar";
+            strViewTitleCalendar = "Calendar";
         }
     }
     
     
     /* ==== OTaskView strings ==== */
     
-    public String strTabBarTitleTasks;
+    public String strViewTitleTasks;
     
     private void setTaskViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleTasks = "Oppgaver";
+            strViewTitleTasks = "Oppgaver";
         } else {
-            strTabBarTitleTasks = "Tasks";
+            strViewTitleTasks = "Tasks";
         }
     }
     
     
     /* ==== OMessageBoardView strings ==== */
     
-    public String strTabBarTitleMessages;
+    public String strViewTitleMessages;
     
     public String strDefaultMessageBoardName;
     
     private void setMessageBoardViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleMessages      = "Meldinger";
+            strViewTitleMessages       = "Meldinger";
             
-            strDefaultMessageBoardName  = "Oppslagstavle";
+            strDefaultMessageBoardName = "Oppslagstavle";
         } else {
-            strTabBarTitleMessages      = "Messages";
+            strViewTitleMessages       = "Messages";
             
-            strDefaultMessageBoardName  = "Message board";
+            strDefaultMessageBoardName = "Message board";
         }
     }
     
     
     /* ==== OSettingListView strings ==== */
     
-    public String strTabBarTitleSettings;
+    public String strViewTitleSettings;
     
     public String strSettingTitleCountry;
     public String strSettingTextCountry;
@@ -592,12 +592,12 @@ public class OStrings
     private void setSettingListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strTabBarTitleSettings = "Innstillinger";
+            strViewTitleSettings   = "Innstillinger";
             
             strSettingTitleCountry = "Land";
             strSettingTextCountry  = "Nye origo tilpasses";
         } else {
-            strTabBarTitleSettings = "Settings";
+            strViewTitleSettings   = "Settings";
             
             strSettingTitleCountry = "Country";
             strSettingTextCountry  = "Adapt origos for";
@@ -620,15 +620,15 @@ public class OStrings
             strLabelCountrySettings    = "Lokal innstilling";
             strLabelCountryLocation    = "Dette landet";
             
-            strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@.";
-            strFooterCountryInfoNote   = "Generelle tilpasninger vil bli benyttet om du velger et annet land.";
+            strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@";
+            strFooterCountryInfoNote   = ", og vil ikke bli benyttet om du velger et annet land.";
             strFooterCountryInfoLocate = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
         } else {
             strLabelCountrySettings    = "Local setting";
             strLabelCountryLocation    = "This country";
             
-            strFooterCountryInfo       = "Local adaptations are currently only availbale for %@.";
-            strFooterCountryInfoNote   = "General adaptations will be used if you select a different country.";
+            strFooterCountryInfo       = "Local adaptations are currently only available for %@";
+            strFooterCountryInfoNote   = ", and will not be applied if you select a different country.";
             strFooterCountryInfoLocate = "If you wish to specify the country you're in, you must permit Origo to use location services.\n(Settings > Privacy > Location)";
         }
     }
