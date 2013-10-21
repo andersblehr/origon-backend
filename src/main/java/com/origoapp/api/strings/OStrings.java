@@ -25,7 +25,6 @@ public class OStrings
         
         setAuthViewStrings(language);
         setOrigoListViewStrings(language);
-        setMemberListViewStrings(language);
         setOrigoViewStrings(language);
         setMemberViewStrings(language);
         
@@ -288,61 +287,9 @@ public class OStrings
     }
     
     
-    /* ==== OMemberListView strings ==== */
-    
-    public String strFooterResidence;
-    public String strFooterFriends;
-    public String strFooterTeam;
-    public String strFooterOrganisation;
-    public String strFooterPreschoolClass;
-    public String strFooterSchoolClass;
-    public String strFooterPlaymates;
-    public String strFooterTeamMinor;
-    public String strFooterOther;
-    
-    public String strButtonNewHousemate;
-    public String strButtonOtherGuardian;
-    public String strButtonDeleteMember;
-    
-    private void setMemberListViewStrings(String language)
-    {
-        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strFooterResidence      = "Trykk [+] for å legge til medlemmer i husstanden.";
-            strFooterFriends        = "Trykk [+] for å legge til venner.";
-            strFooterTeam           = "Trykk [+] for å legge til spillere på laget.";
-            strFooterOrganisation   = "Trykk [+] for å legge til medlemmer.";
-            strFooterPreschoolClass = "Trykk [+] for å legge til barn i avdelingen.";
-            strFooterSchoolClass    = "Trykk [+] for å legge til elever i klassen.";
-            strFooterPlaymates      = "Trykk [+] for å legge til venner i gjengen.";
-            strFooterTeamMinor      = "Trykk [+] for å legge til spillere på laget.";
-            strFooterOther          = "Trykk [+] for å legge til medlemmer.";
-            
-            strButtonNewHousemate   = "Ny bofelle";   
-            strButtonOtherGuardian  = "Annen foresatt";   
-            strButtonDeleteMember   = "Meld ut";
-        } else {
-            strFooterResidence      = "Tap [+] to add members to the household.";
-            strFooterFriends        = "Tap [+] to add friends.";
-            strFooterTeam           = "Tap [+] to add players.";
-            strFooterOrganisation   = "Tap [+] to add members.";
-            strFooterPreschoolClass = "Tap [+] to add pupils to the class.";
-            strFooterSchoolClass    = "Tap [+] to add pupils to the class.";
-            strFooterPlaymates      = "Tap [+] to add friends to the flock.";
-            strFooterTeamMinor      = "Tap [+] to add players.";
-            strFooterOther          = "Tap [+] to add members.";
-            
-            strButtonNewHousemate   = "New housemate";
-            strButtonOtherGuardian  = "Other guardian";   
-            strButtonDeleteMember   = "Remove";
-        }
-    }
-    
-    
     /* ==== OOrigoView strings ==== */
     
     public String strDefaultResidenceName;
-    
-    public String strViewTitleNewOrigo;
     
     public String strLabelAddress;
     public String strLabelPurpose;
@@ -354,36 +301,119 @@ public class OStrings
     public String strPlaceholderDescriptionText;
     public String strPlaceholderTelephone;
     
+    public String strFooterResidence;
+    public String strFooterFriends;
+    public String strFooterTeam;
+    public String strFooterOrganisation;
+    public String strFooterPreschoolClass;
+    public String strFooterSchoolClass;
+    public String strFooterPlaymates;
+    public String strFooterTeamMinor;
+    public String strFooterOther;
+    
+    public String strButtonAddMemberResidence;
+    public String strButtonAddMemberFriends;
+    public String strButtonAddMemberTeam;
+    public String strButtonAddMemberOrganisation;
+    public String strButtonAddMemberPreschoolClass;
+    public String strButtonAddMemberSchoolClass;
+    public String strButtonAddMemberPlaymates;
+    public String strButtonAddMemberTeamMinor;
+    public String strButtonAddMemberOther;
+    public String strButtonAddContactPreschoolClass;
+    public String strButtonAddContactSchoolClass;
+    public String strButtonAddContactPlaymates;
+    public String strButtonAddContactTeamMinor;
+    public String strButtonAbout;
+    public String strButtonShowInMap;
+    public String strButtonNewHousemate;
+    public String strButtonOtherGuardian;
+    public String strButtonDeleteMember;
+    
     private void setOrigoViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strDefaultResidenceName       = "Min husstand";
+            strDefaultResidenceName           = "Min husstand";
             
-            strViewTitleNewOrigo          = "Nytt origo";
+            strLabelAddress                   = "Adresse";
+            strLabelPurpose                   = "Formål";
+            strLabelDescriptionText           = "Beskrivelse";
+            strLabelTelephone                 = "Telefon";
             
-            strLabelAddress               = "Adresse";
-            strLabelPurpose               = "Formål";
-            strLabelDescriptionText       = "Beskrivelse";
-            strLabelTelephone             = "Telefon";
+            strPlaceholderAddress             = "Gateadresse\nPostnummer og -sted";
+            strPlaceholderPurpose             = "Hva er formålet med dette origoet?";
+            strPlaceholderDescriptionText     = "En valgfri beskrivelse";
+            strPlaceholderTelephone           = "Telefonnummer";
             
-            strPlaceholderAddress         = "Gateadresse\nPostnummer og -sted";
-            strPlaceholderPurpose         = "Hva er formålet med dette origoet?";
-            strPlaceholderDescriptionText = "En valgfri beskrivelse";
-            strPlaceholderTelephone       = "Telefonnummer";
+            strFooterResidence                = "Trykk [+] for å legge til medlemmer i husstanden.";
+            strFooterFriends                  = "Trykk [+] for å legge til venner.";
+            strFooterTeam                     = "Trykk [+] for å legge til spillere på laget.";
+            strFooterOrganisation             = "Trykk [+] for å legge til medlemmer.";
+            strFooterPreschoolClass           = "Trykk [+] for å legge til barn i avdelingen.";
+            strFooterSchoolClass              = "Trykk [+] for å legge til elever i klassen.";
+            strFooterPlaymates                = "Trykk [+] for å legge til venner i gjengen.";
+            strFooterTeamMinor                = "Trykk [+] for å legge til deltakere på laget.";
+            strFooterOther                    = "Trykk [+] for å legge til medlemmer.";
+            
+            strButtonAddMemberResidence       = "Legg til medlem i husstanden";
+            strButtonAddMemberFriends         = "Legg til venn";
+            strButtonAddMemberTeam            = "Legg til spiller på laget";
+            strButtonAddMemberOrganisation    = "Legg til medlem";
+            strButtonAddMemberPreschoolClass  = "Legg til barn";
+            strButtonAddMemberSchoolClass     = "Legg til elev";
+            strButtonAddMemberPlaymates       = "Legg til venn i gjengen";
+            strButtonAddMemberTeamMinor       = "Legg til deltaker på laget";
+            strButtonAddMemberOther           = "Legg til medlem";
+            strButtonAddContactPreschoolClass = "Legg til leder el.l.";
+            strButtonAddContactSchoolClass    = "Legg til lærer el.l.";
+            strButtonAddContactPlaymates      = "Legg til foreldrekontakt";
+            strButtonAddContactTeamMinor      = "Legg til trener el.l.";
+            strButtonAbout                    = "Om %@";
+            strButtonShowInMap                = "Vis på kart";
+            strButtonNewHousemate             = "Ny bofelle";   
+            strButtonOtherGuardian            = "Annen foresatt";   
+            strButtonDeleteMember             = "Meld ut";
         } else {
-            strDefaultResidenceName       = "My place";
+            strDefaultResidenceName           = "My place";
             
-            strViewTitleNewOrigo          = "New origo";
+            strLabelAddress                   = "Address";
+            strLabelPurpose                   = "Purpose";
+            strLabelDescriptionText           = "Description";
+            strLabelTelephone                 = "Telephone";
             
-            strLabelAddress               = "Address";
-            strLabelPurpose               = "Purpose";
-            strLabelDescriptionText       = "Description";
-            strLabelTelephone             = "Telephone";
+            strPlaceholderAddress             = "Street address\nPostal code and city/town";
+            strPlaceholderPurpose             = "What is the purpose of this origo?";
+            strPlaceholderDescriptionText     = "An optional description";
+            strPlaceholderTelephone           = "Telephone number";
             
-            strPlaceholderAddress         = "Street address\nPostal code and city/town";
-            strPlaceholderPurpose         = "What is the purpose of this origo?";
-            strPlaceholderDescriptionText = "An optional description";
-            strPlaceholderTelephone       = "Telephone number";
+            strFooterResidence                = "Tap [+] to add members to the household.";
+            strFooterFriends                  = "Tap [+] to add friends.";
+            strFooterTeam                     = "Tap [+] to add players.";
+            strFooterOrganisation             = "Tap [+] to add members.";
+            strFooterPreschoolClass           = "Tap [+] to add pupils to the class.";
+            strFooterSchoolClass              = "Tap [+] to add pupils to the class.";
+            strFooterPlaymates                = "Tap [+] to add friends to the flock.";
+            strFooterTeamMinor                = "Tap [+] to add players.";
+            strFooterOther                    = "Tap [+] to add members.";
+            
+            strButtonAddMemberResidence       = "Add household member";
+            strButtonAddMemberFriends         = "Add friend";
+            strButtonAddMemberTeam            = "Add player";
+            strButtonAddMemberOrganisation    = "Add member";
+            strButtonAddMemberPreschoolClass  = "Add child";
+            strButtonAddMemberSchoolClass     = "Add pupil";
+            strButtonAddMemberPlaymates       = "Add friend";
+            strButtonAddMemberTeamMinor       = "Add player";
+            strButtonAddMemberOther           = "Add member";
+            strButtonAddContactPreschoolClass = "Add teacher or similar";
+            strButtonAddContactSchoolClass    = "Add teacher or similar";
+            strButtonAddContactPlaymates      = "Add parent contact";
+            strButtonAddContactTeamMinor      = "Add coach or similar";
+            strButtonAbout                    = "About %@";
+            strButtonShowInMap                = "Show in map";
+            strButtonNewHousemate             = "New housemate";
+            strButtonOtherGuardian            = "Other guardian";   
+            strButtonDeleteMember             = "Remove";
         }
     }
     
@@ -880,10 +910,10 @@ public class OStrings
             nounContact         = "kontaktperson|-|kontaktpersoner|-|-|-";
             nounAddress         = "adresse|-|adresser|-|-|-";
             
-            pronounI            = "jeg|meg|meg|meg";
-            pronounYou          = "du|deg|deg|deg";
-            pronounHe           = "han|ham|ham|ham";
-            pronounShe          = "hun|henne|henne|henne";
+            pronounI            = "jeg|meg|meg";
+            pronounYou          = "du|deg|deg";
+            pronounHe           = "han|ham|ham";
+            pronounShe          = "hun|henne|henne";
         } else {
             strQuestionTemplate = "{verb} {subject} {argument}?";
             
@@ -897,10 +927,10 @@ public class OStrings
             nounContact         = "contact|-|contacts|-|-|-";
             nounAddress         = "address|-|addresses|-|-|-";
             
-            pronounI            = "I|me|me|me";
-            pronounYou          = "you|you|you|you";
-            pronounHe           = "he|him|him|him";
-            pronounShe          = "she|her|her|her";
+            pronounI            = "I|me|me";
+            pronounYou          = "you|you|you";
+            pronounHe           = "he|him|him";
+            pronounShe          = "she|her|her";
         }
     }
 }
