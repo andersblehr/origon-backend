@@ -22,6 +22,7 @@ public class OStrings
         }
         
         setCrossViewTermsAndStrings(language);
+        setDefaultStrings(language);
         
         setAuthViewStrings(language);
         setOrigoListViewStrings(language);
@@ -75,7 +76,7 @@ public class OStrings
             strFooterOrigoSignature = "\n\nSendt fra Origo - http://origoapp.com";
             
             strButtonOK             = "OK";
-            strButtonEdit           = "Endre";
+            strButtonEdit           = "Rediger";
             strButtonNext           = "Neste";
             strButtonDone           = "Ferdig";
             strButtonContinue       = "Fortsett";
@@ -125,6 +126,19 @@ public class OStrings
         }
     }
     
+    
+    /* ==== Default strings ==== */
+    
+    public String strDefaultResidenceName;
+    
+    private void setDefaultStrings(String language)
+    {
+        if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strDefaultResidenceName           = "Min husstand";
+        } else {
+            strDefaultResidenceName           = "My place";
+        }
+    }
     
     /* ==== OAuthView strings ==== */
     
@@ -208,7 +222,6 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
-    public String strButtonCountryLocate;
     public String strButtonCountryOther;
     
     public String strAlertTitleListedUserRegistration;
@@ -239,11 +252,10 @@ public class OStrings
             strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@";
             
-            strButtonCountryLocate              = "Landet jeg er i nå";
             strButtonCountryOther               = "Et annet land";
             
             strAlertTitleListedUserRegistration = "Velkommen til Origo";
-            strAlertTextListedUserRegistration  = "Kontroller at opplysningene dine er riktige, samt legg inn opplysningene som %@ ikke hadde tilgang til da %@ inviterte deg.";  
+            strAlertTextListedUserRegistration  = "Kontroller at opplysningene dine er riktige, samt legg inn opplysninger som %@ ikke hadde adgang til å oppgi da %@ inviterte deg.";  
             strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
             strAlertTitleCountryOther           = "Andre land";
@@ -265,11 +277,10 @@ public class OStrings
             strFooterOrigoCreation              = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@";
             
-            strButtonCountryLocate              = "The country I'm in";
             strButtonCountryOther               = "Another country";
             
             strAlertTitleListedUserRegistration = "Welcome to Origo";
-            strAlertTextListedUserRegistration  = "Please verify your details and provide the information that %@ did not have access to when %@ invited you.";  
+            strAlertTextListedUserRegistration  = "Please verify your details and provide the information that %@ was not authorised to enter when %@ invited you.";  
             strAlertTitleIncompleteRegistration = "Incomplete registration";
             strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
             strAlertTitleCountryOther           = "Other countries";
@@ -289,13 +300,12 @@ public class OStrings
     
     /* ==== OOrigoView strings ==== */
     
-    public String strDefaultResidenceName;
-    
     public String strLabelAddress;
     public String strLabelPurpose;
     public String strLabelDescriptionText;
     public String strLabelTelephone;
     
+    public String strPlaceholderResidenceName;
     public String strPlaceholderAddress;
     public String strPlaceholderPurpose;
     public String strPlaceholderDescriptionText;
@@ -333,15 +343,14 @@ public class OStrings
     private void setOrigoViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strDefaultResidenceName           = "Min husstand";
-            
             strLabelAddress                   = "Adresse";
             strLabelPurpose                   = "Formål";
             strLabelDescriptionText           = "Beskrivelse";
             strLabelTelephone                 = "Telefon";
             
+            strPlaceholderResidenceName       = "Kallenavn for denne adressen";
             strPlaceholderAddress             = "Gateadresse\nPostnummer og -sted";
-            strPlaceholderPurpose             = "Hva er formålet med dette origoet?";
+            strPlaceholderPurpose             = "Formålet med dette origoet";
             strPlaceholderDescriptionText     = "En valgfri beskrivelse";
             strPlaceholderTelephone           = "Telefonnummer";
             
@@ -374,15 +383,14 @@ public class OStrings
             strButtonOtherGuardian            = "Annen foresatt";   
             strButtonDeleteMember             = "Meld ut";
         } else {
-            strDefaultResidenceName           = "My place";
-            
             strLabelAddress                   = "Address";
             strLabelPurpose                   = "Purpose";
             strLabelDescriptionText           = "Description";
             strLabelTelephone                 = "Telephone";
             
+            strPlaceholderResidenceName       = "Nickname for this address";
             strPlaceholderAddress             = "Street address\nPostal code and city/town";
-            strPlaceholderPurpose             = "What is the purpose of this origo?";
+            strPlaceholderPurpose             = "The purpose of this origo";
             strPlaceholderDescriptionText     = "An optional description";
             strPlaceholderTelephone           = "Telephone number";
             
@@ -616,29 +624,28 @@ public class OStrings
     
     public String strViewTitleSettings;
     
-    public String strSettingTitleCountry;
-    public String strSettingTextCountry;
+    public String strSettingLabelCountry;
     
     private void setSettingListViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleSettings   = "Innstillinger";
             
-            strSettingTitleCountry = "Land";
-            strSettingTextCountry  = "Nye origo tilpasses";
+            strSettingLabelCountry = "Nye origo tilpasses";
         } else {
             strViewTitleSettings   = "Settings";
             
-            strSettingTitleCountry = "Country";
-            strSettingTextCountry  = "Adapt origos for";
+            strSettingLabelCountry = "Adapt origos for";
         }
     }
     
     
     /* ==== OSettingView strings ==== */
     
+    public String strSettingTitleCountry;
+    
     public String strLabelCountrySettings;
-    public String strLabelCountryLocation;
+    public String strLabelCountryLocate;
     
     public String strFooterCountryInfo;
     public String strFooterCountryInfoNote;
@@ -647,15 +654,19 @@ public class OStrings
     private void setSettingViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
+            strSettingTitleCountry     = "Land";
+            
             strLabelCountrySettings    = "Lokal innstilling";
-            strLabelCountryLocation    = "Dette landet";
+            strLabelCountryLocate      = "Dette landet";
             
             strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@";
             strFooterCountryInfoNote   = ", og vil ikke bli benyttet om du velger et annet land.";
             strFooterCountryInfoLocate = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
         } else {
+            strSettingTitleCountry     = "Country";
+            
             strLabelCountrySettings    = "Local setting";
-            strLabelCountryLocation    = "This country";
+            strLabelCountryLocate      = "This country";
             
             strFooterCountryInfo       = "Local adaptations are currently only available for %@";
             strFooterCountryInfoNote   = ", and will not be applied if you select a different country.";
@@ -666,140 +677,140 @@ public class OStrings
     
     /* ==== Origo type strings ==== */
     
-    public String strOrigoLabelContactList;
-    public String strOrigoLabelResidence;
-    public String strOrigoLabelFriends;
-    public String strOrigoLabelTeam;
-    public String strOrigoLabelOrganisation;
-    public String strOrigoLabelPreschoolClass;
-    public String strOrigoLabelSchoolClass;
-    public String strOrigoLabelPlaymates;
-    public String strOrigoLabelMinorTeam;
-    public String strOrigoLabelOther;
+    public String strOrigoTitleContactList;
+    public String strOrigoTitleResidence;
+    public String strOrigoTitleFriends;
+    public String strOrigoTitleTeam;
+    public String strOrigoTitleOrganisation;
+    public String strOrigoTitlePreschoolClass;
+    public String strOrigoTitleSchoolClass;
+    public String strOrigoTitlePlaymates;
+    public String strOrigoTitleMinorTeam;
+    public String strOrigoTitleOther;
     
-    public String strNewOrigoLabelContactList;
-    public String strNewOrigoLabelResidence;
-    public String strNewOrigoLabelFriends;
-    public String strNewOrigoLabelTeam;
-    public String strNewOrigoLabelOrganisation;
-    public String strNewOrigoLabelPreschoolClass;
-    public String strNewOrigoLabelSchoolClass;
-    public String strNewOrigoLabelPlaymates;
-    public String strNewOrigoLabelMinorTeam;
-    public String strNewOrigoLabelOther;
+    public String strNewOrigoTitleContactList;
+    public String strNewOrigoTitleResidence;
+    public String strNewOrigoTitleFriends;
+    public String strNewOrigoTitleTeam;
+    public String strNewOrigoTitleOrganisation;
+    public String strNewOrigoTitlePreschoolClass;
+    public String strNewOrigoTitleSchoolClass;
+    public String strNewOrigoTitlePlaymates;
+    public String strNewOrigoTitleMinorTeam;
+    public String strNewOrigoTitleOther;
     
-    public String strMemberListLabelContactList;
-    public String strMemberListLabelResidence;
-    public String strMemberListLabelFriends;
-    public String strMemberListLabelTeam;
-    public String strMemberListLabelOrganisation;
-    public String strMemberListLabelPreschoolClass;
-    public String strMemberListLabelSchoolClass;
-    public String strMemberListLabelPlaymates;
-    public String strMemberListLabelMinorTeam;
-    public String strMemberListLabelOther;
+    public String strMemberListTitleContactList;
+    public String strMemberListTitleResidence;
+    public String strMemberListTitleFriends;
+    public String strMemberListTitleTeam;
+    public String strMemberListTitleOrganisation;
+    public String strMemberListTitlePreschoolClass;
+    public String strMemberListTitleSchoolClass;
+    public String strMemberListTitlePlaymates;
+    public String strMemberListTitleMinorTeam;
+    public String strMemberListTitleOther;
     
-    public String strNewMemberLabelContactList;
-    public String strNewMemberLabelResidence;
-    public String strNewMemberLabelFriends;
-    public String strNewMemberLabelTeam;
-    public String strNewMemberLabelOrganisation;
-    public String strNewMemberLabelPreschoolClass;
-    public String strNewMemberLabelSchoolClass;
-    public String strNewMemberLabelPlaymates;
-    public String strNewMemberLabelMinorTeam;
-    public String strNewMemberLabelOther;
+    public String strNewMemberTitleContactList;
+    public String strNewMemberTitleResidence;
+    public String strNewMemberTitleFriends;
+    public String strNewMemberTitleTeam;
+    public String strNewMemberTitleOrganisation;
+    public String strNewMemberTitlePreschoolClass;
+    public String strNewMemberTitleSchoolClass;
+    public String strNewMemberTitlePlaymates;
+    public String strNewMemberTitleMinorTeam;
+    public String strNewMemberTitleOther;
     
     private void setOrigoTypeStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOrigoLabelResidence           = "Adresse";
-            strOrigoLabelContactList         = "Personlig kontaktliste";
-            strOrigoLabelFriends             = "Vennegruppe";
-            strOrigoLabelTeam                = "Sportslag";
-            strOrigoLabelOrganisation        = "Organisasjon";
-            strOrigoLabelPreschoolClass      = "Barnehageavdeling";
-            strOrigoLabelSchoolClass         = "Skoleklasse";
-            strOrigoLabelPlaymates           = "Vennegjeng";
-            strOrigoLabelMinorTeam           = "Sportslag";
-            strOrigoLabelOther               = "Annet formål";
+            strOrigoTitleResidence           = "Adresse";
+            strOrigoTitleContactList         = "Personlig kontaktliste";
+            strOrigoTitleFriends             = "Vennegruppe";
+            strOrigoTitleTeam                = "Sportslag";
+            strOrigoTitleOrganisation        = "Organisasjon";
+            strOrigoTitlePreschoolClass      = "Barnehageavdeling";
+            strOrigoTitleSchoolClass         = "Skoleklasse";
+            strOrigoTitlePlaymates           = "Vennegjeng";
+            strOrigoTitleMinorTeam           = "Sportslag";
+            strOrigoTitleOther               = "Annet formål";
             
-            strNewOrigoLabelResidence        = "Ny adresse";
-            strNewOrigoLabelContactList      = "Ny kontaktliste";
-            strNewOrigoLabelFriends          = "Ny vennegruppe";
-            strNewOrigoLabelTeam             = "Nytt lag";
-            strNewOrigoLabelOrganisation     = "Ny organisasjon";
-            strNewOrigoLabelPreschoolClass   = "Ny barnehageavdeling";
-            strNewOrigoLabelSchoolClass      = "Ny skoleklasse";
-            strNewOrigoLabelPlaymates        = "Ny vennegjeng";
-            strNewOrigoLabelMinorTeam        = "Nytt lag";
-            strNewOrigoLabelOther            = "Nytt origo";
+            strNewOrigoTitleResidence        = "Ny adresse";
+            strNewOrigoTitleContactList      = "Ny kontaktliste";
+            strNewOrigoTitleFriends          = "Ny vennegruppe";
+            strNewOrigoTitleTeam             = "Nytt lag";
+            strNewOrigoTitleOrganisation     = "Ny organisasjon";
+            strNewOrigoTitlePreschoolClass   = "Ny barnehageavdeling";
+            strNewOrigoTitleSchoolClass      = "Ny skoleklasse";
+            strNewOrigoTitlePlaymates        = "Ny vennegjeng";
+            strNewOrigoTitleMinorTeam        = "Nytt lag";
+            strNewOrigoTitleOther            = "Nytt origo";
             
-            strMemberListLabelResidence      = "I husstanden";
-            strMemberListLabelContactList    = "Kontakter";
-            strMemberListLabelFriends        = "I gruppa";
-            strMemberListLabelTeam           = "På laget";
-            strMemberListLabelOrganisation   = "Medlemmer";
-            strMemberListLabelPreschoolClass = "I avdelingen";
-            strMemberListLabelSchoolClass    = "I klassen";
-            strMemberListLabelPlaymates      = "I gjengen";
-            strMemberListLabelMinorTeam      = "På laget";
-            strMemberListLabelOther          = "Medlemmer";
+            strMemberListTitleResidence      = "I husstanden";
+            strMemberListTitleContactList    = "Kontakter";
+            strMemberListTitleFriends        = "I gruppa";
+            strMemberListTitleTeam           = "På laget";
+            strMemberListTitleOrganisation   = "Medlemmer";
+            strMemberListTitlePreschoolClass = "I avdelingen";
+            strMemberListTitleSchoolClass    = "I klassen";
+            strMemberListTitlePlaymates      = "I gjengen";
+            strMemberListTitleMinorTeam      = "På laget";
+            strMemberListTitleOther          = "Medlemmer";
             
-            strNewMemberLabelResidence       = "I husstanden";
-            strNewMemberLabelContactList     = "Ny kontakt";
-            strNewMemberLabelFriends         = "I gruppa";
-            strNewMemberLabelTeam            = "På laget";
-            strNewMemberLabelOrganisation    = "Nytt medlem";
-            strNewMemberLabelPreschoolClass  = "Ny i avdelingen";
-            strNewMemberLabelSchoolClass     = "Ny klassekompis";
-            strNewMemberLabelPlaymates       = "I gjengen";
-            strNewMemberLabelMinorTeam       = "På laget";
-            strNewMemberLabelOther           = "Nytt medlem";
+            strNewMemberTitleResidence       = "I husstanden";
+            strNewMemberTitleContactList     = "Ny kontakt";
+            strNewMemberTitleFriends         = "I gruppa";
+            strNewMemberTitleTeam            = "På laget";
+            strNewMemberTitleOrganisation    = "Nytt medlem";
+            strNewMemberTitlePreschoolClass  = "Ny i avdelingen";
+            strNewMemberTitleSchoolClass     = "Ny klassekompis";
+            strNewMemberTitlePlaymates       = "I gjengen";
+            strNewMemberTitleMinorTeam       = "På laget";
+            strNewMemberTitleOther           = "Nytt medlem";
         } else {
-            strOrigoLabelResidence           = "Address";
-            strOrigoLabelContactList         = "Personal contact list";
-            strOrigoLabelFriends             = "Party of friends";
-            strOrigoLabelTeam                = "Sports team";
-            strOrigoLabelOrganisation        = "Organisation";
-            strOrigoLabelPreschoolClass      = "Preschool class";
-            strOrigoLabelSchoolClass         = "School class";
-            strOrigoLabelPlaymates           = "Flock of friends";
-            strOrigoLabelMinorTeam           = "Sports team";
-            strOrigoLabelOther               = "General purpose";
+            strOrigoTitleResidence           = "Address";
+            strOrigoTitleContactList         = "Personal contact list";
+            strOrigoTitleFriends             = "Party of friends";
+            strOrigoTitleTeam                = "Sports team";
+            strOrigoTitleOrganisation        = "Organisation";
+            strOrigoTitlePreschoolClass      = "Preschool class";
+            strOrigoTitleSchoolClass         = "School class";
+            strOrigoTitlePlaymates           = "Flock of friends";
+            strOrigoTitleMinorTeam           = "Sports team";
+            strOrigoTitleOther               = "General purpose";
             
-            strNewOrigoLabelResidence        = "New address";
-            strNewOrigoLabelContactList      = "New contact list";
-            strNewOrigoLabelFriends          = "New party of friends";
-            strNewOrigoLabelTeam             = "New team";
-            strNewOrigoLabelOrganisation     = "New organisation";
-            strNewOrigoLabelPreschoolClass   = "New preschool class";
-            strNewOrigoLabelSchoolClass      = "New school class";
-            strNewOrigoLabelPlaymates        = "New flock";
-            strNewOrigoLabelMinorTeam        = "New team";
-            strNewOrigoLabelOther            = "New origo";
+            strNewOrigoTitleResidence        = "New address";
+            strNewOrigoTitleContactList      = "New contact list";
+            strNewOrigoTitleFriends          = "New party of friends";
+            strNewOrigoTitleTeam             = "New team";
+            strNewOrigoTitleOrganisation     = "New organisation";
+            strNewOrigoTitlePreschoolClass   = "New preschool class";
+            strNewOrigoTitleSchoolClass      = "New school class";
+            strNewOrigoTitlePlaymates        = "New flock";
+            strNewOrigoTitleMinorTeam        = "New team";
+            strNewOrigoTitleOther            = "New origo";
             
-            strMemberListLabelResidence      = "In the household";
-            strMemberListLabelContactList    = "Contacts";
-            strMemberListLabelFriends        = "In the party";
-            strMemberListLabelTeam           = "On the team";
-            strMemberListLabelOrganisation   = "Members";
-            strMemberListLabelPreschoolClass = "In the class";
-            strMemberListLabelSchoolClass    = "In the class";
-            strMemberListLabelPlaymates      = "In the flock";
-            strMemberListLabelMinorTeam      = "On the team";
-            strMemberListLabelOther          = "Members";
+            strMemberListTitleResidence      = "In the household";
+            strMemberListTitleContactList    = "Contacts";
+            strMemberListTitleFriends        = "In the party";
+            strMemberListTitleTeam           = "On the team";
+            strMemberListTitleOrganisation   = "Members";
+            strMemberListTitlePreschoolClass = "In the class";
+            strMemberListTitleSchoolClass    = "In the class";
+            strMemberListTitlePlaymates      = "In the flock";
+            strMemberListTitleMinorTeam      = "On the team";
+            strMemberListTitleOther          = "Members";
             
-            strNewMemberLabelResidence       = "In the household";
-            strNewMemberLabelContactList     = "New contact";
-            strNewMemberLabelFriends         = "In the party";
-            strNewMemberLabelTeam            = "On the team";
-            strNewMemberLabelOrganisation    = "New member";
-            strNewMemberLabelPreschoolClass  = "New classmate";
-            strNewMemberLabelSchoolClass     = "New classmate";
-            strNewMemberLabelPlaymates       = "In the flock";
-            strNewMemberLabelMinorTeam       = "On the team";
-            strNewMemberLabelOther           = "New member";
+            strNewMemberTitleResidence       = "In the household";
+            strNewMemberTitleContactList     = "New contact";
+            strNewMemberTitleFriends         = "In the party";
+            strNewMemberTitleTeam            = "On the team";
+            strNewMemberTitleOrganisation    = "New member";
+            strNewMemberTitlePreschoolClass  = "New classmate";
+            strNewMemberTitleSchoolClass     = "New classmate";
+            strNewMemberTitlePlaymates       = "In the flock";
+            strNewMemberTitleMinorTeam       = "On the team";
+            strNewMemberTitleOther           = "New member";
         }
     }
     
