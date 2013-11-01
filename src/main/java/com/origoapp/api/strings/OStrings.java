@@ -236,6 +236,8 @@ public class OStrings
     public String strSheetTitleCountry;
     public String strSheetTitleOrigoType;
     
+    public String strTextNoOrigos;
+    
     public String strTermYourChild;
     public String strTermHimOrHer;
     public String strTermForName;
@@ -266,6 +268,8 @@ public class OStrings
             strSheetTitleCountry                = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
             strSheetTitleOrigoType              = "Hva slags origo ønsker du å opprette";
             
+            strTextNoOrigos                     = "(Ingen origo)";
+            
             strTermYourChild                    = "et av barna";
             strTermHimOrHer                     = "ham eller henne";
             strTermForName                      = "for %@";
@@ -290,6 +294,8 @@ public class OStrings
             
             strSheetTitleCountry                = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
             strSheetTitleOrigoType              = "What sort of origo du you want to create";
+            
+            strTextNoOrigos                     = "(No origos)";
             
             strTermYourChild                    = "your child";
             strTermHimOrHer                     = "him or her";
@@ -332,8 +338,8 @@ public class OStrings
     public String strButtonAddMemberOther;
     public String strButtonAddContactPreschoolClass;
     public String strButtonAddContactSchoolClass;
-    public String strButtonAddContactPlaymates;
     public String strButtonAddContactTeamMinor;
+    public String strButtonAddParentContact;
     public String strButtonAbout;
     public String strButtonShowInMap;
     public String strButtonNewHousemate;
@@ -364,7 +370,7 @@ public class OStrings
             strFooterTeamMinor                = "Trykk [+] for å legge til deltakere på laget.";
             strFooterOther                    = "Trykk [+] for å legge til medlemmer.";
             
-            strButtonAddMemberResidence       = "Legg til medlem i husstanden";
+            strButtonAddMemberResidence       = "Nytt medlem i husstanden";
             strButtonAddMemberFriends         = "Legg til venn";
             strButtonAddMemberTeam            = "Legg til spiller på laget";
             strButtonAddMemberOrganisation    = "Legg til medlem";
@@ -373,10 +379,10 @@ public class OStrings
             strButtonAddMemberPlaymates       = "Legg til venn i gjengen";
             strButtonAddMemberTeamMinor       = "Legg til deltaker på laget";
             strButtonAddMemberOther           = "Legg til medlem";
-            strButtonAddContactPreschoolClass = "Legg til leder el.l.";
-            strButtonAddContactSchoolClass    = "Legg til lærer el.l.";
-            strButtonAddContactPlaymates      = "Legg til foreldrekontakt";
-            strButtonAddContactTeamMinor      = "Legg til trener el.l.";
+            strButtonAddContactPreschoolClass = "Legg til lærer/assistent";
+            strButtonAddContactSchoolClass    = "Legg til lærer";
+            strButtonAddContactTeamMinor      = "Legg til trener";
+            strButtonAddParentContact         = "Legg til foreldrekontakt";
             strButtonAbout                    = "Om %@";
             strButtonShowInMap                = "Vis på kart";
             strButtonNewHousemate             = "Ny bofelle";   
@@ -404,7 +410,7 @@ public class OStrings
             strFooterTeamMinor                = "Tap [+] to add players.";
             strFooterOther                    = "Tap [+] to add members.";
             
-            strButtonAddMemberResidence       = "Add household member";
+            strButtonAddMemberResidence       = "New household member";
             strButtonAddMemberFriends         = "Add friend";
             strButtonAddMemberTeam            = "Add player";
             strButtonAddMemberOrganisation    = "Add member";
@@ -413,10 +419,10 @@ public class OStrings
             strButtonAddMemberPlaymates       = "Add friend";
             strButtonAddMemberTeamMinor       = "Add player";
             strButtonAddMemberOther           = "Add member";
-            strButtonAddContactPreschoolClass = "Add teacher or similar";
-            strButtonAddContactSchoolClass    = "Add teacher or similar";
-            strButtonAddContactPlaymates      = "Add parent contact";
-            strButtonAddContactTeamMinor      = "Add coach or similar";
+            strButtonAddContactPreschoolClass = "Add teacher";
+            strButtonAddContactSchoolClass    = "Add teacher";
+            strButtonAddContactTeamMinor      = "Add coach";
+            strButtonAddParentContact         = "Add parent contact";
             strButtonAbout                    = "About %@";
             strButtonShowInMap                = "Show in map";
             strButtonNewHousemate             = "New housemate";
@@ -491,7 +497,7 @@ public class OStrings
             strPlaceholderEmail             = "En gyldig epostadresse";
             
             strFooterOrigoInviteAlert       = "En invitasjon vil bli sendt om du oppgir en epost-adresse.";
-            strFooterJuvenileOrigoGuardian  = "Før du kan registrere et mindreårig origo-medlem, må du registrere hans eller hennes foresatte.";
+            strFooterJuvenileOrigoGuardian  = "Før du kan registrere en mindreårig, må du registrere hans eller hennes foresatte.";
             
             strButtonParentToSome           = "Til noen av dem";
             strButtonAddAddress             = "Legg til en adresse";
@@ -537,7 +543,7 @@ public class OStrings
             strPlaceholderEmail             = "A valid email address";
             
             strFooterOrigoInviteAlert       = "An invitation will be sent if you provide an email address.";
-            strFooterJuvenileOrigoGuardian  = "Before you can register a minor origo member, you must register his or her parents/guardians.";
+            strFooterJuvenileOrigoGuardian  = "Before you can register a minor, you must register his or her parents/guardians.";
             
             strButtonParentToSome           = "To some of them";
             strButtonAddAddress             = "Add an address";
@@ -727,23 +733,23 @@ public class OStrings
             strOrigoTitleResidence           = "Adresse";
             strOrigoTitleContactList         = "Personlig kontaktliste";
             strOrigoTitleFriends             = "Vennegruppe";
-            strOrigoTitleTeam                = "Sportslag";
+            strOrigoTitleTeam                = "Idrettsgruppe";
             strOrigoTitleOrganisation        = "Organisasjon";
             strOrigoTitlePreschoolClass      = "Barnehageavdeling";
             strOrigoTitleSchoolClass         = "Skoleklasse";
             strOrigoTitlePlaymates           = "Vennegjeng";
-            strOrigoTitleMinorTeam           = "Sportslag";
+            strOrigoTitleMinorTeam           = "Idrettsgruppe";
             strOrigoTitleOther               = "Annet formål";
             
             strNewOrigoTitleResidence        = "Ny adresse";
             strNewOrigoTitleContactList      = "Ny kontaktliste";
             strNewOrigoTitleFriends          = "Ny vennegruppe";
-            strNewOrigoTitleTeam             = "Nytt lag";
+            strNewOrigoTitleTeam             = "Ny idrettsgruppe";
             strNewOrigoTitleOrganisation     = "Ny organisasjon";
             strNewOrigoTitlePreschoolClass   = "Ny barnehageavdeling";
             strNewOrigoTitleSchoolClass      = "Ny skoleklasse";
             strNewOrigoTitlePlaymates        = "Ny vennegjeng";
-            strNewOrigoTitleMinorTeam        = "Nytt lag";
+            strNewOrigoTitleMinorTeam        = "Ny idrettsgruppe";
             strNewOrigoTitleOther            = "Nytt origo";
             
             strMemberListTitleResidence      = "I husstanden";
@@ -760,34 +766,34 @@ public class OStrings
             strNewMemberTitleResidence       = "I husstanden";
             strNewMemberTitleContactList     = "Ny kontakt";
             strNewMemberTitleFriends         = "I gruppa";
-            strNewMemberTitleTeam            = "På laget";
+            strNewMemberTitleTeam            = "Ny deltaker";
             strNewMemberTitleOrganisation    = "Nytt medlem";
             strNewMemberTitlePreschoolClass  = "Ny i avdelingen";
             strNewMemberTitleSchoolClass     = "Ny klassekompis";
             strNewMemberTitlePlaymates       = "I gjengen";
-            strNewMemberTitleMinorTeam       = "På laget";
+            strNewMemberTitleMinorTeam       = "Ny deltaker";
             strNewMemberTitleOther           = "Nytt medlem";
         } else {
             strOrigoTitleResidence           = "Address";
             strOrigoTitleContactList         = "Personal contact list";
             strOrigoTitleFriends             = "Party of friends";
-            strOrigoTitleTeam                = "Sports team";
+            strOrigoTitleTeam                = "Sports group";
             strOrigoTitleOrganisation        = "Organisation";
             strOrigoTitlePreschoolClass      = "Preschool class";
             strOrigoTitleSchoolClass         = "School class";
             strOrigoTitlePlaymates           = "Flock of friends";
-            strOrigoTitleMinorTeam           = "Sports team";
+            strOrigoTitleMinorTeam           = "Sports group";
             strOrigoTitleOther               = "General purpose";
             
             strNewOrigoTitleResidence        = "New address";
             strNewOrigoTitleContactList      = "New contact list";
             strNewOrigoTitleFriends          = "New party of friends";
-            strNewOrigoTitleTeam             = "New team";
+            strNewOrigoTitleTeam             = "New sports group";
             strNewOrigoTitleOrganisation     = "New organisation";
             strNewOrigoTitlePreschoolClass   = "New preschool class";
             strNewOrigoTitleSchoolClass      = "New school class";
             strNewOrigoTitlePlaymates        = "New flock";
-            strNewOrigoTitleMinorTeam        = "New team";
+            strNewOrigoTitleMinorTeam        = "New sports group";
             strNewOrigoTitleOther            = "New origo";
             
             strMemberListTitleResidence      = "In the household";
@@ -804,12 +810,12 @@ public class OStrings
             strNewMemberTitleResidence       = "In the household";
             strNewMemberTitleContactList     = "New contact";
             strNewMemberTitleFriends         = "In the party";
-            strNewMemberTitleTeam            = "On the team";
+            strNewMemberTitleTeam            = "New participant";
             strNewMemberTitleOrganisation    = "New member";
             strNewMemberTitlePreschoolClass  = "New classmate";
             strNewMemberTitleSchoolClass     = "New classmate";
             strNewMemberTitlePlaymates       = "In the flock";
-            strNewMemberTitleMinorTeam       = "On the team";
+            strNewMemberTitleMinorTeam       = "New participant";
             strNewMemberTitleOther           = "New member";
         }
     }
@@ -817,7 +823,7 @@ public class OStrings
     
     /* ==== Meta strings ==== */
     
-    public String metaSupportedCountryCodes = "no";
+    public String metaSupportedLanguages = "nb";
     
     public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher|parentRepresentative";
     public String strContactRoleClassTeacher;
