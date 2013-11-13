@@ -107,7 +107,7 @@ public class OStrings
             strButtonDone           = "Done";
             strButtonContinue       = "Continue";
             strButtonCancel         = "Cancel";
-            strButtonSignOut        = "Sign out";
+            strButtonSignOut        = "Log out";
             
             strAlertTextNoInternet  = "No internet connection.";
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
@@ -153,7 +153,6 @@ public class OStrings
     public String strPlaceholderPassword;
     public String strPlaceholderActivationCode;
     public String strPlaceholderRepeatPassword;
-    public String strPlaceholderPleaseWait;
     
     public String strButtonHaveCode;
     public String strButtonStartOver;
@@ -177,13 +176,12 @@ public class OStrings
             strPlaceholderPassword        = "Passordet ditt";
             strPlaceholderActivationCode  = "Aktiveringskode fra epost";
             strPlaceholderRepeatPassword  = "Gjenta passordet ditt";
-            strPlaceholderPleaseWait      = "Vent litt...";
             
             strButtonHaveCode             = "Har kode";
             strButtonStartOver            = "Gå tilbake";
             
             strAlertTitleActivationFailed = "Aktivering mislyktes";
-            strAlertTextActivationFailed  = "Det ser ut til at du enten har mistet aktiveringskoden som vi sendte deg på epost, eller at du har glemt passordet du oppga. La oss starte på nytt.";
+            strAlertTextActivationFailed  = "Det ser ut til at du enten har mistet aktiveringskoden som vi sendte deg på epost, eller at du har glemt passordet ditt. La oss starte på nytt.";
             strAlertTitleWelcomeBack      = "Velkommen tilbake!";
             strAlertTextWelcomeBack       = "Om du har aktiveringskoden som ble sendt til %@, så kan du aktivere medlemskapet ditt nå. Om ikke, kan du gå tilbake og starte på nytt.";
         } else {
@@ -198,13 +196,12 @@ public class OStrings
             strPlaceholderPassword        = "Your password";
             strPlaceholderActivationCode  = "Activation code from email";
             strPlaceholderRepeatPassword  = "Repeat your password";
-            strPlaceholderPleaseWait      = "Please wait...";
             
             strButtonHaveCode             = "Have code";
             strButtonStartOver            = "Start over";
             
             strAlertTitleActivationFailed = "Activation failed";
-            strAlertTextActivationFailed  = "It looks like you may have lost the activation code that we sent to you by email, or forgotten the password you provided. Let's start over.";
+            strAlertTextActivationFailed  = "It looks like you may have lost the activation code that we emailed to you, or forgotten your password. Let's start over.";
             strAlertTitleWelcomeBack      = "Welcome back!";
             strAlertTextWelcomeBack       = "If you have handy the activation code sent to %@, you can now activate your membership. If not, you may go back and start over.";
         }
@@ -233,8 +230,8 @@ public class OStrings
     public String strAlertTextCountrySupported;
     public String strAlertTextCountryUnsupported;
     
-    public String strSheetTitleCountry;
-    public String strSheetTitleOrigoType;
+    public String strSheetPromptCountry;
+    public String strSheetPromptOrigoType;
     
     public String strTextNoOrigos;
     
@@ -265,8 +262,8 @@ public class OStrings
             strAlertTextCountrySupported        = "Nye origo vil bli tilpasset %@.";
             strAlertTextCountryUnsupported      = "Lokale tilpasninger er foreløpig ikke tilgjengelige for %@. Nye origo vil bli opprettet uten lokale tilpasninger.";
             
-            strSheetTitleCountry                = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
-            strSheetTitleOrigoType              = "Hva slags origo ønsker du å opprette";
+            strSheetPromptCountry               = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
+            strSheetPromptOrigoType             = "Hva slags origo ønsker du å opprette";
             
             strTextNoOrigos                     = "(Ingen origo)";
             
@@ -292,8 +289,8 @@ public class OStrings
             strAlertTextCountrySupported        = "New origos will be adapted for %@.";
             strAlertTextCountryUnsupported      = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
             
-            strSheetTitleCountry                = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
-            strSheetTitleOrigoType              = "What sort of origo du you want to create";
+            strSheetPromptCountry               = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
+            strSheetPromptOrigoType             = "What sort of origo du you want to create";
             
             strTextNoOrigos                     = "(No origos)";
             
@@ -336,6 +333,9 @@ public class OStrings
     public String strButtonAddMemberPlaymates;
     public String strButtonAddMemberTeamMinor;
     public String strButtonAddMemberOther;
+    public String strButtonAddContactTeam;
+    public String strButtonAddContactOrganisation;
+    public String strButtonAddContactOther;
     public String strButtonAddContactPreschoolClass;
     public String strButtonAddContactSchoolClass;
     public String strButtonAddContactTeamMinor;
@@ -379,6 +379,9 @@ public class OStrings
             strButtonAddMemberPlaymates       = "Legg til venn i gjengen";
             strButtonAddMemberTeamMinor       = "Legg til deltaker på laget";
             strButtonAddMemberOther           = "Legg til medlem";
+            strButtonAddContactTeam           = "Legg til trener";
+            strButtonAddContactOrganisation   = "Legg til kontaktperson";
+            strButtonAddContactOther          = "Lekk til kontaktperson";
             strButtonAddContactPreschoolClass = "Legg til lærer/assistent";
             strButtonAddContactSchoolClass    = "Legg til lærer";
             strButtonAddContactTeamMinor      = "Legg til trener";
@@ -419,6 +422,9 @@ public class OStrings
             strButtonAddMemberPlaymates       = "Add friend";
             strButtonAddMemberTeamMinor       = "Add player";
             strButtonAddMemberOther           = "Add member";
+            strButtonAddContactTeam           = "Add coach";
+            strButtonAddContactOrganisation   = "Add contact";
+            strButtonAddContactOther          = "Add contact";
             strButtonAddContactPreschoolClass = "Add teacher";
             strButtonAddContactSchoolClass    = "Add teacher";
             strButtonAddContactTeamMinor      = "Add coach";
@@ -456,7 +462,9 @@ public class OStrings
     public String strButtonEditRelations;
     public String strButtonCorrectGender;
     public String strButtonNewAddress;
+    public String strButtonAllMembers;
     public String strButtonAllContacts;
+    public String strButtonAllGuardians;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
@@ -467,10 +475,10 @@ public class OStrings
     public String strAlertTitleFailedEmailChange;
     public String strAlertTextFailedEmailChange;
 
-    public String strSheetTitleEmailRecipient;
-    public String strSheetTitleTextRecipient;
-    public String strSheetTitlePhoneCallRecipient;
-    public String strSheetTitleExistingResidence;
+    public String strSheetPromptEmailRecipient;
+    public String strSheetPromptTextRecipient;
+    public String strSheetPromptCallRecipient;
+    public String strSheetPromptExistingResidence;
     
     public String strQuestionArgumentGender;
     public String strQuestionArgumentGenderMinor;
@@ -505,6 +513,8 @@ public class OStrings
             strButtonEditRelations          = "Rediger relasjoner";
             strButtonCorrectGender          = "Korriger kjønn";
             strButtonNewAddress             = "Ny adresse";
+            strButtonAllMembers             = "Alle medlemmer";
+            strButtonAllGuardians           = "Alle foresatte";
             strButtonAllContacts            = "Alle kontaktpersoner";
             strButtonInviteToHousehold      = "Inviter til husstanden";
             strButtonMergeHouseholds        = "Slå sammen husstandene";
@@ -516,10 +526,10 @@ public class OStrings
             strAlertTitleFailedEmailChange  = "Aktivering mislyktes";
             strAlertTextFailedEmailChange   = "Aktivering av epost-adressen %@ mislyktes. Prøv igjen, eller trykk Avbryt for avbryte endringen.";
             
-            strSheetTitleEmailRecipient     = "Hvem vil du sende epost til?";
-            strSheetTitleTextRecipient      = "Hvem vil du sende tekstmelding til?";
-            strSheetTitlePhoneCallRecipient = "Hvem vil du ringe?";
-            strSheetTitleExistingResidence  = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
+            strSheetPromptEmailRecipient    = "Hvem vil du sende epost til?";
+            strSheetPromptTextRecipient     = "Hvem vil du sende tekstmelding til?";
+            strSheetPromptCallRecipient     = "Hvem vil du ringe?";
+            strSheetPromptExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
             
             strQuestionArgumentGender       = "kvinne eller mann";
             strQuestionArgumentGenderMinor  = "jente eller gutt";
@@ -551,7 +561,9 @@ public class OStrings
             strButtonEditRelations          = "Edit relations";
             strButtonCorrectGender          = "Correct gender";
             strButtonNewAddress             = "New address";
+            strButtonAllMembers             = "All members";
             strButtonAllContacts            = "All contacts";
+            strButtonAllGuardians           = "All guardians";
             strButtonInviteToHousehold      = "Invite to household";
             strButtonMergeHouseholds        = "Merge households";
             
@@ -562,10 +574,10 @@ public class OStrings
             strAlertTitleFailedEmailChange  = "Activation failed";
             strAlertTextFailedEmailChange   = "The email address %@ could not be activated. Please try again, or tap Cancel to cancel the change.";
             
-            strSheetTitleEmailRecipient     = "Who do you want to email?";
-            strSheetTitleTextRecipient      = "Who do you want to text?";
-            strSheetTitlePhoneCallRecipient = "Who do you want to call?";
-            strSheetTitleExistingResidence  = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
+            strSheetPromptEmailRecipient    = "Who do you want to email?";
+            strSheetPromptTextRecipient     = "Who do you want to text?";
+            strSheetPromptCallRecipient     = "Who do you want to call?";
+            strSheetPromptExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
             
             strQuestionArgumentGender       = "a woman or a man";
             strQuestionArgumentGenderMinor  = "a girl or a boy";
@@ -683,7 +695,6 @@ public class OStrings
     
     /* ==== Origo type strings ==== */
     
-    public String strOrigoTitleContactList;
     public String strOrigoTitleResidence;
     public String strOrigoTitleFriends;
     public String strOrigoTitleTeam;
@@ -730,15 +741,14 @@ public class OStrings
     private void setOrigoTypeStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strOrigoTitleResidence           = "Adresse";
-            strOrigoTitleContactList         = "Personlig kontaktliste";
+            strOrigoTitleResidence           = "Husstand";
             strOrigoTitleFriends             = "Vennegruppe";
-            strOrigoTitleTeam                = "Idrettsgruppe";
-            strOrigoTitleOrganisation        = "Organisasjon";
+            strOrigoTitleTeam                = "Lag, idrettsgruppe";
+            strOrigoTitleOrganisation        = "Organisasjon, forening";
             strOrigoTitlePreschoolClass      = "Barnehageavdeling";
             strOrigoTitleSchoolClass         = "Skoleklasse";
             strOrigoTitlePlaymates           = "Vennegjeng";
-            strOrigoTitleMinorTeam           = "Idrettsgruppe";
+            strOrigoTitleMinorTeam           = "Lag/idrettsgruppe";
             strOrigoTitleOther               = "Annet formål";
             
             strNewOrigoTitleResidence        = "Ny adresse";
@@ -774,15 +784,14 @@ public class OStrings
             strNewMemberTitleMinorTeam       = "Ny deltaker";
             strNewMemberTitleOther           = "Nytt medlem";
         } else {
-            strOrigoTitleResidence           = "Address";
-            strOrigoTitleContactList         = "Personal contact list";
+            strOrigoTitleResidence           = "Household";
             strOrigoTitleFriends             = "Party of friends";
-            strOrigoTitleTeam                = "Sports group";
+            strOrigoTitleTeam                = "Team/sports group";
             strOrigoTitleOrganisation        = "Organisation";
             strOrigoTitlePreschoolClass      = "Preschool class";
             strOrigoTitleSchoolClass         = "School class";
             strOrigoTitlePlaymates           = "Flock of friends";
-            strOrigoTitleMinorTeam           = "Sports group";
+            strOrigoTitleMinorTeam           = "Team/sports group";
             strOrigoTitleOther               = "General purpose";
             
             strNewOrigoTitleResidence        = "New address";
