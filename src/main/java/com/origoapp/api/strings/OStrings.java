@@ -219,18 +219,11 @@ public class OStrings
     public String strFooterOrigoCreation;
     public String strFooterOrigoCreationWards;
     
-    public String strButtonCountryOther;
-    
     public String strAlertTitleListedUserRegistration;
     public String strAlertTextListedUserRegistration;
     public String strAlertTitleIncompleteRegistration;
     public String strAlertTextIncompleteRegistration;
-    public String strAlertTitleCountryOther;
-    public String strAlertTextCountryOther;
-    public String strAlertTextCountrySupported;
-    public String strAlertTextCountryUnsupported;
     
-    public String strSheetPromptCountry;
     public String strSheetPromptOrigoType;
     
     public String strTextNoOrigos;
@@ -251,18 +244,11 @@ public class OStrings
             strFooterOrigoCreation              = "Trykk [+] for å opprette et nytt origo";
             strFooterOrigoCreationWards         = "for deg selv, eller velg %@ for å opprette et origo for %@";
             
-            strButtonCountryOther               = "Et annet land";
-            
             strAlertTitleListedUserRegistration = "Velkommen til Origo";
             strAlertTextListedUserRegistration  = "Kontroller at opplysningene dine er riktige, samt legg inn opplysninger som %@ ikke hadde adgang til å oppgi da %@ inviterte deg.";  
             strAlertTitleIncompleteRegistration = "Ufullstendig registrering";
             strAlertTextIncompleteRegistration  = "Du må fullføre registreringen før du kan begynne å bruke Origo.";
-            strAlertTitleCountryOther           = "Andre land";
-            strAlertTextCountryOther            = "For å kunne velge et annet land, må du først angi det som regionformat i systeminnstillingene.\n(Innstillinger > Generelt > Internasjonalt)";
-            strAlertTextCountrySupported        = "Nye origo vil bli tilpasset %@.";
-            strAlertTextCountryUnsupported      = "Lokale tilpasninger er foreløpig ikke tilgjengelige for %@. Nye origo vil bli opprettet uten lokale tilpasninger.";
             
-            strSheetPromptCountry               = "Det nye origoet vil om mulig bli tilpasset landet du bor i. Hva er bostedslandet ditt?";
             strSheetPromptOrigoType             = "Hva slags origo ønsker du å opprette";
             
             strTextNoOrigos                     = "(Ingen origo)";
@@ -278,18 +264,11 @@ public class OStrings
             strFooterOrigoCreation              = "Tap [+] to create a new origo";
             strFooterOrigoCreationWards         = "for yourself. Select %@ to create an origo for %@";
             
-            strButtonCountryOther               = "Another country";
-            
             strAlertTitleListedUserRegistration = "Welcome to Origo";
             strAlertTextListedUserRegistration  = "Please verify your details and provide the information that %@ was not authorised to enter when %@ invited you.";  
             strAlertTitleIncompleteRegistration = "Incomplete registration";
             strAlertTextIncompleteRegistration  = "You must complete your registration before you can start using Origo.";
-            strAlertTitleCountryOther           = "Other countries";
-            strAlertTextCountryOther            = "To choose another country, you must first specify it as region format in you system settings.\n(Settings > General > International)";
-            strAlertTextCountrySupported        = "New origos will be adapted for %@.";
-            strAlertTextCountryUnsupported      = "Local adaptations are not yet available for %@. New origos will be created without local adaptations.";
             
-            strSheetPromptCountry               = "The new origo will if possible be adapted for the country where you live. What is your country of residence?";
             strSheetPromptOrigoType             = "What sort of origo du you want to create";
             
             strTextNoOrigos                     = "(No origos)";
@@ -462,9 +441,12 @@ public class OStrings
     public String strButtonEditRelations;
     public String strButtonCorrectGender;
     public String strButtonNewAddress;
-    public String strButtonAllMembers;
     public String strButtonAllContacts;
     public String strButtonAllGuardians;
+    public String strButtonLookUpInContacts;
+    public String strButtonLookUpInOrigo;
+    public String strButtonDifferentNumber;
+    public String strButtonDifferentEmail;
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
@@ -478,6 +460,8 @@ public class OStrings
     public String strSheetPromptEmailRecipient;
     public String strSheetPromptTextRecipient;
     public String strSheetPromptCallRecipient;
+    public String strSheetPromptMultiValuePhone;
+    public String strSheetPromptMultiValueEmail;
     public String strSheetPromptExistingResidence;
     
     public String strQuestionArgumentGender;
@@ -513,9 +497,12 @@ public class OStrings
             strButtonEditRelations          = "Rediger relasjoner";
             strButtonCorrectGender          = "Korriger kjønn";
             strButtonNewAddress             = "Ny adresse";
-            strButtonAllMembers             = "Alle medlemmer";
             strButtonAllGuardians           = "Alle foresatte";
             strButtonAllContacts            = "Alle kontaktpersoner";
+            strButtonLookUpInContacts       = "Slå opp i Kontakter";
+            strButtonLookUpInOrigo          = "Slå opp i Origo";
+            strButtonDifferentNumber        = "Et annet nummer";
+            strButtonDifferentEmail         = "En annen adresse";
             strButtonInviteToHousehold      = "Inviter til husstanden";
             strButtonMergeHouseholds        = "Slå sammen husstandene";
             
@@ -530,6 +517,8 @@ public class OStrings
             strSheetPromptTextRecipient     = "Hvem vil du sende tekstmelding til?";
             strSheetPromptCallRecipient     = "Hvem vil du ringe?";
             strSheetPromptExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
+            strSheetPromptMultiValuePhone   = "%@ er registrert med mer enn ett mobilnummer. Hvilket nummer skal vi registrere hos oss?";
+            strSheetPromptMultiValueEmail   = "%@ er registrert med mer enn én epostadresse. Hvilken adresse skal vi registrere hos oss?";
             
             strQuestionArgumentGender       = "kvinne eller mann";
             strQuestionArgumentGenderMinor  = "jente eller gutt";
@@ -561,9 +550,12 @@ public class OStrings
             strButtonEditRelations          = "Edit relations";
             strButtonCorrectGender          = "Correct gender";
             strButtonNewAddress             = "New address";
-            strButtonAllMembers             = "All members";
             strButtonAllContacts            = "All contacts";
             strButtonAllGuardians           = "All guardians";
+            strButtonLookUpInContacts       = "Look up in Contacts";
+            strButtonLookUpInOrigo          = "Look up in Origo";
+            strButtonDifferentNumber        = "A different number";
+            strButtonDifferentEmail         = "A different address";
             strButtonInviteToHousehold      = "Invite to household";
             strButtonMergeHouseholds        = "Merge households";
             
@@ -578,6 +570,8 @@ public class OStrings
             strSheetPromptTextRecipient     = "Who do you want to text?";
             strSheetPromptCallRecipient     = "Who do you want to call?";
             strSheetPromptExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
+            strSheetPromptMultiValuePhone   = "%@ is registered with more than one mobile phone number. Which number should we register?";
+            strSheetPromptMultiValueEmail   = "%@ is registered with more than one email address. Which address should we register?";
             
             strQuestionArgumentGender       = "a woman or a man";
             strQuestionArgumentGenderMinor  = "a girl or a boy";
@@ -660,35 +654,14 @@ public class OStrings
     
     /* ==== OSettingView strings ==== */
     
-    public String strSettingTitleCountry;
-    
-    public String strLabelCountrySettings;
-    public String strLabelCountryLocate;
-    
-    public String strFooterCountryInfo;
-    public String strFooterCountryInfoNote;
-    public String strFooterCountryInfoLocate;
+    // ...
     
     private void setSettingViewStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
-            strSettingTitleCountry     = "Land";
-            
-            strLabelCountrySettings    = "Lokal innstilling";
-            strLabelCountryLocate      = "Dette landet";
-            
-            strFooterCountryInfo       = "Lokale tilpasninger er foreløpig kun tilgjengelig for %@";
-            strFooterCountryInfoNote   = ", og vil ikke bli benyttet om du velger et annet land.";
-            strFooterCountryInfoLocate = "Om du ønsker å angi landet du befinner deg i, må du tillate Origo å bruke stedstjenestene.\n(Innstillinger > Personvern > Sted)";
+            // ...
         } else {
-            strSettingTitleCountry     = "Country";
-            
-            strLabelCountrySettings    = "Local setting";
-            strLabelCountryLocate      = "This country";
-            
-            strFooterCountryInfo       = "Local adaptations are currently only available for %@";
-            strFooterCountryInfoNote   = ", and will not be applied if you select a different country.";
-            strFooterCountryInfoLocate = "If you wish to specify the country you're in, you must permit Origo to use location services.\n(Settings > Privacy > Location)";
+            // ...
         }
     }
     
@@ -705,7 +678,6 @@ public class OStrings
     public String strOrigoTitleMinorTeam;
     public String strOrigoTitleOther;
     
-    public String strNewOrigoTitleContactList;
     public String strNewOrigoTitleResidence;
     public String strNewOrigoTitleFriends;
     public String strNewOrigoTitleTeam;
@@ -716,7 +688,6 @@ public class OStrings
     public String strNewOrigoTitleMinorTeam;
     public String strNewOrigoTitleOther;
     
-    public String strMemberListTitleContactList;
     public String strMemberListTitleResidence;
     public String strMemberListTitleFriends;
     public String strMemberListTitleTeam;
@@ -727,7 +698,6 @@ public class OStrings
     public String strMemberListTitleMinorTeam;
     public String strMemberListTitleOther;
     
-    public String strNewMemberTitleContactList;
     public String strNewMemberTitleResidence;
     public String strNewMemberTitleFriends;
     public String strNewMemberTitleTeam;
@@ -737,6 +707,15 @@ public class OStrings
     public String strNewMemberTitlePlaymates;
     public String strNewMemberTitleMinorTeam;
     public String strNewMemberTitleOther;
+    
+    public String strAllMembersTitleResidence;
+    public String strAllMembersTitleFriends;
+    public String strAllMembersTitleTeam;
+    public String strAllMembersTitleOrganisation;
+    public String strAllMembersTitleSchoolClass;
+    public String strAllMembersTitlePlaymates;
+    public String strAllMembersTitleMinorTeam;
+    public String strAllMembersTitleOther;
     
     private void setOrigoTypeStrings(String language)
     {
@@ -752,7 +731,6 @@ public class OStrings
             strOrigoTitleOther               = "Annet formål";
             
             strNewOrigoTitleResidence        = "Ny adresse";
-            strNewOrigoTitleContactList      = "Ny kontaktliste";
             strNewOrigoTitleFriends          = "Ny vennegruppe";
             strNewOrigoTitleTeam             = "Ny idrettsgruppe";
             strNewOrigoTitleOrganisation     = "Ny organisasjon";
@@ -763,18 +741,16 @@ public class OStrings
             strNewOrigoTitleOther            = "Nytt origo";
             
             strMemberListTitleResidence      = "I husstanden";
-            strMemberListTitleContactList    = "Kontakter";
             strMemberListTitleFriends        = "I gruppa";
-            strMemberListTitleTeam           = "På laget";
+            strMemberListTitleTeam           = "Deltakere";
             strMemberListTitleOrganisation   = "Medlemmer";
             strMemberListTitlePreschoolClass = "I avdelingen";
             strMemberListTitleSchoolClass    = "I klassen";
             strMemberListTitlePlaymates      = "I gjengen";
-            strMemberListTitleMinorTeam      = "På laget";
+            strMemberListTitleMinorTeam      = "Deltakere";
             strMemberListTitleOther          = "Medlemmer";
             
             strNewMemberTitleResidence       = "I husstanden";
-            strNewMemberTitleContactList     = "Ny kontakt";
             strNewMemberTitleFriends         = "I gruppa";
             strNewMemberTitleTeam            = "Ny deltaker";
             strNewMemberTitleOrganisation    = "Nytt medlem";
@@ -783,6 +759,15 @@ public class OStrings
             strNewMemberTitlePlaymates       = "I gjengen";
             strNewMemberTitleMinorTeam       = "Ny deltaker";
             strNewMemberTitleOther           = "Nytt medlem";
+            
+            strAllMembersTitleResidence      = "Alle i husstanden";
+            strAllMembersTitleFriends        = "Alle i gruppa";
+            strAllMembersTitleTeam           = "Alle i gruppa";
+            strAllMembersTitleOrganisation   = "Alle medlemmene";
+            strAllMembersTitleSchoolClass    = "Alle i klassen";
+            strAllMembersTitlePlaymates      = "Alle i flokken";
+            strAllMembersTitleMinorTeam      = "Alle deltakerne";
+            strAllMembersTitleOther          = "Alle medlemmene";
         } else {
             strOrigoTitleResidence           = "Household";
             strOrigoTitleFriends             = "Party of friends";
@@ -795,7 +780,6 @@ public class OStrings
             strOrigoTitleOther               = "General purpose";
             
             strNewOrigoTitleResidence        = "New address";
-            strNewOrigoTitleContactList      = "New contact list";
             strNewOrigoTitleFriends          = "New party of friends";
             strNewOrigoTitleTeam             = "New sports group";
             strNewOrigoTitleOrganisation     = "New organisation";
@@ -806,18 +790,16 @@ public class OStrings
             strNewOrigoTitleOther            = "New origo";
             
             strMemberListTitleResidence      = "In the household";
-            strMemberListTitleContactList    = "Contacts";
             strMemberListTitleFriends        = "In the party";
-            strMemberListTitleTeam           = "On the team";
+            strMemberListTitleTeam           = "Participants";
             strMemberListTitleOrganisation   = "Members";
             strMemberListTitlePreschoolClass = "In the class";
             strMemberListTitleSchoolClass    = "In the class";
             strMemberListTitlePlaymates      = "In the flock";
-            strMemberListTitleMinorTeam      = "On the team";
+            strMemberListTitleMinorTeam      = "Participants";
             strMemberListTitleOther          = "Members";
             
             strNewMemberTitleResidence       = "In the household";
-            strNewMemberTitleContactList     = "New contact";
             strNewMemberTitleFriends         = "In the party";
             strNewMemberTitleTeam            = "New participant";
             strNewMemberTitleOrganisation    = "New member";
@@ -826,6 +808,15 @@ public class OStrings
             strNewMemberTitlePlaymates       = "In the flock";
             strNewMemberTitleMinorTeam       = "New participant";
             strNewMemberTitleOther           = "New member";
+            
+            strAllMembersTitleResidence      = "The whole household";
+            strAllMembersTitleFriends        = "The whole group";
+            strAllMembersTitleTeam           = "The whole group";
+            strAllMembersTitleOrganisation   = "All members";
+            strAllMembersTitleSchoolClass    = "The whole class";
+            strAllMembersTitlePlaymates      = "The whole flock";
+            strAllMembersTitleMinorTeam      = "All participants";
+            strAllMembersTitleOther          = "All members";
         }
     }
     
@@ -833,8 +824,18 @@ public class OStrings
     /* ==== Meta strings ==== */
     
     public String metaSupportedLanguages = "nb";
+    public String metaMultiLingualCountryCodes = "CA";
+    public String metaCountryCodesByCountryCallingCode = "1:US;33:FR;45:DK;46:SE;47:NO";
+    public String metaInternationalTemplate = "+{1|20|21#|22#|23#|24#|25#|26#|27|29#|30|31|32|33|34|35#|36|37#|8#|39|40|41|42#|43|44|45|46|47|48|49|50#|51|52|53|54|55|56|57|58|59#|60|61|62|63|64|65|66|67#|68#|69#|7|80#|81|82|84|85#|86|878|88#|90|91|92|93|94|95|96#|97#|98|99#} #@";
+    public String metaPhoneNumberTemplatesByRegion =
+            "US|AS|AI|AG|BS|BB|BM|VG|KY|DM|DO|GD|GU|JM|MS|MP|PR|KN|LC|VC|SX|TT|TC|VI:[[[+]1 ]^(N##) ]^N##-####;"+
+            "en_CA:[[[+]1-]^N##-]^N##-####;"+
+            "fr_CA:[[[+]1 ]^N## ]^N##-####;"+
+            "FR:{+33 |0}# ## ## ## ##;"+
+            "DK:[+45 ]N# ## ## ##;"+
+            "NO:[+47 ]^{{4|8|9}## ## ###|N# ## ## ##}";
     
-    public String metaContactRolesSchoolClass = "classTeacher|topicTeacher|specialEducationTeacher|assistantTeacher|headTeacher|parentRepresentative";
+    public String metaContactRolesSchoolClass = "classTeacher;topicTeacher;specialEducationTeacher;assistantTeacher;headTeacher;parentRepresentative";
     public String strContactRoleClassTeacher;
     public String strContactRoleTopicTeacher;
     public String strContactRoleSpecialEducationTeacher;
@@ -842,17 +843,17 @@ public class OStrings
     public String strContactRoleHeadTeacher;
     public String strContactRoleParentRepresentative;
     
-    public String metaContactRolesPreschoolClass = "preschoolClassTeacher|preschoolTeacher|preschoolAssistantTeacher";
+    public String metaContactRolesPreschoolClass = "preschoolClassTeacher;preschoolTeacher;preschoolAssistantTeacher";
     public String strContactRolePreschoolClassTeacher;
     public String strContactRolePreschoolTeacher;
     public String strContactRolePreschoolAssistantTeacher;
     
-    public String metaContactRolesOrganisation = "chair|deputyChair|treasurer";
+    public String metaContactRolesOrganisation = "chair;deputyChair;treasurer";
     public String strContactRoleChair;
     public String strContactRoleDeputyChair;
     public String strContactRoleTreasurer;
     
-    public String metaContactRolesSportsTeam = "coach|assistantCoach";
+    public String metaContactRolesSportsTeam = "coach;assistantCoach";
     public String strContactRoleCoach;
     public String strContactRolessistantCoach;
     
@@ -903,8 +904,8 @@ public class OStrings
     public String strQuestionTemplate;
     
     public String verbs    = "be";
-    public String nouns    = "origo|father|mother|parent|guardian|contact|address";
-    public String pronouns = "I|you|he|she";
+    public String nouns    = "origo;father;mother;parent;guardian;contact;address";
+    public String pronouns = "I;you;he;she";
     
     public String verbBe;
     
@@ -926,37 +927,37 @@ public class OStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strQuestionTemplate = "{verb} {subject} {argument}?";
             
-            verbBe              = "er|er|er|er|er|er";
+            verbBe              = "er;er;er;er;er;er";
             
-            nounOrigo           = "-|-|-|-|mine origo|%@ sine origo";
-            nounFather          = "far|faren|-|-|faren din|faren til %@";
-            nounMother          = "mor|moren|-|-|moren din|moren til %@";
-            nounParent          = "-|-|foreldre|foreldrene|foreldrene dine|foreldrene til %@";
-            nounGuardian        = "foresatt|-|foresatte|-|-|-";
-            nounContact         = "kontaktperson|-|kontaktpersoner|-|-|-";
-            nounAddress         = "adresse|-|adresser|-|-|-";
+            nounOrigo           = "-;-;-;-;mine origo;%@ sine origo";
+            nounFather          = "far;faren;-;-;faren din;faren til %@";
+            nounMother          = "mor;moren;-;-;moren din;moren til %@";
+            nounParent          = "-;-;foreldre;foreldrene;foreldrene dine;foreldrene til %@";
+            nounGuardian        = "foresatt;-;foresatte;-;-;-";
+            nounContact         = "kontaktperson;-;kontaktpersoner;-;-;-";
+            nounAddress         = "adresse;-;adresser;-;-;-";
             
-            pronounI            = "jeg|meg|meg";
-            pronounYou          = "du|deg|deg";
-            pronounHe           = "han|ham|ham";
-            pronounShe          = "hun|henne|henne";
+            pronounI            = "jeg;meg;meg";
+            pronounYou          = "du;deg;deg";
+            pronounHe           = "han;ham;ham";
+            pronounShe          = "hun;henne;henne";
         } else {
             strQuestionTemplate = "{verb} {subject} {argument}?";
             
-            verbBe              = "am|are|is|are|are|are";
+            verbBe              = "am;are;is;are;are;are";
             
-            nounOrigo           = "-|-|-|-|my origos|%@'s origos";
-            nounFather          = "father|the father|-|-|your father|%@'s father";
-            nounMother          = "mother|the mother|-|-|your mother|%@'s mother";
-            nounParent          = "-|-|parents|the parents|your parents|%@'s parents";
-            nounGuardian        = "guardian|-|guardians|-|-|-";
-            nounContact         = "contact|-|contacts|-|-|-";
-            nounAddress         = "address|-|addresses|-|-|-";
+            nounOrigo           = "-;-;-;-;my origos;%@'s origos";
+            nounFather          = "father;the father;-;-;your father;%@'s father";
+            nounMother          = "mother;the mother;-;-;your mother;%@'s mother";
+            nounParent          = "-;-;parents;the parents;your parents;%@'s parents";
+            nounGuardian        = "guardian;-;guardians;-;-;-";
+            nounContact         = "contact;-;contacts;-;-;-";
+            nounAddress         = "address;-;addresses;-;-;-";
             
-            pronounI            = "I|me|me";
-            pronounYou          = "you|you|you";
-            pronounHe           = "he|him|him";
-            pronounShe          = "she|her|her";
+            pronounI            = "I;me;me";
+            pronounYou          = "you;you;you";
+            pronounHe           = "he;him;him";
+            pronounShe          = "she;her;her";
         }
     }
 }
