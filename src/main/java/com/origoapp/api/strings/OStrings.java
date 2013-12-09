@@ -421,10 +421,11 @@ public class OStrings
     
     public String strViewTitleAboutMe;
     
-    public String strLabelAge;
     public String strLabelDateOfBirth;
     public String strLabelMobilePhone;
     public String strLabelEmail;
+    
+    public String strAlternateLabelDateOfBirth;
     
     public String strPlaceholderName;
     public String strPlaceholderPhoto;
@@ -477,10 +478,11 @@ public class OStrings
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleAboutMe             = "Om meg";
             
-            strLabelAge                     = "Alder";
-            strLabelDateOfBirth             = "Født";
+            strLabelDateOfBirth             = "Alder";
             strLabelMobilePhone             = "Mobil";
             strLabelEmail                   = "Epost";
+            
+            strAlternateLabelDateOfBirth    = "Født";
             
             strPlaceholderName              = "Navn";
             strPlaceholderPhoto             = "Bilde";
@@ -530,10 +532,11 @@ public class OStrings
         } else {
             strViewTitleAboutMe             = "About me";
             
-            strLabelAge                     = "Age";
-            strLabelDateOfBirth             = "Born";
+            strLabelDateOfBirth             = "Age";
             strLabelMobilePhone             = "Mobile";
             strLabelEmail                   = "Email";
+            
+            strAlternateLabelDateOfBirth    = "Born";
             
             strPlaceholderName              = "Name";
             strPlaceholderPhoto             = "Photo";
@@ -831,8 +834,8 @@ public class OStrings
             "US|AS|AI|AG|BS|BB|BM|VG|KY|DM|DO|GD|GU|JM|MS|MP|PR|KN|LC|VC|SX|TT|TC|VI:[[[+]1 ]^(N##) ]^N##-####;"+
             "en_CA:[[[+]1-]^N##-]^N##-####;"+
             "fr_CA:[[[+]1 ]^N## ]^N##-####;"+
-            "FR:{+33 |0}# ## ## ## ##;"+
-            "DK:[+45 ]N# ## ## ##;"+
+            "FR:{+33 |^0}# ## ## ## ##;"+
+            "DK:[+45 ]^N# ## ## ##;"+
             "NO:[+47 ]^{{4|8|9}## ## ###|N# ## ## ##}";
     
     public String metaContactRolesSchoolClass = "classTeacher;topicTeacher;specialEducationTeacher;assistantTeacher;headTeacher;parentRepresentative";
