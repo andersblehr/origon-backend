@@ -519,8 +519,8 @@ public class OStrings
             strSheetPromptTextRecipient     = "Hvem vil du sende tekstmelding til?";
             strSheetPromptCallRecipient     = "Hvem vil du ringe?";
             strSheetPromptExistingResidence = "%@ er allerede medlem av en husstand. Vil du invitere %@ til også å bli med i din husstand, eller ønsker du å slå husstandene deres sammen til én?";
-            strSheetPromptMultiValuePhone   = "%@ er registrert med mer enn ett mobilnummer. Hvilket nummer skal vi registrere hos oss?";
-            strSheetPromptMultiValueEmail   = "%@ er registrert med mer enn én epostadresse. Hvilken adresse skal vi registrere hos oss?";
+            strSheetPromptMultiValuePhone   = "%@ er registrert med mer enn ett mobilnummer. Hvilket nummer vil du oppgi?";
+            strSheetPromptMultiValueEmail   = "%@ er registrert med mer enn én epostadresse. Hvilken adresse vil du oppgi?";
             
             strQuestionArgumentGender       = "kvinne eller mann";
             strQuestionArgumentGenderMinor  = "jente eller gutt";
@@ -573,8 +573,8 @@ public class OStrings
             strSheetPromptTextRecipient     = "Who do you want to text?";
             strSheetPromptCallRecipient     = "Who do you want to call?";
             strSheetPromptExistingResidence = "%@ is already member of a household. Would you like to invite %@ to join your household as well, or do you want to merge your households into one?";
-            strSheetPromptMultiValuePhone   = "%@ is registered with more than one mobile phone number. Which number should we register?";
-            strSheetPromptMultiValueEmail   = "%@ is registered with more than one email address. Which address should we register?";
+            strSheetPromptMultiValuePhone   = "%@ is registered with more than one mobile phone number. Which number do you want to provide?";
+            strSheetPromptMultiValueEmail   = "%@ is registered with more than one email address. Which address do you want to provide?";
             
             strQuestionArgumentGender       = "a woman or a man";
             strQuestionArgumentGenderMinor  = "a girl or a boy";
