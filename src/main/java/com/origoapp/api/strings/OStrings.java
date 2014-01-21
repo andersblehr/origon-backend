@@ -78,6 +78,7 @@ public class OStrings
     public String strTermBoy;
     public String strTermWoman;
     public String strTermGirl;
+    public String strTermParentContact;
     
     public String strFormatAge;
     
@@ -107,6 +108,7 @@ public class OStrings
             strTermBoy              = "Gutt";
             strTermWoman            = "Kvinne";
             strTermGirl             = "Jente";
+            strTermParentContact    = "Foreldrekontakt";
             
             strFormatAge            = "%d år";
             
@@ -133,6 +135,7 @@ public class OStrings
             strTermBoy              = "Boy";
             strTermWoman            = "Woman";
             strTermGirl             = "Girl";
+            strTermParentContact    = "Parent contact";
             
             strFormatAge            = "%d years";
             
@@ -296,6 +299,7 @@ public class OStrings
     
     public String strButtonEditRoles;
     public String strButtonAddFromOrigo;
+    public String strButtonAddParentContact;
     public String strButtonShowInMap;
     public String strButtonAbout;
     public String strButtonNewHousemate;
@@ -318,6 +322,7 @@ public class OStrings
             
             strButtonEditRoles            = "Rediger roller";
             strButtonAddFromOrigo         = "Legg til fra andre origo";
+            strButtonAddParentContact     = "Legg til foreldrekontakt";
             strButtonShowInMap            = "Vis på kart";
             strButtonAbout                = "Om %@";
             strButtonNewHousemate         = "Ny bofelle";   
@@ -337,6 +342,7 @@ public class OStrings
             
             strButtonEditRoles            = "Edit roles";
             strButtonAddFromOrigo         = "Add from other origos";
+            strButtonAddParentContact     = "Add parent contact";
             strButtonShowInMap            = "Show in map";
             strButtonAbout                = "About %@";
             strButtonNewHousemate         = "New housemate";
@@ -637,7 +643,10 @@ public class OStrings
     public String strButtonAddContactPreschoolClass;
     public String strButtonAddContactSchoolClass;
     public String strButtonAddContactTeamMinor;
-    public String strButtonAddParentContact;
+    
+    public String strContactTitlePreschoolClass;
+    public String strContactTitleSchoolClass;
+    public String strContactTitleTeamMinor;
     
     public String strMemberListTitleResidence;
     public String strMemberListTitleFriends;
@@ -701,7 +710,7 @@ public class OStrings
             strFooterTeamMinor                = "Trykk [+] for å legge til deltakere.";
             strFooterOther                    = "Trykk [+] for å legge til medlemmer.";
 
-            strButtonAddMemberResidence       = "Nytt medlem i husstanden";
+            strButtonAddMemberResidence       = "Legg til medlem";
             strButtonAddMemberFriends         = "Legg til venn/venninne";
             strButtonAddMemberTeam            = "Legg til deltaker";
             strButtonAddMemberOrganisation    = "Legg til medlem";
@@ -714,7 +723,10 @@ public class OStrings
             strButtonAddContactPreschoolClass = "Legg til lærer/assistent";
             strButtonAddContactSchoolClass    = "Legg til lærer";
             strButtonAddContactTeamMinor      = "Legg til trener";
-            strButtonAddParentContact         = "Legg til foreldrekontakt";
+            
+            strContactTitlePreschoolClass     = "Lærer/assistent";
+            strContactTitleSchoolClass        = "Lærer";
+            strContactTitleTeamMinor          = "Trener";
             
             strMemberListTitleResidence       = "I husstanden";
             strMemberListTitleFriends         = "I gruppa";
@@ -775,7 +787,7 @@ public class OStrings
             strFooterTeamMinor                = "Tap [+] to add players.";
             strFooterOther                    = "Tap [+] to add members.";
             
-            strButtonAddMemberResidence       = "New household member";
+            strButtonAddMemberResidence       = "Add household member";
             strButtonAddMemberFriends         = "Add friend";
             strButtonAddMemberTeam            = "Add player";
             strButtonAddMemberOrganisation    = "Add member";
@@ -788,7 +800,10 @@ public class OStrings
             strButtonAddContactPreschoolClass = "Add teacher";
             strButtonAddContactSchoolClass    = "Add teacher";
             strButtonAddContactTeamMinor      = "Add coach";
-            strButtonAddParentContact         = "Add parent contact";
+            
+            strContactTitlePreschoolClass     = "Teacher";
+            strContactTitleSchoolClass        = "Teacher";
+            strContactTitleTeamMinor          = "Coach";
             
             strMemberListTitleResidence       = "In the household";
             strMemberListTitleFriends         = "In the party";
@@ -872,8 +887,8 @@ public class OStrings
             strContactRolePreschoolTeacher          = "Førskolelærer";
             strContactRolePreschoolAssistantTeacher = "Assistent";
             
-            strContactRoleChair                     = "Formann";
-            strContactRoleDeputyChair               = "Varamann";
+            strContactRoleChair                     = "Formann/-kvinne";
+            strContactRoleDeputyChair               = "Varamann/-kvinne";
             strContactRoleTreasurer                 = "Kasserer";
             
             strContactRoleCoach                     = "Trener";
