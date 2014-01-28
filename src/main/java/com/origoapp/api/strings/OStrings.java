@@ -70,7 +70,6 @@ public class OStrings
     
     public String strAlertTextNoInternet;
     public String strAlertTextServerError;
-    public String strAlertTextLocating;
     
     public String strTermYes;
     public String strTermNo;
@@ -100,7 +99,6 @@ public class OStrings
             
             strAlertTextNoInternet  = "Ingen internettforbindelse.";
             strAlertTextServerError = "Det har oppstått en feil, vennligst prøv igjen senere. [%d: \"%@\"]";
-            strAlertTextLocating    = "Lokaliserer...";
             
             strTermYes              = "Ja";
             strTermNo               = "Nei";
@@ -127,7 +125,6 @@ public class OStrings
             
             strAlertTextNoInternet  = "No internet connection.";
             strAlertTextServerError = "An error has occurred. Please try again later. [%d: \"%@\"]";
-            strAlertTextLocating    = "Locating...";
             
             strTermYes              = "Yes";
             strTermNo               = "No";
@@ -606,8 +603,6 @@ public class OStrings
     public String strOrigoTitleOrganisation;
     public String strOrigoTitlePreschoolClass;
     public String strOrigoTitleSchoolClass;
-    public String strOrigoTitlePlaymates;
-    public String strOrigoTitleMinorTeam;
     public String strOrigoTitleOther;
     
     public String strNewOrigoTitleResidence;
@@ -616,8 +611,6 @@ public class OStrings
     public String strNewOrigoTitleOrganisation;
     public String strNewOrigoTitlePreschoolClass;
     public String strNewOrigoTitleSchoolClass;
-    public String strNewOrigoTitlePlaymates;
-    public String strNewOrigoTitleMinorTeam;
     public String strNewOrigoTitleOther;
     
     public String strFooterResidence;
@@ -626,8 +619,6 @@ public class OStrings
     public String strFooterOrganisation;
     public String strFooterPreschoolClass;
     public String strFooterSchoolClass;
-    public String strFooterPlaymates;
-    public String strFooterTeamMinor;
     public String strFooterOther;
     
     public String strButtonAddMemberResidence;
@@ -636,17 +627,15 @@ public class OStrings
     public String strButtonAddMemberOrganisation;
     public String strButtonAddMemberPreschoolClass;
     public String strButtonAddMemberSchoolClass;
-    public String strButtonAddMemberPlaymates;
-    public String strButtonAddMemberTeamMinor;
     public String strButtonAddMemberOther;
     
     public String strButtonAddContactPreschoolClass;
     public String strButtonAddContactSchoolClass;
-    public String strButtonAddContactTeamMinor;
+    public String strButtonAddContactTeam;
     
     public String strContactTitlePreschoolClass;
     public String strContactTitleSchoolClass;
-    public String strContactTitleTeamMinor;
+    public String strContactTitleTeam;
     
     public String strMemberListTitleResidence;
     public String strMemberListTitleFriends;
@@ -654,8 +643,6 @@ public class OStrings
     public String strMemberListTitleOrganisation;
     public String strMemberListTitlePreschoolClass;
     public String strMemberListTitleSchoolClass;
-    public String strMemberListTitlePlaymates;
-    public String strMemberListTitleMinorTeam;
     public String strMemberListTitleOther;
     
     public String strNewMemberTitleResidence;
@@ -664,8 +651,6 @@ public class OStrings
     public String strNewMemberTitleOrganisation;
     public String strNewMemberTitlePreschoolClass;
     public String strNewMemberTitleSchoolClass;
-    public String strNewMemberTitlePlaymates;
-    public String strNewMemberTitleMinorTeam;
     public String strNewMemberTitleOther;
     
     public String strAllMembersTitleResidence;
@@ -673,8 +658,6 @@ public class OStrings
     public String strAllMembersTitleTeam;
     public String strAllMembersTitleOrganisation;
     public String strAllMembersTitleSchoolClass;
-    public String strAllMembersTitlePlaymates;
-    public String strAllMembersTitleMinorTeam;
     public String strAllMembersTitleOther;
     
     private void setOrigoTypeStrings(String language)
@@ -686,8 +669,6 @@ public class OStrings
             strOrigoTitleOrganisation         = "Organisasjon, forening";
             strOrigoTitlePreschoolClass       = "Barnehageavdeling";
             strOrigoTitleSchoolClass          = "Skoleklasse";
-            strOrigoTitlePlaymates            = "Vennegjeng";
-            strOrigoTitleMinorTeam            = "Lag/idrettsgruppe";
             strOrigoTitleOther                = "Annet formål";
             
             strNewOrigoTitleResidence         = "Ny adresse";
@@ -696,8 +677,6 @@ public class OStrings
             strNewOrigoTitleOrganisation      = "Ny organisasjon";
             strNewOrigoTitlePreschoolClass    = "Ny barnehageavdeling";
             strNewOrigoTitleSchoolClass       = "Ny skoleklasse";
-            strNewOrigoTitlePlaymates         = "Ny vennegjeng";
-            strNewOrigoTitleMinorTeam         = "Ny idrettsgruppe";
             strNewOrigoTitleOther             = "Nytt origo";
             
             strFooterResidence                = "Trykk [+] for å legge til medlemmer i husstanden.";
@@ -706,8 +685,6 @@ public class OStrings
             strFooterOrganisation             = "Trykk [+] for å legge til medlemmer.";
             strFooterPreschoolClass           = "Trykk [+] for å legge til barn i avdelingen.";
             strFooterSchoolClass              = "Trykk [+] for å legge til elever i klassen.";
-            strFooterPlaymates                = "Trykk [+] for å legge til venner i gjengen.";
-            strFooterTeamMinor                = "Trykk [+] for å legge til deltakere.";
             strFooterOther                    = "Trykk [+] for å legge til medlemmer.";
 
             strButtonAddMemberResidence       = "Legg til medlem";
@@ -716,17 +693,15 @@ public class OStrings
             strButtonAddMemberOrganisation    = "Legg til medlem";
             strButtonAddMemberPreschoolClass  = "Legg til barn";
             strButtonAddMemberSchoolClass     = "Legg til elev";
-            strButtonAddMemberPlaymates       = "Legg til venn/venninne";
-            strButtonAddMemberTeamMinor       = "Legg til deltaker";
             strButtonAddMemberOther           = "Legg til medlem";
             
             strButtonAddContactPreschoolClass = "Legg til lærer/assistent";
             strButtonAddContactSchoolClass    = "Legg til lærer";
-            strButtonAddContactTeamMinor      = "Legg til trener";
+            strButtonAddContactTeam           = "Legg til trener";
             
             strContactTitlePreschoolClass     = "Lærer/assistent";
             strContactTitleSchoolClass        = "Lærer";
-            strContactTitleTeamMinor          = "Trener";
+            strContactTitleTeam               = "Trener";
             
             strMemberListTitleResidence       = "I husstanden";
             strMemberListTitleFriends         = "I gruppa";
@@ -734,8 +709,6 @@ public class OStrings
             strMemberListTitleOrganisation    = "Medlemmer";
             strMemberListTitlePreschoolClass  = "I avdelingen";
             strMemberListTitleSchoolClass     = "I klassen";
-            strMemberListTitlePlaymates       = "I gjengen";
-            strMemberListTitleMinorTeam       = "Deltakere";
             strMemberListTitleOther           = "Medlemmer";
             
             strNewMemberTitleResidence        = "I husstanden";
@@ -744,8 +717,6 @@ public class OStrings
             strNewMemberTitleOrganisation     = "Nytt medlem";
             strNewMemberTitlePreschoolClass   = "I avdelingen";
             strNewMemberTitleSchoolClass      = "I klassen";
-            strNewMemberTitlePlaymates        = "I gjengen";
-            strNewMemberTitleMinorTeam        = "Ny deltaker";
             strNewMemberTitleOther            = "Nytt medlem";
             
             strAllMembersTitleResidence       = "Alle i husstanden";
@@ -753,8 +724,6 @@ public class OStrings
             strAllMembersTitleTeam            = "Alle deltakere";
             strAllMembersTitleOrganisation    = "Alle medlemmer";
             strAllMembersTitleSchoolClass     = "Alle i klassen";
-            strAllMembersTitlePlaymates       = "Alle i flokken";
-            strAllMembersTitleMinorTeam       = "Alle deltakere";
             strAllMembersTitleOther           = "Alle medlemmer";
         } else {
             strOrigoTitleResidence            = "Household";
@@ -763,8 +732,6 @@ public class OStrings
             strOrigoTitleOrganisation         = "Organisation";
             strOrigoTitlePreschoolClass       = "Preschool class";
             strOrigoTitleSchoolClass          = "School class";
-            strOrigoTitlePlaymates            = "Flock of friends";
-            strOrigoTitleMinorTeam            = "Team/sports group";
             strOrigoTitleOther                = "General purpose";
             
             strNewOrigoTitleResidence         = "New address";
@@ -773,8 +740,6 @@ public class OStrings
             strNewOrigoTitleOrganisation      = "New organisation";
             strNewOrigoTitlePreschoolClass    = "New preschool class";
             strNewOrigoTitleSchoolClass       = "New school class";
-            strNewOrigoTitlePlaymates         = "New flock";
-            strNewOrigoTitleMinorTeam         = "New sports group";
             strNewOrigoTitleOther             = "New origo";
             
             strFooterResidence                = "Tap [+] to add members to the household.";
@@ -783,8 +748,6 @@ public class OStrings
             strFooterOrganisation             = "Tap [+] to add members.";
             strFooterPreschoolClass           = "Tap [+] to add pupils to the class.";
             strFooterSchoolClass              = "Tap [+] to add pupils to the class.";
-            strFooterPlaymates                = "Tap [+] to add friends to the flock.";
-            strFooterTeamMinor                = "Tap [+] to add players.";
             strFooterOther                    = "Tap [+] to add members.";
             
             strButtonAddMemberResidence       = "Add household member";
@@ -793,17 +756,15 @@ public class OStrings
             strButtonAddMemberOrganisation    = "Add member";
             strButtonAddMemberPreschoolClass  = "Add child";
             strButtonAddMemberSchoolClass     = "Add pupil";
-            strButtonAddMemberPlaymates       = "Add friend";
-            strButtonAddMemberTeamMinor       = "Add player";
             strButtonAddMemberOther           = "Add member";
             
             strButtonAddContactPreschoolClass = "Add teacher";
             strButtonAddContactSchoolClass    = "Add teacher";
-            strButtonAddContactTeamMinor      = "Add coach";
+            strButtonAddContactTeam           = "Add coach";
             
             strContactTitlePreschoolClass     = "Teacher";
             strContactTitleSchoolClass        = "Teacher";
-            strContactTitleTeamMinor          = "Coach";
+            strContactTitleTeam               = "Coach";
             
             strMemberListTitleResidence       = "In the household";
             strMemberListTitleFriends         = "In the party";
@@ -811,8 +772,6 @@ public class OStrings
             strMemberListTitleOrganisation    = "Members";
             strMemberListTitlePreschoolClass  = "In the class";
             strMemberListTitleSchoolClass     = "In the class";
-            strMemberListTitlePlaymates       = "In the flock";
-            strMemberListTitleMinorTeam       = "Participants";
             strMemberListTitleOther           = "Members";
             
             strNewMemberTitleResidence        = "In the household";
@@ -821,8 +780,6 @@ public class OStrings
             strNewMemberTitleOrganisation     = "New member";
             strNewMemberTitlePreschoolClass   = "New classmate";
             strNewMemberTitleSchoolClass      = "New classmate";
-            strNewMemberTitlePlaymates        = "In the flock";
-            strNewMemberTitleMinorTeam        = "New participant";
             strNewMemberTitleOther            = "New member";
             
             strAllMembersTitleResidence       = "The whole household";
@@ -830,8 +787,6 @@ public class OStrings
             strAllMembersTitleTeam            = "The whole group";
             strAllMembersTitleOrganisation    = "All members";
             strAllMembersTitleSchoolClass     = "The whole class";
-            strAllMembersTitlePlaymates       = "The whole flock";
-            strAllMembersTitleMinorTeam       = "All participants";
             strAllMembersTitleOther           = "All members";
         }
     }
