@@ -29,6 +29,8 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String telephone;
     public @IgnoreSave(IfNull.class) Blob photo;
     
+    public @IgnoreSave(IfNull.class) boolean isForMinors;
+    
     public @IgnoreSave OOrigo parentOrigo;
     public @IgnoreSave @EmbedMap Map<String, String> parentOrigoRef;
     public @IgnoreSave(IfNull.class) Key<OOrigo> parentOrigoKey;
