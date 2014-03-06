@@ -383,8 +383,10 @@ public class OStrings
     public String strButtonInviteToHousehold;
     public String strButtonMergeHouseholds;
     
-    public String strAlertTitleMemberExists;
-    public String strAlertTextMemberExists;
+    public String strAlertTitleDataConflict;
+    public String strAlertTextDataConflict;
+    public String strAlertTitleMembershipExists;
+    public String strAlertTextMembershipExists;
     public String strAlertTitleUserEmailChange;
     public String strAlertTextUserEmailChange;
     public String strAlertTitleFailedEmailChange;
@@ -422,7 +424,7 @@ public class OStrings
             strPlaceholderMobilePhone       = "Mobilnummer";
             strPlaceholderEmail             = "En gyldig epostadresse";
             
-            strFooterOrigoInviteAlert       = "En invitasjon vil bli sendt om du oppgir en epost-adresse.";
+            strFooterOrigoInviteAlert       = "En invitasjon vil bli sendt til epost-adressen du oppgir.";
             strFooterJuvenileOrigoGuardian  = "Før du kan registrere en mindreårig, må du registrere hans eller hennes foresatte.";
             
             strButtonParentToSome           = "Til noen av dem";
@@ -440,8 +442,10 @@ public class OStrings
             strButtonInviteToHousehold      = "Inviter til husstanden";
             strButtonMergeHouseholds        = "Slå sammen husstandene";
             
-            strAlertTitleMemberExists       = "Allerede registrert";
-            strAlertTextMemberExists        = "%@ (%@) er allerede registrert i \"%@\". Vennligst oppgi en annen epost-adresse, eller avbryt registreringen.";
+            strAlertTitleDataConflict       = "Uriktige opplysninger";
+            strAlertTextDataConflict        = "Opplysningene du har oppgitt, stemmer ikke med dem som er lagret hos oss. Vennligst avbryt registreringen om du ikke har de korrekte opplysningene om denne personen.";
+            strAlertTitleMembershipExists   = "Allerede medlem";
+            strAlertTextMembershipExists    = "%@ er allerede medlem i %@.";
             strAlertTitleUserEmailChange    = "Ny epost-adresse";
             strAlertTextUserEmailChange     = "Du er i ferd med å endre epost-adressen din fra %@ til %@. Du må ha tilgang til den nye adressen for å aktivere endringen. Ønsker du å fortsette?";
             strAlertTitleFailedEmailChange  = "Aktivering mislyktes";
@@ -476,7 +480,7 @@ public class OStrings
             strPlaceholderMobilePhone       = "Mobile phone number";
             strPlaceholderEmail             = "A valid email address";
             
-            strFooterOrigoInviteAlert       = "An invitation will be sent if you provide an email address.";
+            strFooterOrigoInviteAlert       = "An invitation will be sent to the email address you provide.";
             strFooterJuvenileOrigoGuardian  = "Before you can register a minor, you must register his or her parents/guardians.";
             
             strButtonParentToSome           = "To some of them";
@@ -494,8 +498,10 @@ public class OStrings
             strButtonInviteToHousehold      = "Invite to household";
             strButtonMergeHouseholds        = "Merge households";
             
-            strAlertTitleMemberExists       = "Already registered";
-            strAlertTextMemberExists        = "%@ (%@) is already registered in '%@'. Please enter a different email address, or cancel the registration.";
+            strAlertTitleDataConflict       = "Incorrect details";
+            strAlertTextDataConflict        = "The details you have provided do not match our records. Please cancel the registration if you do not have the correct information about this person.";
+            strAlertTitleMembershipExists   = "Already member";
+            strAlertTextMembershipExists    = "%@ is already a member of %@.";
             strAlertTitleUserEmailChange    = "New email address";
             strAlertTextUserEmailChange     = "You are about to change your email address from %@ to %@. You need access to the new address to activate this change. Do you want to continue?";
             strAlertTitleFailedEmailChange  = "Activation failed";
@@ -551,18 +557,12 @@ public class OStrings
     
     public String strViewTitleMessages;
     
-    public String strDefaultMessageBoardName;
-    
     private void setMessageBoardViewControllerStrings(String language)
     {
         if (language.equals(LANG_NORWEGIAN_BOKMAL)) {
             strViewTitleMessages       = "Meldinger";
-            
-            strDefaultMessageBoardName = "Oppslagstavle";
         } else {
             strViewTitleMessages       = "Messages";
-            
-            strDefaultMessageBoardName = "Message board";
         }
     }
     
