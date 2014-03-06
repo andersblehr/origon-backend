@@ -127,40 +127,51 @@ public class OModelHandler
     @GET
     @Path("lookup")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response lookupMember(@QueryParam(OURLParams.EMAIL) String email,
+    public Response lookupMember(@QueryParam(OURLParams.IDENTIFIER) String identifier,
                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion);
         
-        OMember member = null;
+        List<OReplicatedEntity> memberEntities = null;
         
         if (m.isValid()) {
-            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, email)).now();
+            memberEntities = m.getDAO().lookupMemberEntities(identifier);
+        }
+        
+        if (memberEntities != null) {
+            OLog.log().fine(m.meta() + "Found member with identifier " + identifier + ".");
+            return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
+        } else {
+            OLog.log().fine(m.meta() + "No member with identifier " + identifier + ".");
+            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
+        }
+    }
+    
+    
+    @GET
+    @Path("member")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response fetchMember(@QueryParam(OURLParams.IDENTIFIER) String identifier,
+                                @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        OMember member = null;
+        OMeta m = new OMeta(authToken, appVersion);
+        
+        if (m.isValid()) {
+            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, identifier)).now();
             
             if (memberProxy != null) {
-                Key<OOrigo> memberRootKey = null;
-                String memberId = null;
-                
-                for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
-                    Key<OOrigo> origoKey = membershipKey.getParent();
-                    String origoId = origoKey.getRaw().getName();
-                    
-                    if (origoId.substring(0, 1).equals("~")) {
-                        memberRootKey = origoKey;
-                        memberId = origoId.substring(1);
-                    }
-                }
-                
-                member = ofy().load().key(Key.create(memberRootKey, OMember.class, memberId)).now();
+                member = ofy().load().key(Key.create(Key.create(OOrigo.class, "~" + memberProxy.memberId), OMember.class, memberProxy.memberId)).now();
             }
         }
         
         if (member != null) {
-            OLog.log().fine(m.meta() + "Found member with email " + email + " (id: " + member.entityId + ").");
+            OLog.log().fine(m.meta() + "Found member with identifier " + identifier + " (id: " + member.entityId + ").");
             return Response.status(HttpServletResponse.SC_OK).entity(member).build();
         } else {
-            OLog.log().fine(m.meta() + "No member with email " + email + ".");
+            OLog.log().fine(m.meta() + "No member with identifier " + identifier + ".");
             return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }
     }

@@ -23,8 +23,33 @@ import static com.origoapp.api.aux.OObjectifyService.ofy;
 
 public class ODAO
 {
+    private Set<Key<OReplicatedEntity>> referencedEntityKeys;
+    
     public OMeta m;
 
+    
+    private Set<OReplicatedEntity> fetchMembershipEntities(OMembership membership, Date deviceReplicationDate)
+    {
+        List<OReplicatedEntity> fetchedEntities = null;
+        Set<OReplicatedEntity> membershipEntities = new HashSet<OReplicatedEntity>();
+        
+        if (deviceReplicationDate != null) {
+            fetchedEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", deviceReplicationDate).list();
+        } else {
+            fetchedEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).list();
+        }
+        
+        for (OReplicatedEntity entity : fetchedEntities) {
+            if (entity.getClass().equals(OReplicatedEntityRef.class)) {
+                referencedEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
+            } else if (entity.isReplicatedForMembership(membership)) {
+                membershipEntities.add(entity);
+            }
+        }
+        
+        return membershipEntities;
+    }
+    
     
     public ODAO(OMeta meta)
     {
@@ -61,45 +86,57 @@ public class ODAO
     }
     
     
+    public List<OReplicatedEntity> lookupMemberEntities(String memberId)
+    {
+        OLog.log().fine(m.meta() + "Fetching member with id: " + memberId);
+        
+        Set<OReplicatedEntity> memberEntities = new HashSet<OReplicatedEntity>();
+        OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, memberId)).now(); 
+        
+        if (memberProxy != null) {
+            referencedEntityKeys = new HashSet<Key<OReplicatedEntity>>();
+            
+            for (OMembership membership : ofy().load().keys(memberProxy.membershipKeys).values()) {
+                if (membership.isResidency() && !membership.isExpired) {
+                    memberEntities.addAll(fetchMembershipEntities(membership, null));
+                }
+            }
+            
+            if (referencedEntityKeys.size() > 0) {
+                memberEntities.addAll(ofy().load().keys(referencedEntityKeys).values());
+            }
+        }
+        
+        return (memberEntities.size() > 0) ? new ArrayList<OReplicatedEntity>(memberEntities) : null;
+    }
+    
+    
     public List<OReplicatedEntity> fetchEntities(Date deviceReplicationDate)
     {
         OLog.log().fine(m.meta() + "Fetching entities modified since: " + ((deviceReplicationDate != null) ? deviceReplicationDate.toString() : "<dawn of time>"));
         
+        referencedEntityKeys = new HashSet<Key<OReplicatedEntity>>();
+        
         OMemberProxy memberProxy = m.getMemberProxy();
         Collection<OMembership> memberships = ofy().load().keys(memberProxy.membershipKeys).values();
         
-        Set<Key<OReplicatedEntity>> additionalEntityKeys = new HashSet<Key<OReplicatedEntity>>();
         Set<OReplicatedEntity> fetchedEntities = new HashSet<OReplicatedEntity>();
         
         for (OMembership membership : memberships) {
             if ((membership.isActive || membership.isRootMembership() || membership.isResidency() || membership.isAssociate()) && !membership.isExpired) {
-                List<OReplicatedEntity> membershipEntities = null;
-                
-                if (deviceReplicationDate != null) {
-                    membershipEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).filter("dateReplicated >", deviceReplicationDate).list();
-                } else {
-                    membershipEntities = ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).list();
-                }
-                
-                for (OReplicatedEntity entity : membershipEntities) {
-                    if (entity.getClass().equals(OReplicatedEntityRef.class)) {
-                        additionalEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
-                    } else {
-                        if (entity.isReplicatedForMembership(membership)) {
-                            fetchedEntities.add(entity);
-                        }
-                    }
-                }
+                fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
             } else {
                 fetchedEntities.add(membership);
                 
                 if (!membership.isExpired) {
-                    additionalEntityKeys.add(Key.create(membership.origoKey, OReplicatedEntity.class, membership.origoId));
+                    referencedEntityKeys.add(Key.create(membership.origoKey, OReplicatedEntity.class, membership.origoId));
                 }
             }
         }
         
-        fetchedEntities.addAll(ofy().load().keys(additionalEntityKeys).values());
+        if (referencedEntityKeys.size() > 0) {
+            fetchedEntities.addAll(ofy().load().keys(referencedEntityKeys).values());
+        }
         
         return new ArrayList<OReplicatedEntity>(fetchedEntities);
     }
@@ -161,8 +198,8 @@ public class ODAO
             if (proxyId.equals(m.getEmail())) {
                 OMemberProxy memberProxy = m.getMemberProxy();
                 
-                if (memberProxy.userId == null) {
-                    memberProxy.userId = member.entityId;
+                if (memberProxy.memberId == null) {
+                    memberProxy.memberId = member.entityId;
                     touchedMemberProxies.add(memberProxy);
                 }
                 

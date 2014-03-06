@@ -68,7 +68,7 @@ public class OAuthHandler
         OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
         
         if (fetchedEntities.size() > 0) {
-            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getMemberProxy().userId).entity(fetchedEntities).lastModified(replicationDate).build();
+            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getMemberProxy().memberId).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(replicationDate).build();
         }
@@ -129,7 +129,7 @@ public class OAuthHandler
             OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
             
             if (fetchedEntities.size() > 0) {
-                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.userId).entity(fetchedEntities).lastModified(replicationDate).build();
+                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.memberId).entity(fetchedEntities).lastModified(replicationDate).build();
             } else {
                 return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
             }

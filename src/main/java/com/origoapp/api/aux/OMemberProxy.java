@@ -22,7 +22,7 @@ import com.origoapp.api.model.OMembership;
 public class OMemberProxy
 {
     public @Id String proxyId;
-    public String userId;
+    public String memberId;
     
     public @IgnoreSave(IfDefault.class) boolean didSignUp = false;
     public @IgnoreSave(IfNull.class) String passwordHash;
@@ -38,7 +38,7 @@ public class OMemberProxy
     {
         this(member.getProxyId());
         
-        this.userId = member.entityId;
+        this.memberId = member.entityId;
     }
     
     
