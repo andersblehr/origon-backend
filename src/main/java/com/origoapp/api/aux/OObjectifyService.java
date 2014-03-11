@@ -11,7 +11,6 @@ import com.origoapp.api.model.ODevice;
 import com.origoapp.api.model.OMember;
 import com.origoapp.api.model.OResidencySchedule;
 import com.origoapp.api.model.OMembership;
-import com.origoapp.api.model.OMessageBoard;
 import com.origoapp.api.model.OOrigo;
 import com.origoapp.api.model.OReplicatedEntityRef;
 import com.origoapp.api.model.OSettings;
@@ -29,7 +28,6 @@ public class OObjectifyService
         ObjectifyService.factory().register(OMember.class);
         ObjectifyService.factory().register(OResidencySchedule.class);
         ObjectifyService.factory().register(OMembership.class);
-        ObjectifyService.factory().register(OMessageBoard.class);
         ObjectifyService.factory().register(OOrigo.class);
         ObjectifyService.factory().register(OReplicatedEntityRef.class);
         ObjectifyService.factory().register(OSettings.class);
