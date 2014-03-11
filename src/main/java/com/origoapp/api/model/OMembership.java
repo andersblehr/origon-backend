@@ -22,12 +22,12 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(value = {"origoKey", "memberKey", "associateMemberKey"}, ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity
 {
-    public @IgnoreSave(IfFalse.class) boolean isActive = false;
     public @IgnoreSave(IfFalse.class) boolean isAdmin = false;
-    
     public @IgnoreSave(IfNull.class) String contactRole;
     public @IgnoreSave(IfNull.class) String contactType;
+    
     public String type;
+    public @IgnoreSave(IfNull.class) String status;
     
     public @IgnoreSave OMember member;
     public @IgnoreSave @EmbedMap Map<String, String> memberRef;
@@ -39,6 +39,23 @@ public class OMembership extends OReplicatedEntity
     public OMembership()
     {
         super();
+    }
+    
+    
+    @JsonIgnore
+    public boolean isFetchable()
+    {
+        boolean isFetchable = false;
+        
+        if (!isExpired) {
+            isFetchable = type.equals("~") || type.equals("A");
+            
+            if (!isFetchable && (status != null)) {
+                isFetchable = status.equals("I") || status.equals("A");
+            }
+        }
+        
+        return isFetchable;
     }
     
     

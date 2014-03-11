@@ -42,7 +42,7 @@ public class ODAO
         for (OReplicatedEntity entity : fetchedEntities) {
             if (entity.getClass().equals(OReplicatedEntityRef.class)) {
                 referencedEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
-            } else if (entity.isReplicatedForMembership(membership)) {
+            } else {
                 membershipEntities.add(entity);
             }
         }
@@ -123,14 +123,10 @@ public class ODAO
         Set<OReplicatedEntity> fetchedEntities = new HashSet<OReplicatedEntity>();
         
         for (OMembership membership : memberships) {
-            if ((membership.isActive || membership.isRootMembership() || membership.isResidency() || membership.isAssociate()) && !membership.isExpired) {
+            if (membership.isFetchable()) {
                 fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
-            } else {
+            } else if (membership.isExpired) {
                 fetchedEntities.add(membership);
-                
-                if (!membership.isExpired) {
-                    referencedEntityKeys.add(Key.create(membership.origoKey, OReplicatedEntity.class, membership.origoId));
-                }
             }
         }
         

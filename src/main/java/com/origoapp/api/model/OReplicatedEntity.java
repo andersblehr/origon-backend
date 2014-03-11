@@ -31,7 +31,6 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = OMember.class, name = "OMember"),
     @Type(value = OResidencySchedule.class, name = "OMemberResidency"),
     @Type(value = OMembership.class, name = "OMembership"),
-    @Type(value = OMessageBoard.class, name = "OMessageBoard"),
     @Type(value = OOrigo.class, name = "OOrigo"),
     @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef"),
     @Type(value = OSettings.class, name = "OSettings")})
@@ -118,12 +117,6 @@ public abstract class OReplicatedEntity
         }
     }
 
-    
-    public boolean isReplicatedForMembership(OMembership membership)
-    {
-        return true;
-    }
-    
     
     private Field getOrigoRefField()
     {
