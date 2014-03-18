@@ -19,7 +19,7 @@ import com.googlecode.objectify.annotation.IgnoreSave;
 @JsonIgnoreProperties(value = {"origoKey", "userKey"}, ignoreUnknown = true)
 public class OSettings extends OReplicatedEntity
 {
-    public String countryCode;
+    public boolean useEnglish;
     
     public @IgnoreSave OMember user;
     public @IgnoreSave @EmbedMap Map<String, String> userRef;
