@@ -7,7 +7,6 @@ import javax.ws.rs.core.Application;
 
 import com.origoapp.api.auth.OAuthHandler;
 import com.origoapp.api.model.OModelHandler;
-import com.origoapp.api.strings.OStringHandler;
 
 
 public class OOrigoApplication extends Application
@@ -17,7 +16,6 @@ public class OOrigoApplication extends Application
     
     public OOrigoApplication()
     {
-        singletons.add(new OStringHandler());
         singletons.add(new OAuthHandler());
         singletons.add(new OModelHandler());
     }
