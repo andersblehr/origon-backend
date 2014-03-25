@@ -3,6 +3,7 @@ package com.origoapp.api.aux;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -162,7 +163,7 @@ public class OMeta
                 if (authPhase == OAuthPhase.SENDCODE) {
                     authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
                 } else {
-                    activationCode = deviceId.substring(0, kActivationCodeLength);
+                    activationCode = UUID.randomUUID().toString().substring(0, kActivationCodeLength);
                     
                     authInfo = new OAuthInfo(email, deviceId, passwordHash, activationCode);
                 }
