@@ -55,9 +55,9 @@ public class OMemberProxy
     {
         this.proxyId = proxyId;
         
+        memberId = instanceToClone.memberId;
         didSignUp = instanceToClone.didSignUp;
         passwordHash = instanceToClone.passwordHash;
-        
         authMetaKeys = instanceToClone.authMetaKeys;
         membershipKeys = instanceToClone.membershipKeys;
     }
