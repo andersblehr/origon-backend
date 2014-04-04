@@ -22,7 +22,6 @@ import com.googlecode.objectify.condition.IfNull;
 public class OOrigo extends OReplicatedEntity
 {
     public @IgnoreSave(IfNull.class) String name;
-    public String type;
     
     public @IgnoreSave(IfNull.class) String descriptionText;
     public @IgnoreSave(IfNull.class) String address;

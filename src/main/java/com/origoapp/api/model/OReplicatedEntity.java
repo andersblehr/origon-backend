@@ -29,7 +29,6 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonSubTypes({
     @Type(value = ODevice.class, name = "ODevice"),
     @Type(value = OMember.class, name = "OMember"),
-    @Type(value = OResidencySchedule.class, name = "OMemberResidency"),
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OOrigo.class, name = "OOrigo"),
     @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef"),
@@ -38,6 +37,7 @@ public abstract class OReplicatedEntity
 {
     public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
+    public @IgnoreSave(IfNull.class) String type;
     
     public @IgnoreSave String origoId;
     public @IgnoreSave String entityClass;
