@@ -22,12 +22,11 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(value = {"origoKey", "memberKey", "associateMemberKey"}, ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity
 {
+    public @IgnoreSave(IfNull.class) String status;
     public @IgnoreSave(IfFalse.class) boolean isAdmin = false;
+    
     public @IgnoreSave(IfNull.class) String contactRole;
     public @IgnoreSave(IfNull.class) String contactType;
-    
-    public String type;
-    public @IgnoreSave(IfNull.class) String status;
     
     public @IgnoreSave OMember member;
     public @IgnoreSave @EmbedMap Map<String, String> memberRef;
