@@ -1,7 +1,5 @@
 package com.origoapp.api.model;
 
-import static com.origoapp.api.aux.OObjectifyService.ofy;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -14,9 +12,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.googlecode.objectify.Key;
 import com.origoapp.api.aux.OLog;
-import com.origoapp.api.aux.OMemberProxy;
 import com.origoapp.api.aux.OMeta;
 import com.origoapp.api.aux.OURLParams;
 
@@ -82,12 +78,16 @@ public class OModelHandler
         OLog.log().fine(m.meta() + "Fetched entities: " + entitiesToReturn.toString());
         
         if ((entitiesToReplicate.size() > 0) && (entitiesToReturn.size() > 0)) {
+            OLog.log().fine(m.meta() + "HTTP status: 207");
             return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else if (entitiesToReplicate.size() > 0) {
+            OLog.log().fine(m.meta() + "HTTP status: 201");
             return Response.status(HttpServletResponse.SC_CREATED).lastModified(replicationDate).build();
         } else if (entitiesToReturn.size() > 0) {
+            OLog.log().fine(m.meta() + "HTTP status: 200");
             return Response.status(HttpServletResponse.SC_OK).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else {
+            OLog.log().fine(m.meta() + "HTTP status: 304");
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
@@ -117,8 +117,10 @@ public class OModelHandler
         OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
         
         if (fetchedEntities.size() > 0) {
+            OLog.log().fine(m.meta() + "HTTP status: 200");
             return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
+            OLog.log().fine(m.meta() + "HTTP status: 304");
             return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
         }
     }
@@ -140,38 +142,10 @@ public class OModelHandler
         }
         
         if (memberEntities != null) {
-            OLog.log().fine(m.meta() + "Found member with identifier " + identifier + ".");
+            OLog.log().fine(m.meta() + "HTTP status: 200 [Found member with identifier " + identifier + "]");
             return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
         } else {
-            OLog.log().fine(m.meta() + "No member with identifier " + identifier + ".");
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
-        }
-    }
-    
-    
-    @GET
-    @Path("member")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchMember(@QueryParam(OURLParams.IDENTIFIER) String identifier,
-                                @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        OMember member = null;
-        OMeta m = new OMeta(authToken, appVersion);
-        
-        if (m.isValid()) {
-            OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, identifier)).now();
-            
-            if (memberProxy != null) {
-                member = ofy().load().key(Key.create(Key.create(OOrigo.class, "~" + memberProxy.memberId), OMember.class, memberProxy.memberId)).now();
-            }
-        }
-        
-        if (member != null) {
-            OLog.log().fine(m.meta() + "Found member with identifier " + identifier + " (id: " + member.entityId + ").");
-            return Response.status(HttpServletResponse.SC_OK).entity(member).build();
-        } else {
-            OLog.log().fine(m.meta() + "No member with identifier " + identifier + ".");
+            OLog.log().fine(m.meta() + "HTTP status: 404 [No member with identifier " + identifier + "]");
             return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }
     }

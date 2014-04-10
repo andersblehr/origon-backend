@@ -16,14 +16,15 @@ import com.googlecode.objectify.annotation.IgnoreSave;
 @EntitySubclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"origoKey", "userKey"}, ignoreUnknown = true)
 public class ODevice extends OReplicatedEntity
 {
+    public String type;
     public String displayName;
     
-    public @IgnoreSave OMember member;
-    public @IgnoreSave @EmbedMap Map<String, String> memberRef;
-    public Key<OMember> memberKey;
+    public @IgnoreSave OMember user;
+    public @IgnoreSave @EmbedMap Map<String, String> userRef;
+    public Key<OMember> userKey;
 
     
     public ODevice()
