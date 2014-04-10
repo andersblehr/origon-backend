@@ -19,9 +19,10 @@ import com.googlecode.objectify.condition.IfNull;
 @EntitySubclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
-@JsonIgnoreProperties(value = {"origoKey", "memberKey", "associateMemberKey"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity
 {
+    public String type;
     public @IgnoreSave(IfNull.class) String status;
     public @IgnoreSave(IfFalse.class) boolean isAdmin = false;
     
@@ -30,7 +31,7 @@ public class OMembership extends OReplicatedEntity
     
     public @IgnoreSave OMember member;
     public @IgnoreSave @EmbedMap Map<String, String> memberRef;
-    public @IgnoreSave(IfNull.class) Key<OMember> memberKey;
+    public Key<OMember> memberKey;
     
     public @IgnoreSave @EmbedMap Map<String, String> origoRef;
     

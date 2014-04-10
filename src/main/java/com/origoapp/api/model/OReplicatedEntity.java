@@ -37,7 +37,6 @@ public abstract class OReplicatedEntity
 {
     public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
-    public @IgnoreSave(IfNull.class) String type;
     
     public @IgnoreSave String origoId;
     public @IgnoreSave String entityClass;
