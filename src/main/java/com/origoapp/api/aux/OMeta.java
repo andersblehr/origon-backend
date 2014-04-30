@@ -210,10 +210,10 @@ public class OMeta
     public void validateAuthToken(String authToken)
     {
         if (authPhase == OAuthPhase.NONE) {
-            try {
-                Date now = new Date();
-                OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).now(); 
+            Date now = new Date();
+            OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).now(); 
 
+            if (tokenMeta != null) {
                 if (now.before(tokenMeta.dateExpires)) {
                     this.authToken = authToken;
                     
@@ -223,7 +223,7 @@ public class OMeta
                 } else {
                     OLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
                 }
-            } catch (NotFoundException e) {
+            } else {
                 OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
         } 
