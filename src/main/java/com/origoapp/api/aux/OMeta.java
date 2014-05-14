@@ -11,7 +11,6 @@ import javax.mail.internet.InternetAddress;
 import org.apache.commons.codec.binary.Base64;
 
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.NotFoundException;
 import com.origoapp.api.auth.OAuthInfo;
 import com.origoapp.api.auth.OAuthMeta;
 import com.origoapp.api.auth.OAuthPhase;
