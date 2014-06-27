@@ -7,7 +7,7 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-import javax.mail.Transport;
+//import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
@@ -191,7 +191,7 @@ public class OAuthHandler
                 OLog.log().fine(m.meta() + "Sent email activation code to " + m.getEmail() + ".");
             }
             
-            Transport.send(message);
+            //Transport.send(message);
         } catch (MessagingException e) {
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }

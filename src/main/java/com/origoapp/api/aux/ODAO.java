@@ -124,7 +124,11 @@ public class ODAO
         
         for (OMembership membership : memberships) {
             if (membership.isFetchable()) {
-                fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
+                if ((deviceReplicationDate == null) || membership.dateReplicated.after(deviceReplicationDate)) {
+                    fetchedEntities.addAll(fetchMembershipEntities(membership, null));
+                } else {
+                    fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
+                }
             } else if (membership.isExpired) {
                 fetchedEntities.add(membership);
             }
