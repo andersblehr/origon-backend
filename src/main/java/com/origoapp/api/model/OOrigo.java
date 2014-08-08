@@ -9,13 +9,13 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.EmbedMap;
-import com.googlecode.objectify.annotation.EntitySubclass;
+import com.googlecode.objectify.annotation.Subclass;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@EntitySubclass
+@Subclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "parentOrigoKey"}, ignoreUnknown = true)
@@ -32,8 +32,8 @@ public class OOrigo extends OReplicatedEntity
     
     public @IgnoreSave(IfNull.class) boolean isForMinors;
     
-    public @IgnoreSave OOrigo parentOrigo;
-    public @IgnoreSave @EmbedMap Map<String, String> parentOrigoRef;
+    public @Ignore OOrigo parentOrigo;
+    public @Ignore Map<String, String> parentOrigoRef;
     public @IgnoreSave(IfNull.class) Key<OOrigo> parentOrigoKey;
 
 

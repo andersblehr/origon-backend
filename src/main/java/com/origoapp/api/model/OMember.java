@@ -9,12 +9,12 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.EntitySubclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@EntitySubclass
+@Subclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
