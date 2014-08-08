@@ -6,20 +6,20 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.EntitySubclass;
-import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
+import com.googlecode.objectify.annotation.Subclass;
 
 
-@EntitySubclass
+@Subclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "referencedEntityKey"}, ignoreUnknown = true)
 public class OReplicatedEntityRef extends OReplicatedEntity
 {
-    public @IgnoreSave String referencedEntityId;
-    public @IgnoreSave String referencedEntityOrigoId;
+    public @Ignore String referencedEntityId;
+    public @Ignore String referencedEntityOrigoId;
     public Key<OReplicatedEntity> referencedEntityKey;
 
 

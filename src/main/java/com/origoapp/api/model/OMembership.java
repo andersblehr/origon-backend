@@ -9,31 +9,29 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
-import com.googlecode.objectify.annotation.EmbedMap;
-import com.googlecode.objectify.annotation.EntitySubclass;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
-@EntitySubclass
+@Subclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize(include = Inclusion.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity
 {
     public String type;
-    public @IgnoreSave(IfNull.class) String status;
     public @IgnoreSave(IfFalse.class) boolean isAdmin = false;
+    public @IgnoreSave(IfNull.class) String status;
+    public @IgnoreSave(IfNull.class) String roles;
     
-    public @IgnoreSave(IfNull.class) String contactRole;
-    public @IgnoreSave(IfNull.class) String contactType;
-    
-    public @IgnoreSave OMember member;
-    public @IgnoreSave @EmbedMap Map<String, String> memberRef;
+    public @Ignore OMember member;
+    public @Ignore Map<String, String> memberRef;
     public Key<OMember> memberKey;
     
-    public @IgnoreSave @EmbedMap Map<String, String> origoRef;
+    public @IgnoreSave Map<String, String> origoRef;
     
 
     public OMembership()

@@ -11,6 +11,7 @@ import com.origoapp.api.model.ODevice;
 import com.origoapp.api.model.OMember;
 import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OOrigo;
+import com.origoapp.api.model.OReplicatedEntity;
 import com.origoapp.api.model.OReplicatedEntityRef;
 import com.origoapp.api.model.OSettings;
 
@@ -19,16 +20,17 @@ public class OObjectifyService
 {
     static
     {
-        ObjectifyService.factory().register(OAuthInfo.class);
-        ObjectifyService.factory().register(OAuthMeta.class);
-        ObjectifyService.factory().register(OMemberProxy.class);
+        ObjectifyService.register(OAuthInfo.class);
+        ObjectifyService.register(OAuthMeta.class);
+        ObjectifyService.register(OMemberProxy.class);
+        ObjectifyService.register(OReplicatedEntity.class);
         
-        ObjectifyService.factory().register(ODevice.class);
-        ObjectifyService.factory().register(OMember.class);
-        ObjectifyService.factory().register(OMembership.class);
-        ObjectifyService.factory().register(OOrigo.class);
-        ObjectifyService.factory().register(OReplicatedEntityRef.class);
-        ObjectifyService.factory().register(OSettings.class);
+        ObjectifyService.register(ODevice.class);
+        ObjectifyService.register(OMember.class);
+        ObjectifyService.register(OMembership.class);
+        ObjectifyService.register(OOrigo.class);
+        ObjectifyService.register(OReplicatedEntityRef.class);
+        ObjectifyService.register(OSettings.class);
     }
     
     

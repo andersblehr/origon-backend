@@ -12,6 +12,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnLoad;
@@ -38,8 +39,8 @@ public abstract class OReplicatedEntity
     public @Parent Key<OOrigo> origoKey;
     public @Id String entityId;
     
-    public @IgnoreSave String origoId;
-    public @IgnoreSave String entityClass;
+    public @Ignore String origoId;
+    public @Ignore String entityClass;
     public @IgnoreSave(IfFalse.class) boolean isExpired;
     
     public Date dateCreated;
@@ -107,8 +108,7 @@ public abstract class OReplicatedEntity
                 }
             }
             
-            Field entityClassField = this.getClass().getField("entityClass");
-            entityClassField.set(this, this.getClass().getSimpleName());
+            entityClass = this.getClass().getSimpleName();
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         } catch (NoSuchFieldException e) {
