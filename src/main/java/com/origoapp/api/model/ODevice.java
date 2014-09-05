@@ -1,5 +1,6 @@
 package com.origoapp.api.model;
 
+import java.util.Date;
 import java.util.Map;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -19,7 +20,8 @@ import com.googlecode.objectify.annotation.Subclass;
 public class ODevice extends OReplicatedEntity
 {
     public String type;
-    public String displayName;
+    public String name;
+    public Date lastSeen;
     
     public @Ignore OMember user;
     public @Ignore Map<String, String> userRef;
