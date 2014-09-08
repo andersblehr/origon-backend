@@ -25,7 +25,7 @@ public class OMembership extends OReplicatedEntity
     public String type;
     public @IgnoreSave(IfFalse.class) boolean isAdmin = false;
     public @IgnoreSave(IfNull.class) String status;
-    public @IgnoreSave(IfNull.class) String roles;
+    public @IgnoreSave(IfNull.class) String affiliations;
     
     public @Ignore OMember member;
     public @Ignore Map<String, String> memberRef;
