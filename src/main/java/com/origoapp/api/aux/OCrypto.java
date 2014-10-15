@@ -8,6 +8,7 @@ import javax.ws.rs.WebApplicationException;
 
 public class OCrypto
 {
+    //private static final String kDefaultSeasoning = "RKPAAXYFRYDVM3";
     private static final String kDefaultSeasoning = "socroilgao";
     
     
