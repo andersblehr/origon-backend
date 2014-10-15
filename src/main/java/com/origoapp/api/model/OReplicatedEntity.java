@@ -43,8 +43,9 @@ public abstract class OReplicatedEntity
     public @Ignore String entityClass;
     public @IgnoreSave(IfFalse.class) boolean isExpired;
     
-    public Date dateCreated;
     public String createdBy;
+    public String modifiedBy;
+    public Date dateCreated;
     public @Index Date dateReplicated;
     public @IgnoreSave(IfNull.class) Date dateExpires;
     
