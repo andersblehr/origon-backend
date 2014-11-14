@@ -1,17 +1,14 @@
 package com.origoapp.api.model;
 
-import java.util.Map;
-
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
 import com.google.appengine.api.datastore.Blob;
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Subclass;
-import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -29,13 +26,8 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String countryCode;
     public @IgnoreSave(IfNull.class) String telephone;
     public @IgnoreSave(IfNull.class) Blob photo;
+    public @IgnoreSave(IfFalse.class) boolean isForMinors;
     
-    public @IgnoreSave(IfNull.class) boolean isForMinors;
-    
-    public @Ignore OOrigo parentOrigo;
-    public @Ignore Map<String, String> parentOrigoRef;
-    public @IgnoreSave(IfNull.class) Key<OOrigo> parentOrigoKey;
-
 
     public OOrigo()
     {

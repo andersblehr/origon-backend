@@ -42,9 +42,9 @@ public class ODAO
         for (OReplicatedEntity entity : fetchedEntities) {
             if (entity.getClass().equals(OReplicatedEntityRef.class)) {
                 referencedEntityKeys.add(((OReplicatedEntityRef)entity).referencedEntityKey);
-            } else {
-                membershipEntities.add(entity);
             }
+            
+            membershipEntities.add(entity);
         }
         
         return membershipEntities;
@@ -160,7 +160,6 @@ public class ODAO
         
         private Map<String, OMember> touchedMembersByMemberId;
         private Map<String, OMember> modifiedMembersByEmail;
-        private Set<OMembership> touchedMemberships;
         
         private Map<Key<OMemberProxy>, OMemberProxy> affectedMemberProxiesByKey;
         private Set<Key<OMemberProxy>> affectedMemberProxyKeys;
@@ -220,8 +219,6 @@ public class ODAO
         
         private void processMembershipEntity(OMembership membership)
         {
-            touchedMemberships.add(membership);
-            
             String proxyId = membership.member.getProxyId();
             Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
             
@@ -359,46 +356,6 @@ public class ODAO
         }
         
         
-        private void updateAffectedEntityReferences()
-        {
-            Set<Key<OReplicatedEntityRef>> affectedEntityRefKeys = new HashSet<Key<OReplicatedEntityRef>>();
-            
-            for (OMember member : touchedMembersByMemberId.values()) {
-                OMemberProxy memberProxy = affectedMemberProxiesByKey.get(Key.create(OMemberProxy.class, member.getProxyId()));
-                
-                for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
-                    Key<OOrigo> origoKey = membershipKey.getParent();
-                    String origoId = origoKey.getRaw().getName();
-                    String entityRefId = member.entityId + "#" + origoId;
-                    
-                    affectedEntityRefKeys.add(Key.create(origoKey, OReplicatedEntityRef.class, entityRefId));
-                }
-            }
-            
-            for (OMembership membership : touchedMemberships) {
-                if (!membership.isRootMembership()) {
-                    OMemberProxy memberProxy = affectedMemberProxiesByKey.get(Key.create(OMemberProxy.class, membership.member.getProxyId()));
-                    
-                    for (Key<OMembership> membershipKey : memberProxy.membershipKeys) {
-                        Key<OOrigo> origoKey = membershipKey.getParent();
-                        String origoId = origoKey.getRaw().getName();
-                        String entityRefId = membership.entityId + "#" + origoId;
-                        
-                        affectedEntityRefKeys.add(Key.create(origoKey, OReplicatedEntityRef.class, entityRefId));
-                    }
-                }
-            }
-            
-            Collection<OReplicatedEntityRef> affectedEntityRefs = ofy().load().keys(affectedEntityRefKeys).values();
-            
-            for (OReplicatedEntityRef entityRef : affectedEntityRefs) {
-                entityRef.dateReplicated = dateReplicated;
-            }
-            
-            entitiesToReplicate.addAll(affectedEntityRefs);
-        }
-        
-        
         public OEntityReplicator()
         {
             entitiesToReplicate = new HashSet<OReplicatedEntity>();
@@ -409,7 +366,6 @@ public class ODAO
             
             touchedMembersByMemberId = new HashMap<String, OMember>();
             modifiedMembersByEmail = new HashMap<String, OMember>();
-            touchedMemberships = new HashSet<OMembership>();
             
             affectedMemberProxiesByKey = new HashMap<Key<OMemberProxy>, OMemberProxy>();
             affectedMemberProxyKeys = new HashSet<Key<OMemberProxy>>();
@@ -438,7 +394,6 @@ public class ODAO
             fetchAdditionalAffectedMemberProxies();
             reanchorDriftingMemberProxies();
             updateAffectedMembershipKeys();
-            updateAffectedEntityReferences();
             
             if (touchedMemberProxies.size() > 0) {
                 ofy().save().entities(touchedMemberProxies).now();
