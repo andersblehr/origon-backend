@@ -49,7 +49,7 @@ public class OMembership extends OReplicatedEntity
             isFetchable = type.equals("~") || type.equals("A");
             
             if (!isFetchable && (status != null)) {
-                isFetchable = status.equals("I") || status.equals("A");
+                isFetchable = status.equals("I") || status.equals("W") || status.equals("A");
             }
         }
         

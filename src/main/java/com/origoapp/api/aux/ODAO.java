@@ -97,7 +97,7 @@ public class ODAO
             referencedEntityKeys = new HashSet<Key<OReplicatedEntity>>();
             
             for (OMembership membership : ofy().load().keys(memberProxy.membershipKeys).values()) {
-                if (membership.isResidency() && !membership.isExpired) {
+                if (membership.type.equals("R") && !membership.isExpired) {
                     memberEntities.addAll(fetchMembershipEntities(membership, null));
                 }
             }
