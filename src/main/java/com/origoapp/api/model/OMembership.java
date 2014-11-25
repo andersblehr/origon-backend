@@ -55,25 +55,4 @@ public class OMembership extends OReplicatedEntity
         
         return isFetchable;
     }
-    
-    
-    @JsonIgnore
-    public boolean isRootMembership()
-    {
-        return (origoId.substring(0, 1).equals("~"));
-    }
-    
-    
-    @JsonIgnore
-    public boolean isResidency()
-    {
-        return type.equals("R");
-    }
-    
-    
-    @JsonIgnore
-    public boolean isAssociate()
-    {
-        return type.equals("A");
-    }
 }
