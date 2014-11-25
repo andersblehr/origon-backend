@@ -222,7 +222,7 @@ public class ODAO
             String proxyId = membership.member.getProxyId();
             Key<OMemberProxy> proxyKey = Key.create(OMemberProxy.class, proxyId);
             
-            if (proxyId.equals(m.getEmail()) || (membership.dateReplicated == null)) {
+            if (proxyId.equals(m.getEmail()) || membership.dateReplicated == null) {
                 if (proxyId.equals(m.getEmail())) {
                     affectedMemberProxiesByKey.put(proxyKey, m.getMemberProxy());
                 } else {
