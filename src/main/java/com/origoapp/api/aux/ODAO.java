@@ -341,13 +341,13 @@ public class ODAO
                     if (memberProxy.membershipKeys.size() > 1) {
                         touchedMemberProxies.add(memberProxy);
                     } else {
-                        Key<OMembership> rootMembershipKey = memberProxy.membershipKeys.iterator().next();
-                        String rootOrigoId = rootMembershipKey.getParent().getName();
-                        Key<OOrigo> rootOrigoKey = Key.create(OOrigo.class, rootOrigoId);
+                        Key<OMembership> stashMembershipKey = memberProxy.membershipKeys.iterator().next();
+                        String stashId = stashMembershipKey.getParent().getName();
+                        Key<OOrigo> stashKey = Key.create(OOrigo.class, stashId);
                         
-                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootMembershipKey.getName()));
-                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootOrigoId));
-                        entityKeysForDeletion.add(Key.create(rootOrigoKey, OReplicatedEntity.class, rootOrigoId.substring(1)));
+                        entityKeysForDeletion.add(Key.create(stashKey, OReplicatedEntity.class, stashMembershipKey.getName()));
+                        entityKeysForDeletion.add(Key.create(stashKey, OReplicatedEntity.class, stashId));
+                        entityKeysForDeletion.add(Key.create(stashKey, OReplicatedEntity.class, stashId.substring(1)));
                         
                         driftingMemberProxies.add(memberProxy);
                     }
