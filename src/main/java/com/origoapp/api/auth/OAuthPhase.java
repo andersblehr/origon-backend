@@ -5,7 +5,8 @@ public enum OAuthPhase
 {
     NONE,
     SIGNUP,
-    LOGIN,
+    SIGNIN,
     ACTIVATE,
+    CHANGE,
     SENDCODE,
 }

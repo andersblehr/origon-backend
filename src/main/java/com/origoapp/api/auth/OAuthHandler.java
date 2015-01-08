@@ -32,6 +32,34 @@ public class OAuthHandler
     
     
     @GET
+    @Path("change")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response changePassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        m = new OMeta(authToken, appVersion);
+        
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
+        
+        if (m.isValid()) {
+            OMemberProxy memberProxy = m.getMemberProxy();
+            memberProxy.passwordHash = m.getPasswordHash();
+            
+            ofy().save().entity(memberProxy).now();
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        OLog.log().fine(m.meta() + "Saved updated password hash");
+        OLog.log().fine(m.meta() + "HTTP status: 201");
+        
+        return Response.status(HttpServletResponse.SC_CREATED).build();
+}
+    
+    
+    @GET
     @Path("activate")
     @Produces(MediaType.APPLICATION_JSON)
     public Response activateUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
@@ -78,7 +106,7 @@ public class OAuthHandler
     
     
     @GET
-    @Path("sign-in")
+    @Path("signin")
     @Produces(MediaType.APPLICATION_JSON)
     public Response signInUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
@@ -89,7 +117,7 @@ public class OAuthHandler
     {
         m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNIN);
         m.validateAuthToken(authToken);
         
         OAuthInfo authInfo = null;
