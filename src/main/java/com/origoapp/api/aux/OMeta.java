@@ -188,7 +188,9 @@ public class OMeta
                     if (isValid) {
                         this.authPhase = authPhase;
                         
-                        if (authPhase == OAuthPhase.SENDCODE) {
+                        if (authPhase == OAuthPhase.CHANGE) {
+                            this.passwordHash = OCrypto.generatePasswordHash(authElements[1]);
+                        } else if (authPhase == OAuthPhase.SENDCODE) {
                             this.activationCode = authElements[1];
                         } else {
                             validatePassword(authElements[1]);
@@ -258,7 +260,7 @@ public class OMeta
     
     public boolean isAuthenticating()
     {
-        return ((authPhase == OAuthPhase.LOGIN) || (authPhase == OAuthPhase.ACTIVATE));
+        return ((authPhase == OAuthPhase.SIGNIN) || (authPhase == OAuthPhase.ACTIVATE));
     }
     
     
