@@ -32,31 +32,95 @@ public class OAuthHandler
     
     
     @GET
-    @Path("change")
+    @Path("signup")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response changePassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response signUpUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
+                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new OMeta(authToken, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNUP);
+        m.validateAuthToken(authToken);
+        
+        OAuthInfo authInfo = null;
+        OMemberProxy memberProxy = null;
         
         if (m.isValid()) {
-            OMemberProxy memberProxy = m.getMemberProxy();
-            memberProxy.passwordHash = m.getPasswordHash();
+            memberProxy = m.getMemberProxy();
             
-            ofy().save().entity(memberProxy).now();
+            if ((memberProxy == null) || !memberProxy.didSignUp) {
+                authInfo = m.getAuthInfo();
+                ofy().save().entity(authInfo).now();
+                
+                sendEmail(OAuthPhase.SIGNUP);
+            } else {
+                OLog.log().warning(m.meta() + "User already exists, raising UNAUTHORIZED (401).");
+                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            }
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        OLog.log().fine(m.meta() + "Saved updated password hash");
         OLog.log().fine(m.meta() + "HTTP status: 201");
+        return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
+    }    
+    
+    
+    @GET
+    @Path("signin")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response signInUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
+                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        m = new OMeta(deviceId, deviceType, appVersion);
         
-        return Response.status(HttpServletResponse.SC_CREATED).build();
-}
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNIN);
+        m.validateAuthToken(authToken);
+        
+        OMemberProxy memberProxy = null;
+        List<OReplicatedEntity> fetchedEntities = null;
+        Date replicationDate = new Date();
+        
+        if (m.isValid()) {
+            memberProxy = m.getMemberProxy();
+            
+            if ((memberProxy != null) && memberProxy.didSignUp) {
+                if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
+                    m.getDAO().putAuthToken(authToken);
+                    
+                    fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
+                } else {
+                    OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
+                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                }
+            } else {
+                OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
+                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            }
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
+        
+        if (fetchedEntities.size() > 0) {
+            OLog.log().fine(m.meta() + "HTTP status: 200");
+            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.memberId).entity(fetchedEntities).lastModified(replicationDate).build();
+        } else {
+            OLog.log().fine(m.meta() + "HTTP status: 304");
+            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
+        }
+    }
     
     
     @GET
@@ -106,66 +170,30 @@ public class OAuthHandler
     
     
     @GET
-    @Path("signin")
+    @Path("change")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signInUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response changePassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new OMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(authToken, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNIN);
-        m.validateAuthToken(authToken);
-        
-        OAuthInfo authInfo = null;
-        OMemberProxy memberProxy = null;
-        List<OReplicatedEntity> fetchedEntities = null;
-        Date replicationDate = new Date();
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
         
         if (m.isValid()) {
-            memberProxy = m.getMemberProxy();
+            OMemberProxy memberProxy = m.getMemberProxy();
+            memberProxy.passwordHash = m.getPasswordHash();
             
-            if ((memberProxy == null) || !memberProxy.didSignUp) {
-                authInfo = m.getAuthInfo();
-                ofy().save().entity(authInfo).now();
-                
-                sendEmail(OAuthPhase.SIGNUP);
-            } else {
-                if ((memberProxy != null) && memberProxy.didSignUp) {
-                    if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
-                        m.getDAO().putAuthToken(authToken);
-                        
-                        fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
-                    } else {
-                        OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                        OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-                    }
-                } else {
-                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
-                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-                }
-            }
+            ofy().save().entity(memberProxy).now();
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        if (authInfo != null) {
-            return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
-        } else {
-            OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
-            
-            if (fetchedEntities.size() > 0) {
-                OLog.log().fine(m.meta() + "HTTP status: 200");
-                return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.memberId).entity(fetchedEntities).lastModified(replicationDate).build();
-            } else {
-                OLog.log().fine(m.meta() + "HTTP status: 304");
-                return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
-            }
-        }
+        OLog.log().fine(m.meta() + "Saved updated password hash");
+        OLog.log().fine(m.meta() + "HTTP status: 201");
+        
+        return Response.status(HttpServletResponse.SC_CREATED).build();
     }
     
     
