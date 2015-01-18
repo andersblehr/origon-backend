@@ -8,5 +8,6 @@ public enum OAuthPhase
     SIGNIN,
     ACTIVATE,
     CHANGE,
+    RESET,
     SENDCODE,
 }

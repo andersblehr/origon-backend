@@ -46,18 +46,6 @@ public class OCrypto
     }
     
     
-    public static String generateTimestampHash(String timestamp)
-    {
-        String timestampHash = null;
-        
-        if (timestamp != null) {
-            timestampHash = OCrypto.hashUsingSHA1(OCrypto.seasonedString(timestamp));
-        }
-        
-        return timestampHash;
-    }
-
-
     private static String seasonedString(String string)
     {
         String stringHash = hashUsingSHA1(string);

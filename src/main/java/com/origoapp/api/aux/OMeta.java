@@ -1,7 +1,6 @@
 package com.origoapp.api.aux;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.Date;
 import java.util.UUID;
 
@@ -188,8 +187,12 @@ public class OMeta
                     if (isValid) {
                         this.authPhase = authPhase;
                         
-                        if (authPhase == OAuthPhase.CHANGE) {
+                        if (authPhase == OAuthPhase.CHANGE || authPhase == OAuthPhase.RESET) {
                             this.passwordHash = OCrypto.generatePasswordHash(authElements[1]);
+                            
+                            if (authPhase == OAuthPhase.RESET) {
+                                this.activationCode = authElements[1];
+                            }
                         } else if (authPhase == OAuthPhase.SENDCODE) {
                             this.activationCode = authElements[1];
                         } else {
@@ -228,25 +231,6 @@ public class OMeta
                 OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
         } 
-    }
-    
-    
-    public void validateTimestampToken(String URLEncodedTimestampToken)
-    {
-        try {
-            String timestampToken = URLDecoder.decode(URLEncodedTimestampToken, "UTF-8");
-            String base64EncodedTimestamp = timestampToken.substring(0, timestampToken.indexOf("=") + 1);
-            String timestamp = new String(Base64.decodeBase64(base64EncodedTimestamp.getBytes("UTF-8")), "UTF-8");
-            
-            String seasonedAndHashedTimestamp = timestampToken.substring(timestampToken.indexOf("=") + 1);
-            String reseasonedAndRehashedTimestamp = OCrypto.generateTimestampHash(timestamp);
-            
-            if (!reseasonedAndRehashedTimestamp.equals(seasonedAndHashedTimestamp)) {
-                OLog.log().warning(meta(false) + "Timestamp does not match provided hash.");
-            }
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
     }
     
     
