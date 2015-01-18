@@ -180,18 +180,28 @@ public class OAuthHandler
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
         
-        if (m.isValid()) {
-            OMemberProxy memberProxy = m.getMemberProxy();
-            memberProxy.passwordHash = m.getPasswordHash();
-            
-            ofy().save().entity(memberProxy).now();
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-        }
+        updatePasswordHash(authorizationHeader, OAuthPhase.CHANGE);
         
-        OLog.log().fine(m.meta() + "Saved updated password hash");
-        OLog.log().fine(m.meta() + "HTTP status: 201");
+        return Response.status(HttpServletResponse.SC_CREATED).build();
+    }
+    
+    
+    @GET
+    @Path("reset")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response resetPassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                  @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                                  @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        m = new OMeta(deviceId, deviceType, appVersion);
+        
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.RESET);
+        m.validateAuthToken(authToken);
+        
+        updatePasswordHash(authorizationHeader, OAuthPhase.RESET);
+        sendEmail(OAuthPhase.RESET);
         
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -223,6 +233,23 @@ public class OAuthHandler
     }
 
 
+    private void updatePasswordHash(String authorizationHeader, OAuthPhase authPhase)
+    {
+        if (m.isValid()) {
+            OMemberProxy memberProxy = m.getMemberProxy();
+            memberProxy.passwordHash = m.getPasswordHash();
+            
+            ofy().save().entity(memberProxy).now();
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        OLog.log().fine(m.meta() + "Saved updated password hash");
+        OLog.log().fine(m.meta() + "HTTP status: 201");
+    }
+    
+    
     private void sendEmail(OAuthPhase authPhase)
     {
         Session session = Session.getInstance(new Properties());
@@ -231,7 +258,6 @@ public class OAuthHandler
             Message message = new MimeMessage(session);
             
             // TODO: Localise message
-            // TODO: Provide URL directly to app on device
             message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
             message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
             
@@ -239,12 +265,17 @@ public class OAuthHandler
                 message.setSubject("Complete your registration with Origo");
                 message.setText(String.format("Activation code: %s", m.getActivationCode()));
                 
-                OLog.log().fine(m.meta() + "Sent activation code to new Origo user.");
+                OLog.log().fine(m.meta() + "Sent activation code to new user.");
+            } else if (authPhase == OAuthPhase.RESET) {
+                message.setSubject("Your password has been reset");
+                message.setText(String.format("Your new passord is %s. Please change it to something more memorable.\n\nBest regards,\nThe Origo team", m.getActivationCode()));
+                
+                OLog.log().fine(m.meta() + "Sent new password " + m.getActivationCode() + " to user.");
             } else if (authPhase == OAuthPhase.SENDCODE) {
                 message.setSubject("Activate your email address for use with Origo");
                 message.setText(String.format("Activation code: %s", m.getActivationCode()));
                 
-                OLog.log().fine(m.meta() + "Sent email activation code to " + m.getEmail() + ".");
+                OLog.log().fine(m.meta() + "Sent email activation code to user.");
             }
             
             //Transport.send(message);
