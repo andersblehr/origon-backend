@@ -4,7 +4,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import com.google.appengine.api.datastore.Blob;
+//import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
@@ -25,7 +25,7 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String address;
     public @IgnoreSave(IfNull.class) String countryCode;
     public @IgnoreSave(IfNull.class) String telephone;
-    public @IgnoreSave(IfNull.class) Blob photo;
+    //public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfFalse.class) boolean isForMinors;
     
 
