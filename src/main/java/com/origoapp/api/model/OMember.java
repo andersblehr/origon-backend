@@ -7,7 +7,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 
-import com.google.appengine.api.datastore.Blob;
+//import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
@@ -25,7 +25,7 @@ public class OMember extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) Date dateOfBirth;
     public @IgnoreSave(IfNull.class) String mobilePhone;
     public @IgnoreSave(IfNull.class) String email;
-    public @IgnoreSave(IfNull.class) Blob photo;
+    //public @IgnoreSave(IfNull.class) Blob photo;
     
     public @IgnoreSave(IfNull.class) boolean isMinor;
     public @IgnoreSave(IfNull.class) String fatherId;
