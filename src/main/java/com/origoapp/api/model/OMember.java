@@ -31,6 +31,7 @@ public class OMember extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String fatherId;
     public @IgnoreSave(IfNull.class) String motherId;
     
+    public @IgnoreSave(IfNull.class) String createdIn;
     public @IgnoreSave(IfNull.class) Date activeSince;
     
     
