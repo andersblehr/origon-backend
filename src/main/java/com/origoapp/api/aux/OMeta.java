@@ -43,7 +43,7 @@ public class OMeta
     {
         validateDeviceId(deviceId);
         
-        if ((deviceType != null) && (appVersion != null)) {
+        if (deviceType != null && appVersion != null) {
             this.deviceType = deviceType;
             this.appVersion = appVersion;            
         } else if (deviceType == null) {
@@ -174,7 +174,7 @@ public class OMeta
     
     public void validateAuthorizationHeader(String authorizationHeader, OAuthPhase authPhase)
     {
-        if ((authorizationHeader != null) && (authorizationHeader.indexOf("Basic ") == 0)) {
+        if (authorizationHeader != null && authorizationHeader.indexOf("Basic ") == 0) {
             String base64EncodedAuthString = authorizationHeader.split(" ")[1];
             
             try {
@@ -244,7 +244,7 @@ public class OMeta
     
     public boolean isAuthenticating()
     {
-        return ((authPhase == OAuthPhase.SIGNIN) || (authPhase == OAuthPhase.ACTIVATE));
+        return authPhase == OAuthPhase.SIGNIN || authPhase == OAuthPhase.ACTIVATE;
     }
     
     
@@ -266,15 +266,15 @@ public class OMeta
     {
         boolean isValid = false;
         
-        if ((UUID != null) && (UUID.length() == 36)) {
+        if (UUID != null && UUID.length() == 36) {
             String[] UUIDElements = UUID.split("-");
             
             isValid = (UUIDElements.length == 5);
-            isValid = isValid && (UUIDElements[0].length() ==  8);
-            isValid = isValid && (UUIDElements[1].length() ==  4);
-            isValid = isValid && (UUIDElements[2].length() ==  4);
-            isValid = isValid && (UUIDElements[3].length() ==  4);
-            isValid = isValid && (UUIDElements[4].length() == 12);
+            isValid = isValid && UUIDElements[0].length() ==  8;
+            isValid = isValid && UUIDElements[1].length() ==  4;
+            isValid = isValid && UUIDElements[2].length() ==  4;
+            isValid = isValid && UUIDElements[3].length() ==  4;
+            isValid = isValid && UUIDElements[4].length() == 12;
         }
 
         return isValid;
@@ -306,7 +306,7 @@ public class OMeta
     
     private void validatePassword(String password)
     {
-        if ((password != null) && (password.length() >= kMinimumPasswordLength)) {
+        if (password != null && password.length() >= kMinimumPasswordLength) {
             this.passwordHash = OCrypto.generatePasswordHash(password);
         } else {
             if (password == null) {

@@ -47,20 +47,12 @@ public class OAuthHandler
         m.validateAuthToken(authToken);
         
         OAuthInfo authInfo = null;
-        OMemberProxy memberProxy = null;
         
         if (m.isValid()) {
-            memberProxy = m.getMemberProxy();
-            
-            if ((memberProxy == null) || !memberProxy.didSignUp) {
-                authInfo = m.getAuthInfo();
-                ofy().save().entity(authInfo).now();
+            authInfo = m.getAuthInfo();
+            ofy().save().entity(authInfo).now();
                 
-                sendEmail(OAuthPhase.SIGNUP);
-            } else {
-                OLog.log().warning(m.meta() + "User already exists, raising UNAUTHORIZED (401).");
-                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-            }
+            sendEmail(OAuthPhase.SIGNUP);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -93,7 +85,7 @@ public class OAuthHandler
         if (m.isValid()) {
             memberProxy = m.getMemberProxy();
             
-            if ((memberProxy != null) && memberProxy.didSignUp) {
+            if (memberProxy != null && memberProxy.didSignUp) {
                 if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                     m.getDAO().putAuthToken(authToken);
                     

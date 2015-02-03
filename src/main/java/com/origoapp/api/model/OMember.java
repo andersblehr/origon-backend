@@ -50,6 +50,6 @@ public class OMember extends OReplicatedEntity
     
     public boolean hasEmail()
     {
-        return (email != null) && (email.length() > 0);
+        return email != null && email.length() > 0;
     }
 }
