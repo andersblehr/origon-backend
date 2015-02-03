@@ -77,7 +77,7 @@ public class OModelHandler
         OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
         OLog.log().fine(m.meta() + "Fetched entities: " + entitiesToReturn.toString());
         
-        if ((entitiesToReplicate.size() > 0) && (entitiesToReturn.size() > 0)) {
+        if (entitiesToReplicate.size() > 0 && entitiesToReturn.size() > 0) {
             OLog.log().fine(m.meta() + "HTTP status: 207");
             return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else if (entitiesToReplicate.size() > 0) {
@@ -142,10 +142,10 @@ public class OModelHandler
         }
         
         if (memberEntities != null) {
-            OLog.log().fine(m.meta() + "HTTP status: 200 [Found member with identifier " + identifier + "]");
+            OLog.log().fine(m.meta() + "HTTP status: 200");
             return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
         } else {
-            OLog.log().fine(m.meta() + "HTTP status: 404 [No member with identifier " + identifier + "]");
+            OLog.log().fine(m.meta() + "HTTP status: 404");
             return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
         }
     }

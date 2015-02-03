@@ -26,7 +26,7 @@ public class OLog
     {
         Response.ResponseBuilder responseBuilder = Response.status(statusCode);
         
-        if ((reason != null) && (reason != "")) {
+        if (reason != null && reason != "") {
             responseBuilder.header("reason", reason);
         }
         
