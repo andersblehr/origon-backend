@@ -13,7 +13,6 @@ import com.origoapp.api.model.OMembership;
 import com.origoapp.api.model.OOrigo;
 import com.origoapp.api.model.OReplicatedEntity;
 import com.origoapp.api.model.OReplicatedEntityRef;
-import com.origoapp.api.model.OSettings;
 
 
 public class OObjectifyService
@@ -30,7 +29,6 @@ public class OObjectifyService
         ObjectifyService.register(OMembership.class);
         ObjectifyService.register(OOrigo.class);
         ObjectifyService.register(OReplicatedEntityRef.class);
-        ObjectifyService.register(OSettings.class);
     }
     
     

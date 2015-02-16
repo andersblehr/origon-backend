@@ -26,6 +26,7 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String countryCode;
     public @IgnoreSave(IfNull.class) String telephone;
     //public @IgnoreSave(IfNull.class) Blob photo;
+    public @IgnoreSave(IfNull.class) String permissions;
     public @IgnoreSave(IfFalse.class) boolean isForMinors;
     
 

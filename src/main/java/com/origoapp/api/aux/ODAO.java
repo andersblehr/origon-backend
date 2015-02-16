@@ -128,7 +128,7 @@ public class ODAO
                 } else {
                     fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
                 }
-            } else if (membership.isExpired) {
+            } else if (membership.isExpired && (deviceReplicationDate == null || membership.dateReplicated.after(deviceReplicationDate))) {
                 fetchedEntities.add(membership);
             }
         }
