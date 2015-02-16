@@ -26,6 +26,7 @@ public class OMember extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String mobilePhone;
     public @IgnoreSave(IfNull.class) String email;
     //public @IgnoreSave(IfNull.class) Blob photo;
+    public @IgnoreSave(IfNull.class) String settings;
     
     public @IgnoreSave(IfNull.class) boolean isMinor;
     public @IgnoreSave(IfNull.class) String fatherId;

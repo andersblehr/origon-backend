@@ -32,8 +32,7 @@ import com.googlecode.objectify.condition.IfNull;
     @Type(value = OMember.class, name = "OMember"),
     @Type(value = OMembership.class, name = "OMembership"),
     @Type(value = OOrigo.class, name = "OOrigo"),
-    @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef"),
-    @Type(value = OSettings.class, name = "OSettings")})
+    @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")})
 public abstract class OReplicatedEntity
 {
     public @Parent Key<OOrigo> origoKey;
