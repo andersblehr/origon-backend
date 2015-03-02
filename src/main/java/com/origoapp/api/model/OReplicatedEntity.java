@@ -19,7 +19,6 @@ import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.condition.IfFalse;
-import com.googlecode.objectify.condition.IfNull;
 
 
 @Entity
@@ -46,7 +45,6 @@ public abstract class OReplicatedEntity
     public String modifiedBy;
     public Date dateCreated;
     public @Index Date dateReplicated;
-    public @IgnoreSave(IfNull.class) Date dateExpires;
     
     
     @OnSave
