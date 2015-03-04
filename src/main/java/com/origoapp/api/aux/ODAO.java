@@ -123,7 +123,7 @@ public class ODAO
         
         for (OMembership membership : memberships) {
             if (membership.isFetchable()) {
-                if (deviceReplicationDate == null || membership.dateReplicated.after(deviceReplicationDate)) {
+                if (deviceReplicationDate == null || membership.dateCreated.after(deviceReplicationDate)) {
                     fetchedEntities.addAll(fetchMembershipEntities(membership, null));
                 } else {
                     fetchedEntities.addAll(fetchMembershipEntities(membership, deviceReplicationDate));
