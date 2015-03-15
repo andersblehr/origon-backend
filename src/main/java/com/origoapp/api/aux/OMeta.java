@@ -244,7 +244,7 @@ public class OMeta
     
     public boolean isAuthenticating()
     {
-        return authPhase == OAuthPhase.SIGNIN || authPhase == OAuthPhase.ACTIVATE;
+        return authPhase == OAuthPhase.LOGIN || authPhase == OAuthPhase.ACTIVATE;
     }
     
     

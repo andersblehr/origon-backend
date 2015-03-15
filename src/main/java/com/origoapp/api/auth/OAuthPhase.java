@@ -4,8 +4,8 @@ package com.origoapp.api.auth;
 public enum OAuthPhase
 {
     NONE,
-    SIGNUP,
-    SIGNIN,
+    REGISTER,
+    LOGIN,
     ACTIVATE,
     CHANGE,
     RESET,
