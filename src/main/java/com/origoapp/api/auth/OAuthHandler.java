@@ -32,18 +32,18 @@ public class OAuthHandler
     
     
     @GET
-    @Path("signup")
+    @Path("register")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signUpUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response registerUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                 @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
+                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                 @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                                 @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNUP);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.REGISTER);
         m.validateAuthToken(authToken);
         
         OAuthInfo authInfo = null;
@@ -52,7 +52,7 @@ public class OAuthHandler
             authInfo = m.getAuthInfo();
             ofy().save().entity(authInfo).now();
                 
-            sendEmail(OAuthPhase.SIGNUP);
+            sendEmail(OAuthPhase.REGISTER);
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
@@ -64,18 +64,18 @@ public class OAuthHandler
     
     
     @GET
-    @Path("signin")
+    @Path("login")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response signInUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                               @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
+                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                              @QueryParam(OURLParams.DEVICE_ID) String deviceId,
+                              @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
+                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion);
         
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SIGNIN);
+        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
         
         OMemberProxy memberProxy = null;
@@ -253,7 +253,7 @@ public class OAuthHandler
             message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
             message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
             
-            if (authPhase == OAuthPhase.SIGNUP) {
+            if (authPhase == OAuthPhase.REGISTER) {
                 message.setSubject("Complete your registration with Origo");
                 message.setText(String.format("Activation code: %s", m.getActivationCode()));
                 

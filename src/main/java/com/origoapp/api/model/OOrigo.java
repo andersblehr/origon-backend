@@ -23,7 +23,7 @@ public class OOrigo extends OReplicatedEntity
     
     public @IgnoreSave(IfNull.class) String descriptionText;
     public @IgnoreSave(IfNull.class) String address;
-    public @IgnoreSave(IfNull.class) String countryCode;
+    public @IgnoreSave(IfNull.class) String location;
     public @IgnoreSave(IfNull.class) String telephone;
     //public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfNull.class) String permissions;
