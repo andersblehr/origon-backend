@@ -8,7 +8,9 @@ import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.condition.IfFalse;
+import com.googlecode.objectify.condition.IfNotNull;
 import com.googlecode.objectify.condition.IfNull;
 
 
@@ -29,7 +31,10 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String permissions;
     public @IgnoreSave(IfFalse.class) boolean isForMinors;
     
+    public @IgnoreSave(IfNull.class) String joinCode;
+    public @Index(IfNotNull.class) @IgnoreSave(IfNull.class) String internalJoinCode;
 
+    
     public OOrigo()
     {
         super();

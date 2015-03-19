@@ -73,7 +73,7 @@ public class ODAO
                 }
             }
         } else {
-            memberProxy.didSignUp = true;
+            memberProxy.didRegister = true;
         }
         
         OAuthMeta authMeta = new OAuthMeta(authToken, m.getEmail(), m.getDeviceId(), m.getDeviceType());
@@ -107,6 +107,16 @@ public class ODAO
         }
         
         return memberEntities.size() > 0 ? new ArrayList<OReplicatedEntity>(memberEntities) : null;
+    }
+    
+    
+    public OOrigo lookupOrigo(String internalJoinCode)
+    {
+        OLog.log().fine(m.meta() + "Looking up origo with internal join code: " + internalJoinCode);
+        
+        OReplicatedEntity origo = ofy().load().type(OReplicatedEntity.class).filter("internalJoinCode", internalJoinCode).first().now();
+        
+        return (OOrigo)origo;
     }
     
     

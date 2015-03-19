@@ -127,9 +127,9 @@ public class OModelHandler
     
     
     @GET
-    @Path("lookup")
+    @Path("member")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response lookupMember(@QueryParam(OURLParams.IDENTIFIER) String identifier,
+    public Response lookupMember(@QueryParam(OURLParams.IDENTIFIER) String memberId,
                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
@@ -138,12 +138,43 @@ public class OModelHandler
         List<OReplicatedEntity> memberEntities = null;
         
         if (m.isValid()) {
-            memberEntities = m.getDAO().lookupMemberEntities(identifier);
+            memberEntities = m.getDAO().lookupMemberEntities(memberId);
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
         if (memberEntities != null) {
             OLog.log().fine(m.meta() + "HTTP status: 200");
             return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
+        } else {
+            OLog.log().fine(m.meta() + "HTTP status: 404");
+            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
+        }
+    }
+    
+    
+    @GET
+    @Path("origo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response lookupOrigo(@QueryParam(OURLParams.IDENTIFIER) String internalJoinCode,
+                                @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
+                                @QueryParam(OURLParams.APP_VERSION) String appVersion)
+    {
+        OMeta m = new OMeta(authToken, appVersion);
+        
+        OOrigo origo = null;;
+        
+        if (m.isValid()) {
+            origo = m.getDAO().lookupOrigo(internalJoinCode);
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+        
+        if (origo != null) {
+            OLog.log().fine(m.meta() + "HTTP status: 200");
+            return Response.status(HttpServletResponse.SC_OK).entity(origo).build();
         } else {
             OLog.log().fine(m.meta() + "HTTP status: 404");
             return Response.status(HttpServletResponse.SC_NOT_FOUND).build();

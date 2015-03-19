@@ -24,7 +24,7 @@ public class OMemberProxy
     public @Id String proxyId;
     public String memberId;
     
-    public @IgnoreSave(IfDefault.class) boolean didSignUp = false;
+    public @IgnoreSave(IfDefault.class) boolean didRegister = false;
     public @IgnoreSave(IfNull.class) String passwordHash;
     
     public @IgnoreSave(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
@@ -56,7 +56,7 @@ public class OMemberProxy
         this.proxyId = proxyId;
         
         memberId = instanceToClone.memberId;
-        didSignUp = instanceToClone.didSignUp;
+        didRegister = instanceToClone.didRegister;
         passwordHash = instanceToClone.passwordHash;
         authMetaKeys = instanceToClone.authMetaKeys;
         membershipKeys = instanceToClone.membershipKeys;
