@@ -85,7 +85,7 @@ public class OAuthHandler
         if (m.isValid()) {
             memberProxy = m.getMemberProxy();
             
-            if (memberProxy != null && memberProxy.didSignUp) {
+            if (memberProxy != null && memberProxy.didRegister) {
                 if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
                     m.getDAO().putAuthToken(authToken);
                     
