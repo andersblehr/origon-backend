@@ -35,17 +35,18 @@ public class OMeta
     private String deviceId = null;
     private String deviceType = null;
     private String appVersion = null;
+    private String language = null;
     private String activationCode = null;
-    private InternetAddress emailAddress = null;
     
     
-    public OMeta(String deviceId, String deviceType, String appVersion)
+    public OMeta(String deviceId, String deviceType, String appVersion, String language)
     {
         validateDeviceId(deviceId);
         
         if (deviceType != null && appVersion != null) {
             this.deviceType = deviceType;
-            this.appVersion = appVersion;            
+            this.appVersion = appVersion;
+            this.language = language;
         } else if (deviceType == null) {
             OLog.log().warning(meta(false) + "Device type is missing.");
         } else {
@@ -54,12 +55,13 @@ public class OMeta
     }
     
     
-    public OMeta(String authToken, String appVersion)
+    public OMeta(String authToken, String appVersion, String language)
     {
         validateAuthToken(authToken);
         
         if (appVersion != null) {
             this.appVersion = appVersion;
+            this.language = language;
         } else {
             OLog.log().warning(meta(false) + "App version is missing.");
         }
@@ -103,15 +105,15 @@ public class OMeta
     }
     
     
-    public String getActivationCode()
+    public String getLanguage()
     {
-        return activationCode;
+        return language;
     }
     
     
-    public InternetAddress getEmailAddress()
+    public String getActivationCode()
     {
-        return emailAddress;
+        return activationCode;
     }
     
     
@@ -295,7 +297,8 @@ public class OMeta
     {
         if (email != null) {
             try {
-                this.emailAddress = new InternetAddress(email);
+                new InternetAddress(email);
+                
                 this.email = email;
             } catch (AddressException e) {
                 OLog.log().warning(meta(false) + String.format("'%s' is not a valid email address.", email));

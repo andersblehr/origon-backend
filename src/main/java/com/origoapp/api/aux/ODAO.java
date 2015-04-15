@@ -24,7 +24,8 @@ public class ODAO
 {
     private Set<Key<OReplicatedEntity>> referencedEntityKeys;
     
-    public OMeta m;
+    private OMeta m;
+    private OMailer mailer;
 
     
     private Set<OReplicatedEntity> fetchMembershipEntities(OMembership membership, Date deviceReplicationDate)
@@ -50,11 +51,12 @@ public class ODAO
     }
     
     
-    public ODAO(OMeta meta)
+    public ODAO(OMeta m)
     {
         super();
         
-        m = meta;
+        this.m = m;
+        this.mailer = new OMailer(m);
     }
     
     
@@ -192,8 +194,15 @@ public class ODAO
             if (proxyId.equals(m.getEmail())) {
                 OMemberProxy memberProxy = m.getMemberProxy();
                 
-                if (memberProxy.memberId == null) {
-                    memberProxy.memberId = member.entityId;
+                if (memberProxy.memberId == null || memberProxy.memberName == null || !memberProxy.memberName.equals(member.name)) {
+                    if (memberProxy.memberId == null) {
+                        memberProxy.memberId = member.entityId;
+                    }
+                    
+                    if (memberProxy.memberName == null || !memberProxy.memberName.equals(member.name)) {
+                        memberProxy.memberName = member.name;
+                    }
+                    
                     touchedMemberProxies.add(memberProxy);
                 }
                 
@@ -222,6 +231,10 @@ public class ODAO
                     affectedMemberProxiesByKey.put(proxyKey, m.getMemberProxy());
                 } else {
                     affectedMemberProxyKeys.add(proxyKey);
+                    
+                    if (membership.member.hasEmail() && !membership.status.equals("A") && (membership.type.equals("P") || membership.type.equals("R") || membership.type.equals("L"))) {
+                        mailer.sendInvitation(membership.member.email);
+                    }
                 }
                 
                 Set<Key<OMembership>> membershipKeysToAddForMember = addedMembershipKeysByProxyId.get(proxyId);
@@ -285,25 +298,26 @@ public class ODAO
                 
                 for (OMember driftingMember : driftingMembers) {
                     String driftingMemberProxyId = driftingMember.getProxyId();
-                    String currentEmail = touchedMembersByMemberId.get(driftingMember.entityId).email; 
+                    OMember currentMember = touchedMembersByMemberId.get(driftingMember.entityId);
                     
                     OMemberProxy driftingMemberProxy = driftingMemberProxiesByProxyId.get(driftingMemberProxyId);
-                    OMemberProxy reanchoredMemberProxy = new OMemberProxy(currentEmail, driftingMemberProxy);
+                    OMemberProxy reanchoredMemberProxy = new OMemberProxy(currentMember.email, driftingMemberProxy);
                     
                     for (OAuthMeta authMetaItem : ofy().load().keys(reanchoredMemberProxy.authMetaKeys).values()) {
-                        authMetaItem.email = currentEmail;
+                        authMetaItem.email = currentMember.email;
                         reanchoredAuthMetaItems.add(authMetaItem);
                     }
                     
                     driftingMemberProxies.add(driftingMemberProxy);
                     touchedMemberProxies.add(reanchoredMemberProxy);
-                    affectedMemberProxiesByKey.put(Key.create(OMemberProxy.class, currentEmail), reanchoredMemberProxy);
+                    affectedMemberProxiesByKey.put(Key.create(OMemberProxy.class, currentMember.email), reanchoredMemberProxy);
                     
                     if (driftingMemberProxyId.equals(m.getEmail())) {
                         m.setMemberProxy(reanchoredMemberProxy);
+                    } else if (driftingMember.hasEmail()) {
+                        mailer.sendEmailChangeNotification(currentMember, driftingMember.email);
                     } else {
-                        OLog.log().fine(m.meta() + "TODO: Send notification email to new address.");
-                        // TODO: Send notification email (new address: currentEmail; old address: driftingMember.getProxyId())
+                        mailer.sendInvitation(currentMember.email);
                     }
                 }
                 
