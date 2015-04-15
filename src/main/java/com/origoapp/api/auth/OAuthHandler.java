@@ -2,14 +2,7 @@ package com.origoapp.api.auth;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Session;
-//import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -17,6 +10,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.origoapp.api.aux.OLog;
+import com.origoapp.api.aux.OMailer;
 import com.origoapp.api.aux.OMemberProxy;
 import com.origoapp.api.aux.OMeta;
 import com.origoapp.api.aux.OURLParams;
@@ -39,9 +33,10 @@ public class OAuthHandler
                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                  @QueryParam(OURLParams.DEVICE_ID) String deviceId,
                                  @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
+                                 @QueryParam(OURLParams.APP_VERSION) String appVersion,
+                                 @QueryParam(OURLParams.LANGUAGE) String language)
     {
-        m = new OMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion, language);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.REGISTER);
         m.validateAuthToken(authToken);
@@ -51,11 +46,11 @@ public class OAuthHandler
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
             ofy().save().entity(authInfo).now();
-                
-            sendEmail(OAuthPhase.REGISTER);
+            
+            new OMailer(m).sendRegistrationEmail();
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         OLog.log().fine(m.meta() + "HTTP status: 201");
@@ -73,7 +68,7 @@ public class OAuthHandler
                               @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new OMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion, null);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
@@ -99,8 +94,8 @@ public class OAuthHandler
                 OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
             }
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
@@ -124,7 +119,7 @@ public class OAuthHandler
                                  @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new OMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion, null);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATE);
         m.validateAuthToken(authToken);
@@ -168,12 +163,18 @@ public class OAuthHandler
                                    @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                    @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        m = new OMeta(authToken, appVersion);
+        m = new OMeta(authToken, appVersion, null);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
         
-        updatePasswordHash(authorizationHeader, OAuthPhase.CHANGE);
+        if (m.isValid()) {
+            updatePasswordHash(authorizationHeader);
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+        }
         
+        OLog.log().fine(m.meta() + "HTTP status: 201");
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
     
@@ -185,16 +186,24 @@ public class OAuthHandler
                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                   @QueryParam(OURLParams.DEVICE_ID) String deviceId,
                                   @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
+                                  @QueryParam(OURLParams.APP_VERSION) String appVersion,
+                                  @QueryParam(OURLParams.LANGUAGE) String language)
     {
-        m = new OMeta(deviceId, deviceType, appVersion);
+        m = new OMeta(deviceId, deviceType, appVersion, language);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.RESET);
         m.validateAuthToken(authToken);
         
-        updatePasswordHash(authorizationHeader, OAuthPhase.RESET);
-        sendEmail(OAuthPhase.RESET);
+        if (m.isValid()) {
+            updatePasswordHash(authorizationHeader);
+            
+            new OMailer(m).sendPasswordResetEmail();
+        } else {
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+        }
         
+        OLog.log().fine(m.meta() + "HTTP status: 201");
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
     
@@ -204,9 +213,10 @@ public class OAuthHandler
     @Produces(MediaType.APPLICATION_JSON)
     public Response sendActivationCode(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                        @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                       @QueryParam(OURLParams.APP_VERSION) String appVersion)
+                                       @QueryParam(OURLParams.APP_VERSION) String appVersion,
+                                       @QueryParam(OURLParams.LANGUAGE) String language)
     {
-        m = new OMeta(authToken, appVersion);
+        m = new OMeta(authToken, appVersion, language);
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SENDCODE);
         
@@ -214,10 +224,11 @@ public class OAuthHandler
         
         if (m.isValid()) {
             authInfo = m.getAuthInfo();
-            sendEmail(OAuthPhase.SENDCODE);
+            
+            new OMailer(m).sendEmailActivationCode();
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         OLog.log().fine(m.meta() + "HTTP status: 201");
@@ -225,7 +236,7 @@ public class OAuthHandler
     }
 
 
-    private void updatePasswordHash(String authorizationHeader, OAuthPhase authPhase)
+    private void updatePasswordHash(String authorizationHeader)
     {
         if (m.isValid()) {
             OMemberProxy memberProxy = m.getMemberProxy();
@@ -233,46 +244,11 @@ public class OAuthHandler
             
             ofy().save().entity(memberProxy).now();
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         OLog.log().fine(m.meta() + "Saved updated password hash");
         OLog.log().fine(m.meta() + "HTTP status: 201");
-    }
-    
-    
-    private void sendEmail(OAuthPhase authPhase)
-    {
-        Session session = Session.getInstance(new Properties());
-    
-        try {
-            Message message = new MimeMessage(session);
-            
-            // TODO: Localise message
-            message.setFrom(new InternetAddress("ablehr@gmail.com")); // TODO: Need another email address!
-            message.addRecipient(Message.RecipientType.TO, m.getEmailAddress());
-            
-            if (authPhase == OAuthPhase.REGISTER) {
-                message.setSubject("Complete your registration with Origo");
-                message.setText(String.format("Activation code: %s", m.getActivationCode()));
-                
-                OLog.log().fine(m.meta() + "Sent activation code to new user.");
-            } else if (authPhase == OAuthPhase.RESET) {
-                message.setSubject("Your password has been reset");
-                message.setText(String.format("Your new passord is %s. Please change it to something more memorable.\n\nBest regards,\nThe Origo team", m.getActivationCode()));
-                
-                OLog.log().fine(m.meta() + "Sent new password " + m.getActivationCode() + " to user.");
-            } else if (authPhase == OAuthPhase.SENDCODE) {
-                message.setSubject("Activate your email address for use with Origo");
-                message.setText(String.format("Activation code: %s", m.getActivationCode()));
-                
-                OLog.log().fine(m.meta() + "Sent email activation code to user.");
-            }
-            
-            //Transport.send(message);
-        } catch (MessagingException e) {
-            OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        }
     }
 }

@@ -23,6 +23,7 @@ public class OMemberProxy
 {
     public @Id String proxyId;
     public String memberId;
+    public @IgnoreSave(IfNull.class) String memberName;
     
     public @IgnoreSave(IfDefault.class) boolean didRegister = false;
     public @IgnoreSave(IfNull.class) String passwordHash;

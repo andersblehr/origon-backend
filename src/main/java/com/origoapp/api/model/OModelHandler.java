@@ -30,9 +30,10 @@ public class OModelHandler
     public Response replicate(List<OReplicatedEntity> entitiesToReplicate,
                               @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
                               @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
+                              @QueryParam(OURLParams.APP_VERSION) String appVersion,
+                              @QueryParam(OURLParams.LANGUAGE) String language)
     {
-        OMeta m = new OMeta(authToken, appVersion);
+        OMeta m = new OMeta(authToken, appVersion, language);
         
         m.validateReplicationDate(deviceReplicationDate);
         
@@ -100,7 +101,7 @@ public class OModelHandler
                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        OMeta m = new OMeta(authToken, appVersion);
+        OMeta m = new OMeta(authToken, appVersion, null);
         
         m.validateReplicationDate(deviceReplicationDate);
         
@@ -133,7 +134,7 @@ public class OModelHandler
                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        OMeta m = new OMeta(authToken, appVersion);
+        OMeta m = new OMeta(authToken, appVersion, null);
         
         List<OReplicatedEntity> memberEntities = null;
         
@@ -161,7 +162,7 @@ public class OModelHandler
                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
-        OMeta m = new OMeta(authToken, appVersion);
+        OMeta m = new OMeta(authToken, appVersion, null);
         
         OOrigo origo = null;;
         
