@@ -68,6 +68,12 @@ public class OMeta
     }
     
     
+    public boolean isDownForMaintenance()
+    {
+        return false;
+    }
+    
+    
     public boolean isValid()
     {
         return isValid;
@@ -102,6 +108,12 @@ public class OMeta
     public String getDeviceType()
     {
         return deviceType;
+    }
+    
+    
+    public String getAppVersion()
+    {
+        return appVersion;
     }
     
     
