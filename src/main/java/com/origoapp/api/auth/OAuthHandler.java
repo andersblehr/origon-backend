@@ -38,6 +38,11 @@ public class OAuthHandler
     {
         m = new OMeta(deviceId, deviceType, appVersion, language);
         
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
+        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.REGISTER);
         m.validateAuthToken(authToken);
         
@@ -69,6 +74,11 @@ public class OAuthHandler
                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion, null);
+        
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
@@ -121,6 +131,11 @@ public class OAuthHandler
     {
         m = new OMeta(deviceId, deviceType, appVersion, null);
         
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
+        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATE);
         m.validateAuthToken(authToken);
         
@@ -165,6 +180,11 @@ public class OAuthHandler
     {
         m = new OMeta(authToken, appVersion, null);
         
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
+        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
         
         if (m.isValid()) {
@@ -174,6 +194,7 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        OLog.log().fine(m.meta() + "Saved updated password hash");
         OLog.log().fine(m.meta() + "HTTP status: 201");
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -191,6 +212,11 @@ public class OAuthHandler
     {
         m = new OMeta(deviceId, deviceType, appVersion, language);
         
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
+        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.RESET);
         m.validateAuthToken(authToken);
         
@@ -203,6 +229,7 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
+        OLog.log().fine(m.meta() + "Saved temporary password hash");
         OLog.log().fine(m.meta() + "HTTP status: 201");
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -217,6 +244,11 @@ public class OAuthHandler
                                        @QueryParam(OURLParams.LANGUAGE) String language)
     {
         m = new OMeta(authToken, appVersion, language);
+        
+        if (m.isDownForMaintenance()) {
+            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
+            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        }
         
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SENDCODE);
         
@@ -247,8 +279,5 @@ public class OAuthHandler
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
-        
-        OLog.log().fine(m.meta() + "Saved updated password hash");
-        OLog.log().fine(m.meta() + "HTTP status: 201");
     }
 }

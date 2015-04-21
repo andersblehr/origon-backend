@@ -5,7 +5,7 @@ import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
-//import javax.mail.Transport;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletResponse;
@@ -28,15 +28,16 @@ public class OMailer
         Message message = new MimeMessage(Session.getInstance(new Properties()));
         
         try {
-            message.setFrom(new InternetAddress(kFromAddress));
-            //message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress("ablehr@gmail.com"));  // TODO: For testing only, remove and uncomment preceding when done
-            message.setSubject(subject);
-            message.setText(text);
-            
-            OLog.log().fine(m.meta() + String.format("Sending email to %s with body:\n%s", recipientAddress, text));
-            
-            //Transport.send(message);
+            if (m.getAppVersion().compareTo("1.0") >= 0) {
+                message.setFrom(new InternetAddress(kFromAddress));
+                message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
+                message.setSubject(subject);
+                message.setText(text);
+                
+                Transport.send(message);
+            } else {
+                OLog.log().fine(m.meta() + String.format("Prerelease version, not sending email to %s with body:\n%s", recipientAddress, text));
+            }
         } catch (MessagingException e) {
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
