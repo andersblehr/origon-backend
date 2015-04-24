@@ -1,18 +1,17 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
+
+import co.origon.api.auth.OAuthInfo;
+import co.origon.api.auth.OAuthMeta;
+import co.origon.api.aux.OMemberProxy;
+import co.origon.api.model.ODevice;
+import co.origon.api.model.OMember;
+import co.origon.api.model.OMembership;
+import co.origon.api.model.OOrigo;
+import co.origon.api.model.OReplicatedEntity;
+import co.origon.api.model.OReplicatedEntityRef;
 
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
-
-import com.origoapp.api.auth.OAuthInfo;
-import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.aux.OMemberProxy;
-
-import com.origoapp.api.model.ODevice;
-import com.origoapp.api.model.OMember;
-import com.origoapp.api.model.OMembership;
-import com.origoapp.api.model.OOrigo;
-import com.origoapp.api.model.OReplicatedEntity;
-import com.origoapp.api.model.OReplicatedEntityRef;
 
 
 public class OObjectifyService

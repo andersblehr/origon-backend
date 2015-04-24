@@ -1,4 +1,4 @@
-package com.origoapp.api;
+package co.origon.api;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;

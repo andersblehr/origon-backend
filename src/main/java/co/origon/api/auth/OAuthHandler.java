@@ -1,4 +1,4 @@
-package com.origoapp.api.auth;
+package co.origon.api.auth;
 
 import java.util.Date;
 import java.util.List;
@@ -9,14 +9,13 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.origoapp.api.aux.OLog;
-import com.origoapp.api.aux.OMailer;
-import com.origoapp.api.aux.OMemberProxy;
-import com.origoapp.api.aux.OMeta;
-import com.origoapp.api.aux.OURLParams;
-import com.origoapp.api.model.OReplicatedEntity;
-
-import static com.origoapp.api.aux.OObjectifyService.ofy;
+import co.origon.api.aux.OLog;
+import co.origon.api.aux.OMailer;
+import co.origon.api.aux.OMemberProxy;
+import co.origon.api.aux.OMeta;
+import co.origon.api.aux.OURLParams;
+import co.origon.api.model.OReplicatedEntity;
+import static co.origon.api.aux.OObjectifyService.ofy;
 
 
 @Path("auth")

@@ -1,4 +1,4 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,15 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.googlecode.objectify.Key;
-import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.model.OReplicatedEntity;
-import com.origoapp.api.model.OMember;
-import com.origoapp.api.model.OMembership;
-import com.origoapp.api.model.OOrigo;
-import com.origoapp.api.model.OReplicatedEntityRef;
+import co.origon.api.auth.OAuthMeta;
+import co.origon.api.model.OMember;
+import co.origon.api.model.OMembership;
+import co.origon.api.model.OOrigo;
+import co.origon.api.model.OReplicatedEntity;
+import co.origon.api.model.OReplicatedEntityRef;
 
-import static com.origoapp.api.aux.OObjectifyService.ofy;
+import com.googlecode.objectify.Key;
+
+import static co.origon.api.aux.OObjectifyService.ofy;
 
 
 public class ODAO
@@ -232,7 +233,7 @@ public class ODAO
                 } else {
                     affectedMemberProxyKeys.add(proxyKey);
                     
-                    if (membership.member.hasEmail() && !membership.status.equals("A") && (membership.type.equals("P") || membership.type.equals("R") || membership.type.equals("L"))) {
+                    if (membership.isInvitable()) {
                         mailer.sendInvitation(membership.member.email);
                     }
                 }

@@ -1,4 +1,4 @@
-package com.origoapp.api.auth;
+package co.origon.api.auth;
 
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;

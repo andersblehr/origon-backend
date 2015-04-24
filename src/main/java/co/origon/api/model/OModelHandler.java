@@ -1,4 +1,4 @@
-package com.origoapp.api.model;
+package co.origon.api.model;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,9 +12,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.origoapp.api.aux.OLog;
-import com.origoapp.api.aux.OMeta;
-import com.origoapp.api.aux.OURLParams;
+import co.origon.api.aux.OLog;
+import co.origon.api.aux.OMeta;
+import co.origon.api.aux.OURLParams;
 
 
 @Path("model")

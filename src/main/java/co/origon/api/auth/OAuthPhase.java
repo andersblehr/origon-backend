@@ -1,4 +1,4 @@
-package com.origoapp.api.auth;
+package co.origon.api.auth;
 
 
 public enum OAuthPhase

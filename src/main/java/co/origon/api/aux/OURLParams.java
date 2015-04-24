@@ -1,4 +1,4 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 
 public final class OURLParams

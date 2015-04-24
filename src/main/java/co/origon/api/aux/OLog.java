@@ -1,16 +1,16 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
-import com.origoapp.api.OOrigoApplication;
+import co.origon.api.OOrigonApplication;
 
 
 public class OLog
 {
-    private static final Logger log = Logger.getLogger(OOrigoApplication.class.getName());
+    private static final Logger log = Logger.getLogger(OOrigonApplication.class.getName());
 
     
     protected OLog() {}

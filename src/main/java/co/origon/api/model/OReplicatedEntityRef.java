@@ -1,4 +1,4 @@
-package com.origoapp.api.model;
+package co.origon.api.model;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;

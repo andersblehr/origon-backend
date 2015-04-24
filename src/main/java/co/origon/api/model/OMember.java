@@ -1,4 +1,4 @@
-package com.origoapp.api.model;
+package co.origon.api.model;
 
 import java.util.Date;
 

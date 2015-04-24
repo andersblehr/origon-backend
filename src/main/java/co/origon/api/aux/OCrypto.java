@@ -1,4 +1,4 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 import java.security.MessageDigest;
 

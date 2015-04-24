@@ -1,4 +1,4 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -9,12 +9,13 @@ import javax.mail.internet.InternetAddress;
 
 import org.apache.commons.codec.binary.Base64;
 
-import com.googlecode.objectify.Key;
-import com.origoapp.api.auth.OAuthInfo;
-import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.auth.OAuthPhase;
+import co.origon.api.auth.OAuthInfo;
+import co.origon.api.auth.OAuthMeta;
+import co.origon.api.auth.OAuthPhase;
 
-import static com.origoapp.api.aux.OObjectifyService.ofy;
+import com.googlecode.objectify.Key;
+
+import static co.origon.api.aux.OObjectifyService.ofy;
 
 
 public class OMeta
