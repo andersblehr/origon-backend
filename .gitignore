@@ -3,6 +3,7 @@
 target/*
 target/**/*
 db/*
+war/*
 
 *.DS_Store
 /target
