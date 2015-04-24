@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.origoapp.api</groupId>
-	<artifactId>origoapp-api</artifactId>
-	<version>1</version>
+	<groupId>co.origon.api</groupId>
+	<artifactId>origon-api</artifactId>
+	<version>0.9</version>
 	<packaging>war</packaging>
 
-	<name>Origo backend API</name>
-	<description>Backend API for the Origo app</description>
+	<name>Origon backend API</name>
+	<description>Backend API for the Origon app</description>
 
     <repositories>
 		<repository>

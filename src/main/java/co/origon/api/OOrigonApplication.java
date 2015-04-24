@@ -1,20 +1,20 @@
-package com.origoapp.api;
+package co.origon.api;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import com.origoapp.api.auth.OAuthHandler;
-import com.origoapp.api.model.OModelHandler;
+import co.origon.api.auth.OAuthHandler;
+import co.origon.api.model.OModelHandler;
 
 
-public class OOrigoApplication extends Application
+public class OOrigonApplication extends Application
 {
     private Set<Object> singletons = new HashSet<Object>();
     
     
-    public OOrigoApplication()
+    public OOrigonApplication()
     {
         singletons.add(new OAuthHandler());
         singletons.add(new OModelHandler());

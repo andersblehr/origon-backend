@@ -1,4 +1,4 @@
-package com.origoapp.api.model;
+package co.origon.api.model;
 
 import java.util.Map;
 
@@ -50,5 +50,17 @@ public class OMembership extends OReplicatedEntity
         }
         
         return isFetchable;
+    }
+    
+    
+    @JsonIgnore
+    public boolean isInvitable()
+    {
+        boolean isInvitable = dateReplicated == null;
+        isInvitable = isInvitable && member.hasEmail();
+        isInvitable = isInvitable && status != null && !status.equals("A");
+        isInvitable = isInvitable && type != null & (type.equals("P") || type.equals("R") || type.equals("L"));
+        
+        return isInvitable;
     }
 }

@@ -1,7 +1,11 @@
-package com.origoapp.api.aux;
+package co.origon.api.aux;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import co.origon.api.auth.OAuthMeta;
+import co.origon.api.model.OMember;
+import co.origon.api.model.OMembership;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
@@ -12,9 +16,6 @@ import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.condition.IfDefault;
 import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
-import com.origoapp.api.auth.OAuthMeta;
-import com.origoapp.api.model.OMember;
-import com.origoapp.api.model.OMembership;
 
 
 @Entity

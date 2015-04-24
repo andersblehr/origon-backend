@@ -4,17 +4,17 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-    <display-name>REST API for the Origo backend</display-name>
+    <display-name>REST API for the Origon backend</display-name>
     <context-param>
         <param-name>resteasy.providers</param-name>
-        <param-value>com.origoapp.api.OWebApplicationExceptionMapper</param-value>
+        <param-value>co.origon.api.OWebApplicationExceptionMapper</param-value>
     </context-param>
     <servlet>
-        <servlet-name>origoapp-api</servlet-name>
+        <servlet-name>origon-api</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
         <init-param>
             <param-name>javax.ws.rs.Application</param-name>
-            <param-value>com.origoapp.api.OOrigoApplication</param-value>
+            <param-value>co.origon.api.OOrigonApplication</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.feature.DisableWADL</param-name>
@@ -22,7 +22,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
         </init-param>
     </servlet>
     <servlet-mapping>
-        <servlet-name>origoapp-api</servlet-name>
+        <servlet-name>origon-api</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
     <filter>
@@ -35,7 +35,7 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
     </filter-mapping>
     <security-constraint>
         <web-resource-collection>
-            <web-resource-name>origoapp</web-resource-name>
+            <web-resource-name>origon</web-resource-name>
             <url-pattern>/*</url-pattern>
         </web-resource-collection>
         <user-data-constraint>

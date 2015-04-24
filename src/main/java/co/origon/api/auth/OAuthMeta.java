@@ -1,4 +1,4 @@
-package com.origoapp.api.auth;
+package co.origon.api.auth;
 
 import java.util.Calendar;
 import java.util.Date;
