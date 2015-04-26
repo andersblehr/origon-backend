@@ -1,5 +1,5 @@
 eclipse.preferences.version=1
 jarsExcludedFromWebInfLib=
 lastWarOutDir=/Users/ablehr/Developer/Apps/Origon/origon-api/war
-warSrcDir=
-warSrcDirIsOutput=false
+warSrcDir=war
+warSrcDirIsOutput=true
