@@ -220,15 +220,18 @@ public class OAuthHandler
         m.validateAuthToken(authToken);
         
         if (m.isValid()) {
-            updatePasswordHash(authorizationHeader);
-            
-            new OMailer(m).sendPasswordResetEmail();
+            if (updatePasswordHash(authorizationHeader)) {
+                new OMailer(m).sendPasswordResetEmail();
+                
+                OLog.log().fine(m.meta() + "Saved temporary password hash");
+            } else {
+                OLog.log().warning(m.meta() + "Attempt made to reset password for inactive or non-existent user, doing nothing.");
+            }
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        OLog.log().fine(m.meta() + "Saved temporary password hash");
         OLog.log().fine(m.meta() + "HTTP status: 201");
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
@@ -267,16 +270,25 @@ public class OAuthHandler
     }
 
 
-    private void updatePasswordHash(String authorizationHeader)
+    private boolean updatePasswordHash(String authorizationHeader)
     {
+        boolean didUpdate = true;
+        
         if (m.isValid()) {
             OMemberProxy memberProxy = m.getMemberProxy();
-            memberProxy.passwordHash = m.getPasswordHash();
             
-            ofy().save().entity(memberProxy).now();
+            if (memberProxy != null) {
+                memberProxy.passwordHash = m.getPasswordHash();
+                
+                ofy().save().entity(memberProxy).now();
+            } else {
+                didUpdate = false;
+            }
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
+        
+        return didUpdate;
     }
 }
