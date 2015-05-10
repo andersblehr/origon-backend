@@ -15,7 +15,7 @@ import co.origon.api.model.OMember;
 
 public class OMailer
 {
-    private static final String kFromAddress = "do_not_reply@origon.co";
+    private static final String kFromAddress = "contact@origon.co";
     
     private static final String kLanguageEnglish = "en";
     private static final String kLanguageNorwegianBokmal = "nb";
@@ -28,7 +28,7 @@ public class OMailer
         Message message = new MimeMessage(Session.getInstance(new Properties()));
         
         try {
-            if (m.getAppVersion().compareTo("1.0") >= 0) {
+            if (m.getAppVersion().compareTo("1.0") >= 0 || recipientAddress.equals("ablehr@gmail.com") || recipientAddress.equals("ablehr@me.com")) {
                 message.setFrom(new InternetAddress(kFromAddress));
                 message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
                 message.setSubject(subject);
@@ -39,6 +39,7 @@ public class OMailer
                 OLog.log().fine(m.meta() + String.format("Prerelease version, not sending email to %s with body:\n%s", recipientAddress, text));
             }
         } catch (MessagingException e) {
+            OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -49,11 +50,11 @@ public class OMailer
         String slogan = null;
 
         if (language.equals(kLanguageNorwegianBokmal)) {
-            slogan = "mobil-appen som gir deg full kontroll over din egen kontaktinformasjon " +
-                     "og knytter deg tettere sammen med mennesker du allerede har med å gjøre i det daglige";
+            slogan = "mobil-appen som gir deg fullt eierskap til din egen kontaktinformasjon " +
+                     "og gjør det lettere å knytte deg tettere sammen med mennesker du allerede har med å gjøre i det daglige";
         } else {
-            slogan = "the mobile app that gives you full control over your own contact information " +
-                     "and connects you more tightly with people you already cross paths with in your daily routine";
+            slogan = "the mobile app that gives you full ownership of your own contact information " +
+                     "and enables you to connect more tightly with the people you already cross paths with in your daily routine";
         }
         
         return slogan;
