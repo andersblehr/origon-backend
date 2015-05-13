@@ -15,7 +15,7 @@ import co.origon.api.model.OMember;
 
 public class OMailer
 {
-    private static final String kFromAddress = "contact@origon.co";
+    private static final String kFromAddress = "minion@origon.co";
     
     private static final String kLanguageEnglish = "en";
     private static final String kLanguageNorwegianBokmal = "nb";
@@ -28,16 +28,12 @@ public class OMailer
         Message message = new MimeMessage(Session.getInstance(new Properties()));
         
         try {
-            if (m.getAppVersion().compareTo("1.0") >= 0 || recipientAddress.equals("ablehr@gmail.com") || recipientAddress.equals("ablehr@me.com")) {
-                message.setFrom(new InternetAddress(kFromAddress));
-                message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
-                message.setSubject(subject);
-                message.setText(text);
-                
-                Transport.send(message);
-            } else {
-                OLog.log().fine(m.meta() + String.format("Prerelease version, not sending email to %s with body:\n%s", recipientAddress, text));
-            }
+            message.setFrom(new InternetAddress(kFromAddress));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
+            message.setSubject(subject);
+            message.setText(text);
+            
+            Transport.send(message);
         } catch (MessagingException e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -51,10 +47,10 @@ public class OMailer
 
         if (language.equals(kLanguageNorwegianBokmal)) {
             slogan = "mobil-appen som gir deg fullt eierskap til din egen kontaktinformasjon " +
-                     "og gjør det lettere å knytte deg tettere sammen med mennesker du allerede har med å gjøre i det daglige";
+                     "og knytter deg tettere sammen med menneskene du allerede har med å gjøre i det daglige";
         } else {
             slogan = "the mobile app that gives you full ownership of your own contact information " +
-                     "and enables you to connect more tightly with the people you already cross paths with in your daily routine";
+                     "and connects you more tightly with the people you already cross paths with in your daily routine";
         }
         
         return slogan;
@@ -64,15 +60,27 @@ public class OMailer
     private String origonAvailabilityInfo(String language, String registrationEmail)
     {
         String availabilityInfo = null;
-        
-        if (language.equals(kLanguageNorwegianBokmal)) {
-            availabilityInfo = String.format("Origon er tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
-                                             "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
-                                             "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
+
+        if (m.isLive()) {
+            if (language.equals(kLanguageNorwegianBokmal)) {
+                availabilityInfo = String.format("Origon er tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
+                                                 "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
+                                                 "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
+            } else {
+                availabilityInfo = String.format("Origon is available on iOS 7 and later (iPhone, iPad and iPod touch). " +
+                                                 "Download Origon from the App Store and register with %s to get going. " +
+                                                 "(Origon is currently not available on Android or Windows Phone.)", registrationEmail);
+            }
         } else {
-            availabilityInfo = String.format("Origon is available on iOS 7 and later (iPhone, iPad and iPod touch). " +
-                                             "Download Origon from the App Store and register with %s to get going. " +
-                                             "(Origon is currently not available on Android or Windows Phone.)", registrationEmail);
+            if (language.equals(kLanguageNorwegianBokmal)) {
+                availabilityInfo = String.format("Origon vil snart være tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
+                                                 "Når det skjer, kan du laste ned Origon fra App Store og registrere deg med %s for å komme i gang. " +
+                                                 "(Origon kommer inntil videre ikke til å være tilgjengelig for Android eller Windows Phone.)", registrationEmail);
+            } else {
+                availabilityInfo = String.format("Origon will soon be available on iOS 7 and later (iPhone, iPad and iPod touch). " +
+                                                 "When it is, you can download Origon from the App Store and register with %s to get going. " +
+                                                 "(Origon will not be available on Android or Windows Phone this time around.)", registrationEmail);
+            }
         }
         
         return availabilityInfo;
@@ -84,11 +92,12 @@ public class OMailer
         String bestRegards = null;
         
         if (language.equals(kLanguageNorwegianBokmal)) {
-            bestRegards = "Med vennlig hilsen,\n" +
-                          "Origon-laget - http://origon.co\n";
+            bestRegards = "Med vennlig hilsen Origon-teamet\n" +
+                          "http://origon.co\n";
         } else {
             bestRegards = "Best regards,\n" +
-                          "The Origon team - http://origon.co\n";
+                          "The Origon team\n" +
+                          "http://origon.co\n";
         }
         
         return bestRegards;
