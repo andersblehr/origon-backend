@@ -80,17 +80,14 @@ public class OModelHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        OLog.log().fine(m.meta() + "Replicated entities: " + entitiesToReplicate.toString());
-        OLog.log().fine(m.meta() + "Fetched entities: " + entitiesToReturn.toString());
-        
         if (entitiesToReplicate.size() > 0 && entitiesToReturn.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 207");
+            OLog.log().fine(m.meta() + "HTTP status: 207 " + String.format("(Replicated %d entities, returning %d entities.)", entitiesToReplicate.size(), entitiesToReturn.size()));
             return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else if (entitiesToReplicate.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 201");
+            OLog.log().fine(m.meta() + "HTTP status: 201 " + String.format("(Replicated %d entities.)", entitiesToReplicate.size()));
             return Response.status(HttpServletResponse.SC_CREATED).lastModified(replicationDate).build();
         } else if (entitiesToReturn.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
+            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", entitiesToReturn.size()));
             return Response.status(HttpServletResponse.SC_OK).entity(entitiesToReturn).lastModified(replicationDate).build();
         } else {
             OLog.log().fine(m.meta() + "HTTP status: 304");
@@ -125,10 +122,8 @@ public class OModelHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
-        
         if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
+            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format ("(Returning %d entities.)", fetchedEntities.size()));
             return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             OLog.log().fine(m.meta() + "HTTP status: 304");

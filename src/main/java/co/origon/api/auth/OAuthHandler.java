@@ -107,10 +107,8 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
         }
         
-        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
-        
         if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
+            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", fetchedEntities.size()));
             return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.memberId).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             OLog.log().fine(m.meta() + "HTTP status: 304");
@@ -158,10 +156,8 @@ public class OAuthHandler
             OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
         }
         
-        OLog.log().fine(m.meta() + "Fetched entities: " + fetchedEntities.toString());
-        
         if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
+            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", fetchedEntities.size()));
             return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getMemberProxy().memberId).entity(fetchedEntities).lastModified(replicationDate).build();
         } else {
             OLog.log().fine(m.meta() + "HTTP status: 204");

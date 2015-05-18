@@ -112,13 +112,11 @@ public class OMailer
     
     public void sendInvitation(String invitedEmail)
     {
-        OMemberProxy memberProxy = m.getMemberProxy();
-        
         if (m.getLanguage().equals(kLanguageNorwegianBokmal)) {
             sendEmail(invitedEmail, "Du har blitt lagt til i en liste på Origon",
                     String.format("Hei!\n" +
                                   "\n" +
-                                  "%s (%s) har lagt deg til i en liste på Origon, " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
+                                  "Du har blitt lagt til i en liste på Origon, " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageNorwegianBokmal, invitedEmail) + "\n" +
                                   "\n" +
@@ -126,22 +124,20 @@ public class OMailer
                                   "\n" +
                                   "Hi!\n" +
                                   "\n" +
-                                  "%s (%s) has added you to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "You have been added to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitedEmail) + "\n" +
                                   "\n" +
-                                  origonBestRegards(kLanguageEnglish),
-                                  memberProxy.memberName, memberProxy.proxyId, memberProxy.memberName, memberProxy.proxyId));
+                                  origonBestRegards(kLanguageEnglish)));
         } else {
             sendEmail(invitedEmail, "You have been added to a list on Origon",
                     String.format("Hi!\n" +
                                   "\n" +
-                                  "%s (%s) has added you to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "You have been added to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitedEmail) + "\n" +
                                   "\n" +
-                                  origonBestRegards(kLanguageEnglish),
-                                  memberProxy.memberName, memberProxy.proxyId));
+                                  origonBestRegards(kLanguageEnglish)));
         }
     }
     
