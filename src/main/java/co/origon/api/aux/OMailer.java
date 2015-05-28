@@ -3,7 +3,6 @@ package co.origon.api.aux;
 import java.util.Properties;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -28,13 +27,16 @@ public class OMailer
         Message message = new MimeMessage(Session.getInstance(new Properties()));
         
         try {
-            message.setFrom(new InternetAddress(kFromAddress));
+            InternetAddress sender = new InternetAddress(kFromAddress);
+            sender.setPersonal("Origon");
+            
+            message.setFrom(sender);
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
             message.setSubject(subject);
             message.setText(text);
             
             Transport.send(message);
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
