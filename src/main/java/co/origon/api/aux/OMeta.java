@@ -69,12 +69,6 @@ public class OMeta
     }
     
     
-    public boolean isLive()
-    {
-        return false;
-    }
-    
-    
     public boolean isDownForMaintenance()
     {
         return false;

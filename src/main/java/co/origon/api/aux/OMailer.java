@@ -63,26 +63,14 @@ public class OMailer
     {
         String availabilityInfo = null;
 
-        if (m.isLive()) {
-            if (language.equals(kLanguageNorwegianBokmal)) {
-                availabilityInfo = String.format("Origon er tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
-                                                 "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
-                                                 "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
-            } else {
-                availabilityInfo = String.format("Origon is available on iOS 7 and later (iPhone, iPad and iPod touch). " +
-                                                 "Download Origon from the App Store and register with %s to get going. " +
-                                                 "(Origon is currently not available on Android or Windows Phone.)", registrationEmail);
-            }
+        if (language.equals(kLanguageNorwegianBokmal)) {
+            availabilityInfo = String.format("Origon er tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
+                                             "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
+                                             "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
         } else {
-            if (language.equals(kLanguageNorwegianBokmal)) {
-                availabilityInfo = String.format("Origon vil snart være tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
-                                                 "Når det skjer, kan du laste ned Origon fra App Store og registrere deg med %s for å komme i gang. " +
-                                                 "(Origon kommer inntil videre ikke til å være tilgjengelig for Android eller Windows Phone.)", registrationEmail);
-            } else {
-                availabilityInfo = String.format("Origon will soon be available on iOS 7 and later (iPhone, iPad and iPod touch). " +
-                                                 "When it is, you can download Origon from the App Store and register with %s to get going. " +
-                                                 "(Origon will not be available on Android or Windows Phone this time around.)", registrationEmail);
-            }
+            availabilityInfo = String.format("Origon is available on iOS 7 and later (iPhone, iPad and iPod touch). " +
+                                             "Download Origon from the App Store and register with %s to get going. " +
+                                             "(Origon is currently not available on Android or Windows Phone.)", registrationEmail);
         }
         
         return availabilityInfo;
