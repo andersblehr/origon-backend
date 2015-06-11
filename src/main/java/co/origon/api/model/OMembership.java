@@ -45,7 +45,7 @@ public class OMembership extends OReplicatedEntity
     {
         boolean isFetchable = false;
         
-        if (!isExpired) {
+        if (!isExpired && !type.equals("F")) {
             isFetchable = type.equals("~") || type.equals("A") || (status != null && !status.equals("-"));
         }
         

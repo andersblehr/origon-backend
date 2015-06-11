@@ -36,6 +36,8 @@ public class OMailer
             message.setText(text);
             
             Transport.send(message);
+            
+            OLog.log().fine(m.meta() + String.format("Sent email with subject \"%s\" to %s", subject, recipientAddress));
         } catch (Exception e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -112,6 +114,7 @@ public class OMailer
                                   "\n" +
                                   origonBestRegards(kLanguageNorwegianBokmal) +
                                   "\n" +
+                                  "\n" +
                                   "Hi!\n" +
                                   "\n" +
                                   "You have been added to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
@@ -142,7 +145,7 @@ public class OMailer
             sendEmail(invitee.email, "Epostadressen din har blitt endret på Origon",
                     String.format("%s,\n" +
                                   "\n" +
-                                  "%s (%s) har endret epostadressen din på Origon fra %s til denne adressen. Origon er " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
+                                  "%s (%s) har endret epostadressen din på Origon fra %s til denne adressen.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageNorwegianBokmal, invitee.email) + "\n" +
                                   "\n" +
@@ -151,7 +154,7 @@ public class OMailer
                                   "\n" +
                                   "%s,\n" +
                                   "\n" +
-                                  "%s (%s) has changed your email address on Origon from %s to this address. Origon is " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "%s (%s) has changed your email address on Origon from %s to this address.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitee.email) + "\n" +
                                   "\n" +
@@ -160,7 +163,7 @@ public class OMailer
             sendEmail(oldEmail, "Epostadressen din har blitt endret på Origon",
                     String.format("%s,\n" +
                                   "\n" +
-                                  "%s (%s) har endret epostadressen din på Origon fra denne adressen til %s. Origon er " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
+                                  "%s (%s) har endret epostadressen din på Origon fra denne adressen til %s.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageNorwegianBokmal, invitee.email) + "\n" +
                                   "\n" +
@@ -169,7 +172,7 @@ public class OMailer
                                   "\n" +
                                   "%s,\n" +
                                   "\n" +
-                                  "%s (%s) has changed your email address on Origon from this address to %s. Origon is " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "%s (%s) has changed your email address on Origon from this address to %s.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitee.email) + "\n" +
                                   "\n" +
@@ -179,7 +182,7 @@ public class OMailer
             sendEmail(invitee.email, "Your email address has been changed on Origon",
                     String.format("%s,\n" +
                                   "\n" +
-                                  "%s (%s) has changed your email address on Origon from %s to this address. Origon is " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "%s (%s) has changed your email address on Origon from %s to this address.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitee.email) + "\n" +
                                   "\n" +
@@ -188,7 +191,7 @@ public class OMailer
             sendEmail(oldEmail, "Your email address has been changed on Origon",
                     String.format("%s,\n" +
                                   "\n" +
-                                  "%s (%s) has changed your email address on Origon from this address to %s. Origon is " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  "%s (%s) has changed your email address on Origon from this address to %s.\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitee.email) + "\n" +
                                   "\n" +
@@ -201,13 +204,12 @@ public class OMailer
     public void sendRegistrationEmail()
     {
         if (m.getLanguage().equals(kLanguageNorwegianBokmal)) {
-            sendEmail(m.getEmail(), "Complete your registration with Origon",
+            sendEmail(m.getEmail(), "Fullfør registreringen på Origon",
                     String.format("Velkommen til Origon!\n" +
                                   "\n" +
-                                  "Du er nesten klar til å begynne å bruke Origon, " + origonSlogan(kLanguageNorwegianBokmal) + ". " +
-                                  "Alt som gjenstår, er å gå tilbake til Origon, oppgi aktiveringskoden under og fylle ut evt manglende opplysninger.\n" +
+                                  "Alt som gjenstår før du kan begynne å bruke Origon, er å oppgi aktiveringskoden under og fylle ut evt manglende opplysninger.\n" +
                                   "\n" +
-                                  "  Aktiveringskode: %s\n" +
+                                  "    Aktiveringskode: %s\n" +
                                   "\n" +
                                   "Merk: Opplysningene du vil bli bedt om å oppgi (eller som kanskje allerede har blitt oppgitt om du mottok en invitasjon) " +
                                   "er dine og bare dine. Vi kommer aldri til å selge dem videre eller bruke dem til noe annet enn det du kan se med egne øyne i Origon.\n" +
@@ -219,10 +221,9 @@ public class OMailer
             sendEmail(m.getEmail(), "Complete your registration with Origon",
                     String.format("Welcome to Origon!\n" +
                                   "\n" +
-                                  "You are almost ready to start using Origon, " + origonSlogan(kLanguageEnglish) + ". " +
-                                  "All that remains is to return to Origon, enter the activation code below and fill out any missing information.\n" +
+                                  "All that remains before you can start using Origon, is to enter the activation code below and fill out any missing information.\n" +
                                   "\n" +
-                                  "  Activation code: %s\n" +
+                                  "    Activation code: %s\n" +
                                   "\n" +
                                   "Please note: The information you will be asked to enter (or that may have already been entered if you received an invitation) " +
                                   "is yours and yours alone. We will never sell it nor use it for anything except what you can see with your own eyes in Origon.\n" +
@@ -239,7 +240,7 @@ public class OMailer
             sendEmail(m.getEmail(), "Aktiver den nye epostadressen din for bruk i Origon",
                     String.format("Oppgi følgende kode for å aktivere den nye epostadressen din for bruk i Origon.\n" +
                                   "\n" +
-                                  "  Aktiveringskode: %s\n" +
+                                  "    Aktiveringskode: %s\n" +
                                   "\n" +
                                   origonBestRegards(kLanguageNorwegianBokmal),
                                   m.getActivationCode()));
@@ -247,7 +248,7 @@ public class OMailer
             sendEmail(m.getEmail(), "Activate your new email address for use with Origon",
                     String.format("Please enter the following code to activate your new email address for use with Origon.\n" +
                                   "\n" +
-                                  "  Activation code: %s\n" +
+                                  "    Activation code: %s\n" +
                                   "\n" +
                                   origonBestRegards(kLanguageEnglish),
                                   m.getActivationCode()));

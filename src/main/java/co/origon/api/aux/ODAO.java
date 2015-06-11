@@ -391,7 +391,7 @@ public class ODAO
 
             if (entityKeysForDeletion.size() > 0) {
                 ofy().delete().keys(entityKeysForDeletion);
-                OLog.log().fine(m.meta() + "Permanently deleted entities: " + entityKeysForDeletion);
+                OLog.log().fine(m.meta() + String.format("Permanently deleted %d entities.", entityKeysForDeletion.size()));
             }
         }
     }
