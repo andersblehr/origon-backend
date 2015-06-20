@@ -168,6 +168,7 @@ public class ODAO
         private Set<Key<OReplicatedEntity>> entityKeysForDeletion;
         
         private Map<String, Set<Key<OMembership>>> addedMembershipKeysByProxyId;
+        private Map<String, Set<String>> invitedMemberEmailsByOrigoId;
         private Map<String, OMember> touchedMembersByMemberId;
         private Map<String, OMember> modifiedMembersByEmail;
         
@@ -234,7 +235,15 @@ public class ODAO
                     affectedMemberProxyKeys.add(proxyKey);
                     
                     if (membership.isInvitable()) {
-                        mailer.sendInvitation(membership.member.email);
+                        Set<String> invitedMemberEmails = invitedMemberEmailsByOrigoId.get(membership.origoId);
+                        
+                        if (invitedMemberEmails == null) {
+                            invitedMemberEmails = new HashSet<String>();
+                            invitedMemberEmailsByOrigoId.put(membership.origoId, invitedMemberEmails);
+                        }
+                        
+                        invitedMemberEmails.add(membership.member.email);
+                        //mailer.sendInvitation(membership.member.email);
                     }
                 }
                 
@@ -248,6 +257,34 @@ public class ODAO
                 membershipKeysToAddForMember.add(Key.create(membership.origoKey, OMembership.class, membership.entityId));
             } else if (membership.dateReplicated != null) {
                 affectedMemberProxyKeys.add(proxyKey);
+            }
+        }
+        
+        
+        private void sendInvitations()
+        {
+            List<Key<OOrigo>> origoKeys = new ArrayList<Key<OOrigo>>();
+            
+            for (String origoId : invitedMemberEmailsByOrigoId.keySet()) {
+                origoKeys.add(Key.create(Key.create(OOrigo.class, origoId), OOrigo.class, origoId));
+            }
+            
+            Map<String, OOrigo> origosById = new HashMap<String, OOrigo>();
+            
+            for (OOrigo origo : ofy().load().keys(origoKeys).values()) {
+                origosById.put(origo.entityId, origo);
+            }
+            
+            for (String origoId : invitedMemberEmailsByOrigoId.keySet()) {
+                OOrigo origo = origosById.get(origoId);
+                
+                if (origo != null) {
+                    Set<String> invitedMemberEmails = invitedMemberEmailsByOrigoId.get(origoId);
+                    
+                    for (String memberEmail : invitedMemberEmails) {
+                        mailer.sendInvitation(memberEmail, origo);
+                    }
+                }
             }
         }
         
@@ -318,7 +355,7 @@ public class ODAO
                     } else if (driftingMember.hasEmail()) {
                         mailer.sendEmailChangeNotification(currentMember, driftingMember.email);
                     } else {
-                        mailer.sendInvitation(currentMember.email);
+                        mailer.sendInvitation(currentMember.email, null);
                     }
                 }
                 
@@ -348,6 +385,7 @@ public class ODAO
             entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
             
             addedMembershipKeysByProxyId = new HashMap<String, Set<Key<OMembership>>>();
+            invitedMemberEmailsByOrigoId = new HashMap<String, Set<String>>();
             touchedMembersByMemberId = new HashMap<String, OMember>();
             modifiedMembersByEmail = new HashMap<String, OMember>();
             
@@ -378,6 +416,7 @@ public class ODAO
             fetchAdditionalAffectedMemberProxies();
             reanchorDriftingMemberProxies();
             updateAffectedMembershipKeys();
+            sendInvitations();
             
             if (touchedMemberProxies.size() > 0) {
                 ofy().save().entities(touchedMemberProxies).now();

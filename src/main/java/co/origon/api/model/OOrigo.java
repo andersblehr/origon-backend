@@ -1,8 +1,10 @@
 package co.origon.api.model;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.map.annotate.JsonSerialize;
 import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+
 
 //import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
@@ -38,5 +40,19 @@ public class OOrigo extends OReplicatedEntity
     public OOrigo()
     {
         super();
+    }
+    
+    
+    @JsonIgnore
+    public boolean isResidence()
+    {
+        return type != null && type.equals("residence");
+    }
+    
+    
+    @JsonIgnore
+    public boolean isPrivate()
+    {
+        return type != null && type.equals("private");
     }
 }
