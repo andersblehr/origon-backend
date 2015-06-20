@@ -58,8 +58,8 @@ public class OMembership extends OReplicatedEntity
     {
         boolean isInvitable = dateReplicated == null;
         isInvitable = isInvitable && member.hasEmail();
-        isInvitable = isInvitable && status != null && !status.equals("A");
         isInvitable = isInvitable && type != null & (type.equals("P") || type.equals("R") || type.equals("L"));
+        isInvitable = isInvitable && status != null && (!status.equals("A") || type.equals("R"));
         
         return isInvitable;
     }

@@ -7,9 +7,11 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletResponse;
 
 import co.origon.api.model.OMember;
+import co.origon.api.model.OOrigo;
 
 
 public class OMailer
@@ -32,16 +34,78 @@ public class OMailer
             
             message.setFrom(sender);
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
-            message.setSubject(subject);
+            message.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));
             message.setText(text);
             
             Transport.send(message);
             
-            OLog.log().fine(m.meta() + String.format("Sent email with subject \"%s\" to %s", subject, recipientAddress));
+            OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' to %s", subject, recipientAddress));
+            //OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' and following body to %s:\n\n%s", subject, recipientAddress, text));
         } catch (Exception e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    
+    private String origonInvitationSubject(String language, OOrigo origo)
+    {
+        String invitationSubject = null;
+        
+        if (language.equals(kLanguageNorwegianBokmal)) {
+            if (origo == null) {
+                invitationSubject = "Epostadressen din er lagt inn på Origon";
+            } else if (origo.isPrivate()) {
+                invitationSubject = "Du har blitt lagt til i en privat liste på Origon";
+            } else if (origo.isResidence()) {
+                invitationSubject = "Husstanden din har blitt lagt inn på Origon";
+            } else {
+                invitationSubject = String.format("Du har blitt lagt inn i lista \"%s\" på Origon", origo.name);
+            }
+        } else {
+            if (origo == null) {
+                invitationSubject = "Your email address has been added on Origon";
+            } else if (origo.isPrivate()) {
+                invitationSubject = "You have been added to a private list on Origon";
+            } else if (origo.isResidence()) {
+                invitationSubject = "Your household has been added on Origon";
+            } else {
+                invitationSubject = String.format("You have been added to the list '%s' on Origon", origo.name);
+            }
+        }
+        
+        return invitationSubject;
+    }
+    
+    
+    private String origonInvitationPreamble(String language, OOrigo origo)
+    {
+        String invitationPreamble = null;
+        OMemberProxy memberProxy = m.getMemberProxy();
+        
+        if (language.equals(kLanguageNorwegianBokmal)) {
+            if (origo == null) {
+                invitationPreamble = String.format("%s (%s) har lagt inn epostadressen din på Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else if (origo.isPrivate()) {
+                invitationPreamble = "Du har blitt lagt til i en privat liste på Origon";
+            } else if (origo.isResidence()) {
+                invitationPreamble = String.format("%s (%s) har lagt inn husstanden din på Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else {
+                invitationPreamble = String.format("%s (%s) har lagt deg inn i lista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+            }
+        } else {
+            if (origo == null) {
+                invitationPreamble = String.format("%s (%s) has added your email address on Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else if (origo.isPrivate()) {
+                invitationPreamble = "You have been added to a private list on Origon";
+            } else if (origo.isResidence()) {
+                invitationPreamble = String.format("%s (%s) has added your household on Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else {
+                invitationPreamble = String.format("%s (%s) has added you to the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+            }
+        }
+        
+        return invitationPreamble;
     }
     
     
@@ -102,13 +166,13 @@ public class OMailer
     }
     
     
-    public void sendInvitation(String invitedEmail)
+    public void sendInvitation(String invitedEmail, OOrigo origo)
     {
         if (m.getLanguage().equals(kLanguageNorwegianBokmal)) {
-            sendEmail(invitedEmail, "Du har blitt lagt til i en liste på Origon",
+            sendEmail(invitedEmail, origonInvitationSubject(kLanguageNorwegianBokmal, origo),
                     String.format("Hei!\n" +
                                   "\n" +
-                                  "Du har blitt lagt til i en liste på Origon, " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
+                                  origonInvitationPreamble(kLanguageNorwegianBokmal, origo) + ", " + origonSlogan(kLanguageNorwegianBokmal) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageNorwegianBokmal, invitedEmail) + "\n" +
                                   "\n" +
@@ -117,16 +181,16 @@ public class OMailer
                                   "\n" +
                                   "Hi!\n" +
                                   "\n" +
-                                  "You have been added to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  origonInvitationPreamble(kLanguageEnglish, origo) + ", " + origonSlogan(kLanguageEnglish) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitedEmail) + "\n" +
                                   "\n" +
                                   origonBestRegards(kLanguageEnglish)));
         } else {
-            sendEmail(invitedEmail, "You have been added to a list on Origon",
+            sendEmail(invitedEmail, origonInvitationSubject(kLanguageEnglish, origo),
                     String.format("Hi!\n" +
                                   "\n" +
-                                  "You have been added to a list on Origon, " + origonSlogan(kLanguageEnglish) + ".\n" +
+                                  origonInvitationPreamble(kLanguageEnglish, origo) + ", " + origonSlogan(kLanguageEnglish) + ".\n" +
                                   "\n" +
                                   origonAvailabilityInfo(kLanguageEnglish, invitedEmail) + "\n" +
                                   "\n" +
