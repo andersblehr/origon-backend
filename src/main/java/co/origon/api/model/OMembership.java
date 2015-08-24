@@ -41,6 +41,13 @@ public class OMembership extends OReplicatedEntity
     
     
     @JsonIgnore
+    public boolean isAssociate()
+    {
+        return type.equals("A");
+    }
+    
+    
+    @JsonIgnore
     public boolean isFetchable()
     {
         boolean isFetchable = false;
@@ -58,8 +65,8 @@ public class OMembership extends OReplicatedEntity
     {
         boolean isInvitable = dateReplicated == null;
         isInvitable = isInvitable && member.hasEmail();
-        isInvitable = isInvitable && type != null & (type.equals("P") || type.equals("R") || type.equals("L"));
-        isInvitable = isInvitable && status != null && (!status.equals("A") || type.equals("R"));
+        isInvitable = isInvitable && type != null & (type.equals("P")|| type.equals("R") || type.equals("L") || type.equals("A"));
+        isInvitable = isInvitable && ((status == null && type.equals("A")) || (status != null && (!status.equals("A") || type.equals("R"))));
         
         return isInvitable;
     }

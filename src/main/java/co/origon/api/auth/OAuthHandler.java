@@ -48,10 +48,19 @@ public class OAuthHandler
         OAuthInfo authInfo = null;
         
         if (m.isValid()) {
-            authInfo = m.getAuthInfo();
-            ofy().save().entity(authInfo).now();
-            
-            new OMailer(m).sendRegistrationEmail();
+            if (!m.getMemberProxy().didRegister) {
+                authInfo = m.getAuthInfo();
+                ofy().save().entity(authInfo).now();
+                
+                new OMailer(m).sendRegistrationEmail();
+            } else {
+                if (m.appVersionIncludes("1.0.3")) {
+                    OLog.log().warning(m.meta() + "Trying to register an existing user, raising CONFLICT (409).");
+                    OLog.throwWebApplicationException(HttpServletResponse.SC_CONFLICT);
+                } else {
+                    authInfo = m.getAuthInfo();
+                }
+            }
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
             OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
@@ -99,8 +108,13 @@ public class OAuthHandler
                     OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             } else {
-                OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
-                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                if (m.appVersionIncludes("1.0.3")) {
+                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising NOT_FOUND (404).");
+                    OLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND);
+                } else {
+                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
+                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+                }
             }
         } else {
             OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
