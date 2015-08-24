@@ -172,14 +172,12 @@ public class OMeta
         if (isValid) {
             if (authPhase == OAuthPhase.ACTIVATE) {
                 authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).now();
+            } else if (authPhase == OAuthPhase.SENDCODE) {
+                authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
             } else {
-                if (authPhase == OAuthPhase.SENDCODE) {
-                    authInfo = new OAuthInfo(email, deviceId, "n/a", activationCode);
-                } else {
-                    activationCode = UUID.randomUUID().toString().substring(0, kActivationCodeLength);
-                    
-                    authInfo = new OAuthInfo(email, deviceId, passwordHash, activationCode);
-                }
+                activationCode = UUID.randomUUID().toString().substring(0, kActivationCodeLength);
+                
+                authInfo = new OAuthInfo(email, deviceId, passwordHash, activationCode);
             }
         }
         
@@ -260,6 +258,12 @@ public class OMeta
     public boolean isAuthenticating()
     {
         return authPhase == OAuthPhase.LOGIN || authPhase == OAuthPhase.ACTIVATE;
+    }
+    
+    
+    public boolean appVersionIncludes(String thresholdVersion)
+    {
+        return appVersion.compareTo(thresholdVersion) >= 0;
     }
     
     
