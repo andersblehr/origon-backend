@@ -143,7 +143,9 @@ public class OMailer
                 invitationBody = String.format("%s (%s) har lagt inn epostadressen din på Origon", memberProxy.memberName, memberProxy.proxyId);
             } else if (origo.isPrivate()) {
                 invitationBody = "Du har blitt lagt til i en privat liste på Origon";
-            } else if (membership.isAssociate()) {
+            } else if (origo.isResidence()) {
+                invitationBody = String.format("%s (%s) har lagt inn husstanden din på Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else if (membership.isAssociate() && !origo.isForMinors) {
                 invitationBody = String.format("%s (%s) har lagt deg inn som assossiert medlem av lista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
                 invitationBody = String.format("%s (%s) har lagt deg inn i lista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
@@ -153,7 +155,9 @@ public class OMailer
                 invitationBody = String.format("%s (%s) hat deine E-Mail-Adresse in Origon eingetragen", memberProxy.memberName, memberProxy.proxyId);
             } else if (origo.isPrivate()) {
                 invitationBody = "Du bist in eine private Liste bei Origon eingetragen worden";
-            } else if (membership.isAssociate()) {
+            } else if (origo.isResidence()) {
+                invitationBody = String.format("%s (%s) hat deinen Haushalt bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId);
+            } else if (membership.isAssociate() && !origo.isForMinors) {
                 invitationBody = String.format("%s (%s) har dich als assoziiertes Mitglied der Liste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
                 invitationBody = String.format("%s (%s) hat dich in die Liste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
@@ -163,8 +167,10 @@ public class OMailer
                 invitationBody = String.format("%s (%s) has added your email address on Origon", memberProxy.memberName, memberProxy.proxyId);
             } else if (origo.isPrivate()) {
                 invitationBody = "You have been added to a private list on Origon";
-            } else if (membership.isAssociate()) {
-                invitationBody = String.format("%s (%s) has added you as associate member of the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+            } else if (origo.isResidence()) {
+                invitationBody = String.format("%s (%s) has added your household on Origon", memberProxy.memberName, memberProxy.proxyId);
+            } else if (membership.isAssociate() && !origo.isForMinors) {
+                invitationBody = String.format("%s (%s) has added you as an associate member of the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
                 invitationBody = String.format("%s (%s) has added you to the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             }

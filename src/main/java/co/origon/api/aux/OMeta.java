@@ -227,19 +227,14 @@ public class OMeta
     public void validateAuthToken(String authToken)
     {
         if (authPhase == OAuthPhase.NONE) {
-            Date now = new Date();
             OAuthMeta tokenMeta = ofy().load().type(OAuthMeta.class).id(authToken).now(); 
 
             if (tokenMeta != null) {
-                if (now.before(tokenMeta.dateExpires)) {
-                    this.authToken = authToken;
-                    
-                    email = tokenMeta.email;
-                    deviceId = tokenMeta.deviceId;
-                    deviceType = tokenMeta.deviceType;
-                } else {
-                    OLog.log().warning(meta(false) + String.format("Expired auth token: %s.", authToken));
-                }
+                this.authToken = authToken;
+                
+                email = tokenMeta.email;
+                deviceId = tokenMeta.deviceId;
+                deviceType = tokenMeta.deviceType;
             } else {
                 OLog.log().warning(meta(false) + String.format("Unknown auth token: %s.", authToken));
             }
