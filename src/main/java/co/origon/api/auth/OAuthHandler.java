@@ -48,7 +48,9 @@ public class OAuthHandler
         OAuthInfo authInfo = null;
         
         if (m.isValid()) {
-            if (!m.getMemberProxy().didRegister) {
+            OMemberProxy memberProxy = m.getMemberProxy();
+            
+            if (memberProxy == null || !memberProxy.didRegister) {
                 authInfo = m.getAuthInfo();
                 ofy().save().entity(authInfo).now();
                 

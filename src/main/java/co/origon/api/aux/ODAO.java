@@ -168,7 +168,7 @@ public class ODAO
         private Set<Key<OReplicatedEntity>> entityKeysForDeletion;
         
         private Map<String, Set<Key<OMembership>>> addedMembershipKeysByProxyId;
-        private Map<String, Set<OMembership>> invitedMembershipsByOrigoId;
+        private Map<String, Set<OMembership>> invitedMembershipsByMemberId;
         private Map<String, OMember> touchedMembersByMemberId;
         private Map<String, OMember> modifiedMembersByEmail;
         
@@ -235,11 +235,11 @@ public class ODAO
                     affectedMemberProxyKeys.add(proxyKey);
                     
                     if (membership.isInvitable()) {
-                        Set<OMembership> invitedMemberships = invitedMembershipsByOrigoId.get(membership.origoId);
+                        Set<OMembership> invitedMemberships = invitedMembershipsByMemberId.get(membership.member.entityId);
                         
                         if (invitedMemberships == null) {
                             invitedMemberships = new HashSet<OMembership>();
-                            invitedMembershipsByOrigoId.put(membership.origoId, invitedMemberships);
+                            invitedMembershipsByMemberId.put(membership.member.entityId, invitedMemberships);
                         }
                         
                         invitedMemberships.add(membership);
@@ -264,8 +264,12 @@ public class ODAO
         {
             List<Key<OOrigo>> origoKeys = new ArrayList<Key<OOrigo>>();
          
-            for (String origoId : invitedMembershipsByOrigoId.keySet()) {
-                origoKeys.add(Key.create(Key.create(OOrigo.class, origoId), OOrigo.class, origoId));
+            for (String memberId : invitedMembershipsByMemberId.keySet()) {
+                Set<OMembership> memberships = invitedMembershipsByMemberId.get(memberId);
+                
+                for (OMembership membership : memberships) {
+                    origoKeys.add(Key.create(Key.create(OOrigo.class, membership.origoId), OOrigo.class, membership.origoId));
+                }
             }
             
             Map<String, OOrigo> origosById = new HashMap<String, OOrigo>();
@@ -274,13 +278,24 @@ public class ODAO
                 origosById.put(origo.entityId, origo);
             }
             
-            for (String origoId : invitedMembershipsByOrigoId.keySet()) {
-                OOrigo origo = origosById.get(origoId);
+            for (String memberId : invitedMembershipsByMemberId.keySet()) {
+                Set<OMembership> memberships = invitedMembershipsByMemberId.get(memberId);
+                OMembership invitationMembership = null;
+                OOrigo invitationOrigo = null;
                 
-                if (origo != null) {
-                    for (OMembership membership : invitedMembershipsByOrigoId.get(origoId)) {
-                        mailer.sendInvitation(membership, origo);
+                for (OMembership membership : memberships) {
+                    OOrigo origo = origosById.get(membership.origoId);
+                    
+                    if (origo != null) {
+                        if (invitationOrigo == null || origo.takesPrecedenceOver(invitationOrigo)) {
+                            invitationMembership = membership;
+                            invitationOrigo = origo;
+                        }
                     }
+                }
+
+                if (invitationMembership != null) {
+                    mailer.sendInvitation(invitationMembership, invitationOrigo);
                 }
             }
         }
@@ -382,7 +397,7 @@ public class ODAO
             entityKeysForDeletion = new HashSet<Key<OReplicatedEntity>>();
             
             addedMembershipKeysByProxyId = new HashMap<String, Set<Key<OMembership>>>();
-            invitedMembershipsByOrigoId = new HashMap<String, Set<OMembership>>();
+            invitedMembershipsByMemberId = new HashMap<String, Set<OMembership>>();
             touchedMembersByMemberId = new HashMap<String, OMember>();
             modifiedMembersByEmail = new HashMap<String, OMember>();
             
