@@ -93,7 +93,7 @@ public class OMailer
     }
     
     
-    private String invitationSubject(String language, OOrigo origo)
+    private String invitationSubject(String language, OMembership membership, OOrigo origo)
     {
         String invitationSubject = null;
         
@@ -104,8 +104,10 @@ public class OMailer
                 invitationSubject = "Du har blitt lagt til i en privat liste på Origon";
             } else if (origo.isResidence()) {
                 invitationSubject = "Husstanden din har blitt lagt inn på Origon";
+            } else if (membership.isAssociate() && !origo.isForMinors) {
+                invitationSubject = String.format("Du har blitt lagt inn som familiemedlem i den delte kontaktlista \"%s\" på Origon", origo.name);
             } else {
-                invitationSubject = String.format("Du har blitt lagt inn i lista \"%s\" på Origon", origo.name);
+                invitationSubject = String.format("Du har blitt lagt inn i den delte kontaktlista \"%s\" på Origon", origo.name);
             }
         } else if (language.equals(kLanguageGerman)) {
             if (origo == null) {
@@ -114,8 +116,10 @@ public class OMailer
                 invitationSubject = "Du bist in eine private Liste bei Origon eingetragen worden";
             } else if (origo.isResidence()) {
                 invitationSubject = "Dein Haushalt ist bei Origon eingetragen worden";
+            } else if (membership.isAssociate() && !origo.isForMinors) {
+                invitationSubject = String.format("Du bist als Familienmitglied in die geteilte Kontaktliste \"%s\" bei Origon eingetragen worden", origo.name);
             } else {
-                invitationSubject = String.format("Du bist in die Liste \"%s\" bei Origon eingetragen worden", origo.name);
+                invitationSubject = String.format("Du bist in die geteilte Kontaktliste \"%s\" bei Origon eingetragen worden", origo.name);
             }
         } else {
             if (origo == null) {
@@ -124,8 +128,10 @@ public class OMailer
                 invitationSubject = "You have been added to a private list on Origon";
             } else if (origo.isResidence()) {
                 invitationSubject = "Your household has been added on Origon";
+            } else if (membership.isAssociate() && !origo.isForMinors) {
+                invitationSubject = String.format("You have been added as a family member in the shared contact list '%s' on Origon", origo.name);
             } else {
-                invitationSubject = String.format("You have been added to the list '%s' on Origon", origo.name);
+                invitationSubject = String.format("You have been added to the shared contact list '%s' on Origon", origo.name);
             }
         }
         
@@ -146,9 +152,9 @@ public class OMailer
             } else if (origo.isResidence()) {
                 invitationBody = String.format("%s (%s) har lagt inn husstanden din på Origon", memberProxy.memberName, memberProxy.proxyId);
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) har lagt deg inn som assossiert medlem av lista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) har lagt deg inn som familiemedlem i den delte kontaktlista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
-                invitationBody = String.format("%s (%s) har lagt deg inn i lista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) har lagt deg inn i den delte kontaktlista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             }
         } else if (language.equals(kLanguageGerman)) {
             if (origo == null) {
@@ -158,9 +164,9 @@ public class OMailer
             } else if (origo.isResidence()) {
                 invitationBody = String.format("%s (%s) hat deinen Haushalt bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId);
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) har dich als assoziiertes Mitglied der Liste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) hat dich als Familienmitglied in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
-                invitationBody = String.format("%s (%s) hat dich in die Liste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) hat dich in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", memberProxy.memberName, memberProxy.proxyId, origo.name);
             }
         } else {
             if (origo == null) {
@@ -170,9 +176,9 @@ public class OMailer
             } else if (origo.isResidence()) {
                 invitationBody = String.format("%s (%s) has added your household on Origon", memberProxy.memberName, memberProxy.proxyId);
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) has added you as an associate member of the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) has added you as a family member in the shared contact list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             } else {
-                invitationBody = String.format("%s (%s) has added you to the list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
+                invitationBody = String.format("%s (%s) has added you to the shared contact list '%s' on Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             }
         }
         
@@ -180,7 +186,7 @@ public class OMailer
     }
     
     
-    private String invitationText(String language, OMembership membership, OOrigo origo)
+    private String invitationText(String language, String email, OMembership membership, OOrigo origo)
     {
         String invitationText = null;
         
@@ -190,7 +196,7 @@ public class OMailer
                                   "\n" +
                                   invitationBody(kLanguageNorwegian, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageNorwegian, membership.member.email) + "\n" +
+                                  availabilityInfo(kLanguageNorwegian, email) + "\n" +
                                   "\n" +
                                   bestRegards(kLanguageNorwegian));
         } else if (language.equals(kLanguageGerman)) {
@@ -199,7 +205,7 @@ public class OMailer
                                   "\n" +
                                   invitationBody(kLanguageGerman, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageGerman, membership.member.email) + "\n" +
+                                  availabilityInfo(kLanguageGerman, email) + "\n" +
                                   "\n" +
                                   bestRegards(kLanguageGerman));
         } else {
@@ -208,7 +214,7 @@ public class OMailer
                                   "\n" +
                                   invitationBody(kLanguageEnglish, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageEnglish, membership.member.email) + "\n" +
+                                  availabilityInfo(kLanguageEnglish, email) + "\n" +
                                   "\n" +
                                   bestRegards(kLanguageEnglish));
         }
@@ -264,27 +270,30 @@ public class OMailer
     }
     
     
-    public void sendInvitation(String email)
+    public void sendInvitation(String invitationEmail)
     {
-        String invitationText = invitationText(m.getLanguage(), null, null);
+        String invitationSubject = invitationSubject(m.getLanguage(), null, null);
+        String invitationText = invitationText(m.getLanguage(), invitationEmail, null, null);
         
         if (!m.getLanguage().equals(kLanguageEnglish)) {
-            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, null, null);
+            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, invitationEmail, null, null);
         }
         
-        sendEmail(email, invitationSubject(m.getLanguage(), null), invitationText);
+        sendEmail(invitationEmail, invitationSubject, invitationText);
     }
     
     
     public void sendInvitation(OMembership membership, OOrigo origo)
     {
-        String invitationText = invitationText(m.getLanguage(), membership, origo);
+        String invitationEmail = membership.member.email;
+        String invitationSubject = invitationSubject(m.getLanguage(), membership, origo);
+        String invitationText = invitationText(m.getLanguage(), invitationEmail, membership, origo);
         
         if (!m.getLanguage().equals(kLanguageEnglish)) {
-            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, membership, origo);
+            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, invitationEmail, membership, origo);
         }
         
-        sendEmail(membership.member.email, invitationSubject(m.getLanguage(), origo), invitationText);
+        sendEmail(invitationEmail, invitationSubject, invitationText);
     }
     
     

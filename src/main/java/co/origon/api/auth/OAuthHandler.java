@@ -111,10 +111,10 @@ public class OAuthHandler
                 }
             } else {
                 if (m.appVersionIncludes("1.0.3")) {
-                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising NOT_FOUND (404).");
+                    OLog.log().warning(m.meta() + String.format("User %s is inactive or does not exist, raising NOT_FOUND (404).", m.getEmail()));
                     OLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND);
                 } else {
-                    OLog.log().warning(m.meta() + "User is inactive or does not exist, raising UNAUTHORIZED (401).");
+                    OLog.log().warning(m.meta() + String.format("User %s is inactive or does not exist, raising UNAUTHORIZED (401).", m.getEmail()));
                     OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
                 }
             }
