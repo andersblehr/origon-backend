@@ -55,15 +55,15 @@ public class OMailer
         String availabilityInfo = null;
 
         if (language.equals(kLanguageNorwegian)) {
-            availabilityInfo = String.format("Origon er tilgjengelig for iOS 7 og senere (iPhone, iPad og iPod touch). " +
+            availabilityInfo = String.format("Origon er tilgjengelig for iOS 8 og senere (iPhone, iPad og iPod touch). " +
                                              "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
                                              "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
         } else if (language.equals(kLanguageGerman)) {
-            availabilityInfo = String.format("Origon steht für iOS 7 und höher zur Verfügung (iPhone, iPad und iPod touch). " +
+            availabilityInfo = String.format("Origon steht für iOS 8 und höher zur Verfügung (iPhone, iPad und iPod touch). " +
                                              "Zum Losfahren, Origon im App Store herunterladen und dich mit %s registrieren. " +
                                              "(Origon unterstützt zur Zeit nicht Android oder Windows Phone.)", registrationEmail);
         } else {
-            availabilityInfo = String.format("Origon is available on iOS 7 and later (iPhone, iPad and iPod touch). " +
+            availabilityInfo = String.format("Origon is available on iOS 8 and later (iPhone, iPad and iPod touch). " +
                                              "Download Origon from the App Store and register with %s to get going. " +
                                              "(Origon is currently not available on Android or Windows Phone.)", registrationEmail);
         }
