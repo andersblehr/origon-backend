@@ -15,7 +15,8 @@ import co.origon.api.aux.OMemberProxy;
 import co.origon.api.aux.OMeta;
 import co.origon.api.aux.OURLParams;
 import co.origon.api.model.OReplicatedEntity;
-import static co.origon.api.aux.OObjectifyService.ofy;
+
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
 @Path("auth")

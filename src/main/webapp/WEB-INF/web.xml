@@ -9,6 +9,9 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
         <param-name>resteasy.providers</param-name>
         <param-value>co.origon.api.OWebApplicationExceptionMapper</param-value>
     </context-param>
+    <listener>
+        <listener-class>co.origon.api.OOrigonBootstrapper</listener-class>
+    </listener>
     <servlet>
         <servlet-name>origon-api</servlet-name>
         <servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
