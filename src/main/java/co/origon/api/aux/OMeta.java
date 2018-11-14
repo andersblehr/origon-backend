@@ -15,7 +15,7 @@ import co.origon.api.auth.OAuthPhase;
 
 import com.googlecode.objectify.Key;
 
-import static co.origon.api.aux.OObjectifyService.ofy;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
 public class OMeta
