@@ -1,14 +1,28 @@
 package co.origon.api.aux;
 
-import java.util.Properties;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
 
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+
+import org.json.JSONObject;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+
+import io.github.cdimascio.dotenv.Dotenv;
 
 import co.origon.api.model.OMember;
 import co.origon.api.model.OMembership;
@@ -17,34 +31,268 @@ import co.origon.api.model.OOrigo;
 
 public class OMailer
 {
-    private static final String kFromAddress = "minion@origon.co";
+    private static final String LANG_ENGLISH = "en";
+    private static final String LANG_GERMAN = "de";
+    private static final String LANG_NORWEGIAN = "nb";
+
+    private static final String ENV_MAILER_BASE_URL = "MAILER_BASE_URL";
+    private static final String ENV_MAILER_JWT_SECRET = "MAILER_JWT_SECRET";
+    private static final String ENV_MAILER_JWT_ISSUER = "MAILER_JWT_ISSUER";
+    private static final String ENV_MAILER_JWT_EXPIRES_IN_SECONDS = "MAILER_JWT_EXPIRES_IN_SECONDS";
     
-    private static final String kLanguageEnglish = "en";
-    private static final String kLanguageGerman = "de";
-    private static final String kLanguageNorwegian = "nb";
+    private static final String MAILER_RESOURCE_PATH = "/mailer";
+    private static final String MAILER_TO = "to";
+    private static final String MAILER_SUBJECT = "subject";
+    private static final String MAILER_BODY = "body";
     
-    private OMeta m;
+    private final String mailerBaseUrl;
+    private final String jwtSecret;
+    private final String jwtIssuer;
+    private final long jwtExpiresInSeconds;
+    
+    private final OMeta m;
+    private final Dotenv dotenv;
     
     
-    private void sendEmail(String recipientAddress, String subject, String text)
+    public OMailer(OMeta m)
     {
-        Message message = new MimeMessage(Session.getInstance(new Properties()));
+        this.m = m;
+        this.dotenv = Dotenv.load();
+        
+        this.mailerBaseUrl = dotenv.get(ENV_MAILER_BASE_URL);
+        this.jwtSecret = dotenv.get(ENV_MAILER_JWT_SECRET);
+        this.jwtIssuer = dotenv.get(ENV_MAILER_JWT_ISSUER);
+        
+        final String jwtExpiresInSecondsString = dotenv.get(ENV_MAILER_JWT_EXPIRES_IN_SECONDS);
+        
+        if (mailerBaseUrl == null || jwtSecret == null || jwtIssuer == null || jwtExpiresInSecondsString == null) {
+            throw new RuntimeException("Missing one or more JWT settings in .env");
+        }
         
         try {
-            InternetAddress sender = new InternetAddress(kFromAddress);
-            sender.setPersonal("Origon");
+            this.jwtExpiresInSeconds = Long.parseLong(jwtExpiresInSecondsString);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Illegal number format", e);
+        }
+    }
+    
+    
+    public void sendInvitation(String invitationEmail)
+    {
+        String invitationSubject = invitationSubject(m.getLanguage(), null, null);
+        String invitationText = invitationText(m.getLanguage(), invitationEmail, null, null);
+        
+        if (!m.getLanguage().equals(LANG_ENGLISH)) {
+            invitationText = invitationText + "\n\n" + invitationText(LANG_ENGLISH, invitationEmail, null, null);
+        }
+        
+        sendEmail(invitationEmail, invitationSubject, invitationText);
+    }
+    
+    
+    public void sendInvitation(OMembership membership, OOrigo origo)
+    {
+        String invitationEmail = membership.member.email;
+        String invitationSubject = invitationSubject(m.getLanguage(), membership, origo);
+        String invitationText = invitationText(m.getLanguage(), invitationEmail, membership, origo);
+        
+        if (!m.getLanguage().equals(LANG_ENGLISH)) {
+            invitationText = invitationText + "\n\n" + invitationText(LANG_ENGLISH, invitationEmail, membership, origo);
+        }
+        
+        sendEmail(invitationEmail, invitationSubject, invitationText);
+    }
+    
+    
+    public void sendEmailChangeNotification(OMember invitee, String oldEmail)
+    {
+        String emailChangeNotificationSubject = null;
+        
+        if (m.getLanguage().equals(LANG_NORWEGIAN)) {
+            emailChangeNotificationSubject = "Epostadressen din på Origon har blitt endret";
+        } else if (m.getLanguage().equals(LANG_GERMAN)) {
+            emailChangeNotificationSubject = "Deine E-Mail-Adresse bei Origon ist geändert worden";
+        } else {
+            emailChangeNotificationSubject = "Your email address on Origon has been changed";
+        }
+        
+        String emailChangeNotificationText = emailChangeNotificationText(m.getLanguage(), m.getMemberProxy(), invitee, oldEmail);
+
+        if (!m.getLanguage().equals(LANG_ENGLISH)) {
+            emailChangeNotificationText = emailChangeNotificationText + "\n\n" + emailChangeNotificationText(LANG_ENGLISH, m.getMemberProxy(), invitee, oldEmail);
+        }
+        
+        sendEmail(invitee.email, emailChangeNotificationSubject, emailChangeNotificationText);
+        sendEmail(oldEmail, emailChangeNotificationSubject, emailChangeNotificationText);
+    }
+    
+    
+    public void sendRegistrationEmail()
+    {
+        if (m.getLanguage().equals(LANG_NORWEGIAN)) {
+            sendEmail(m.getEmail(), "Fullfør registreringen på Origon",
+                    String.format("Velkommen til Origon!\n" +
+                                  "\n" +
+                                  "Alt som gjenstår før du kan begynne å bruke Origon, er å oppgi aktiveringskoden under og fylle ut evt manglende opplysninger.\n" +
+                                  "\n" +
+                                  "    Aktiveringskode: %s\n" +
+                                  "\n" +
+                                  "Merk: Opplysningene dine tilhører deg og bare deg. Vi kommer aldri til å selge dem videre eller bruke dem til noe annet enn det du kan " +
+                                  "se med egne øyne i Origon.\n" +
+                                  "\n" +
+                                  bestRegards(LANG_NORWEGIAN),
+                                  m.getActivationCode()));
+        } else if (m.getLanguage().equals(LANG_GERMAN)) {
+            sendEmail(m.getEmail(), "Bitte deine Registrierung bei Origon vollenden",
+                    String.format("Willkommen bei Origon!\n" +
+                                  "\n" +
+                                  "Bevor du Origon nutzen kannst, musst du den folgenden Aktivierungscode eingeben und alle eventuell fehlenden Informationen nachtragen." +
+                                  "\n" +
+                                  "    Aktivierungscode: %s\n" +
+                                  "\n" +
+                                  "Bitte beachten: Deine Informationen gehören dir und nur dir. Wir werden sie nie weiterverkaufen oder für andere Zwecke nutzen, als was du dir" +
+                                  "mit eigenen Augen in Origon anschauen kannst." +
+                                  "\n" +
+                                  bestRegards(LANG_GERMAN),
+                                  m.getActivationCode()));
+        } else {
+            sendEmail(m.getEmail(), "Complete your registration with Origon",
+                    String.format("Welcome to Origon!\n" +
+                                  "\n" +
+                                  "All that remains before you can start using Origon, is to enter the activation code below and fill out any missing information.\n" +
+                                  "\n" +
+                                  "    Activation code: %s\n" +
+                                  "\n" +
+                                  "Please note: Your information belongs to you and you alone. We will never sell it nor use it for anything besides what you can " +
+                                  "see with your own eyes in Origon.\n" +
+                                  "\n" +
+                                  bestRegards(LANG_ENGLISH),
+                                  m.getActivationCode()));
+        }
+    }
+    
+    
+    public void sendEmailActivationCode()
+    {
+        if (m.getLanguage().equals(LANG_NORWEGIAN)) {
+            sendEmail(m.getEmail(), "Aktiver epostadressen din for bruk i Origon",
+                    String.format("Oppgi følgende kode for å aktivere epostadressen %s for bruk i Origon.\n" +
+                                  "\n" +
+                                  "    Aktiveringskode: %s\n" +
+                                  "\n" +
+                                  bestRegards(LANG_NORWEGIAN),
+                                  m.getEmail(), m.getActivationCode()));
+        } else if (m.getLanguage().equals(LANG_GERMAN)) {
+            sendEmail(m.getEmail(), "Bitte deine E-Mail-Adresse für Gebrauch bei Origon aktivieren",
+                    String.format("Bitte den folgenden Code eingeben, um die E-Mail-Adresse %s für Gebrauch bei Origon zu aktivieren.\n" +
+                                  "\n" +
+                                  "    Aktivierungscode: %s\n" +
+                                  "\n" +
+                                  bestRegards(LANG_GERMAN),
+                                  m.getEmail(), m.getActivationCode()));
+        } else {
+            sendEmail(m.getEmail(), "Activate your email address for use with Origon",
+                    String.format("Please enter the following code to activate the email address %s for use with Origon.\n" +
+                                  "\n" +
+                                  "    Activation code: %s\n" +
+                                  "\n" +
+                                  bestRegards(LANG_ENGLISH),
+                                  m.getEmail(), m.getActivationCode()));
+        }
+        
+        OLog.log().fine(m.meta() + "Sent email activation code to user.");
+    }
+    
+    
+    public void sendPasswordResetEmail()
+    {
+        if (m.getLanguage().equals(LANG_NORWEGIAN)) {
+            sendEmail(m.getEmail(), "Passordet ditt har blitt tilbakestilt",
+                    String.format("Ditt midlertidige passord er: %s.\n" +
+                                  "\n" +
+                                  "Så snart du har logget på Origon, bør du gå til Innstillinger og endre passordet til noe bare du vet om.\n" +
+                                  "\n" +
+                                  bestRegards(LANG_NORWEGIAN),
+                                  m.getActivationCode()));
+        } else if (m.getLanguage().equals(LANG_GERMAN)) {
+            sendEmail(m.getEmail(), "Dein Passwort ist zurückgestellt worden",
+                    String.format("Dein temporäres Passwort ist: %s.\n" +
+                                  "\n" +
+                                  "Wenn du dich bei Origon eingeloggt hast, bitte unter Einstellungen ein Passwort wählen, das nur du kennst." +
+                                  "\n" +
+                                  bestRegards(LANG_GERMAN),
+                                  m.getActivationCode()));
+        } else {
+            sendEmail(m.getEmail(), "Your password has been reset",
+                    String.format("Your temporary passord is: %s.\n" +
+                                  "\n" +
+                                  "Once you have logged in to Origon, you should go to Settings and change the password to something only you know.\n" +
+                                  "\n" +
+                                  bestRegards(LANG_ENGLISH),
+                                  m.getActivationCode()));
+        }
+        
+        OLog.log().fine(m.meta() + "Sent new password to user.");
+    }
+    
+    
+    private String createJwtBearerToken() {
+        try {
+            final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
+            final Instant jwtExpiry = now.plusSeconds(jwtExpiresInSeconds);
             
-            message.setFrom(sender);
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(recipientAddress));
-            message.setSubject(MimeUtility.encodeText(subject, "UTF-8", "B"));
-            message.setText(text);
+            return JWT.create()
+                    .withIssuer(jwtIssuer)
+                    .withIssuedAt(Date.from(now))
+                    .withExpiresAt(Date.from(jwtExpiry))
+                    .sign(Algorithm.HMAC256(jwtSecret));
+        } catch (Exception e) {
+            throw new RuntimeException("Error during JWT creatiion", e);
+        }
+    }
+    
+    
+    private void sendEmail(String to, String subject, String body)
+    {
+        try {
+            final InternetAddress validTo = new InternetAddress(to);
+            final Map<String, String> requestBody = new HashMap<String, String>();
+            requestBody.put(MAILER_TO, validTo.getAddress());
+            requestBody.put(MAILER_SUBJECT, subject);
+            requestBody.put(MAILER_BODY, body);
             
-            Transport.send(message);
+            final URL mailerUrl = new URL(mailerBaseUrl + MAILER_RESOURCE_PATH);
+            final HttpURLConnection connection = (HttpURLConnection)mailerUrl.openConnection();
+            connection.setDoInput(true);
+            connection.setDoOutput(true);
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty(HttpHeaders.AUTHORIZATION, "Bearer " + createJwtBearerToken());
+            connection.setRequestProperty(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
+            connection.setRequestProperty(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON);
             
-            OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' to %s", subject, recipientAddress));
-            //OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' and following body to %s:\n\n%s", subject, recipientAddress, text));
+            final JSONObject requestJson = new JSONObject(requestBody);
+            final OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+            writer.write(requestJson.toString());
+            writer.close();
+            
+            if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                final StringBuffer responseString = new StringBuffer();
+                
+                String responseLine;
+                while ((responseLine = reader.readLine()) != null) {
+                    responseString.append(responseLine);
+                }
+                
+                final JSONObject response = new JSONObject(responseString);
+                
+                throw new RuntimeException("Error sending email: " + response.getString("message"));
+            }
+
+            OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' and following body to %s:\n\n%s", subject, to, body));
         } catch (Exception e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
+            e.printStackTrace();
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
@@ -54,11 +302,11 @@ public class OMailer
     {
         String availabilityInfo = null;
 
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             availabilityInfo = String.format("Origon er tilgjengelig for iOS 8 og senere (iPhone, iPad og iPod touch). " +
                                              "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
                                              "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
-        } else if (language.equals(kLanguageGerman)) {
+        } else if (language.equals(LANG_GERMAN)) {
             availabilityInfo = String.format("Origon steht für iOS 8 und höher zur Verfügung (iPhone, iPad und iPod touch). " +
                                              "Zum Losfahren, Origon im App Store herunterladen und dich mit %s registrieren. " +
                                              "(Origon unterstützt zur Zeit nicht Android oder Windows Phone.)", registrationEmail);
@@ -76,17 +324,17 @@ public class OMailer
     {
         String bestRegards = null;
         
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             bestRegards = "Med vennlig hilsen Origon-teamet\n" +
-                          "http://origon.co\n";
-        } else if (language.equals(kLanguageGerman)) {
+                          "https://origon.co\n";
+        } else if (language.equals(LANG_GERMAN)) {
             bestRegards = "Mit freundlichen Grüßen,\n" +
                           "das Origon-Team\n" +
-                          "http://origon.co\n";
+                          "https://origon.co\n";
         } else {
             bestRegards = "Best regards,\n" +
                           "The Origon team\n" +
-                          "http://origon.co\n";
+                          "https://origon.co\n";
         }
         
         return bestRegards;
@@ -97,7 +345,7 @@ public class OMailer
     {
         String invitationSubject = null;
         
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             if (origo == null) {
                 invitationSubject = "Epostadressen din er lagt inn på Origon";
             } else if (origo.isPrivate()) {
@@ -109,7 +357,7 @@ public class OMailer
             } else {
                 invitationSubject = String.format("Du har blitt lagt inn i den delte kontaktlista \"%s\" på Origon", origo.name);
             }
-        } else if (language.equals(kLanguageGerman)) {
+        } else if (language.equals(LANG_GERMAN)) {
             if (origo == null) {
                 invitationSubject = "Deine E-Mail-Adresse ist in Origon eingetragen worden";
             } else if (origo.isPrivate()) {
@@ -144,7 +392,7 @@ public class OMailer
         String invitationBody = null;
         OMemberProxy memberProxy = m.getMemberProxy();
         
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             if (origo == null) {
                 invitationBody = String.format("%s (%s) har lagt inn epostadressen din på Origon", memberProxy.memberName, memberProxy.proxyId);
             } else if (origo.isPrivate()) {
@@ -156,7 +404,7 @@ public class OMailer
             } else {
                 invitationBody = String.format("%s (%s) har lagt deg inn i den delte kontaktlista \"%s\" på Origon", memberProxy.memberName, memberProxy.proxyId, origo.name);
             }
-        } else if (language.equals(kLanguageGerman)) {
+        } else if (language.equals(LANG_GERMAN)) {
             if (origo == null) {
                 invitationBody = String.format("%s (%s) hat deine E-Mail-Adresse in Origon eingetragen", memberProxy.memberName, memberProxy.proxyId);
             } else if (origo.isPrivate()) {
@@ -190,33 +438,33 @@ public class OMailer
     {
         String invitationText = null;
         
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             invitationText =
                     String.format("Hei!\n" +
                                   "\n" +
-                                  invitationBody(kLanguageNorwegian, membership, origo) + ".\n" +
+                                  invitationBody(LANG_NORWEGIAN, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageNorwegian, email) + "\n" +
+                                  availabilityInfo(LANG_NORWEGIAN, email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageNorwegian));
-        } else if (language.equals(kLanguageGerman)) {
+                                  bestRegards(LANG_NORWEGIAN));
+        } else if (language.equals(LANG_GERMAN)) {
             invitationText =
                     String.format("Hallo!\n" +
                                   "\n" +
-                                  invitationBody(kLanguageGerman, membership, origo) + ".\n" +
+                                  invitationBody(LANG_GERMAN, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageGerman, email) + "\n" +
+                                  availabilityInfo(LANG_GERMAN, email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageGerman));
+                                  bestRegards(LANG_GERMAN));
         } else {
             invitationText =
                     String.format("Hi!\n" +
                                   "\n" +
-                                  invitationBody(kLanguageEnglish, membership, origo) + ".\n" +
+                                  invitationBody(LANG_ENGLISH, membership, origo) + ".\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageEnglish, email) + "\n" +
+                                  availabilityInfo(LANG_ENGLISH, email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageEnglish));
+                                  bestRegards(LANG_ENGLISH));
         }
         
         return invitationText;
@@ -228,25 +476,25 @@ public class OMailer
         String emailChangeNotificationText = null;
         String inviteeGivenName = invitee.name.split(" ")[0];
         
-        if (language.equals(kLanguageNorwegian)) {
+        if (language.equals(LANG_NORWEGIAN)) {
             emailChangeNotificationText =
                     String.format("%s,\n" +
                                   "\n" +
                                   "%s (%s) har endret epostadressen din på Origon fra %s til %s.\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageNorwegian, invitee.email) + "\n" +
+                                  availabilityInfo(LANG_NORWEGIAN, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageNorwegian),
+                                  bestRegards(LANG_NORWEGIAN),
                                   inviteeGivenName, inviterProxy.memberName, inviterProxy.proxyId, oldEmail, invitee.email);
-        } else if (language.equals(kLanguageGerman)) {
+        } else if (language.equals(LANG_GERMAN)) {
             emailChangeNotificationText =
                     String.format("%s,\n" +
                                   "\n" +
                                   "%s (%s) hat deine E-Mail-Adresse bei Origon von %s auf %s geändert.\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageGerman, invitee.email) + "\n" +
+                                  availabilityInfo(LANG_GERMAN, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageGerman),
+                                  bestRegards(LANG_GERMAN),
                                   inviteeGivenName, inviterProxy.memberName, inviterProxy.proxyId, oldEmail, invitee.email);
         } else {
             emailChangeNotificationText = 
@@ -254,177 +502,12 @@ public class OMailer
                                   "\n" +
                                   "%s (%s) has changed your email address on Origon from %s to %s.\n" +
                                   "\n" +
-                                  availabilityInfo(kLanguageEnglish, invitee.email) + "\n" +
+                                  availabilityInfo(LANG_ENGLISH, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(kLanguageEnglish),
+                                  bestRegards(LANG_ENGLISH),
                                   inviteeGivenName, inviterProxy.memberName, inviterProxy.proxyId, oldEmail, invitee.email);
         }
 
         return emailChangeNotificationText;
-    }
-    
-    
-    public OMailer(OMeta m)
-    {
-        this.m = m;
-    }
-    
-    
-    public void sendInvitation(String invitationEmail)
-    {
-        String invitationSubject = invitationSubject(m.getLanguage(), null, null);
-        String invitationText = invitationText(m.getLanguage(), invitationEmail, null, null);
-        
-        if (!m.getLanguage().equals(kLanguageEnglish)) {
-            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, invitationEmail, null, null);
-        }
-        
-        sendEmail(invitationEmail, invitationSubject, invitationText);
-    }
-    
-    
-    public void sendInvitation(OMembership membership, OOrigo origo)
-    {
-        String invitationEmail = membership.member.email;
-        String invitationSubject = invitationSubject(m.getLanguage(), membership, origo);
-        String invitationText = invitationText(m.getLanguage(), invitationEmail, membership, origo);
-        
-        if (!m.getLanguage().equals(kLanguageEnglish)) {
-            invitationText = invitationText + "\n\n" + invitationText(kLanguageEnglish, invitationEmail, membership, origo);
-        }
-        
-        sendEmail(invitationEmail, invitationSubject, invitationText);
-    }
-    
-    
-    public void sendEmailChangeNotification(OMember invitee, String oldEmail)
-    {
-        String emailChangeNotificationSubject = null;
-        
-        if (m.getLanguage().equals(kLanguageNorwegian)) {
-            emailChangeNotificationSubject = "Epostadressen din på Origon har blitt endret";
-        } else if (m.getLanguage().equals(kLanguageGerman)) {
-            emailChangeNotificationSubject = "Deine E-Mail-Adresse bei Origon ist geändert worden";
-        } else {
-            emailChangeNotificationSubject = "Your email address on Origon has been changed";
-        }
-        
-        String emailChangeNotificationText = emailChangeNotificationText(m.getLanguage(), m.getMemberProxy(), invitee, oldEmail);
-
-        if (!m.getLanguage().equals(kLanguageEnglish)) {
-            emailChangeNotificationText = emailChangeNotificationText + "\n\n" + emailChangeNotificationText(kLanguageEnglish, m.getMemberProxy(), invitee, oldEmail);
-        }
-        
-        sendEmail(invitee.email, emailChangeNotificationSubject, emailChangeNotificationText);
-        sendEmail(oldEmail, emailChangeNotificationSubject, emailChangeNotificationText);
-    }
-    
-    
-    public void sendRegistrationEmail()
-    {
-        if (m.getLanguage().equals(kLanguageNorwegian)) {
-            sendEmail(m.getEmail(), "Fullfør registreringen på Origon",
-                    String.format("Velkommen til Origon!\n" +
-                                  "\n" +
-                                  "Alt som gjenstår før du kan begynne å bruke Origon, er å oppgi aktiveringskoden under og fylle ut evt manglende opplysninger.\n" +
-                                  "\n" +
-                                  "    Aktiveringskode: %s\n" +
-                                  "\n" +
-                                  "Merk: Opplysningene dine tilhører deg og bare deg. Vi kommer aldri til å selge dem videre eller bruke dem til noe annet enn det du kan " +
-                                  "se med egne øyne i Origon.\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageNorwegian),
-                                  m.getActivationCode()));
-        } else if (m.getLanguage().equals(kLanguageGerman)) {
-            sendEmail(m.getEmail(), "Bitte deine Registrierung bei Origon vollenden",
-                    String.format("Willkommen bei Origon!\n" +
-                                  "\n" +
-                                  "Bevor du Origon nutzen kannst, musst du den folgenden Aktivierungscode eingeben und alle eventuell fehlenden Informationen nachtragen." +
-                                  "\n" +
-                                  "    Aktivierungscode: %s\n" +
-                                  "\n" +
-                                  "Bitte beachten: Deine Informationen gehören dir und nur dir. Wir werden sie nie weiterverkaufen oder für andere Zwecke nutzen, als was du dir" +
-                                  "mit eigenen Augen in Origon anschauen kannst." +
-                                  "\n" +
-                                  bestRegards(kLanguageGerman),
-                                  m.getActivationCode()));
-        } else {
-            sendEmail(m.getEmail(), "Complete your registration with Origon",
-                    String.format("Welcome to Origon!\n" +
-                                  "\n" +
-                                  "All that remains before you can start using Origon, is to enter the activation code below and fill out any missing information.\n" +
-                                  "\n" +
-                                  "    Activation code: %s\n" +
-                                  "\n" +
-                                  "Please note: Your information belongs to you and you alone. We will never sell it nor use it for anything besides what you can " +
-                                  "see with your own eyes in Origon.\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageEnglish),
-                                  m.getActivationCode()));
-        }
-    }
-    
-    
-    public void sendEmailActivationCode()
-    {
-        if (m.getLanguage().equals(kLanguageNorwegian)) {
-            sendEmail(m.getEmail(), "Aktiver epostadressen din for bruk i Origon",
-                    String.format("Oppgi følgende kode for å aktivere epostadressen %s for bruk i Origon.\n" +
-                                  "\n" +
-                                  "    Aktiveringskode: %s\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageNorwegian),
-                                  m.getEmail(), m.getActivationCode()));
-        } else if (m.getLanguage().equals(kLanguageGerman)) {
-            sendEmail(m.getEmail(), "Bitte deine E-Mail-Adresse für Gebrauch bei Origon aktivieren",
-                    String.format("Bitte den folgenden Code eingeben, um die E-Mail-Adresse %s für Gebrauch bei Origon zu aktivieren.\n" +
-                                  "\n" +
-                                  "    Aktivierungscode: %s\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageGerman),
-                                  m.getEmail(), m.getActivationCode()));
-        } else {
-            sendEmail(m.getEmail(), "Activate your email address for use with Origon",
-                    String.format("Please enter the following code to activate the email address %s for use with Origon.\n" +
-                                  "\n" +
-                                  "    Activation code: %s\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageEnglish),
-                                  m.getEmail(), m.getActivationCode()));
-        }
-        
-        OLog.log().fine(m.meta() + "Sent email activation code to user.");
-    }
-    
-    
-    public void sendPasswordResetEmail()
-    {
-        if (m.getLanguage().equals(kLanguageNorwegian)) {
-            sendEmail(m.getEmail(), "Passordet ditt har blitt tilbakestilt",
-                    String.format("Ditt midlertidige passord er: %s.\n" +
-                                  "\n" +
-                                  "Så snart du har logget på Origon, bør du gå til Innstillinger og endre passordet til noe bare du vet om.\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageNorwegian),
-                                  m.getActivationCode()));
-        } else if (m.getLanguage().equals(kLanguageGerman)) {
-            sendEmail(m.getEmail(), "Dein Passwort ist zurückgestellt worden",
-                    String.format("Dein temporäres Passwort ist: %s.\n" +
-                                  "\n" +
-                                  "Wenn du dich bei Origon eingeloggt hast, bitte unter Einstellungen ein Passwort wählen, das nur du kennst." +
-                                  "\n" +
-                                  bestRegards(kLanguageGerman),
-                                  m.getActivationCode()));
-        } else {
-            sendEmail(m.getEmail(), "Your password has been reset",
-                    String.format("Your temporary passord is: %s.\n" +
-                                  "\n" +
-                                  "Once you have logged in to Origon, you should go to Settings and change the password to something only you know.\n" +
-                                  "\n" +
-                                  bestRegards(kLanguageEnglish),
-                                  m.getActivationCode()));
-        }
-        
-        OLog.log().fine(m.meta() + "Sent new password to user.");
     }
 }
