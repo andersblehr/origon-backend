@@ -22,8 +22,6 @@ import org.json.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import io.github.cdimascio.dotenv.Dotenv;
-
 import co.origon.api.model.OMember;
 import co.origon.api.model.OMembership;
 import co.origon.api.model.OOrigo;
@@ -35,11 +33,6 @@ public class OMailer
     private static final String LANG_GERMAN = "de";
     private static final String LANG_NORWEGIAN = "nb";
 
-    private static final String ENV_MAILER_BASE_URL = "MAILER_BASE_URL";
-    private static final String ENV_MAILER_JWT_SECRET = "MAILER_JWT_SECRET";
-    private static final String ENV_MAILER_JWT_ISSUER = "MAILER_JWT_ISSUER";
-    private static final String ENV_MAILER_JWT_EXPIRES_IN_SECONDS = "MAILER_JWT_EXPIRES_IN_SECONDS";
-    
     private static final String MAILER_RESOURCE_PATH = "/mailer";
     private static final String MAILER_TO = "to";
     private static final String MAILER_SUBJECT = "subject";
@@ -51,29 +44,17 @@ public class OMailer
     private final long jwtExpiresInSeconds;
     
     private final OMeta m;
-    private final Dotenv dotenv;
     
     
     public OMailer(OMeta m)
     {
         this.m = m;
-        this.dotenv = Dotenv.load();
         
-        this.mailerBaseUrl = dotenv.get(ENV_MAILER_BASE_URL);
-        this.jwtSecret = dotenv.get(ENV_MAILER_JWT_SECRET);
-        this.jwtIssuer = dotenv.get(ENV_MAILER_JWT_ISSUER);
-        
-        final String jwtExpiresInSecondsString = dotenv.get(ENV_MAILER_JWT_EXPIRES_IN_SECONDS);
-        
-        if (mailerBaseUrl == null || jwtSecret == null || jwtIssuer == null || jwtExpiresInSecondsString == null) {
-            throw new RuntimeException("Missing one or more JWT settings in .env");
-        }
-        
-        try {
-            this.jwtExpiresInSeconds = Long.parseLong(jwtExpiresInSecondsString);
-        } catch (NumberFormatException e) {
-            throw new RuntimeException("Illegal number format", e);
-        }
+        // TODO: Replace with proper config/secrets handling
+        this.mailerBaseUrl = "http://example.com";
+        this.jwtSecret = "this is not the secret";
+        this.jwtIssuer = "this is not the issuer";
+        this.jwtExpiresInSeconds = 0;
     }
     
     
