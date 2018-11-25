@@ -13,6 +13,7 @@ import co.origon.api.auth.OAuthInfo;
 import co.origon.api.auth.OAuthMeta;
 import co.origon.api.auth.OAuthPhase;
 
+import com.google.appengine.api.utils.SystemProperty;
 import com.googlecode.objectify.Key;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
@@ -26,6 +27,7 @@ public class OMeta
     private OAuthPhase authPhase = OAuthPhase.NONE;
     
     private ODAO DAO;
+    private OConfig config;
     private OMemberProxy memberProxy;
     
     private boolean isValid = true;
@@ -72,6 +74,15 @@ public class OMeta
     public boolean isDownForMaintenance()
     {
         return false;
+    }
+    
+    public OConfig getConfig()
+    {
+        if (config == null) {
+            config = ofy().load().key(Key.create(OConfig.class, SystemProperty.applicationId.get())).now();
+        }
+        
+        return config;
     }
     
     
