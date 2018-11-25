@@ -38,23 +38,12 @@ public class OMailer
     private static final String MAILER_SUBJECT = "subject";
     private static final String MAILER_BODY = "body";
     
-    private final String mailerBaseUrl;
-    private final String jwtSecret;
-    private final String jwtIssuer;
-    private final long jwtExpiresInSeconds;
-    
     private final OMeta m;
     
     
     public OMailer(OMeta m)
     {
         this.m = m;
-        
-        // TODO: Replace with proper config/secrets handling
-        this.mailerBaseUrl = "http://example.com";
-        this.jwtSecret = "this is not the secret";
-        this.jwtIssuer = "this is not the issuer";
-        this.jwtExpiresInSeconds = 0;
     }
     
     
@@ -140,7 +129,7 @@ public class OMailer
             sendEmail(m.getEmail(), "Complete your registration with Origon",
                     String.format("Welcome to Origon!\n" +
                                   "\n" +
-                                  "All that remains before you can start using Origon, is to enter the activation code below and fill out any missing information.\n" +
+                                  "All you need to do to start using Origon, is to enter the activation code below and fill in any missing information.\n" +
                                   "\n" +
                                   "    Activation code: %s\n" +
                                   "\n" +
@@ -219,14 +208,15 @@ public class OMailer
     
     private String createJwtBearerToken() {
         try {
+            final OConfig config = m.getConfig(); 
             final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-            final Instant jwtExpiry = now.plusSeconds(jwtExpiresInSeconds);
+            final Instant jwtExpiry = now.plusSeconds(config.jwtExpiresInSeconds);
             
             return JWT.create()
-                    .withIssuer(jwtIssuer)
+                    .withIssuer(config.jwtIssuer)
                     .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(jwtExpiry))
-                    .sign(Algorithm.HMAC256(jwtSecret));
+                    .sign(Algorithm.HMAC256(config.jwtSecret));
         } catch (Exception e) {
             throw new RuntimeException("Error during JWT creatiion", e);
         }
@@ -242,7 +232,7 @@ public class OMailer
             requestBody.put(MAILER_SUBJECT, subject);
             requestBody.put(MAILER_BODY, body);
             
-            final URL mailerUrl = new URL(mailerBaseUrl + MAILER_RESOURCE_PATH);
+            final URL mailerUrl = new URL(m.getConfig().mailerBaseUrl + MAILER_RESOURCE_PATH);
             final HttpURLConnection connection = (HttpURLConnection)mailerUrl.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);
