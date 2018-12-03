@@ -1,4 +1,4 @@
-package co.origon.api.aux;
+package co.origon.api.helpers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,6 +25,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import co.origon.api.model.OMember;
 import co.origon.api.model.OMembership;
 import co.origon.api.model.OOrigo;
+import co.origon.api.helpers.Config.Category;
+import co.origon.api.helpers.Config.Setting;
 
 
 public class OMailer
@@ -33,25 +35,17 @@ public class OMailer
     private static final String LANG_GERMAN = "de";
     private static final String LANG_NORWEGIAN = "nb";
 
-    private static final String CONFIG_MAILER = "mailer";
-    private static final String SETTING_BASE_URL = "baseUrl";
-    private static final String SETTING_JWT_SECRET = "jwtSecret";
-    private static final String SETTING_JWT_ISSUER = "jwtIssuer";
-    private static final String SETTING_JWT_EXPIRES_IN_SECONDS = "jwtExpiresInSeconds";
-
     private static final String MAILER_RESOURCE_PATH = "/mailer";
     private static final String MAILER_TO = "to";
     private static final String MAILER_SUBJECT = "subject";
     private static final String MAILER_BODY = "body";
     
     private final OMeta m;
-    private final JSONObject config;
-    
+
     
     public OMailer(OMeta m)
     {
         this.m = m;
-        this.config = m.getConfig(CONFIG_MAILER);
     }
     
     
@@ -216,14 +210,15 @@ public class OMailer
     
     private String createJwtBearerToken() {
         try {
+            final JSONObject jwtConfig = Config.get(Category.JWT);
             final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-            final Instant jwtExpiry = now.plusSeconds(config.getInt(SETTING_JWT_EXPIRES_IN_SECONDS));
+            final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Setting.EXPIRES_IN_SECONDS));
             
             return JWT.create()
-                    .withIssuer(config.getString(SETTING_JWT_ISSUER))
+                    .withIssuer(jwtConfig.getString(Setting.ISSUER))
                     .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(jwtExpiry))
-                    .sign(Algorithm.HMAC256(config.getString(SETTING_JWT_SECRET)));
+                    .sign(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET)));
         } catch (Exception e) {
             throw new RuntimeException("Error during JWT creatiion", e);
         }
@@ -239,7 +234,7 @@ public class OMailer
             requestBody.put(MAILER_SUBJECT, subject);
             requestBody.put(MAILER_BODY, body);
             
-            final URL mailerUrl = new URL(config.getString(SETTING_BASE_URL) + MAILER_RESOURCE_PATH);
+            final URL mailerUrl = new URL(Config.get(Category.MAILER).getString(Setting.BASE_URL) + MAILER_RESOURCE_PATH);
             final HttpURLConnection connection = (HttpURLConnection)mailerUrl.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);

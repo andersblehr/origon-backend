@@ -1,9 +1,7 @@
-package co.origon.api.aux;
+package co.origon.api.helpers;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import javax.mail.internet.AddressException;
@@ -14,10 +12,10 @@ import org.apache.commons.codec.binary.Base64;
 import co.origon.api.auth.OAuthInfo;
 import co.origon.api.auth.OAuthMeta;
 import co.origon.api.auth.OAuthPhase;
+import co.origon.api.helpers.Config.Category;
+import co.origon.api.helpers.Config.Setting;
 
-import com.google.appengine.api.utils.SystemProperty;
 import com.googlecode.objectify.Key;
-import org.json.JSONObject;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -27,13 +25,9 @@ public class OMeta
     private static final int kMinimumPasswordLength = 6;
     private static final int kActivationCodeLength = 6;
 
-    private static final String CONFIG_MAINTENANCE_MODE = "maintenance-mode";
-    private static final String SETTING_MAINTENANCE_MODE_ON = "on";
-
     private OAuthPhase authPhase = OAuthPhase.NONE;
     
     private ODAO DAO;
-    private Map<String, JSONObject> configs;
     private OMemberProxy memberProxy;
     
     private boolean isValid = true;
@@ -79,30 +73,10 @@ public class OMeta
     
     public boolean isDownForMaintenance()
     {
-        return getConfig(CONFIG_MAINTENANCE_MODE).getInt(SETTING_MAINTENANCE_MODE_ON) == 1;
+        return Config.get(Category.MAINTENANCE_MODE).getInt(Setting.ON) == 1;
     }
 
 
-    public JSONObject getConfig(String category)
-    {
-        if (configs == null) {
-            configs = new HashMap<>();
-        }
-
-        if (!configs.containsKey(category)) {
-            OConfig config = ofy().load().key(Key.create(OConfig.class, SystemProperty.applicationId.get() + ":" + category)).now();
-
-            if (config == null) {
-                throw new RuntimeException("No configuration settings for category: " + category);
-            }
-
-            configs.put(category, new JSONObject(config.configJson));
-        }
-
-        return configs.get(category);
-    }
-    
-    
     public boolean isValid()
     {
         return isValid;
