@@ -9,11 +9,11 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.aux.OLog;
-import co.origon.api.aux.OMailer;
-import co.origon.api.aux.OMemberProxy;
-import co.origon.api.aux.OMeta;
-import co.origon.api.aux.OURLParams;
+import co.origon.api.helpers.OLog;
+import co.origon.api.helpers.OMailer;
+import co.origon.api.helpers.OMemberProxy;
+import co.origon.api.helpers.OMeta;
+import co.origon.api.helpers.OURLParams;
 import co.origon.api.model.OReplicatedEntity;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
