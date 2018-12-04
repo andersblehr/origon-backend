@@ -2,10 +2,11 @@ package co.origon.api.model;
 
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
@@ -18,7 +19,8 @@ import com.googlecode.objectify.condition.IfNull;
 
 @Subclass
 @Cache(expirationSeconds = 600)
-@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonSerialize
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "memberKey"}, ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity
 {
