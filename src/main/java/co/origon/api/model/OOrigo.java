@@ -1,12 +1,11 @@
 package co.origon.api.model;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-
-//import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.annotation.IgnoreSave;
@@ -18,7 +17,8 @@ import com.googlecode.objectify.condition.IfNull;
 
 @Subclass
 @Cache(expirationSeconds = 600)
-@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonSerialize
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey", "parentOrigoKey"}, ignoreUnknown = true)
 public class OOrigo extends OReplicatedEntity
 {
@@ -29,7 +29,6 @@ public class OOrigo extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) String address;
     public @IgnoreSave(IfNull.class) String location;
     public @IgnoreSave(IfNull.class) String telephone;
-    //public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfNull.class) String permissions;
     public @IgnoreSave(IfFalse.class) boolean isForMinors;
     

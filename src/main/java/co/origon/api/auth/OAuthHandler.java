@@ -8,6 +8,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
 
 import co.origon.api.helpers.OLog;
 import co.origon.api.helpers.OMailer;
