@@ -7,6 +7,7 @@ import javax.ws.rs.core.Application;
 
 import co.origon.api.auth.OAuthHandler;
 import co.origon.api.controllers.ConfigController;
+
 import co.origon.api.model.OModelHandler;
 
 
@@ -22,7 +23,8 @@ public class OOrigonApplication extends Application
         singletons.add(new OModelHandler());
     }
     
-    
+
+    @Override
     public Set<Object> getSingletons()
     {
         return singletons;

@@ -12,9 +12,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.aux.OLog;
-import co.origon.api.aux.OMeta;
-import co.origon.api.aux.OURLParams;
+import co.origon.api.helpers.OLog;
+import co.origon.api.helpers.OMeta;
+import co.origon.api.helpers.OURLParams;
 
 
 @Path("model")
@@ -34,12 +34,6 @@ public class OModelHandler
                               @QueryParam(OURLParams.LANGUAGE) String language)
     {
         OMeta m = new OMeta(authToken, appVersion, language);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateReplicationDate(deviceReplicationDate);
         
         Date replicationDate = null;
@@ -104,12 +98,6 @@ public class OModelHandler
                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateReplicationDate(deviceReplicationDate);
         
         Date replicationDate = new Date();
@@ -140,12 +128,6 @@ public class OModelHandler
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         List<OReplicatedEntity> memberEntities = null;
         
         if (m.isValid()) {
@@ -173,12 +155,6 @@ public class OModelHandler
                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         OMeta m = new OMeta(authToken, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         OOrigo origo = null;;
         
         if (m.isValid()) {

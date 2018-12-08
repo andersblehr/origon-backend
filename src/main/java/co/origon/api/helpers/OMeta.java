@@ -1,4 +1,4 @@
-package co.origon.api.aux;
+package co.origon.api.helpers;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -12,8 +12,9 @@ import org.apache.commons.codec.binary.Base64;
 import co.origon.api.auth.OAuthInfo;
 import co.origon.api.auth.OAuthMeta;
 import co.origon.api.auth.OAuthPhase;
+import co.origon.api.helpers.Config.Category;
+import co.origon.api.helpers.Config.Setting;
 
-import com.google.appengine.api.utils.SystemProperty;
 import com.googlecode.objectify.Key;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
@@ -23,11 +24,10 @@ public class OMeta
 {
     private static final int kMinimumPasswordLength = 6;
     private static final int kActivationCodeLength = 6;
-    
+
     private OAuthPhase authPhase = OAuthPhase.NONE;
     
     private ODAO DAO;
-    private OConfig config;
     private OMemberProxy memberProxy;
     
     private boolean isValid = true;
@@ -71,26 +71,10 @@ public class OMeta
     }
     
     
-    public boolean isDownForMaintenance()
-    {
-        return false;
-    }
-    
-    public OConfig getConfig()
-    {
-        if (config == null) {
-            config = ofy().load().key(Key.create(OConfig.class, SystemProperty.applicationId.get())).now();
-        }
-        
-        return config;
-    }
-    
-    
     public boolean isValid()
     {
         return isValid;
     }
-    
     
 
     public String getAuthToken()
