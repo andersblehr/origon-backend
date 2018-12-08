@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.annotate.JsonSubTypes.Type;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
@@ -22,9 +22,8 @@ import com.googlecode.objectify.condition.IfFalse;
 
 
 @Entity
-@JsonTypeInfo (
+@JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.PROPERTY,
     property = "entityClass")
 @JsonSubTypes({
     @Type(value = ODevice.class, name = "ODevice"),

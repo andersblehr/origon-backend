@@ -1,6 +1,6 @@
 package co.origon.api.controllers;
 
-//import co.origon.api.filters.JwtAuthenticated;
+import co.origon.api.filters.JwtAuthenticated;
 import co.origon.api.helpers.Config;
 
 import org.json.JSONException;
@@ -13,12 +13,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 @Path("configs")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-//@JwtAuthenticated
+@JwtAuthenticated
 public class ConfigController {
 
     @Context
