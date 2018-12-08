@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import co.origon.api.auth.OAuthHandler;
+import co.origon.api.controllers.ConfigController;
 import co.origon.api.model.OModelHandler;
 
 
@@ -16,6 +17,7 @@ public class OOrigonApplication extends Application
     
     public OOrigonApplication()
     {
+        singletons.add(new ConfigController());
         singletons.add(new OAuthHandler());
         singletons.add(new OModelHandler());
     }
