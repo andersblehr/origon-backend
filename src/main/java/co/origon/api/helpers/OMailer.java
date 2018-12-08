@@ -1,4 +1,4 @@
-package co.origon.api.aux;
+package co.origon.api.helpers;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -25,6 +25,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import co.origon.api.model.OMember;
 import co.origon.api.model.OMembership;
 import co.origon.api.model.OOrigo;
+import co.origon.api.helpers.Config.Category;
+import co.origon.api.helpers.Config.Setting;
 
 
 public class OMailer
@@ -39,7 +41,7 @@ public class OMailer
     private static final String MAILER_BODY = "body";
     
     private final OMeta m;
-    
+
     
     public OMailer(OMeta m)
     {
@@ -208,15 +210,15 @@ public class OMailer
     
     private String createJwtBearerToken() {
         try {
-            final OConfig config = m.getConfig(); 
+            final JSONObject jwtConfig = Config.get(Category.JWT);
             final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-            final Instant jwtExpiry = now.plusSeconds(config.jwtExpiresInSeconds);
+            final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Setting.EXPIRES_IN_SECONDS));
             
             return JWT.create()
-                    .withIssuer(config.jwtIssuer)
+                    .withIssuer(jwtConfig.getString(Setting.ISSUER))
                     .withIssuedAt(Date.from(now))
                     .withExpiresAt(Date.from(jwtExpiry))
-                    .sign(Algorithm.HMAC256(config.jwtSecret));
+                    .sign(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET)));
         } catch (Exception e) {
             throw new RuntimeException("Error during JWT creatiion", e);
         }
@@ -232,7 +234,7 @@ public class OMailer
             requestBody.put(MAILER_SUBJECT, subject);
             requestBody.put(MAILER_BODY, body);
             
-            final URL mailerUrl = new URL(m.getConfig().mailerBaseUrl + MAILER_RESOURCE_PATH);
+            final URL mailerUrl = new URL(Config.get(Category.MAILER).getString(Setting.BASE_URL) + MAILER_RESOURCE_PATH);
             final HttpURLConnection connection = (HttpURLConnection)mailerUrl.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);
@@ -256,14 +258,13 @@ public class OMailer
                 }
                 
                 final JSONObject response = new JSONObject(responseString);
-                
+
                 throw new RuntimeException("Error sending email: " + response.getString("message"));
             }
 
             OLog.log().fine(m.meta() + String.format("Sent email with subject '%s' and following body to %s:\n\n%s", subject, to, body));
         } catch (Exception e) {
             OLog.log().warning(m.meta() + String.format("Caught exception: %s", e.getMessage()));
-            e.printStackTrace();
             OLog.throwWebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
