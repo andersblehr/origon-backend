@@ -71,12 +71,6 @@ public class OMeta
     }
     
     
-    public boolean isDownForMaintenance()
-    {
-        return Config.get(Category.MAINTENANCE_MODE).getInt(Setting.ON) == 1;
-    }
-
-
     public boolean isValid()
     {
         return isValid;
