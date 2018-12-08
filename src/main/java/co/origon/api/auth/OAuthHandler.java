@@ -8,7 +8,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.Provider;
 
 import co.origon.api.helpers.OLog;
 import co.origon.api.helpers.OMailer;
@@ -38,12 +37,6 @@ public class OAuthHandler
                                  @QueryParam(OURLParams.LANGUAGE) String language)
     {
         m = new OMeta(deviceId, deviceType, appVersion, language);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.REGISTER);
         m.validateAuthToken(authToken);
         
@@ -86,12 +79,6 @@ public class OAuthHandler
                               @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
         m.validateAuthToken(authToken);
         
@@ -145,12 +132,6 @@ public class OAuthHandler
                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(deviceId, deviceType, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATE);
         m.validateAuthToken(authToken);
         
@@ -192,12 +173,6 @@ public class OAuthHandler
                                    @QueryParam(OURLParams.APP_VERSION) String appVersion)
     {
         m = new OMeta(authToken, appVersion, null);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
         
         if (m.isValid()) {
@@ -224,12 +199,6 @@ public class OAuthHandler
                                   @QueryParam(OURLParams.LANGUAGE) String language)
     {
         m = new OMeta(deviceId, deviceType, appVersion, language);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.RESET);
         m.validateAuthToken(authToken);
         
@@ -260,12 +229,6 @@ public class OAuthHandler
                                        @QueryParam(OURLParams.LANGUAGE) String language)
     {
         m = new OMeta(authToken, appVersion, language);
-        
-        if (m.isDownForMaintenance()) {
-            OLog.log().warning(m.meta() + "Service is down for maintenance, raising SERVICE_UNAVAILABLE (503).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-        }
-        
         m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SENDCODE);
         
         OAuthInfo authInfo = null;
