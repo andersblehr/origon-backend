@@ -48,6 +48,12 @@
             <artifactId>jersey-common</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+            <scope>runtime</scope>
+        </dependency>
         <!-- TODO: Needed if/when upgrading to Jersey 2.26+
         <dependency>
             <groupId>org.glassfish.jersey.inject</groupId>
