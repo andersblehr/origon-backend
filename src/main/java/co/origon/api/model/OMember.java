@@ -2,12 +2,12 @@ package co.origon.api.model;
 
 import java.util.Date;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
-import org.codehaus.jackson.map.annotate.JsonSerialize.Inclusion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-//import com.google.appengine.api.datastore.Blob;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
@@ -16,7 +16,8 @@ import com.googlecode.objectify.condition.IfNull;
 
 @Subclass
 @Cache(expirationSeconds = 600)
-@JsonSerialize(include = Inclusion.NON_NULL)
+@JsonSerialize
+@JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(value = {"origoKey"}, ignoreUnknown = true)
 public class OMember extends OReplicatedEntity
 {
@@ -25,7 +26,6 @@ public class OMember extends OReplicatedEntity
     public @IgnoreSave(IfNull.class) Date dateOfBirth;
     public @IgnoreSave(IfNull.class) String mobilePhone;
     public @IgnoreSave(IfNull.class) String email;
-    //public @IgnoreSave(IfNull.class) Blob photo;
     public @IgnoreSave(IfNull.class) String settings;
     
     public @IgnoreSave(IfNull.class) boolean isMinor;
