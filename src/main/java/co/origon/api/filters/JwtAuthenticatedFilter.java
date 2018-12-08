@@ -7,35 +7,33 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 
-import javax.ws.rs.WebApplicationException;
+import javax.annotation.Priority;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 @Provider
 @JwtAuthenticated
-public class JwtTokenFilter implements ContainerRequestFilter {
-
-    private final static String TOKEN_TYPE_BEARER = "Bearer";
+@Priority(2)
+public class JwtAuthenticatedFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext context) {
         final String authorizationHeader = context.getHeaderString(HttpHeaders.AUTHORIZATION);
-
         if (authorizationHeader == null) {
-            throw new WebApplicationException("Missing AUTHORIZATION header", Response.Status.FORBIDDEN);
+            throw new ForbiddenException("Missing AUTHORIZATION header");
         }
 
         final String[] authElements = authorizationHeader.split(" ");
-
         if (authElements.length != 2) {
-            throw new WebApplicationException("Invalid AUTHORIZATION header: " + authorizationHeader, Response.Status.FORBIDDEN);
+            throw new ForbiddenException("Invalid AUTHORIZATION header: " + authorizationHeader);
         }
 
-        if (!authElements[0].equals(TOKEN_TYPE_BEARER)) {
-            throw new WebApplicationException("Invalid bearer token type: " + authElements[0], Response.Status.FORBIDDEN);
+        if (!authElements[0].equals("Bearer")) {
+            throw new ForbiddenException("Invalid bearer token type: " + authElements[0]);
         }
 
         try {
@@ -46,9 +44,9 @@ public class JwtTokenFilter implements ContainerRequestFilter {
                     .build()
                     .verify(jwt);
         } catch (TokenExpiredException e) {
-            throw new WebApplicationException("JWT has expired", Response.Status.UNAUTHORIZED);
+            throw new NotAuthorizedException("JWT has expired");
         } catch (Exception e) {
-            throw new WebApplicationException("Invalid JWT", Response.Status.FORBIDDEN);
+            throw new ForbiddenException("Invalid JWT");
         }
     }
 }
