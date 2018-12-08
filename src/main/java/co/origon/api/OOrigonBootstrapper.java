@@ -3,6 +3,7 @@ package co.origon.api;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import co.origon.api.helpers.Config;
 import com.googlecode.objectify.ObjectifyService;
 
 import co.origon.api.auth.OAuthInfo;
@@ -20,7 +21,7 @@ public class OOrigonBootstrapper implements ServletContextListener
         ObjectifyService.init();
 
         ObjectifyService.register(Config.class);
-        
+
         ObjectifyService.register(OAuthInfo.class);
         ObjectifyService.register(OAuthMeta.class);
         ObjectifyService.register(OMemberProxy.class);
