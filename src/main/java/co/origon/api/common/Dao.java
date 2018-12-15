@@ -1,4 +1,4 @@
-package co.origon.api.helpers;
+package co.origon.api.common;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,12 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import co.origon.api.auth.OAuthMeta;
-import co.origon.api.model.OMember;
-import co.origon.api.model.OMembership;
-import co.origon.api.model.OOrigo;
-import co.origon.api.model.OReplicatedEntity;
-import co.origon.api.model.OReplicatedEntityRef;
+import co.origon.api.entities.OAuthMeta;
+import co.origon.api.entities.*;
 
 import com.googlecode.objectify.Key;
 
@@ -59,7 +55,7 @@ public class Dao
     public List<OReplicatedEntity> lookupMemberEntities(String memberId)
     {
         Set<OReplicatedEntity> memberEntities = new HashSet<>();
-        OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, memberId)).now(); 
+        OMemberProxy memberProxy = ofy().load().key(Key.create(OMemberProxy.class, memberId)).now();
         
         if (memberProxy != null) {
             referencedEntityKeys = new HashSet<>();

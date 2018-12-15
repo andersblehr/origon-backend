@@ -1,5 +1,6 @@
-package co.origon.api.config;
+package co.origon.api.controllers;
 
+import co.origon.api.common.Config;
 import co.origon.api.filters.JwtAuthenticated;
 
 import org.json.JSONException;
