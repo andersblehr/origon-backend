@@ -6,7 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
 
-public class OCrypto
+public class Crypto
 {
     //private static final String kDefaultSeasoning = "RKPAAXYFRYDVM3";
     private static final String kDefaultSeasoning = "socroilgao";
@@ -38,7 +38,7 @@ public class OCrypto
         String passwordHash = null;
         
         if (password != null) {
-            passwordHash = OCrypto.hashUsingSHA1(OCrypto.seasonedString(password)); 
+            passwordHash = Crypto.hashUsingSHA1(Crypto.seasonedString(password));
         }
         
         return passwordHash; 

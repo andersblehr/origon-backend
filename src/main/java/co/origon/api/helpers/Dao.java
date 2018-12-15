@@ -21,13 +21,18 @@ import com.googlecode.objectify.Key;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
-public class ODAO
+public class Dao
 {
-    private static final ODAO dao = new ODAO();
+    private static final Dao dao = new Dao();
 
     private Set<Key<OReplicatedEntity>> referencedEntityKeys;
 
-    
+
+    public static Dao getDao() {
+        return dao;
+    }
+
+
     private Set<OReplicatedEntity> fetchMembershipEntities(OMembership membership, Date deviceReplicationDate)
     {
         List<OReplicatedEntity> fetchedEntities;
@@ -51,11 +56,6 @@ public class ODAO
     }
     
     
-    public static ODAO getDao() {
-        return dao;
-    }
-
-
     public List<OReplicatedEntity> lookupMemberEntities(String memberId)
     {
         Set<OReplicatedEntity> memberEntities = new HashSet<>();
@@ -121,7 +121,7 @@ public class ODAO
     }
     
     
-    public void replicateEntities(List<OReplicatedEntity> entityList, String userEmail, OMailer mailer)
+    public void replicateEntities(List<OReplicatedEntity> entityList, String userEmail, Mailer mailer)
     {
         if (entityList.size() > 0) {
             new OEntityReplicator().replicate(entityList, userEmail, mailer);
@@ -229,7 +229,7 @@ public class ODAO
         }
         
         
-        private void sendInvitations(OMemberProxy userProxy, OMailer mailer)
+        private void sendInvitations(OMemberProxy userProxy, Mailer mailer)
         {
             List<Key<OOrigo>> origoKeys = new ArrayList<>();
          
@@ -282,7 +282,7 @@ public class ODAO
         }
         
         
-        private void reanchorDriftingMemberProxies(OMemberProxy userProxy, OMailer mailer)
+        private void reanchorDriftingMemberProxies(OMemberProxy userProxy, Mailer mailer)
         {
             Set<String> anchoredProxyIds = new HashSet<>();
             
@@ -375,7 +375,7 @@ public class ODAO
         }
         
         
-        public void replicate(List<OReplicatedEntity> entityList, String userEmail, OMailer mailer)
+        public void replicate(List<OReplicatedEntity> entityList, String userEmail, Mailer mailer)
         {
             for (OReplicatedEntity entity : entityList) {
                 entity.origoKey = Key.create(OOrigo.class, entity.origoId);

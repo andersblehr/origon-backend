@@ -1,6 +1,6 @@
 package co.origon.api.exceptions;
 
-import co.origon.api.OOrigonApplication;
+import co.origon.api.OrigonApplication;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
@@ -12,7 +12,7 @@ import java.util.logging.Logger;
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException>
 {
-	private static final Logger LOG = Logger.getLogger(OOrigonApplication.class.getName());
+	private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
 	public Response toResponse(WebApplicationException exception)
 	{

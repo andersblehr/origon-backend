@@ -46,7 +46,7 @@ public class InputValidator {
             throw new IllegalArgumentException("Password is too short, must have " + LENGTH_PASSWORD_MIN + " characters or more" );
         }
 
-        return OCrypto.generatePasswordHash(userPassword);
+        return Crypto.generatePasswordHash(userPassword);
     }
 
     public static String checkMetadata(String deviceId, String deviceType, String appVersion) {
