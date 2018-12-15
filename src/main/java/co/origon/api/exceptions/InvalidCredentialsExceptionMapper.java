@@ -6,17 +6,17 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 @Provider
-public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException>
-{
+public class InvalidCredentialsExceptionMapper implements ExceptionMapper<InvalidCredentialsException> {
+
 	private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
-	public Response toResponse(IllegalArgumentException e)
-	{
+	public Response toResponse(InvalidCredentialsException e) {
 		LOG.warning(e.getMessage());
-		return Response.status(Response.Status.BAD_REQUEST).build();
+		return Response.status(Response.Status.FORBIDDEN).build();
 	}
 }
