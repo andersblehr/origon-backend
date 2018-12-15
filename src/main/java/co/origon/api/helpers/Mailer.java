@@ -31,7 +31,7 @@ import co.origon.api.config.Config.Category;
 import co.origon.api.config.Config.Setting;
 
 
-public class OMailer
+public class Mailer
 {
     private static final String LANG_ENGLISH = "en";
     private static final String LANG_GERMAN = "de";
@@ -45,7 +45,7 @@ public class OMailer
     private final String language;
 
 
-    public OMailer(String language) {
+    public Mailer(String language) {
         this.language = language;
     }
 

@@ -12,7 +12,7 @@ import co.origon.api.helpers.OMemberProxy;
 import co.origon.api.model.*;
 
 
-public class OOrigonBootstrapper implements ServletContextListener
+public class OrigonBootstrapper implements ServletContextListener
 {
     @Override
     public void contextInitialized(ServletContextEvent event)

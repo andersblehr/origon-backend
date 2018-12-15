@@ -9,9 +9,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.OOrigonApplication;
-import co.origon.api.helpers.ODAO;
-import co.origon.api.helpers.OMailer;
+import co.origon.api.OrigonApplication;
+import co.origon.api.helpers.Dao;
+import co.origon.api.helpers.Mailer;
 import co.origon.api.helpers.OMemberProxy;
 import co.origon.api.helpers.UrlParams;
 import co.origon.api.model.OReplicatedEntity;
@@ -24,8 +24,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
-public class OAuthHandler {
-    private static final Logger LOG = Logger.getLogger(OOrigonApplication.class.getName());
+public class AuthController {
+    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
     private static final int LENGTH_ACTIVATION_CODE = 6;
 
     @GET
@@ -47,7 +47,7 @@ public class OAuthHandler {
         final String activationCode = UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE);
         final OAuthInfo authInfo = new OAuthInfo(userEmail, deviceId, userPasswordHash, activationCode);
         ofy().save().entity(authInfo).now();
-        new OMailer(language).sendRegistrationEmail(userEmail, activationCode);
+        new Mailer(language).sendRegistrationEmail(userEmail, activationCode);
         LOG.fine(metadata + "Sent user activation code to new user " + userEmail);
 
         return Response
@@ -81,7 +81,7 @@ public class OAuthHandler {
             ofy().delete().entity(authInfo);
             LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
 
-            final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(userEmail);
+            final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail);
             LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
             return Response
@@ -116,7 +116,7 @@ public class OAuthHandler {
             putAuthToken(authToken, authMeta, memberProxy);
             LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
 
-            final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(userEmail, replicationDate);
+            final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail, replicationDate);
             LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
             return Response
@@ -169,7 +169,7 @@ public class OAuthHandler {
 
         memberProxy.passwordHash = temporaryPasswordHash;
         ofy().save().entity(memberProxy).now();
-        new OMailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
+        new Mailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
         LOG.fine(metadata + "Sent temporary password to " + userEmail);
 
         return Response.status(HttpServletResponse.SC_CREATED).build();
@@ -192,7 +192,7 @@ public class OAuthHandler {
         checkRegistered(userEmail);
 
         final OAuthInfo authInfo = new OAuthInfo(userEmail, authMeta.deviceId, "n/a", activationCode);
-        new OMailer(language).sendEmailActivationCode(userEmail, activationCode);
+        new Mailer(language).sendEmailActivationCode(userEmail, activationCode);
         LOG.fine(metadata + "Sent email activation code to " + userEmail);
 
         return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();

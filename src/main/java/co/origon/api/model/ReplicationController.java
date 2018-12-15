@@ -9,7 +9,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.OOrigonApplication;
+import co.origon.api.OrigonApplication;
 import co.origon.api.auth.OAuthMeta;
 import co.origon.api.helpers.*;
 
@@ -18,9 +18,9 @@ import static co.origon.api.helpers.InputValidator.*;
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-public class OModelHandler
+public class ReplicationController
 {
-    private static final Logger LOG = Logger.getLogger(OOrigonApplication.class.getName());
+    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
     @POST
     @Path("replicate")
@@ -36,8 +36,8 @@ public class OModelHandler
         checkReplicationDate(replicationDate);
         checkLanguage(language);
 
-        ODAO.getDao().replicateEntities(entitiesToReplicate, authMeta.email, new OMailer(language));
-        final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(authMeta.email, replicationDate);
+        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.email, new Mailer(language));
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.email, replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
@@ -61,7 +61,7 @@ public class OModelHandler
         final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
         checkReplicationDate(replicationDate);
 
-        final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(authMeta.email, replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.email, replicationDate);
 
         LOG.fine(metadata + fetchedEntities.size() + " entities fetched");
 
@@ -81,7 +81,7 @@ public class OModelHandler
         final OAuthMeta authMeta = checkAuthToken(authToken);
         checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
 
-        List<OReplicatedEntity> memberEntities = ODAO.getDao().lookupMemberEntities(memberId);
+        List<OReplicatedEntity> memberEntities = Dao.getDao().lookupMemberEntities(memberId);
         if (memberEntities == null) {
             throw new NotFoundException();
         }
@@ -101,7 +101,7 @@ public class OModelHandler
         final OAuthMeta authMeta = checkAuthToken(authToken);
         checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
 
-        OOrigo origo = ODAO.getDao().lookupOrigo(internalJoinCode);
+        OOrigo origo = Dao.getDao().lookupOrigo(internalJoinCode);
         if (origo == null) {
             throw new NotFoundException();
         }
