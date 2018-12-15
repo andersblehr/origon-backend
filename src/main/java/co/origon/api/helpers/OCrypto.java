@@ -26,7 +26,6 @@ public class OCrypto
                 output = output.concat(String.format("%02x", digestOutput[i]));
             }
         } catch (Exception e) {
-            OLog.log().severe(String.format("Caught exception while generating SHA1 hash from input string '%s', bailing out.", string));
             throw new WebApplicationException(e, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
         
