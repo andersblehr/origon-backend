@@ -3,7 +3,7 @@ package co.origon.api.common;
 import co.origon.api.entities.OAuthInfo;
 import co.origon.api.entities.OAuthMeta;
 import co.origon.api.entities.OMemberProxy;
-import co.origon.api.exceptions.InvalidCredentialsException;
+import co.origon.api.exceptions.IllegalCredentialsException;
 import co.origon.api.exceptions.InvalidInputException;
 import com.googlecode.objectify.Key;
 
@@ -106,7 +106,7 @@ public class InputValidator {
 
             return authMeta;
         } catch (NullPointerException e) {
-            throw new InvalidCredentialsException(e);
+            throw new IllegalCredentialsException(e);
         }
     }
 
@@ -119,7 +119,7 @@ public class InputValidator {
 
             return authMeta;
         } catch (IllegalArgumentException e) {
-            throw new InvalidCredentialsException(e);
+            throw new IllegalCredentialsException(e);
         }
     }
 
@@ -131,7 +131,7 @@ public class InputValidator {
 
             return authInfo;
         } catch (NullPointerException e) {
-            throw new InvalidCredentialsException(e);
+            throw new IllegalCredentialsException(e);
         }
     }
 
@@ -141,7 +141,7 @@ public class InputValidator {
             final OMemberProxy memberProxy = OMemberProxy.get(email);
             checkArgument(memberProxy == null || !memberProxy.didRegister, "User " + email + " is already registered");
         } catch (IllegalArgumentException e) {
-            throw new InvalidCredentialsException(e);
+            throw new IllegalCredentialsException(e);
         }
     }
 
@@ -153,7 +153,7 @@ public class InputValidator {
 
             return memberProxy;
         } catch (IllegalArgumentException e) {
-            throw new InvalidCredentialsException(e);
+            throw new IllegalCredentialsException(e);
         }
     }
 }
