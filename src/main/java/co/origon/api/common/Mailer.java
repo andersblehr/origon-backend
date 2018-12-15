@@ -1,4 +1,4 @@
-package co.origon.api.helpers;
+package co.origon.api.common;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -13,22 +13,21 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import javax.mail.internet.InternetAddress;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import co.origon.api.config.Config;
+import co.origon.api.entities.OMemberProxy;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import co.origon.api.model.OMember;
-import co.origon.api.model.OMembership;
-import co.origon.api.model.OOrigo;
-import co.origon.api.config.Config.Category;
-import co.origon.api.config.Config.Setting;
+import co.origon.api.entities.OMember;
+import co.origon.api.entities.OMembership;
+import co.origon.api.entities.OOrigo;
+import co.origon.api.common.Config.Category;
+import co.origon.api.common.Config.Setting;
 
 
 public class Mailer

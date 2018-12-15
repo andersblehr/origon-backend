@@ -1,4 +1,4 @@
-package co.origon.api.model;
+package co.origon.api.controllers;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -10,10 +10,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import co.origon.api.OrigonApplication;
-import co.origon.api.auth.OAuthMeta;
-import co.origon.api.helpers.*;
+import co.origon.api.entities.OAuthMeta;
+import co.origon.api.common.*;
+import co.origon.api.entities.OOrigo;
+import co.origon.api.entities.OReplicatedEntity;
 
-import static co.origon.api.helpers.InputValidator.*;
+import static co.origon.api.common.InputValidator.*;
 
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)

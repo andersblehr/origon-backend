@@ -1,7 +1,8 @@
-package co.origon.api.helpers;
+package co.origon.api.common;
 
-import co.origon.api.auth.OAuthInfo;
-import co.origon.api.auth.OAuthMeta;
+import co.origon.api.entities.OAuthInfo;
+import co.origon.api.entities.OAuthMeta;
+import co.origon.api.entities.OMemberProxy;
 import com.googlecode.objectify.Key;
 
 import javax.mail.internet.AddressException;

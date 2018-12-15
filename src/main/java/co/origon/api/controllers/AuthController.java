@@ -1,4 +1,4 @@
-package co.origon.api.auth;
+package co.origon.api.controllers;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -10,15 +10,17 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import co.origon.api.OrigonApplication;
-import co.origon.api.helpers.Dao;
-import co.origon.api.helpers.Mailer;
-import co.origon.api.helpers.OMemberProxy;
-import co.origon.api.helpers.UrlParams;
-import co.origon.api.model.OReplicatedEntity;
+import co.origon.api.common.Dao;
+import co.origon.api.common.Mailer;
+import co.origon.api.entities.OAuthInfo;
+import co.origon.api.entities.OAuthMeta;
+import co.origon.api.entities.OMemberProxy;
+import co.origon.api.common.UrlParams;
+import co.origon.api.entities.OReplicatedEntity;
 
 import com.googlecode.objectify.Key;
 
-import static co.origon.api.helpers.InputValidator.*;
+import static co.origon.api.common.InputValidator.*;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 

@@ -1,8 +1,8 @@
 package co.origon.api.filters;
 
-import co.origon.api.config.Config;
-import co.origon.api.config.Config.Category;
-import co.origon.api.config.Config.Setting;
+import co.origon.api.common.Config;
+import co.origon.api.common.Config.Category;
+import co.origon.api.common.Config.Setting;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;

@@ -1,11 +1,7 @@
-package co.origon.api.helpers;
+package co.origon.api.entities;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import co.origon.api.auth.OAuthMeta;
-import co.origon.api.model.OMember;
-import co.origon.api.model.OMembership;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;

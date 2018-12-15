@@ -1,4 +1,4 @@
-package co.origon.api.model;
+package co.origon.api.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
