@@ -1,4 +1,4 @@
-package co.origon.api.helpers;
+package co.origon.api.config;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;

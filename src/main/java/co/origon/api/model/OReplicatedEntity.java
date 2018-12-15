@@ -106,9 +106,7 @@ public abstract class OReplicatedEntity
             }
             
             entityClass = this.getClass().getSimpleName();
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchFieldException e) {
+        } catch (IllegalAccessException | NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
@@ -139,9 +137,9 @@ public abstract class OReplicatedEntity
     public boolean equals(Object other)
     {
         boolean areEqual = false;
-        
+
         if (OReplicatedEntity.class.isAssignableFrom(other.getClass())) {
-            areEqual = (((OReplicatedEntity)other).hashCode() == this.hashCode());
+            areEqual = (other.hashCode() == this.hashCode());
         }
         
         return areEqual;

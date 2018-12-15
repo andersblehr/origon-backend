@@ -1,8 +1,8 @@
 package co.origon.api.filters;
 
-import co.origon.api.helpers.Config;
-import co.origon.api.helpers.Config.Category;
-import co.origon.api.helpers.Config.Setting;
+import co.origon.api.config.Config;
+import co.origon.api.config.Config.Category;
+import co.origon.api.config.Config.Setting;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
@@ -21,8 +21,8 @@ import javax.ws.rs.ext.Provider;
 public class JwtAuthenticatedFilter implements ContainerRequestFilter {
 
     @Override
-    public void filter(ContainerRequestContext context) {
-        final String authorizationHeader = context.getHeaderString(HttpHeaders.AUTHORIZATION);
+    public void filter(ContainerRequestContext requestContext) {
+        final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
         if (authorizationHeader == null) {
             throw new ForbiddenException("Missing AUTHORIZATION header");
         }
