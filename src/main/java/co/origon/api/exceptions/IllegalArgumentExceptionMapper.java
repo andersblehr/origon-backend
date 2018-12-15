@@ -17,6 +17,6 @@ public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalAr
 	public Response toResponse(IllegalArgumentException e)
 	{
 		LOG.warning(e.getMessage());
-		throw new BadRequestException(e);
+		return Response.status(Response.Status.BAD_REQUEST).build();
 	}
 }
