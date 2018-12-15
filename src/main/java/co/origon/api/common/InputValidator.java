@@ -65,8 +65,7 @@ public class InputValidator {
 
     public static void checkAuthTokenFormat(String authToken) {
         checkNotNull(authToken, "Missing parmaeter: " + UrlParams.AUTH_TOKEN);
-        checkArgument(authToken.length() == 40, "Invalid token format: " + authToken);
-        checkArgument(authToken.matches("[a-z0-9]"), "Invalid token format: " + authToken);
+        checkArgument(authToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + authToken);
     }
 
     public static OAuthMeta checkAuthToken(String authToken) {
@@ -84,25 +83,25 @@ public class InputValidator {
 
     public static OAuthInfo checkAuthInfo(String email) {
         final OAuthInfo authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).now();
-        checkNotNull(authInfo, "User " + email + "  has not received activation code, cannot activate");
+        checkNotNull(authInfo, "User " + email + " has not received activation code, cannot activate");
 
         return authInfo;
     }
 
     public static void checkNotRegistered(String email) {
         final OMemberProxy memberProxy = OMemberProxy.get(email);
-        checkArgument(memberProxy == null || !memberProxy.didRegister, "Email " + email + " already registered");
+        checkArgument(memberProxy == null || !memberProxy.didRegister, "User " + email + " already registered");
     }
 
     public static OMemberProxy checkRegistered(String email) {
         final OMemberProxy memberProxy = OMemberProxy.get(email);
-        checkArgument(memberProxy != null && memberProxy.didRegister, "Email " + email + " is not registered");
+        checkArgument(memberProxy != null && memberProxy.didRegister, "User " + email + " is not registered");
 
         return memberProxy;
     }
 
-    public static void checkReplicationDate(Date replictionDate) {
-        checkNotNull(replictionDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
-        checkArgument(replictionDate.before(new Date()), "Invalid last replication date: " + replictionDate);
+    public static void checkReplicationDate(Date replicationDate) {
+        checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
+        checkArgument(replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
     }
 }

@@ -17,6 +17,6 @@ public class NullPointerExceptionMapper implements ExceptionMapper<NullPointerEx
 	public Response toResponse(NullPointerException e)
 	{
 		LOG.warning(e.getMessage());
-		throw new BadRequestException(e);
+		return Response.status(Response.Status.BAD_REQUEST).build();
 	}
 }
