@@ -17,6 +17,8 @@ import com.googlecode.objectify.condition.IfDefault;
 import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
 
 @Entity
 @Cache(expirationSeconds=600)
@@ -48,8 +50,8 @@ public class OMemberProxy
     {
         this.proxyId = proxyId;
         
-        authMetaKeys = new HashSet<Key<OAuthMeta>>();
-        membershipKeys = new HashSet<Key<OMembership>>();
+        authMetaKeys = new HashSet<>();
+        membershipKeys = new HashSet<>();
     }
 
     
@@ -63,17 +65,26 @@ public class OMemberProxy
         authMetaKeys = instanceToClone.authMetaKeys;
         membershipKeys = instanceToClone.membershipKeys;
     }
-        
+
+    public static OMemberProxy get(String email) {
+        return ofy().load().key(Key.create(OMemberProxy.class, email)).now();
+    }
+
+    public static OMemberProxy getOrCreate(String email) {
+        OMemberProxy memberProxy = get(email);
+
+        return memberProxy != null ? memberProxy : new OMemberProxy(email);
+    }
     
     @OnLoad
     public void instantiateNullSets()
     {
         if (authMetaKeys == null) {
-            authMetaKeys = new HashSet<Key<OAuthMeta>>();
+            authMetaKeys = new HashSet<>();
         }
         
         if (membershipKeys == null) {
-            membershipKeys = new HashSet<Key<OMembership>>();
+            membershipKeys = new HashSet<>();
         }
     }
 }

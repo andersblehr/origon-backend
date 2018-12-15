@@ -1,7 +1,7 @@
 package co.origon.api.auth;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
@@ -9,263 +9,212 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.helpers.OLog;
+import co.origon.api.OOrigonApplication;
+import co.origon.api.helpers.ODAO;
 import co.origon.api.helpers.OMailer;
 import co.origon.api.helpers.OMemberProxy;
-import co.origon.api.helpers.OMeta;
-import co.origon.api.helpers.OURLParams;
+import co.origon.api.helpers.UrlParams;
 import co.origon.api.model.OReplicatedEntity;
+
+import com.googlecode.objectify.Key;
+
+import static co.origon.api.helpers.InputValidator.*;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-
 @Path("auth")
-public class OAuthHandler
-{
-    private OMeta m;
-    
-    
+@Produces(MediaType.APPLICATION_JSON)
+public class OAuthHandler {
+    private static final Logger LOG = Logger.getLogger(OOrigonApplication.class.getName());
+    private static final int LENGTH_ACTIVATION_CODE = 6;
+
     @GET
     @Path("register")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response registerUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                 @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                 @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                                 @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                                 @QueryParam(OURLParams.APP_VERSION) String appVersion,
-                                 @QueryParam(OURLParams.LANGUAGE) String language)
-    {
-        m = new OMeta(deviceId, deviceType, appVersion, language);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.REGISTER);
-        m.validateAuthToken(authToken);
-        
-        OAuthInfo authInfo = null;
-        
-        if (m.isValid()) {
-            OMemberProxy memberProxy = m.getMemberProxy();
-            
-            if (memberProxy == null || !memberProxy.didRegister) {
-                authInfo = m.getAuthInfo();
-                ofy().save().entity(authInfo).now();
-                
-                new OMailer(m).sendRegistrationEmail();
-            } else {
-                if (m.appVersionIncludes("1.0.3")) {
-                    OLog.log().warning(m.meta() + "Trying to register an existing user, raising CONFLICT (409).");
-                    OLog.throwWebApplicationException(HttpServletResponse.SC_CONFLICT);
-                } else {
-                    authInfo = m.getAuthInfo();
-                }
-            }
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        OLog.log().fine(m.meta() + "HTTP status: 201");
-        return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
-    }    
-    
-    
-    @GET
-    @Path("login")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response loginUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                              @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                              @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                              @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        m = new OMeta(deviceId, deviceType, appVersion, null);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.LOGIN);
-        m.validateAuthToken(authToken);
-        
-        OMemberProxy memberProxy = null;
-        List<OReplicatedEntity> fetchedEntities = null;
-        Date replicationDate = new Date();
-        
-        if (m.isValid()) {
-            memberProxy = m.getMemberProxy();
-            
-            if (memberProxy != null && memberProxy.didRegister) {
-                if (memberProxy.passwordHash.equals(m.getPasswordHash())) {
-                    m.getDAO().putAuthToken(authToken);
-                    
-                    fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
-                } else {
-                    OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-                }
-            } else {
-                if (m.appVersionIncludes("1.0.3")) {
-                    OLog.log().warning(m.meta() + String.format("User %s is inactive or does not exist, raising NOT_FOUND (404).", m.getEmail()));
-                    OLog.throwWebApplicationException(HttpServletResponse.SC_NOT_FOUND);
-                } else {
-                    OLog.log().warning(m.meta() + String.format("User %s is inactive or does not exist, raising UNAUTHORIZED (401).", m.getEmail()));
-                    OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-                }
-            }
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", fetchedEntities.size()));
-            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, memberProxy.memberId).entity(fetchedEntities).lastModified(replicationDate).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 304");
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
-        }
+    public Response registerUser(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @QueryParam(UrlParams.DEVICE_ID) String deviceId,
+            @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion,
+            @QueryParam(UrlParams.LANGUAGE) String language
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String userPasswordHash = checkValidPassword(credentials[1]);
+        final String metadata = checkMetadata(deviceId, deviceType, appVersion);
+        checkLanguage(language);
+        checkNotRegistered(userEmail);
+
+        final String activationCode = UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE);
+        final OAuthInfo authInfo = new OAuthInfo(userEmail, deviceId, userPasswordHash, activationCode);
+        ofy().save().entity(authInfo).now();
+        new OMailer(language).sendRegistrationEmail(userEmail, activationCode);
+        LOG.fine(metadata + "Sent user activation code to new user " + userEmail);
+
+        return Response
+                .status(HttpServletResponse.SC_CREATED)
+                .entity(authInfo)
+                .build();
     }
-    
-    
+
     @GET
     @Path("activate")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response activateUser(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                 @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                                 @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        m = new OMeta(deviceId, deviceType, appVersion, null);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.ACTIVATE);
-        m.validateAuthToken(authToken);
-        
-        List<OReplicatedEntity> fetchedEntities = null;
-        Date replicationDate = new Date();
-        
-        if (m.isValid()) {
-            OAuthInfo authInfo = m.getAuthInfo();
-            
-            if (authInfo.passwordHash.equals(m.getPasswordHash())) {
-                ofy().delete().entity(authInfo);
-                m.getDAO().putAuthToken(authToken);
-                
-                fetchedEntities = m.getDAO().fetchEntities(null);
-            } else {
-                OLog.log().warning(m.meta() + "Incorrect password, raising UNAUTHORIZED (401).");
-                OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-            }
+    public Response activateUser(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_ID) String deviceId,
+            @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String userPasswordHash = checkValidPassword(credentials[1]);
+        final String metadata = checkMetadata(deviceId, deviceType, appVersion);
+        final OAuthInfo authInfo = checkAuthInfo(userEmail);
+        checkAuthTokenFormat(authToken);
+        checkNotRegistered(userEmail);
+
+        if (authInfo.passwordHash.equals(userPasswordHash)) {
+            final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
+            final OMemberProxy memberProxy = OMemberProxy.getOrCreate(userEmail);
+            memberProxy.passwordHash = userPasswordHash;
+            putAuthToken(authToken, authMeta, memberProxy);
+            ofy().delete().entity(authInfo);
+            LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
+
+            final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(userEmail);
+            LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
+
+            return Response
+                    .ok(fetchedEntities)
+                    .header(HttpHeaders.LOCATION, memberProxy.memberId)
+                    .lastModified(new Date())
+                    .build();
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-        }
-        
-        if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", fetchedEntities.size()));
-            return Response.status(HttpServletResponse.SC_OK).header(HttpHeaders.LOCATION, m.getMemberProxy().memberId).entity(fetchedEntities).lastModified(replicationDate).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 204");
-            return Response.status(HttpServletResponse.SC_NO_CONTENT).lastModified(replicationDate).build();
+            throw new NotAuthorizedException(metadata + "Incorrect password");
         }
     }
-    
+
+    @GET
+    @Path("login")
+    public Response loginUser(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_ID) String deviceId,
+            @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String userPasswordHash = checkValidPassword(credentials[1]);
+        final String metadata = checkMetadata(deviceId, deviceType, appVersion);
+        final OMemberProxy memberProxy = checkRegistered(userEmail);
+        checkAuthTokenFormat(authToken);
+
+        if (memberProxy.passwordHash.equals(userPasswordHash)) {
+            final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
+            putAuthToken(authToken, authMeta, memberProxy);
+            LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
+
+            final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(userEmail, replicationDate);
+            LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
+
+            return Response
+                    .ok(fetchedEntities)
+                    .header(HttpHeaders.LOCATION, memberProxy.memberId)
+                    .lastModified(new Date())
+                    .build();
+        } else {
+            throw new NotAuthorizedException(metadata + "Incorrect password");
+        }
+    }
     
     @GET
     @Path("change")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response changePassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                   @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                   @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        m = new OMeta(authToken, appVersion, null);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.CHANGE);
-        
-        if (m.isValid()) {
-            updatePasswordHash(authorizationHeader);
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        OLog.log().fine(m.meta() + "Saved updated password hash");
-        OLog.log().fine(m.meta() + "HTTP status: 201");
+    public Response changePassword(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String userPasswordHash = checkValidPassword(credentials[1]);
+        final OAuthMeta authMeta = checkAuthToken(authToken, userEmail);
+        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        final OMemberProxy memberProxy = checkRegistered(userEmail);
+
+        memberProxy.passwordHash = userPasswordHash;
+        ofy().save().entity(memberProxy).now();
+        LOG.fine(metadata + "Saved new password hash for " + userEmail);
+
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
-    
     
     @GET
     @Path("reset")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response resetPassword(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                  @QueryParam(OURLParams.DEVICE_ID) String deviceId,
-                                  @QueryParam(OURLParams.DEVICE_TYPE) String deviceType,
-                                  @QueryParam(OURLParams.APP_VERSION) String appVersion,
-                                  @QueryParam(OURLParams.LANGUAGE) String language)
-    {
-        m = new OMeta(deviceId, deviceType, appVersion, language);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.RESET);
-        m.validateAuthToken(authToken);
-        
-        if (m.isValid()) {
-            if (updatePasswordHash(authorizationHeader)) {
-                new OMailer(m).sendPasswordResetEmail();
-                
-                OLog.log().fine(m.meta() + "Saved temporary password hash");
-            } else {
-                OLog.log().warning(m.meta() + "Attempt made to reset password for inactive or non-existent user, doing nothing.");
-            }
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        OLog.log().fine(m.meta() + "HTTP status: 201");
+    public Response resetPassword(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @QueryParam(UrlParams.DEVICE_ID) String deviceId,
+            @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion,
+            @QueryParam(UrlParams.LANGUAGE) String language
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String temporaryPassword = credentials[1];
+        final String temporaryPasswordHash = checkValidPassword(credentials[1]);
+        final String metadata = checkMetadata(deviceId, deviceType, appVersion);
+        final OMemberProxy memberProxy = checkRegistered(userEmail);
+        checkLanguage(language);
+
+        memberProxy.passwordHash = temporaryPasswordHash;
+        ofy().save().entity(memberProxy).now();
+        new OMailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
+        LOG.fine(metadata + "Sent temporary password to " + userEmail);
+
         return Response.status(HttpServletResponse.SC_CREATED).build();
     }
     
-    
     @GET
     @Path("sendcode")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sendActivationCode(@HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                       @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                       @QueryParam(OURLParams.APP_VERSION) String appVersion,
-                                       @QueryParam(OURLParams.LANGUAGE) String language)
-    {
-        m = new OMeta(authToken, appVersion, language);
-        m.validateAuthorizationHeader(authorizationHeader, OAuthPhase.SENDCODE);
-        
-        OAuthInfo authInfo = null;
-        
-        if (m.isValid()) {
-            authInfo = m.getAuthInfo();
-            
-            new OMailer(m).sendEmailActivationCode();
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
-        }
-        
-        OLog.log().fine(m.meta() + "HTTP status: 201");
+    public Response sendActivationCode(
+            @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion,
+            @QueryParam(UrlParams.LANGUAGE) String language
+    ) {
+        final String[] credentials = checkBasicAuth(authorizationHeader);
+        final String userEmail = checkValidEmail(credentials[0]);
+        final String activationCode = credentials[1];
+        final OAuthMeta authMeta = checkAuthToken(authToken, userEmail);
+        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        checkLanguage(language);
+        checkRegistered(userEmail);
+
+        final OAuthInfo authInfo = new OAuthInfo(userEmail, authMeta.deviceId, "n/a", activationCode);
+        new OMailer(language).sendEmailActivationCode(userEmail, activationCode);
+        LOG.fine(metadata + "Sent email activation code to " + userEmail);
+
         return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
     }
 
 
-    private boolean updatePasswordHash(String authorizationHeader)
+    private void putAuthToken(String authToken, OAuthMeta authMeta, OMemberProxy memberProxy)
     {
-        boolean didUpdate = true;
-        
-        if (m.isValid()) {
-            OMemberProxy memberProxy = m.getMemberProxy();
-            
-            if (memberProxy != null) {
-                memberProxy.passwordHash = m.getPasswordHash();
-                
-                ofy().save().entity(memberProxy).now();
-            } else {
-                didUpdate = false;
+        Collection<OAuthMeta> authMetaItems = ofy().load().keys(memberProxy.authMetaKeys).values();
+
+        if (authMetaItems.size() > 0) {
+            for (OAuthMeta authMetaItem : authMetaItems) {
+                if (authMetaItem.deviceId.equals(authMeta.deviceId)) {
+                    memberProxy.authMetaKeys.remove(Key.create(OAuthMeta.class, authMetaItem.authToken));
+                    ofy().delete().entity(authMetaItem);
+                }
             }
         } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising BAD_REQUEST (400).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_BAD_REQUEST);
+            memberProxy.didRegister = true;
         }
-        
-        return didUpdate;
+
+        memberProxy.authMetaKeys.add(Key.create(OAuthMeta.class, authToken));
+        ofy().save().entities(authMeta, memberProxy).now();
     }
 }

@@ -1,8 +1,8 @@
 package co.origon.api.filters;
 
-import co.origon.api.helpers.Config;
-import co.origon.api.helpers.Config.Category;
-import co.origon.api.helpers.Config.Setting;
+import co.origon.api.config.Config;
+import co.origon.api.config.Config.Category;
+import co.origon.api.config.Config.Setting;
 
 import javax.annotation.Priority;
 import javax.ws.rs.ServiceUnavailableException;

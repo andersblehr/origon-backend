@@ -1,7 +1,7 @@
 package co.origon.api.helpers;
 
 
-public final class OURLParams
+public final class UrlParams
 {
     public static final String AUTH_TOKEN = "token";
     public static final String DEVICE_ID = "duid";

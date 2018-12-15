@@ -1,175 +1,113 @@
 package co.origon.api.model;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import co.origon.api.helpers.OLog;
-import co.origon.api.helpers.OMeta;
-import co.origon.api.helpers.OURLParams;
+import co.origon.api.OOrigonApplication;
+import co.origon.api.auth.OAuthMeta;
+import co.origon.api.helpers.*;
 
+import static co.origon.api.helpers.InputValidator.*;
 
 @Path("model")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class OModelHandler
 {
-    private final static int SC_MULTI_STATUS = 207;
-    
-    
+    private static final Logger LOG = Logger.getLogger(OOrigonApplication.class.getName());
+
     @POST
     @Path("replicate")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response replicate(List<OReplicatedEntity> entitiesToReplicate,
-                              @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                              @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                              @QueryParam(OURLParams.APP_VERSION) String appVersion,
-                              @QueryParam(OURLParams.LANGUAGE) String language)
-    {
-        OMeta m = new OMeta(authToken, appVersion, language);
-        m.validateReplicationDate(deviceReplicationDate);
-        
-        Date replicationDate = null;
-        
-        Set<String> replicatedEntityIds = new HashSet<String>();
-        List<OReplicatedEntity> entitiesToReturn = new ArrayList<OReplicatedEntity>();
-        
-        if (m.isValid()) {
-            if (entitiesToReplicate.size() > 0) {
-                for (OReplicatedEntity entity : entitiesToReplicate) {
-                    replicatedEntityIds.add(entity.entityId);
-                }
-                
-                m.getDAO().replicateEntities(entitiesToReplicate);
-                
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+    public Response replicate(
+            List<OReplicatedEntity> entitiesToReplicate,
+            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion,
+            @QueryParam(UrlParams.LANGUAGE) String language
+    ) {
+        final OAuthMeta authMeta = checkAuthToken(authToken);
+        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        checkReplicationDate(replicationDate);
+        checkLanguage(language);
 
-            replicationDate = new Date();
+        ODAO.getDao().replicateEntities(entitiesToReplicate, authMeta.email, new OMailer(language));
+        final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(authMeta.email, replicationDate);
+        final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
+                .filter(entity -> !entitiesToReplicate.contains(entity))
+                .collect(Collectors.toList());
 
-            List<OReplicatedEntity> fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
-            
-            if (entitiesToReplicate.size() > 0) {
-                for (OReplicatedEntity entity : fetchedEntities) {
-                    if (!replicatedEntityIds.contains(entity.entityId)) {
-                        entitiesToReturn.add(entity);
-                    }
-                }
-            } else {
-                entitiesToReturn = fetchedEntities;
-            }
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-        }
-        
-        if (entitiesToReplicate.size() > 0 && entitiesToReturn.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 207 " + String.format("(Replicated %d entities, returning %d entities.)", entitiesToReplicate.size(), entitiesToReturn.size()));
-            return Response.status(OModelHandler.SC_MULTI_STATUS).entity(entitiesToReturn).lastModified(replicationDate).build();
-        } else if (entitiesToReplicate.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 201 " + String.format("(Replicated %d entities.)", entitiesToReplicate.size()));
-            return Response.status(HttpServletResponse.SC_CREATED).lastModified(replicationDate).build();
-        } else if (entitiesToReturn.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format("(Returning %d entities.)", entitiesToReturn.size()));
-            return Response.status(HttpServletResponse.SC_OK).entity(entitiesToReturn).lastModified(replicationDate).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 304");
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
-        }
+        LOG.fine(metadata + entitiesToReplicate.size() + "/" + entitiesToReturn.size() + " entities replicated");
+
+        return Response
+                .ok(entitiesToReturn)
+                .lastModified(new Date())
+                .build();
     }
-    
-    
+
     @GET
     @Path("fetch")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response fetchEntities(@HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date deviceReplicationDate,
-                                  @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                  @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        OMeta m = new OMeta(authToken, appVersion, null);
-        m.validateReplicationDate(deviceReplicationDate);
-        
-        Date replicationDate = new Date();
-        List<OReplicatedEntity> fetchedEntities = null;
-        
-        if (m.isValid()) {
-            fetchedEntities = m.getDAO().fetchEntities(deviceReplicationDate);
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
-        }
-        
-        if (fetchedEntities.size() > 0) {
-            OLog.log().fine(m.meta() + "HTTP status: 200 " + String.format ("(Returning %d entities.)", fetchedEntities.size()));
-            return Response.status(HttpServletResponse.SC_OK).entity(fetchedEntities).lastModified(replicationDate).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 304");
-            return Response.status(HttpServletResponse.SC_NOT_MODIFIED).lastModified(replicationDate).build();
-        }
+    public Response fetchEntities(
+            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final OAuthMeta authMeta = checkAuthToken(authToken);
+        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        checkReplicationDate(replicationDate);
+
+        final List<OReplicatedEntity> fetchedEntities = ODAO.getDao().fetchEntities(authMeta.email, replicationDate);
+
+        LOG.fine(metadata + fetchedEntities.size() + " entities fetched");
+
+        return Response
+                .ok(fetchedEntities)
+                .lastModified(new Date())
+                .build();
     }
-    
-    
+
     @GET
     @Path("member")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response lookupMember(@QueryParam(OURLParams.IDENTIFIER) String memberId,
-                                 @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                 @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        OMeta m = new OMeta(authToken, appVersion, null);
-        List<OReplicatedEntity> memberEntities = null;
-        
-        if (m.isValid()) {
-            memberEntities = m.getDAO().lookupMemberEntities(memberId);
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+    public Response lookupMember(
+            @QueryParam(UrlParams.IDENTIFIER) String memberId,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final OAuthMeta authMeta = checkAuthToken(authToken);
+        checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+
+        List<OReplicatedEntity> memberEntities = ODAO.getDao().lookupMemberEntities(memberId);
+        if (memberEntities == null) {
+            throw new NotFoundException();
         }
-        
-        if (memberEntities != null) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
-            return Response.status(HttpServletResponse.SC_OK).entity(memberEntities).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 404");
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
-        }
+
+        return Response
+                .ok(memberEntities)
+                .build();
     }
-    
-    
+
     @GET
     @Path("origo")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response lookupOrigo(@QueryParam(OURLParams.IDENTIFIER) String internalJoinCode,
-                                @QueryParam(OURLParams.AUTH_TOKEN) String authToken,
-                                @QueryParam(OURLParams.APP_VERSION) String appVersion)
-    {
-        OMeta m = new OMeta(authToken, appVersion, null);
-        OOrigo origo = null;;
-        
-        if (m.isValid()) {
-            origo = m.getDAO().lookupOrigo(internalJoinCode);
-        } else {
-            OLog.log().warning(m.meta() + "Invalid parameter set (see preceding warnings). Blocking entry for potential intruder, raising UNAUTHORIZED (401).");
-            OLog.throwWebApplicationException(HttpServletResponse.SC_UNAUTHORIZED);
+    public Response lookupOrigo(
+            @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
+            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.APP_VERSION) String appVersion
+    ) {
+        final OAuthMeta authMeta = checkAuthToken(authToken);
+        checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+
+        OOrigo origo = ODAO.getDao().lookupOrigo(internalJoinCode);
+        if (origo == null) {
+            throw new NotFoundException();
         }
-        
-        if (origo != null) {
-            OLog.log().fine(m.meta() + "HTTP status: 200");
-            return Response.status(HttpServletResponse.SC_OK).entity(origo).build();
-        } else {
-            OLog.log().fine(m.meta() + "HTTP status: 404");
-            return Response.status(HttpServletResponse.SC_NOT_FOUND).build();
-        }
+
+        return Response
+                .ok(origo)
+                .build();
     }
 }

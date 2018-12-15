@@ -3,12 +3,11 @@ package co.origon.api;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import co.origon.api.helpers.Config;
+import co.origon.api.config.Config;
 import com.googlecode.objectify.ObjectifyService;
 
 import co.origon.api.auth.OAuthInfo;
 import co.origon.api.auth.OAuthMeta;
-import co.origon.api.helpers.Config;
 import co.origon.api.helpers.OMemberProxy;
 import co.origon.api.model.*;
 
