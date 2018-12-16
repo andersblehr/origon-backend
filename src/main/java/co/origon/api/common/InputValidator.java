@@ -3,13 +3,17 @@ package co.origon.api.common;
 import co.origon.api.entities.OAuthInfo;
 import co.origon.api.entities.OAuthMeta;
 import co.origon.api.entities.OMemberProxy;
-import co.origon.api.exceptions.IllegalCredentialsException;
-import co.origon.api.exceptions.InvalidInputException;
 import com.googlecode.objectify.Key;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.ForbiddenException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
@@ -34,7 +38,7 @@ public class InputValidator {
 
             return credentials;
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -44,7 +48,7 @@ public class InputValidator {
 
             return (new InternetAddress(email)).getAddress();
         } catch (AddressException e) {
-            throw new InvalidInputException("Invalid email address: " + email, e);
+            throw new BadRequestException("Invalid email address: " + email, e);
         }
     }
 
@@ -55,7 +59,7 @@ public class InputValidator {
 
             return Crypto.generatePasswordHash(password);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -64,7 +68,7 @@ public class InputValidator {
             checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
             checkArgument(replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -76,7 +80,7 @@ public class InputValidator {
                     checkNotNull(appVersion, "Missing parameter: " + UrlParams.APP_VERSION)
             );
         } catch (NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -85,7 +89,22 @@ public class InputValidator {
             checkNotNull(language, "Missing parameter: " + UrlParams.LANGUAGE);
             checkArgument(Arrays.asList(new String[]{"nb", "en", "de"}).contains(language), "Illegal language: " + language);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
+        }
+    }
+
+    public static OAuthInfo checkAuthInfo(String email, String passwordHash) {
+        try {
+            checkValidEmail(email);
+            final OAuthInfo authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).now();
+            checkNotNull(authInfo, "User " + email + " is not pending activation, cannot activate");
+            checkArgument(authInfo.passwordHash.equals(passwordHash), "Incorrect password");
+
+            return authInfo;
+        } catch (NullPointerException e) {
+            throw new BadRequestException(e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new NotAuthorizedException(e.getMessage(), e);
         }
     }
 
@@ -94,7 +113,7 @@ public class InputValidator {
             checkNotNull(authToken, "Missing parmaeter: " + UrlParams.AUTH_TOKEN);
             checkArgument(authToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + authToken);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
@@ -106,32 +125,21 @@ public class InputValidator {
 
             return authMeta;
         } catch (NullPointerException e) {
-            throw new IllegalCredentialsException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
         }
     }
 
     public static OAuthMeta checkAuthToken(String authToken, String email) {
         try {
-            checkAuthTokenFormat(authToken);
-            checkValidEmail(email);
             final OAuthMeta authMeta = checkAuthToken(authToken);
+            checkNotNull(email);
             checkArgument(authMeta.email.equals(email), "Email address does not match records");
 
             return authMeta;
-        } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e.getMessage(), e);
-        }
-    }
-
-    public static OAuthInfo checkAuthInfo(String email) {
-        try {
-            checkValidEmail(email);
-            final OAuthInfo authInfo = ofy().load().key(Key.create(OAuthInfo.class, email)).now();
-            checkNotNull(authInfo, "User " + email + " is not pending activation, cannot activate");
-
-            return authInfo;
         } catch (NullPointerException e) {
-            throw new IllegalCredentialsException(e.getMessage(), e);
+            throw new BadRequestException(e.getMessage(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ForbiddenException(e.getMessage(), e);
         }
     }
 
@@ -141,7 +149,7 @@ public class InputValidator {
             final OMemberProxy memberProxy = OMemberProxy.get(email);
             checkArgument(memberProxy == null || !memberProxy.didRegister, "User " + email + " is already registered");
         } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e.getMessage(), e);
+            throw new WebApplicationException(e.getMessage(), e, Status.CONFLICT);
         }
     }
 
@@ -153,7 +161,7 @@ public class InputValidator {
 
             return memberProxy;
         } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e.getMessage(), e);
+            throw new NotAuthorizedException(e.getMessage(), e);
         }
     }
 }
