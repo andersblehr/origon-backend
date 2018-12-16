@@ -87,7 +87,7 @@ public class AuthController {
             LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
             return Response
-                    .ok(fetchedEntities)
+                    .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
                     .header(HttpHeaders.LOCATION, memberProxy.memberId)
                     .lastModified(new Date())
                     .build();
@@ -122,7 +122,7 @@ public class AuthController {
             LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
             return Response
-                    .ok(fetchedEntities)
+                    .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
                     .header(HttpHeaders.LOCATION, memberProxy.memberId)
                     .lastModified(new Date())
                     .build();
@@ -149,7 +149,9 @@ public class AuthController {
         ofy().save().entity(memberProxy).now();
         LOG.fine(metadata + "Saved new password hash for " + userEmail);
 
-        return Response.status(HttpServletResponse.SC_CREATED).build();
+        return Response
+                .status(HttpServletResponse.SC_CREATED)
+                .build();
     }
     
     @GET
@@ -174,7 +176,9 @@ public class AuthController {
         new Mailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
         LOG.fine(metadata + "Sent temporary password to " + userEmail);
 
-        return Response.status(HttpServletResponse.SC_CREATED).build();
+        return Response
+                .status(HttpServletResponse.SC_CREATED)
+                .build();
     }
     
     @GET
@@ -197,7 +201,9 @@ public class AuthController {
         new Mailer(language).sendEmailActivationCode(userEmail, activationCode);
         LOG.fine(metadata + "Sent email activation code to " + userEmail);
 
-        return Response.status(HttpServletResponse.SC_CREATED).entity(authInfo).build();
+        return Response
+                .status(HttpServletResponse.SC_CREATED).entity(authInfo)
+                .build();
     }
 
 
