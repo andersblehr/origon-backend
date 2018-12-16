@@ -11,10 +11,10 @@ import java.util.logging.Logger;
 @Provider
 public class IllegalCredentialsExceptionMapper implements ExceptionMapper<IllegalCredentialsException> {
 
-	private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
+    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
-	public Response toResponse(IllegalCredentialsException e) {
-		LOG.warning(e.getMessage());
-		return Response.status(Response.Status.FORBIDDEN).build();
-	}
+    public Response toResponse(IllegalCredentialsException e) {
+        LOG.warning(e.getMessage());
+        return Response.status(Response.Status.FORBIDDEN).build();
+    }
 }

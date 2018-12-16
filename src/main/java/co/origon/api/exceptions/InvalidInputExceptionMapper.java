@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 @Provider
 public class InvalidInputExceptionMapper implements ExceptionMapper<InvalidInputException> {
 
-	private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
+    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
-	public Response toResponse(InvalidInputException e) {
-		LOG.warning(e.getMessage());
-		return Response.status(Response.Status.BAD_REQUEST).build();
-	}
+    public Response toResponse(InvalidInputException e) {
+        LOG.warning(e.getMessage());
+        return Response.status(Response.Status.BAD_REQUEST).build();
+    }
 }
