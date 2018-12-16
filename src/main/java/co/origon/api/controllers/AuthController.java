@@ -8,6 +8,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import co.origon.api.OrigonApplication;
 import co.origon.api.common.Dao;
@@ -71,29 +72,26 @@ public class AuthController {
         final String userEmail = checkValidEmail(credentials[0]);
         final String userPasswordHash = checkValidPassword(credentials[1]);
         final String metadata = checkMetadata(deviceId, deviceType, appVersion);
-        final OAuthInfo authInfo = checkAuthInfo(userEmail);
+        final OAuthInfo authInfo = checkAuthInfo(userEmail, userPasswordHash);
         checkAuthTokenFormat(authToken);
         checkNotRegistered(userEmail);
 
-        if (authInfo.passwordHash.equals(userPasswordHash)) {
-            final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
-            final OMemberProxy memberProxy = OMemberProxy.getOrCreate(userEmail);
-            memberProxy.passwordHash = userPasswordHash;
-            putAuthToken(authToken, authMeta, memberProxy);
-            ofy().delete().entity(authInfo);
-            LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
+        final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
+        final OMemberProxy memberProxy = OMemberProxy.getOrCreate(userEmail);
+        memberProxy.passwordHash = userPasswordHash;
+        putAuthToken(authToken, authMeta, memberProxy);
+        ofy().delete().entity(authInfo);
+        LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
 
-            final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail);
-            LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail);
+        LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
-            return Response
-                    .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
-                    .header(HttpHeaders.LOCATION, memberProxy.memberId)
-                    .lastModified(new Date())
-                    .build();
-        } else {
-            throw new NotAuthorizedException(metadata + "Incorrect password");
-        }
+        return Response
+                .status(fetchedEntities.size() > 0 ? Status.OK : Status.NO_CONTENT)
+                .entity(fetchedEntities.size() > 0 ? fetchedEntities : null)
+                .header(HttpHeaders.LOCATION, memberProxy.memberId)
+                .lastModified(new Date())
+                .build();
     }
 
     @GET

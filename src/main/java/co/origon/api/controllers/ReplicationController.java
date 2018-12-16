@@ -8,6 +8,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import co.origon.api.OrigonApplication;
 import co.origon.api.entities.OAuthMeta;
@@ -47,7 +48,8 @@ public class ReplicationController
         LOG.fine(metadata + entitiesToReplicate.size() + "/" + entitiesToReturn.size() + " entities replicated");
 
         return Response
-                .ok(entitiesToReturn.size() > 0 ? entitiesToReturn : null)
+                .status(entitiesToReplicate.size() > 0 ? Status.CREATED : Status.OK)
+                .entity(entitiesToReturn.size() > 0 ? entitiesToReturn : null)
                 .lastModified(new Date())
                 .build();
     }
