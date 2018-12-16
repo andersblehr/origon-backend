@@ -12,13 +12,13 @@ import java.util.logging.Logger;
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
-	private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
+    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
 
-	public Response toResponse(WebApplicationException e) {
-		if (e.getResponse().getStatus() != HttpServletResponse.SC_NOT_FOUND) {
-			LOG.warning(e.getMessage());
-		}
+    public Response toResponse(WebApplicationException e) {
+        if (e.getResponse().getStatus() != HttpServletResponse.SC_NOT_FOUND) {
+            LOG.warning(e.getMessage());
+        }
 
-		return e.getResponse();
-	}
+        return e.getResponse();
+    }
 }
