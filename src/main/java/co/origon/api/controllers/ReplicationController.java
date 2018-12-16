@@ -47,7 +47,7 @@ public class ReplicationController
         LOG.fine(metadata + entitiesToReplicate.size() + "/" + entitiesToReturn.size() + " entities replicated");
 
         return Response
-                .ok(entitiesToReturn)
+                .ok(entitiesToReturn.size() > 0 ? entitiesToReturn : null)
                 .lastModified(new Date())
                 .build();
     }
@@ -68,7 +68,7 @@ public class ReplicationController
         LOG.fine(metadata + fetchedEntities.size() + " entities fetched");
 
         return Response
-                .ok(fetchedEntities)
+                .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
                 .lastModified(new Date())
                 .build();
     }
