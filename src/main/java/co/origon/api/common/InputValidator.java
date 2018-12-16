@@ -83,7 +83,7 @@ public class InputValidator {
     public static void checkLanguage(String language) {
         try {
             checkNotNull(language, "Missing parameter: " + UrlParams.LANGUAGE);
-            checkArgument(Arrays.asList(new String[]{"no", "en", "de"}).contains(language), "Illegal language: " + language);
+            checkArgument(Arrays.asList(new String[]{"nb", "en", "de"}).contains(language), "Illegal language: " + language);
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new InvalidInputException(e.getMessage(), e);
         }
