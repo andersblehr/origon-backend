@@ -34,7 +34,7 @@ public class InputValidator {
 
             return credentials;
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -55,7 +55,7 @@ public class InputValidator {
 
             return Crypto.generatePasswordHash(password);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -64,7 +64,7 @@ public class InputValidator {
             checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
             checkArgument(replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -76,7 +76,7 @@ public class InputValidator {
                     checkNotNull(appVersion, "Missing parameter: " + UrlParams.APP_VERSION)
             );
         } catch (NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -85,7 +85,7 @@ public class InputValidator {
             checkNotNull(language, "Missing parameter: " + UrlParams.LANGUAGE);
             checkArgument(Arrays.asList(new String[]{"no", "en", "de"}).contains(language), "Illegal language: " + language);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -94,7 +94,7 @@ public class InputValidator {
             checkNotNull(authToken, "Missing parmaeter: " + UrlParams.AUTH_TOKEN);
             checkArgument(authToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + authToken);
         } catch (IllegalArgumentException | NullPointerException e) {
-            throw new InvalidInputException(e);
+            throw new InvalidInputException(e.getMessage(), e);
         }
     }
 
@@ -106,7 +106,7 @@ public class InputValidator {
 
             return authMeta;
         } catch (NullPointerException e) {
-            throw new IllegalCredentialsException(e);
+            throw new IllegalCredentialsException(e.getMessage(), e);
         }
     }
 
@@ -119,7 +119,7 @@ public class InputValidator {
 
             return authMeta;
         } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e);
+            throw new IllegalCredentialsException(e.getMessage(), e);
         }
     }
 
@@ -131,7 +131,7 @@ public class InputValidator {
 
             return authInfo;
         } catch (NullPointerException e) {
-            throw new IllegalCredentialsException(e);
+            throw new IllegalCredentialsException(e.getMessage(), e);
         }
     }
 
@@ -141,7 +141,7 @@ public class InputValidator {
             final OMemberProxy memberProxy = OMemberProxy.get(email);
             checkArgument(memberProxy == null || !memberProxy.didRegister, "User " + email + " is already registered");
         } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e);
+            throw new IllegalCredentialsException(e.getMessage(), e);
         }
     }
 
@@ -153,7 +153,7 @@ public class InputValidator {
 
             return memberProxy;
         } catch (IllegalArgumentException e) {
-            throw new IllegalCredentialsException(e);
+            throw new IllegalCredentialsException(e.getMessage(), e);
         }
     }
 }
