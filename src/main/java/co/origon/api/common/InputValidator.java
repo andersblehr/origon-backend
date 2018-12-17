@@ -164,4 +164,12 @@ public class InputValidator {
             throw new NotAuthorizedException(e.getMessage(), e);
         }
     }
+
+    public static void checkPassword(OMemberProxy memberProxy, String passwordHash) {
+        try {
+            checkArgument(memberProxy.passwordHash.equals(passwordHash), "Incorrect password");
+        } catch (IllegalArgumentException e) {
+            throw new NotAuthorizedException(e.getMessage(), e);
+        }
+    }
 }
