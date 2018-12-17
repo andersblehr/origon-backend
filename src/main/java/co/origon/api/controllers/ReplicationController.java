@@ -45,7 +45,7 @@ public class ReplicationController
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
 
-        LOG.fine(metadata + entitiesToReplicate.size() + "/" + entitiesToReturn.size() + " entities replicated");
+        LOG.fine(metadata + entitiesToReplicate.size() + "+" + entitiesToReturn.size() + " entities replicated");
 
         return Response
                 .status(entitiesToReplicate.size() > 0 ? Status.CREATED : Status.OK)

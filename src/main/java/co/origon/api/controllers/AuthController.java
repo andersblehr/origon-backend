@@ -54,7 +54,7 @@ public class AuthController {
         LOG.fine(metadata + "Sent user activation code to new user " + userEmail);
 
         return Response
-                .status(HttpServletResponse.SC_CREATED)
+                .status(Status.CREATED)
                 .entity(authInfo)
                 .build();
     }
@@ -148,7 +148,7 @@ public class AuthController {
         LOG.fine(metadata + "Saved new password hash for " + userEmail);
 
         return Response
-                .status(HttpServletResponse.SC_CREATED)
+                .status(Status.CREATED)
                 .build();
     }
     
@@ -175,7 +175,7 @@ public class AuthController {
         LOG.fine(metadata + "Sent temporary password to " + userEmail);
 
         return Response
-                .status(HttpServletResponse.SC_CREATED)
+                .status(Status.CREATED)
                 .build();
     }
     
@@ -200,7 +200,8 @@ public class AuthController {
         LOG.fine(metadata + "Sent email activation code to " + userEmail);
 
         return Response
-                .status(HttpServletResponse.SC_CREATED).entity(authInfo)
+                .status(Status.CREATED)
+                .entity(authInfo)
                 .build();
     }
 
