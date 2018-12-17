@@ -44,10 +44,10 @@ public class InputValidator {
 
     public static String checkValidEmail(String email) {
         try {
-            checkNotNull(email, "Email address is null");
+            checkNotNull(email);
 
             return (new InternetAddress(email)).getAddress();
-        } catch (AddressException e) {
+        } catch (NullPointerException | AddressException e) {
             throw new BadRequestException("Invalid email address: " + email, e);
         }
     }
