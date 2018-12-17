@@ -77,9 +77,9 @@ public class AuthController {
         checkNotRegistered(userEmail);
 
         final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
-        final OMemberProxy memberProxy = OMemberProxy.getOrCreate(userEmail);
-        memberProxy.passwordHash = userPasswordHash;
-        putAuthToken(authToken, authMeta, memberProxy);
+        final OMemberProxy userProxy = OMemberProxy.getOrCreate(userEmail);
+        userProxy.passwordHash = userPasswordHash;
+        putAuthToken(authToken, authMeta, userProxy);
         ofy().delete().entity(authInfo);
         LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
 
@@ -89,7 +89,7 @@ public class AuthController {
         return Response
                 .status(fetchedEntities.size() > 0 ? Status.OK : Status.NO_CONTENT)
                 .entity(fetchedEntities.size() > 0 ? fetchedEntities : null)
-                .header(HttpHeaders.LOCATION, memberProxy.memberId)
+                .header(HttpHeaders.LOCATION, userProxy.memberId)
                 .lastModified(new Date())
                 .build();
     }
@@ -108,25 +108,22 @@ public class AuthController {
         final String userEmail = checkValidEmail(credentials[0]);
         final String userPasswordHash = checkValidPassword(credentials[1]);
         final String metadata = checkMetadata(deviceId, deviceType, appVersion);
-        final OMemberProxy memberProxy = checkRegistered(userEmail);
+        final OMemberProxy userProxy = checkRegistered(userEmail);
+        checkPassword(userProxy, userPasswordHash);
         checkAuthTokenFormat(authToken);
 
-        if (memberProxy.passwordHash.equals(userPasswordHash)) {
-            final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
-            putAuthToken(authToken, authMeta, memberProxy);
-            LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
+        final OAuthMeta authMeta = new OAuthMeta(authToken, userEmail, deviceId, deviceType);
+        putAuthToken(authToken, authMeta, userProxy);
+        LOG.fine(metadata + "Persisted new auth token for user " + userEmail);
 
-            final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail, replicationDate);
-            LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(userEmail, replicationDate);
+        LOG.fine(metadata + "Returning " + fetchedEntities.size() + " entities");
 
-            return Response
-                    .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
-                    .header(HttpHeaders.LOCATION, memberProxy.memberId)
-                    .lastModified(new Date())
-                    .build();
-        } else {
-            throw new NotAuthorizedException(metadata + "Incorrect password");
-        }
+        return Response
+                .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
+                .header(HttpHeaders.LOCATION, userProxy.memberId)
+                .lastModified(new Date())
+                .build();
     }
     
     @GET
@@ -141,10 +138,10 @@ public class AuthController {
         final String userPasswordHash = checkValidPassword(credentials[1]);
         final OAuthMeta authMeta = checkAuthToken(authToken, userEmail);
         final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
-        final OMemberProxy memberProxy = checkRegistered(userEmail);
+        final OMemberProxy userProxy = checkRegistered(userEmail);
 
-        memberProxy.passwordHash = userPasswordHash;
-        ofy().save().entity(memberProxy).now();
+        userProxy.passwordHash = userPasswordHash;
+        ofy().save().entity(userProxy).now();
         LOG.fine(metadata + "Saved new password hash for " + userEmail);
 
         return Response
@@ -166,11 +163,11 @@ public class AuthController {
         final String temporaryPassword = credentials[1];
         final String temporaryPasswordHash = checkValidPassword(credentials[1]);
         final String metadata = checkMetadata(deviceId, deviceType, appVersion);
-        final OMemberProxy memberProxy = checkRegistered(userEmail);
+        final OMemberProxy userProxy = checkRegistered(userEmail);
         checkLanguage(language);
 
-        memberProxy.passwordHash = temporaryPasswordHash;
-        ofy().save().entity(memberProxy).now();
+        userProxy.passwordHash = temporaryPasswordHash;
+        ofy().save().entity(userProxy).now();
         new Mailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
         LOG.fine(metadata + "Sent temporary password to " + userEmail);
 
