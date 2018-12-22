@@ -39,7 +39,7 @@ public class ReplicationController
         checkReplicationDate(replicationDate);
         checkLanguage(language);
 
-        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.email, new Mailer(language));
+        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.email, Mailer.forLanguage(language));
         final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.email, replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))

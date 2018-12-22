@@ -36,6 +36,8 @@ public class Mailer
     private static final String LANG_GERMAN = "de";
     private static final String LANG_NORWEGIAN = "nb";
 
+    public static final String[] LANGUAGES = new String[]{LANG_ENGLISH, LANG_GERMAN, LANG_NORWEGIAN};
+
     private static final String MAILER_RESOURCE_PATH = "/mailer";
     private static final String MAILER_TO = "to";
     private static final String MAILER_SUBJECT = "subject";
@@ -44,11 +46,16 @@ public class Mailer
     private final String language;
 
 
-    public Mailer(String language) {
+    private Mailer(String language) {
         this.language = language;
     }
 
-    
+
+    public static Mailer forLanguage(String language) {
+        return new Mailer(language);
+    }
+
+
     public void sendInvitation(String invitationEmail, OMemberProxy userProxy)
     {
         String invitationSubject = invitationSubject(language, null, null);
