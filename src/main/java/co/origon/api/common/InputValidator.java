@@ -12,7 +12,6 @@ import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.Arrays;
 import java.util.Base64;
@@ -87,7 +86,7 @@ public class InputValidator {
     public static void checkLanguage(String language) {
         try {
             checkNotNull(language, "Missing parameter: " + UrlParams.LANGUAGE);
-            checkArgument(Arrays.asList(new String[]{"nb", "en", "de"}).contains(language), "Illegal language: " + language);
+            checkArgument(Arrays.asList(Mailer.LANGUAGES).contains(language), "Unsupported language: " + language);
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new BadRequestException(e.getMessage(), e);
         }

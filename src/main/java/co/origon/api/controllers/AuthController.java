@@ -50,7 +50,7 @@ public class AuthController {
         final String activationCode = UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE);
         final OAuthInfo authInfo = new OAuthInfo(userEmail, deviceId, userPasswordHash, activationCode);
         ofy().save().entity(authInfo).now();
-        new Mailer(language).sendRegistrationEmail(userEmail, activationCode);
+        Mailer.forLanguage(language).sendRegistrationEmail(userEmail, activationCode);
         LOG.fine(metadata + "Sent user activation code to new user " + userEmail);
 
         return Response
@@ -168,7 +168,7 @@ public class AuthController {
 
         userProxy.passwordHash = temporaryPasswordHash;
         ofy().save().entity(userProxy).now();
-        new Mailer(language).sendPasswordResetEmail(userEmail, temporaryPassword);
+        Mailer.forLanguage(language).sendPasswordResetEmail(userEmail, temporaryPassword);
         LOG.fine(metadata + "Sent temporary password to " + userEmail);
 
         return Response
@@ -193,7 +193,7 @@ public class AuthController {
         checkRegistered(userEmail);
 
         final OAuthInfo authInfo = new OAuthInfo(userEmail, authMeta.deviceId, "n/a", activationCode);
-        new Mailer(language).sendEmailActivationCode(userEmail, activationCode);
+        Mailer.forLanguage(language).sendEmailActivationCode(userEmail, activationCode);
         LOG.fine(metadata + "Sent email activation code to " + userEmail);
 
         return Response
@@ -203,22 +203,22 @@ public class AuthController {
     }
 
 
-    private void putAuthToken(String authToken, OAuthMeta authMeta, OMemberProxy memberProxy)
+    private void putAuthToken(String authToken, OAuthMeta authMeta, OMemberProxy userProxy)
     {
-        Collection<OAuthMeta> authMetaItems = ofy().load().keys(memberProxy.authMetaKeys).values();
+        Collection<OAuthMeta> authMetaItems = ofy().load().keys(userProxy.authMetaKeys).values();
 
         if (authMetaItems.size() > 0) {
             for (OAuthMeta authMetaItem : authMetaItems) {
                 if (authMetaItem.deviceId.equals(authMeta.deviceId)) {
-                    memberProxy.authMetaKeys.remove(Key.create(OAuthMeta.class, authMetaItem.authToken));
+                    userProxy.authMetaKeys.remove(Key.create(OAuthMeta.class, authMetaItem.authToken));
                     ofy().delete().entity(authMetaItem);
                 }
             }
         } else {
-            memberProxy.didRegister = true;
+            userProxy.didRegister = true;
         }
 
-        memberProxy.authMetaKeys.add(Key.create(OAuthMeta.class, authToken));
-        ofy().save().entities(authMeta, memberProxy).now();
+        userProxy.authMetaKeys.add(Key.create(OAuthMeta.class, authToken));
+        ofy().save().entities(authMeta, userProxy).now();
     }
 }
