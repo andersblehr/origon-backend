@@ -58,7 +58,7 @@ public class Dao
         if (memberProxy != null) {
             referencedEntityKeys = new HashSet<>();
             
-            for (OMembership membership : ofy().load().keys(memberProxy.membershipKeys).values()) {
+            for (OMembership membership : ofy().load().keys(memberProxy.getMembershipKeys()).values()) {
                 if (membership.type.equals("R") && !membership.isExpired) {
                     memberEntities.addAll(fetchMembershipEntities(membership, null));
                 }
@@ -81,17 +81,17 @@ public class Dao
     }
 
 
-    public List<OReplicatedEntity> fetchEntities(String userEmaiil) {
-        return fetchEntities(userEmaiil, null);
+    public List<OReplicatedEntity> fetchEntities(String userEmail) {
+        return fetchEntities(userEmail, null);
     }
 
     
-    public List<OReplicatedEntity> fetchEntities(String userEmaiil, Date deviceReplicationDate)
+    public List<OReplicatedEntity> fetchEntities(String userEmail, Date deviceReplicationDate)
     {
         referencedEntityKeys = new HashSet<>();
         
-        OMemberProxy memberProxy = OMemberProxy.get(userEmaiil);
-        Collection<OMembership> memberships = ofy().load().keys(memberProxy.membershipKeys).values();
+        OMemberProxy memberProxy = OMemberProxy.get(userEmail);
+        Collection<OMembership> memberships = ofy().load().keys(memberProxy.getMembershipKeys()).values();
         
         Set<OReplicatedEntity> fetchedEntities = new HashSet<>();
         

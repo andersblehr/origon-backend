@@ -15,12 +15,14 @@ import co.origon.api.entities.OAuthMeta;
 import co.origon.api.common.*;
 import co.origon.api.entities.OOrigo;
 import co.origon.api.entities.OReplicatedEntity;
+import co.origon.api.annotations.TokenAuthenticated;
 
 import static co.origon.api.common.InputValidator.*;
 
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
+@TokenAuthenticated
 public class ReplicationController
 {
     private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
@@ -34,13 +36,13 @@ public class ReplicationController
             @QueryParam(UrlParams.APP_VERSION) String appVersion,
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
-        final OAuthMeta authMeta = checkAuthToken(authToken);
-        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        final String metadata = checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
         checkReplicationDate(replicationDate);
         checkLanguage(language);
 
-        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.email, Mailer.forLanguage(language));
-        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.email, replicationDate);
+        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.getEmail(), Mailer.forLanguage(language));
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
@@ -61,11 +63,11 @@ public class ReplicationController
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = checkAuthToken(authToken);
-        final String metadata = checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        final String metadata = checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
         checkReplicationDate(replicationDate);
 
-        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.email, replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
 
         LOG.fine(metadata + fetchedEntities.size() + " entities fetched");
 
@@ -82,8 +84,8 @@ public class ReplicationController
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = checkAuthToken(authToken);
-        checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
 
         List<OReplicatedEntity> memberEntities = Dao.getDao().lookupMemberEntities(memberId);
         if (memberEntities == null) {
@@ -102,8 +104,8 @@ public class ReplicationController
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = checkAuthToken(authToken);
-        checkMetadata(authMeta.deviceId, authMeta.deviceType, appVersion);
+        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
 
         OOrigo origo = Dao.getDao().lookupOrigo(internalJoinCode);
         if (origo == null) {

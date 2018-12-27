@@ -1,7 +1,10 @@
 package co.origon.api.entities;
 
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
@@ -9,26 +12,42 @@ import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.OnLoad;
-import com.googlecode.objectify.condition.IfDefault;
 import com.googlecode.objectify.condition.IfEmpty;
+import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
+
+import lombok.*;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-
 @Entity
 @Cache(expirationSeconds=600)
-public class OMemberProxy
-{
-    public @Id String proxyId;
-    public String memberId;
-    public @IgnoreSave(IfNull.class) String memberName;
-    
-    public @IgnoreSave(IfDefault.class) boolean didRegister = false;
-    public @IgnoreSave(IfNull.class) String passwordHash;
-    
-    public @IgnoreSave(IfEmpty.class) Set<Key<OAuthMeta>> authMetaKeys;
-    public @IgnoreSave(IfEmpty.class) Set<Key<OMembership>> membershipKeys;
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@Getter
+@Setter
+public class OMemberProxy {
+    @Id
+    private String proxyId;
+    private String memberId;
+
+    @IgnoreSave(IfNull.class)
+    private String memberName;
+
+    @IgnoreSave(IfFalse.class)
+    @Getter(lazy = true)
+    private final boolean registered = hasPassword();
+
+    @IgnoreSave(IfNull.class)
+    private String passwordHash;
+
+    @IgnoreSave(IfEmpty.class)
+    @Singular
+    private Set<Key<OAuthMeta>> authMetaKeys;
+
+    @IgnoreSave(IfEmpty.class)
+    @Singular
+    private Set<Key<OMembership>> membershipKeys;
     
     
     public OMemberProxy() {}
@@ -56,22 +75,38 @@ public class OMemberProxy
         this.proxyId = proxyId;
         
         memberId = instanceToClone.memberId;
-        didRegister = instanceToClone.didRegister;
         passwordHash = instanceToClone.passwordHash;
         authMetaKeys = instanceToClone.authMetaKeys;
         membershipKeys = instanceToClone.membershipKeys;
     }
 
     public static OMemberProxy get(String email) {
-        return ofy().load().key(Key.create(OMemberProxy.class, email)).now();
-    }
-
-    public static OMemberProxy getOrCreate(String email) {
-        OMemberProxy memberProxy = get(email);
-
+        OMemberProxy memberProxy = ofy().load().type(OMemberProxy.class).id(email).now();
         return memberProxy != null ? memberProxy : new OMemberProxy(email);
     }
-    
+
+    public void save() {
+        ofy().save().entity(this).now();
+    }
+
+    public void delete() {
+        ofy().delete().entity(this);
+    }
+
+    public void refreshAuthTokenForDevice(String authToken, String deviceId) {
+        final Collection<Key<OAuthMeta>> redundantAuthMetaKeys = ofy().load().keys(authMetaKeys).values().stream()
+                .filter(authMeta -> authMeta.getDeviceId().equals(deviceId))
+                .map(authMeta -> Key.create(OAuthMeta.class, authMeta.getAuthToken()))
+                .collect(Collectors.toSet());
+
+        authMetaKeys.add(Key.create(OAuthMeta.class, authToken));
+        authMetaKeys = authMetaKeys.stream()
+                .filter(key -> !redundantAuthMetaKeys.contains(key))
+                .collect(Collectors.toSet());
+
+        ofy().delete().keys(redundantAuthMetaKeys).now();
+    }
+
     @OnLoad
     public void instantiateNullSets()
     {
@@ -82,5 +117,9 @@ public class OMemberProxy
         if (membershipKeys == null) {
             membershipKeys = new HashSet<>();
         }
+    }
+
+    private boolean hasPassword() {
+        return passwordHash != null;
     }
 }

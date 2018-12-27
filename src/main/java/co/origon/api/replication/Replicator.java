@@ -44,13 +44,13 @@ public class Replicator
         if (proxyId.equals(userEmail)) {
             OMemberProxy memberProxy = OMemberProxy.get(userEmail);
 
-            if (memberProxy.memberId == null || memberProxy.memberName == null || !memberProxy.memberName.equals(member.name)) {
-                if (memberProxy.memberId == null) {
-                    memberProxy.memberId = member.entityId;
+            if (memberProxy.getMemberId() == null || memberProxy.getMemberName() == null || !memberProxy.getMemberName().equals(member.name)) {
+                if (memberProxy.getMemberId() == null) {
+                    memberProxy.setMemberId(member.entityId);
                 }
 
-                if (memberProxy.memberName == null || !memberProxy.memberName.equals(member.name)) {
-                    memberProxy.memberName = member.name;
+                if (memberProxy.getMemberName() == null || !memberProxy.getMemberName().equals(member.name)) {
+                    memberProxy.setMemberName(member.name);
                 }
 
                 touchedMemberProxies.add(memberProxy);
@@ -83,26 +83,14 @@ public class Replicator
                 affectedMemberProxyKeys.add(proxyKey);
 
                 if (membership.isInvitable()) {
-                    Set<OMembership> invitedMemberships = invitedMembershipsByMemberId.get(membership.member.entityId);
-
-                    if (invitedMemberships == null) {
-                        invitedMemberships = new HashSet<>();
-                        invitedMembershipsByMemberId.put(membership.member.entityId, invitedMemberships);
-                    }
-
+                    Set<OMembership> invitedMemberships = invitedMembershipsByMemberId.computeIfAbsent(membership.member.entityId, k -> new HashSet<>());
                     invitedMemberships.add(membership);
                 }
             }
 
-            Set<Key<OMembership>> membershipKeysToAddForMember = addedMembershipKeysByProxyId.get(proxyId);
-
-            if (membershipKeysToAddForMember == null) {
-                membershipKeysToAddForMember = new HashSet<>();
-                addedMembershipKeysByProxyId.put(proxyId, membershipKeysToAddForMember);
-            }
-
+            Set<Key<OMembership>> membershipKeysToAddForMember = addedMembershipKeysByProxyId.computeIfAbsent(proxyId, k -> new HashSet<>());
             membershipKeysToAddForMember.add(Key.create(membership.origoKey, OMembership.class, membership.entityId));
-        } else if (membership.dateReplicated != null) {
+        } else {
             affectedMemberProxyKeys.add(proxyKey);
         }
     }
@@ -166,7 +154,7 @@ public class Replicator
         Set<String> anchoredProxyIds = new HashSet<>();
 
         for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
-            anchoredProxyIds.add(memberProxy.proxyId);
+            anchoredProxyIds.add(memberProxy.getProxyId());
         }
 
         Set<Key<OMember>> driftingMemberKeys = new HashSet<>();
@@ -191,7 +179,7 @@ public class Replicator
             Map<String, OMemberProxy> driftingMemberProxiesByProxyId = new HashMap<>();
 
             for (OMemberProxy driftingMemberProxy : ofy().load().keys(driftingMemberProxyKeys).values()) {
-                driftingMemberProxiesByProxyId.put(driftingMemberProxy.proxyId, driftingMemberProxy);
+                driftingMemberProxiesByProxyId.put(driftingMemberProxy.getProxyId(), driftingMemberProxy);
             }
 
             for (OMember driftingMember : driftingMembers) {
@@ -201,8 +189,8 @@ public class Replicator
                 OMemberProxy driftingMemberProxy = driftingMemberProxiesByProxyId.get(driftingMemberProxyId);
                 OMemberProxy reanchoredMemberProxy = new OMemberProxy(currentMember.email, driftingMemberProxy);
 
-                for (OAuthMeta authMetaItem : ofy().load().keys(reanchoredMemberProxy.authMetaKeys).values()) {
-                    authMetaItem.email = currentMember.email;
+                for (OAuthMeta authMetaItem : ofy().load().keys(reanchoredMemberProxy.getAuthMetaKeys()).values()) {
+                    authMetaItem.setEmail(currentMember.email);
                     reanchoredAuthMetaItems.add(authMetaItem);
                 }
 
@@ -227,10 +215,10 @@ public class Replicator
     private void updateAffectedMembershipKeys()
     {
         for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
-            Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeysByProxyId.get(memberProxy.proxyId);
+            Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeysByProxyId.get(memberProxy.getProxyId());
 
             if (addedMembershipKeysForMember != null) {
-                memberProxy.membershipKeys.addAll(addedMembershipKeysForMember);
+                memberProxy.getMembershipKeys().addAll(addedMembershipKeysForMember);
                 touchedMemberProxies.add(memberProxy);
             }
         }
