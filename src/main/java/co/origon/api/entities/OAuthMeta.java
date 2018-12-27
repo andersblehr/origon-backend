@@ -7,25 +7,25 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
 @Entity
 @Cache(expirationSeconds = 600)
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Getter
 public class OAuthMeta {
     @Id
-    private final String authToken;
+    private String authToken;
 
     @Setter
     private String email;
-    private final String deviceId;
-    private final String deviceType;
+    private String deviceId;
+    private String deviceType;
 
     @Getter(lazy = true)
     private final Date dateExpires = dateExpires();
