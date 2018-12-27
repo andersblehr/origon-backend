@@ -78,18 +78,19 @@ public class AuthController {
         final String metadata = checkMetadata(deviceId, deviceType, appVersion);
         checkAuthTokenFormat(authToken);
 
-        OAuthMeta.builder()
+        final OAuthMeta authMeta = OAuthMeta.builder()
                 .authToken(authToken)
                 .email(credentials.getEmail())
                 .deviceId(deviceId)
                 .deviceType(deviceType)
-                .build()
-                .save();
+                .build();
         final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail()).toBuilder()
                 .proxyId(credentials.getEmail())
                 .passwordHash(credentials.getPasswordHash())
                 .authMetaKey(Key.create(OAuthMeta.class, authToken))
                 .build();
+
+        authMeta.save();
         userProxy.save();
         authInfo.delete();
 
