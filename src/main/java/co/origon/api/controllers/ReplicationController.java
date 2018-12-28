@@ -1,7 +1,6 @@
 package co.origon.api.controllers;
 
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.*;
@@ -10,7 +9,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.OrigonApplication;
+import co.origon.api.annotations.LanguageSupported;
 import co.origon.api.annotations.SessionDataValidated;
 import co.origon.api.entities.OAuthMeta;
 import co.origon.api.common.*;
@@ -18,7 +17,8 @@ import co.origon.api.entities.OOrigo;
 import co.origon.api.entities.OReplicatedEntity;
 import co.origon.api.annotations.TokenAuthenticated;
 
-import static co.origon.api.common.InputValidator.*;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -29,6 +29,7 @@ public class ReplicationController {
 
     @POST
     @Path("replicate")
+    @LanguageSupported
     public Response replicate(
             List<OReplicatedEntity> entitiesToReplicate,
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
@@ -38,7 +39,6 @@ public class ReplicationController {
     ) {
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
         checkReplicationDate(replicationDate);
-        checkLanguage(language);
 
         Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.getEmail(), Mailer.forLanguage(language));
         final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
@@ -107,5 +107,14 @@ public class ReplicationController {
         return Response
                 .ok(origo)
                 .build();
+    }
+
+    private static void checkReplicationDate(Date replicationDate) {
+        try {
+            checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
+            checkArgument(replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
+        } catch (IllegalArgumentException | NullPointerException e) {
+            throw new BadRequestException(e.getMessage(), e);
+        }
     }
 }
