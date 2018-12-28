@@ -1,7 +1,6 @@
 package co.origon.api.controllers;
 
 import java.util.*;
-import java.util.logging.Logger;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
@@ -9,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.OrigonApplication;
+import co.origon.api.annotations.LanguageSupported;
 import co.origon.api.annotations.SessionDataValidated;
 import co.origon.api.annotations.TokenAuthenticated;
 import co.origon.api.common.*;
@@ -20,8 +19,6 @@ import co.origon.api.entities.OReplicatedEntity;
 import co.origon.api.annotations.BasicAuthValidated;
 
 import com.googlecode.objectify.Key;
-
-import static co.origon.api.common.InputValidator.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,6 +32,7 @@ public class AuthController {
 
     @GET
     @Path("register")
+    @LanguageSupported
     public Response registerUser(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.DEVICE_ID) String deviceId,
@@ -44,7 +42,6 @@ public class AuthController {
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
         checkNotRegistered(credentials.getEmail());
-        checkLanguage(language);
 
         final OAuthInfo authInfo = OAuthInfo.builder()
                 .deviceId(deviceId)
@@ -161,6 +158,7 @@ public class AuthController {
     @GET
     @Path("reset")
     @TokenAuthenticated
+    @LanguageSupported
     public Response resetPassword(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
@@ -170,8 +168,6 @@ public class AuthController {
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        checkLanguage(language);
-
         final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail());
         userProxy.setPasswordHash(credentials.getPasswordHash());
         userProxy.save();
@@ -187,6 +183,7 @@ public class AuthController {
     @GET
     @Path("sendcode")
     @TokenAuthenticated
+    @LanguageSupported
     public Response sendActivationCode(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
@@ -195,8 +192,6 @@ public class AuthController {
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        checkLanguage(language);
-
         final String activationCode = credentials.getPassword();  // Not pretty, but how I chose to do it back then..
         final OAuthInfo authInfo = OAuthInfo.builder()
                 .deviceId(authMeta.getDeviceId())

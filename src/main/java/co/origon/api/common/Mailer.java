@@ -32,27 +32,21 @@ import co.origon.api.common.Config.Setting;
 
 public class Mailer
 {
-    private static final String LANG_ENGLISH = "en";
-    private static final String LANG_GERMAN = "de";
-    private static final String LANG_NORWEGIAN = "nb";
-
-    static final String[] LANGUAGES = new String[]{LANG_ENGLISH, LANG_GERMAN, LANG_NORWEGIAN};
-
     private static final String MAILER_RESOURCE_PATH = "/mailer";
     private static final String MAILER_TO = "to";
     private static final String MAILER_SUBJECT = "subject";
     private static final String MAILER_BODY = "body";
     
-    private final String language;
+    private final Language language;
 
 
-    private Mailer(String language) {
+    private Mailer(Language language) {
         this.language = language;
     }
 
 
-    public static Mailer forLanguage(String language) {
-        return new Mailer(language);
+    public static Mailer forLanguage(String languageCode) {
+        return new Mailer(Language.fromCode(languageCode));
     }
 
 
@@ -61,8 +55,8 @@ public class Mailer
         String invitationSubject = invitationSubject(language, null, null);
         String invitationText = invitationText(language, invitationEmail, userProxy, null, null);
         
-        if (language.equals(LANG_ENGLISH)) {
-            invitationText = invitationText + "\n\n" + invitationText(LANG_ENGLISH, invitationEmail, userProxy, null, null);
+        if (language != Language.ENGLISH) {
+            invitationText = invitationText + "\n\n" + invitationText(Language.ENGLISH, invitationEmail, userProxy, null, null);
         }
         
         sendEmail(invitationEmail, invitationSubject, invitationText);
@@ -75,8 +69,8 @@ public class Mailer
         String invitationSubject = invitationSubject(language, membership, origo);
         String invitationText = invitationText(language, invitationEmail, userProxy, membership, origo);
         
-        if (language.equals(LANG_ENGLISH)) {
-            invitationText = invitationText + "\n\n" + invitationText(LANG_ENGLISH, invitationEmail, userProxy, membership, origo);
+        if (language != Language.ENGLISH) {
+            invitationText = invitationText + "\n\n" + invitationText(Language.ENGLISH, invitationEmail, userProxy, membership, origo);
         }
         
         sendEmail(invitationEmail, invitationSubject, invitationText);
@@ -87,9 +81,9 @@ public class Mailer
     {
         String emailChangeNotificationSubject;
         
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             emailChangeNotificationSubject = "Epostadressen din på Origon har blitt endret";
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             emailChangeNotificationSubject = "Deine E-Mail-Adresse bei Origon ist geändert worden";
         } else {
             emailChangeNotificationSubject = "Your email address on Origon has been changed";
@@ -97,8 +91,8 @@ public class Mailer
         
         String emailChangeNotificationText = emailChangeNotificationText(language, userProxy, invitee, oldEmail);
 
-        if (!language.equals(LANG_ENGLISH)) {
-            emailChangeNotificationText = emailChangeNotificationText + "\n\n" + emailChangeNotificationText(LANG_ENGLISH, userProxy, invitee, oldEmail);
+        if (language != Language.ENGLISH) {
+            emailChangeNotificationText = emailChangeNotificationText + "\n\n" + emailChangeNotificationText(Language.ENGLISH, userProxy, invitee, oldEmail);
         }
         
         sendEmail(invitee.email, emailChangeNotificationSubject, emailChangeNotificationText);
@@ -108,7 +102,7 @@ public class Mailer
     
     public void sendRegistrationEmail(String email, String activationCode)
     {
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             sendEmail(email, "Fullfør registreringen på Origon",
                     String.format("Velkommen til Origon!\n" +
                                   "\n" +
@@ -119,9 +113,9 @@ public class Mailer
                                   "Merk: Opplysningene dine tilhører deg og bare deg. Vi kommer aldri til å selge dem videre eller bruke dem til noe annet enn det du kan " +
                                   "se med egne øyne i Origon.\n" +
                                   "\n" +
-                                  bestRegards(LANG_NORWEGIAN),
+                                  bestRegards(language),
                                   activationCode));
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             sendEmail(email, "Bitte deine Registrierung bei Origon vollenden",
                     String.format("Willkommen bei Origon!\n" +
                                   "\n" +
@@ -132,7 +126,7 @@ public class Mailer
                                   "Bitte beachten: Deine Informationen gehören dir und nur dir. Wir werden sie nie weiterverkaufen oder für andere Zwecke nutzen, als was du dir" +
                                   "mit eigenen Augen in Origon anschauen kannst." +
                                   "\n" +
-                                  bestRegards(LANG_GERMAN),
+                                  bestRegards(language),
                                   activationCode));
         } else {
             sendEmail(email, "Complete your registration with Origon",
@@ -145,7 +139,7 @@ public class Mailer
                                   "Please note: Your information belongs to you and you alone. We will never sell it nor use it for anything besides what you can " +
                                   "see with your own eyes in Origon.\n" +
                                   "\n" +
-                                  bestRegards(LANG_ENGLISH),
+                                  bestRegards(Language.ENGLISH),
                                   activationCode));
         }
     }
@@ -153,21 +147,21 @@ public class Mailer
     
     public void sendEmailActivationCode(String email, String activationCode)
     {
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             sendEmail(email, "Aktiver epostadressen din for bruk i Origon",
                     String.format("Oppgi følgende kode for å aktivere epostadressen %s for bruk i Origon.\n" +
                                   "\n" +
                                   "    Aktiveringskode: %s\n" +
                                   "\n" +
-                                  bestRegards(LANG_NORWEGIAN),
+                                  bestRegards(language),
                                   email, activationCode));
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             sendEmail(email, "Bitte deine E-Mail-Adresse für Gebrauch bei Origon aktivieren",
                     String.format("Bitte den folgenden Code eingeben, um die E-Mail-Adresse %s für Gebrauch bei Origon zu aktivieren.\n" +
                                   "\n" +
                                   "    Aktivierungscode: %s\n" +
                                   "\n" +
-                                  bestRegards(LANG_GERMAN),
+                                  bestRegards(language),
                                   email, activationCode));
         } else {
             sendEmail(email, "Activate your email address for use with Origon",
@@ -175,7 +169,7 @@ public class Mailer
                                   "\n" +
                                   "    Activation code: %s\n" +
                                   "\n" +
-                                  bestRegards(LANG_ENGLISH),
+                                  bestRegards(Language.ENGLISH),
                                   email, activationCode));
         }
     }
@@ -183,21 +177,21 @@ public class Mailer
     
     public void sendPasswordResetEmail(String email, String activationCode)
     {
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             sendEmail(email, "Passordet ditt har blitt tilbakestilt",
                     String.format("Ditt midlertidige passord er: %s.\n" +
                                   "\n" +
                                   "Så snart du har logget på Origon, bør du gå til Innstillinger og endre passordet til noe bare du vet om.\n" +
                                   "\n" +
-                                  bestRegards(LANG_NORWEGIAN),
+                                  bestRegards(language),
                                   activationCode));
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             sendEmail(email, "Dein Passwort ist zurückgestellt worden",
                     String.format("Dein temporäres Passwort ist: %s.\n" +
                                   "\n" +
                                   "Wenn du dich bei Origon eingeloggt hast, bitte unter Einstellungen ein Passwort wählen, das nur du kennst." +
                                   "\n" +
-                                  bestRegards(LANG_GERMAN),
+                                  bestRegards(language),
                                   activationCode));
         } else {
             sendEmail(email, "Your password has been reset",
@@ -205,7 +199,7 @@ public class Mailer
                                   "\n" +
                                   "Once you have logged in to Origon, you should go to Settings and change the password to something only you know.\n" +
                                   "\n" +
-                                  bestRegards(LANG_ENGLISH),
+                                  bestRegards(Language.ENGLISH),
                                   activationCode));
         }
     }
@@ -270,15 +264,15 @@ public class Mailer
     }
     
     
-    private String availabilityInfo(String language, String registrationEmail)
+    private String availabilityInfo(Language language, String registrationEmail)
     {
         String availabilityInfo;
 
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             availabilityInfo = String.format("Origon er tilgjengelig for iOS 8 og senere (iPhone, iPad og iPod touch). " +
                                              "Last ned Origon fra App Store og registrer deg med %s for å komme i gang. " +
                                              "(Origon er foreløpig ikke tilgjengelig for Android eller Windows Phone.)", registrationEmail);
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             availabilityInfo = String.format("Origon steht für iOS 8 und höher zur Verfügung (iPhone, iPad und iPod touch). " +
                                              "Zum Losfahren, Origon im App Store herunterladen und dich mit %s registrieren. " +
                                              "(Origon unterstützt zur Zeit nicht Android oder Windows Phone.)", registrationEmail);
@@ -292,14 +286,14 @@ public class Mailer
     }
     
     
-    private String bestRegards(String language)
+    private String bestRegards(Language language)
     {
         String bestRegards;
         
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             bestRegards = "Med vennlig hilsen Origon-teamet\n" +
                           "https://origon.co\n";
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             bestRegards = "Mit freundlichen Grüßen,\n" +
                           "das Origon-Team\n" +
                           "https://origon.co\n";
@@ -313,11 +307,11 @@ public class Mailer
     }
     
     
-    private String invitationSubject(String language, OMembership membership, OOrigo origo)
+    private String invitationSubject(Language language, OMembership membership, OOrigo origo)
     {
         String invitationSubject;
         
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             if (origo == null) {
                 invitationSubject = "Epostadressen din er lagt inn på Origon";
             } else if (origo.isPrivate()) {
@@ -329,7 +323,7 @@ public class Mailer
             } else {
                 invitationSubject = String.format("Du har blitt lagt inn i den delte kontaktlista \"%s\" på Origon", origo.name);
             }
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             if (origo == null) {
                 invitationSubject = "Deine E-Mail-Adresse ist in Origon eingetragen worden";
             } else if (origo.isPrivate()) {
@@ -359,11 +353,11 @@ public class Mailer
     }
     
     
-    private String invitationBody(String language, OMemberProxy userProxy, OMembership membership, OOrigo origo)
+    private String invitationBody(Language language, OMemberProxy userProxy, OMembership membership, OOrigo origo)
     {
         String invitationBody;
 
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             if (origo == null) {
                 invitationBody = String.format("%s (%s) har lagt inn epostadressen din på Origon", userProxy.getMemberName(), userProxy.getProxyId());
             } else if (origo.isPrivate()) {
@@ -375,7 +369,7 @@ public class Mailer
             } else {
                 invitationBody = String.format("%s (%s) har lagt deg inn i den delte kontaktlista \"%s\" på Origon", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
             }
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             if (origo == null) {
                 invitationBody = String.format("%s (%s) hat deine E-Mail-Adresse in Origon eingetragen", userProxy.getMemberName(), userProxy.getProxyId());
             } else if (origo.isPrivate()) {
@@ -405,67 +399,43 @@ public class Mailer
     }
     
     
-    private String invitationText(String language, String email, OMemberProxy userProxy, OMembership membership, OOrigo origo)
+    private String invitationText(Language language, String email, OMemberProxy userProxy, OMembership membership, OOrigo origo)
     {
-        String invitationText;
-        
-        if (language.equals(LANG_NORWEGIAN)) {
-            invitationText =
-                    "Hei!\n" +
-                    "\n" +
-                    invitationBody(LANG_NORWEGIAN, userProxy, membership, origo) + ".\n" +
-                    "\n" +
-                    availabilityInfo(LANG_NORWEGIAN, email) + "\n" +
-                    "\n" +
-                    bestRegards(LANG_NORWEGIAN);
-        } else if (language.equals(LANG_GERMAN)) {
-            invitationText =
-                    "Hallo!\n" +
-                    "\n" +
-                    invitationBody(LANG_GERMAN, userProxy, membership, origo) + ".\n" +
-                    "\n" +
-                    availabilityInfo(LANG_GERMAN, email) + "\n" +
-                    "\n" +
-                    bestRegards(LANG_GERMAN);
-        } else {
-            invitationText =
-                    "Hi!\n" +
-                    "\n" +
-                    invitationBody(LANG_ENGLISH, userProxy, membership, origo) + ".\n" +
-                    "\n" +
-                    availabilityInfo(LANG_ENGLISH, email) + "\n" +
-                    "\n" +
-                    bestRegards(LANG_ENGLISH);
-        }
-        
-        return invitationText;
+        return (language == Language.NORWEGIAN ? "Hei!" : (language == Language.GERMAN ? "Hallo!" : "Hi!")) +
+                "\n\n" +
+                invitationBody(language, userProxy, membership, origo) + ".\n" +
+                "\n" +
+                availabilityInfo(language, email) + "\n" +
+                "\n" +
+                bestRegards(language);
+
     }
 
     
-    private String emailChangeNotificationText(String language, OMemberProxy userProxy, OMember invitee, String oldEmail)
+    private String emailChangeNotificationText(Language language, OMemberProxy userProxy, OMember invitee, String oldEmail)
     {
         String emailChangeNotificationText;
         String inviteeGivenName = invitee.name.split(" ")[0];
         
-        if (language.equals(LANG_NORWEGIAN)) {
+        if (language == Language.NORWEGIAN) {
             emailChangeNotificationText =
                     String.format("%s,\n" +
                                   "\n" +
                                   "%s (%s) har endret epostadressen din på Origon fra %s til %s.\n" +
                                   "\n" +
-                                  availabilityInfo(LANG_NORWEGIAN, invitee.email) + "\n" +
+                                  availabilityInfo(language, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(LANG_NORWEGIAN),
+                                  bestRegards(language),
                                   inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
-        } else if (language.equals(LANG_GERMAN)) {
+        } else if (language == Language.GERMAN) {
             emailChangeNotificationText =
                     String.format("%s,\n" +
                                   "\n" +
                                   "%s (%s) hat deine E-Mail-Adresse bei Origon von %s auf %s geändert.\n" +
                                   "\n" +
-                                  availabilityInfo(LANG_GERMAN, invitee.email) + "\n" +
+                                  availabilityInfo(language, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(LANG_GERMAN),
+                                  bestRegards(language),
                                   inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
         } else {
             emailChangeNotificationText = 
@@ -473,9 +443,9 @@ public class Mailer
                                   "\n" +
                                   "%s (%s) has changed your email address on Origon from %s to %s.\n" +
                                   "\n" +
-                                  availabilityInfo(LANG_ENGLISH, invitee.email) + "\n" +
+                                  availabilityInfo(Language.ENGLISH, invitee.email) + "\n" +
                                   "\n" +
-                                  bestRegards(LANG_ENGLISH),
+                                  bestRegards(Language.ENGLISH),
                                   inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
         }
 
