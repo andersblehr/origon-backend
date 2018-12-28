@@ -27,7 +27,7 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
         final OAuthMeta authMeta;
         try {
             authMeta = OAuthMeta.get(authToken);
-        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException | IllegalArgumentException e) {
             throw new BadRequestException("Missing or invalid query parameter: " + UrlParams.AUTH_TOKEN, e);
         }
         if (authMeta == null) {
@@ -38,7 +38,7 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
         }
 
         final OMemberProxy userProxy = OMemberProxy.get(authMeta.getEmail());
-        if (!userProxy.isRegistered()) {
+        if (!userProxy.didRegister()) {
             throw new ForbiddenException("Cannot authenticate unknown or inactive user " + authMeta.getEmail());
         }
 

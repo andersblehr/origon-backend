@@ -31,7 +31,10 @@ public class OAuthMeta {
     private final Date dateExpires = dateExpires();
 
     public static OAuthMeta get(String authToken) {
-        if (authToken == null || authToken.length() != 40) {
+        if (authToken == null) {
+            throw new NullPointerException("Auth token is null");
+        }
+        if (authToken.length() != 40) {
             throw new IllegalArgumentException("Invalid auth token: " + authToken);
         }
 
