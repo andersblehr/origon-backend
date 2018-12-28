@@ -23,7 +23,7 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        final String authToken = requestContext.getUriInfo().getPathParameters().getFirst(UrlParams.AUTH_TOKEN);
+        final String authToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.AUTH_TOKEN);
         final OAuthMeta authMeta;
         try {
             authMeta = OAuthMeta.get(authToken);

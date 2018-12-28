@@ -66,7 +66,6 @@ public class ReplicationController {
         checkReplicationDate(replicationDate);
 
         final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
-
         Session.log(fetchedEntities.size() + " entities fetched");
 
         return Response
