@@ -2,8 +2,6 @@ package co.origon.api.common;
 
 import lombok.Getter;
 
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
 import java.util.Base64;
 
 @Getter
@@ -17,6 +15,7 @@ public class BasicAuthCredentials {
     private final String passwordHash;
 
     public static BasicAuthCredentials validate(String authorizationHeader) {
+        credentials = null;
         return credentials = new BasicAuthCredentials(authorizationHeader);
     }
 
@@ -25,7 +24,7 @@ public class BasicAuthCredentials {
     }
 
     private BasicAuthCredentials(String authorizationHeader) {
-        if (authorizationHeader == null) {
+        if (authorizationHeader == null || authorizationHeader.length() == 0) {
             throw new IllegalArgumentException("Missing Authorization header");
         }
 
@@ -33,7 +32,6 @@ public class BasicAuthCredentials {
         if (authElements.length != 2) {
             throw new IllegalArgumentException("Invalid Authorization header: " + authorizationHeader);
         }
-
         if (!authElements[0].equals("Basic")) {
             throw new IllegalArgumentException("Invalid authentication scheme for HTTP basic auth: " + authElements[0]);
         }
@@ -49,17 +47,15 @@ public class BasicAuthCredentials {
         if (credentials.length != 2) {
             throw new IllegalArgumentException("Invalid basic auth credentials: " + credentialsString);
         }
-
-        try {
-            email = (new InternetAddress(credentials[0])).getAddress();
-        } catch (AddressException e) {
-            throw new IllegalArgumentException("Invalid email address: " + credentials[0], e);
+        if (!credentials[0].matches("^.+@.+\\..+$")) {
+            throw new IllegalArgumentException("Invalid email address: " + credentials[0]);
         }
 
         if (credentials[1].length() < LENGTH_PASSWORD_MIN) {
             throw new IllegalArgumentException("Password is too short: " + credentials[1]);
         }
 
+        email = credentials[0];
         password = credentials[1];
         passwordHash = Crypto.generatePasswordHash(password);
     }

@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.mail.internet.InternetAddress;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -225,9 +224,12 @@ public class Mailer
     private void sendEmail(String to, String subject, String body)
     {
         try {
-            final InternetAddress validTo = new InternetAddress(to);
+            if (!to.matches("\"^.+@.+\\\\..+$\"")) {
+                throw new IllegalArgumentException("Invalid email address");
+            }
+
             final Map<String, String> requestBody = new HashMap<>();
-            requestBody.put(MAILER_TO, validTo.getAddress());
+            requestBody.put(MAILER_TO, to);
             requestBody.put(MAILER_SUBJECT, subject);
             requestBody.put(MAILER_BODY, body);
 
