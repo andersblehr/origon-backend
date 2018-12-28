@@ -222,7 +222,7 @@ public class AuthController {
         try {
             checkNotRegistered(credentials.getEmail());
         } catch (WebApplicationException e) {
-            throw new ForbiddenException("Cannot activate an active user", e);
+            throw new BadRequestException("Cannot activate an active user", e);
         }
 
         final OAuthInfo authInfo = OAuthInfo.get(credentials.getEmail());

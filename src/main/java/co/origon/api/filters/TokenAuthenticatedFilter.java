@@ -8,7 +8,6 @@ import co.origon.api.entities.OMemberProxy;
 
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -31,7 +30,7 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
             throw new BadRequestException("Missing or invalid query parameter: " + UrlParams.AUTH_TOKEN, e);
         }
         if (authMeta == null) {
-            throw new ForbiddenException("Cannot authenticate unknown auth token");
+            throw new BadRequestException("Cannot authenticate unknown auth token");
         }
         if (authMeta.getDateExpires().before(new Date())) {
             throw new NotAuthorizedException("Auth token has expired");
@@ -39,12 +38,12 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
         final OMemberProxy userProxy = OMemberProxy.get(authMeta.getEmail());
         if (!userProxy.didRegister()) {
-            throw new ForbiddenException("Cannot authenticate unknown or inactive user " + authMeta.getEmail());
+            throw new BadRequestException("Cannot authenticate unknown or inactive user " + authMeta.getEmail());
         }
 
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
         if (credentials != null && !credentials.getEmail().equals(authMeta.getEmail())) {
-            throw new ForbiddenException("Basic auth credentials do not match records for auth token provided");
+            throw new BadRequestException("Basic auth credentials do not match records for auth token provided");
         }
     }
 }

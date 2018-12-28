@@ -10,7 +10,6 @@ import com.auth0.jwt.exceptions.TokenExpiredException;
 
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.ForbiddenException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -48,7 +47,7 @@ public class JwtAuthenticatedFilter implements ContainerRequestFilter {
         } catch (TokenExpiredException e) {
             throw new NotAuthorizedException("JWT has expired");
         } catch (Exception e) {
-            throw new ForbiddenException("Invalid JWT", e);
+            throw new BadRequestException("Invalid JWT", e);
         }
     }
 }
