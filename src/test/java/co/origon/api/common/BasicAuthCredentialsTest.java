@@ -25,26 +25,26 @@ class BasicAuthCredentialsTest {
         @DisplayName("Validate successfully when Authorization header contains valid credentials")
         void validateSuccessfully_whenAuthorizationHeaderContainsValidCredentials() {
             final BasicAuthCredentials credentials = BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
-            assertEquals(credentials.getEmail(), "user@example.com");
-            assertEquals(credentials.getPassword(), "password");
-            assertEquals(credentials.getPasswordHash(), Crypto.generatePasswordHash("password"));
+            assertEquals("user@example.com", credentials.getEmail());
+            assertEquals("password", credentials.getPassword());
+            assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
         }
 
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header is missing")
         void throwIllegalArgumentException_whenAuthorizationHeaderMissing() {
-            assertAll("Invalid or missing Authorization header",
+            assertAll("Missing Authorization header",
                     () -> {
                         Throwable e = assertThrows(IllegalArgumentException.class, () ->
                                 BasicAuthCredentials.validate(null)
                         );
-                        assertEquals(e.getMessage(), "Missing Authorization header");
+                        assertEquals("Missing Authorization header", e.getMessage());
                     },
                     () -> {
                         Throwable e = assertThrows(IllegalArgumentException.class, () ->
                                 BasicAuthCredentials.validate("")
                         );
-                        assertEquals(e.getMessage(), "Missing Authorization header");
+                        assertEquals("Missing Authorization header", e.getMessage());
                     }
             );
         }
@@ -73,7 +73,7 @@ class BasicAuthCredentialsTest {
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_BASE64)
             );
-            assertEquals(e.getMessage(), "Credentials are not base 64 encoded");
+            assertEquals("Credentials are not base 64 encoded", e.getMessage() );
         }
 
         @Test
@@ -112,9 +112,9 @@ class BasicAuthCredentialsTest {
         void retrieveCredentialsSuccessfully_whenSuccessfullyValidated() {
             BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
             final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-            assertEquals(credentials.getEmail(), "user@example.com");
-            assertEquals(credentials.getPassword(), "password");
-            assertEquals(credentials.getPasswordHash(), Crypto.generatePasswordHash("password"));
+            assertEquals("user@example.com", credentials.getEmail());
+            assertEquals("password", credentials.getPassword());
+            assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
         }
 
         @Test
