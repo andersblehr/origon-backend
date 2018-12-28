@@ -20,8 +20,4 @@ public enum Language {
 
         throw new IllegalArgumentException("Unknown or unsupported language: " + languageCoode);
     }
-
-    public String toCode() {
-        return languageCoode;
-    }
 }
