@@ -11,6 +11,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import co.origon.api.OrigonApplication;
+import co.origon.api.annotations.SessionDataValidated;
 import co.origon.api.entities.OAuthMeta;
 import co.origon.api.common.*;
 import co.origon.api.entities.OOrigo;
@@ -23,9 +24,8 @@ import static co.origon.api.common.InputValidator.*;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @TokenAuthenticated
-public class ReplicationController
-{
-    private static final Logger LOG = Logger.getLogger(OrigonApplication.class.getName());
+@SessionDataValidated
+public class ReplicationController {
 
     @POST
     @Path("replicate")
@@ -37,7 +37,6 @@ public class ReplicationController
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        final String metadata = checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
         checkReplicationDate(replicationDate);
         checkLanguage(language);
 
@@ -47,7 +46,7 @@ public class ReplicationController
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
 
-        LOG.fine(metadata + entitiesToReplicate.size() + "+" + entitiesToReturn.size() + " entities replicated");
+        Session.log(entitiesToReplicate.size() + "+" + entitiesToReturn.size() + " entities replicated");
 
         return Response
                 .status(entitiesToReplicate.size() > 0 ? Status.CREATED : Status.OK)
@@ -64,12 +63,11 @@ public class ReplicationController
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        final String metadata = checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
         checkReplicationDate(replicationDate);
 
         final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
 
-        LOG.fine(metadata + fetchedEntities.size() + " entities fetched");
+        Session.log(fetchedEntities.size() + " entities fetched");
 
         return Response
                 .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
@@ -84,9 +82,6 @@ public class ReplicationController
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
-
         List<OReplicatedEntity> memberEntities = Dao.getDao().lookupMemberEntities(memberId);
         if (memberEntities == null) {
             throw new NotFoundException();
@@ -104,9 +99,6 @@ public class ReplicationController
             @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        checkMetadata(authMeta.getDeviceId(), authMeta.getDeviceType(), appVersion);
-
         OOrigo origo = Dao.getDao().lookupOrigo(internalJoinCode);
         if (origo == null) {
             throw new NotFoundException();
