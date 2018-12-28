@@ -225,7 +225,7 @@ public class AuthController {
     private static void checkNotRegistered(String email) {
         try {
             final OMemberProxy userProxy = OMemberProxy.get(email);
-            checkArgument(!userProxy.isRegistered(), "User " + email + " is already registered");
+            checkArgument(!userProxy.didRegister(), "User " + email + " is already registered");
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(e.getMessage(), e, Status.CONFLICT);
         }
@@ -252,7 +252,7 @@ public class AuthController {
     private static OMemberProxy checkAuthenticated(BasicAuthCredentials credentials) {
         try {
             final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail());
-            checkArgument(userProxy.isRegistered(), "User " + credentials.getEmail() + " is not registered");
+            checkArgument(userProxy.didRegister(), "User " + credentials.getEmail() + " is not registered");
             checkArgument(userProxy.getPasswordHash().equals(credentials.getPasswordHash()), "Invalid password");
 
             return userProxy;

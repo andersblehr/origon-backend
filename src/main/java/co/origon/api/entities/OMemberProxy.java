@@ -2,7 +2,6 @@ package co.origon.api.entities;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,6 @@ import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.condition.IfEmpty;
-import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
 
 import lombok.*;
@@ -21,8 +19,9 @@ import lombok.*;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @Entity
-@Cache(expirationSeconds=600)
+@Cache(expirationSeconds = 600)
 @Builder(toBuilder = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -34,10 +33,6 @@ public class OMemberProxy {
     @IgnoreSave(IfNull.class)
     private String memberName;
 
-    @IgnoreSave(IfFalse.class)
-    @Getter(lazy = true)
-    private final boolean registered = hasPassword();
-
     @IgnoreSave(IfNull.class)
     private String passwordHash;
 
@@ -48,9 +43,6 @@ public class OMemberProxy {
     @IgnoreSave(IfEmpty.class)
     @Singular
     private Set<Key<OMembership>> membershipKeys;
-    
-    
-    public OMemberProxy() {}
     
     
     public OMemberProxy(OMember member)
@@ -107,6 +99,10 @@ public class OMemberProxy {
         ofy().delete().keys(redundantAuthMetaKeys).now();
     }
 
+    public boolean didRegister() {
+        return passwordHash != null;
+    }
+
     @OnLoad
     public void instantiateNullSets()
     {
@@ -117,9 +113,5 @@ public class OMemberProxy {
         if (membershipKeys == null) {
             membershipKeys = new HashSet<>();
         }
-    }
-
-    private boolean hasPassword() {
-        return passwordHash != null;
     }
 }
