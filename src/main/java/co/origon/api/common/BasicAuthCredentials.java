@@ -6,7 +6,7 @@ import java.util.Base64;
 
 @Getter
 public class BasicAuthCredentials {
-    private static BasicAuthCredentials credentials;
+    private static ThreadLocal<BasicAuthCredentials> localCredentials = ThreadLocal.withInitial(() -> null);
     private static final int LENGTH_PASSWORD_MIN = 6;
 
     private final String email;
@@ -14,14 +14,20 @@ public class BasicAuthCredentials {
     private final String passwordHash;
 
     public static BasicAuthCredentials validate(String authorizationHeader) {
-        if (credentials != null) {
+        if (localCredentials.get() != null) {
             throw new RuntimeException("Basic auth credentials have already been validated");
         }
-        return credentials = new BasicAuthCredentials(authorizationHeader);
+        final BasicAuthCredentials credentials = new BasicAuthCredentials(authorizationHeader);
+        localCredentials = ThreadLocal.withInitial(() -> credentials);
+        return localCredentials.get();
     }
 
     public static BasicAuthCredentials getCredentials() {
-        return credentials;
+        return localCredentials.get();
+    }
+
+    public static void dispose() {
+        localCredentials = ThreadLocal.withInitial(() -> null);
     }
 
     private BasicAuthCredentials(String authorizationHeader) {
