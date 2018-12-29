@@ -1,6 +1,5 @@
 package co.origon.api.entities;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import com.googlecode.objectify.annotation.Cache;
@@ -27,8 +26,8 @@ public class OAuthMeta {
     private String deviceId;
     private String deviceType;
 
-    @Getter(lazy = true)
-    private final Date dateExpires = dateExpires();
+    @Builder.Default
+    private Date dateExpires = dateExpires();
 
     public static OAuthMeta get(String authToken) {
         if (authToken == null) {
@@ -49,11 +48,7 @@ public class OAuthMeta {
         ofy().delete().entity(this);
     }
 
-    private Date dateExpires() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.add(Calendar.DATE, 30);
-
-        return calendar.getTime();
+    private static Date dateExpires() {
+        return new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
     }
 }
