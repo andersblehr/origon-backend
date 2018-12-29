@@ -14,12 +14,7 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
 
     public Response toResponse(WebApplicationException e) {
         if (Status.fromStatusCode(e.getResponse().getStatus()) != Status.NOT_FOUND) {
-            final String message = e.getResponse().getStatus() + ": " + e.getMessage();
-            if (Session.getSession() != null) {
-                Session.log(Level.WARNING, message);
-            } else {
-                Session.LOGGER.warning(message);
-            }
+            Session.log(Level.WARNING, e.getResponse().getStatus() + ": " + e.getMessage());
         }
 
         return e.getResponse();
