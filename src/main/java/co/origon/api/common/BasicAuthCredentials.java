@@ -6,8 +6,7 @@ import java.util.Base64;
 
 @Getter
 public class BasicAuthCredentials {
-    static BasicAuthCredentials credentials;
-
+    private static BasicAuthCredentials credentials;
     private static final int LENGTH_PASSWORD_MIN = 6;
 
     private final String email;

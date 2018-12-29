@@ -8,8 +8,7 @@ import java.util.logging.Logger;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class Session {
-    static Session session;
-
+    private static Session session;
     private static final Logger LOGGER = Logger.getLogger(OrigonApplication.class.getName());
 
     private final String deviceId;
