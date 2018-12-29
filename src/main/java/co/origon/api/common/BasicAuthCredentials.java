@@ -6,16 +6,18 @@ import java.util.Base64;
 
 @Getter
 public class BasicAuthCredentials {
-    private static final int LENGTH_PASSWORD_MIN = 6;
+    static BasicAuthCredentials credentials;
 
-    private static BasicAuthCredentials credentials;
+    private static final int LENGTH_PASSWORD_MIN = 6;
 
     private final String email;
     private final String password;
     private final String passwordHash;
 
     public static BasicAuthCredentials validate(String authorizationHeader) {
-        credentials = null;
+        if (credentials != null) {
+            throw new RuntimeException("Basic auth credentials have already been validated");
+        }
         return credentials = new BasicAuthCredentials(authorizationHeader);
     }
 

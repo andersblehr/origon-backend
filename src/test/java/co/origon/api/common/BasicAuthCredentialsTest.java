@@ -24,6 +24,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Validate successfully when Authorization header contains valid credentials")
         void validateSuccessfully_whenAuthorizationHeaderContainsValidCredentials() {
+            BasicAuthCredentials.credentials = null;
             final BasicAuthCredentials credentials = BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
             assertEquals("user@example.com", credentials.getEmail());
             assertEquals("password", credentials.getPassword());
@@ -33,6 +34,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header is missing")
         void throwIllegalArgumentException_whenAuthorizationHeaderMissing() {
+            BasicAuthCredentials.credentials = null;
             assertAll("Missing Authorization header",
                     () -> {
                         Throwable e = assertThrows(IllegalArgumentException.class, () ->
@@ -52,6 +54,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header has too many elements")
         void throwIllegalArgumentException_whenAuthorizationHeaderHasTooManyElements() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_TOO_MANY_ELEMENTS)
             );
@@ -61,6 +64,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header has invalid scheme")
         void throwIllegalArgumentException_whenAuthorizationHeaderHasInvalidScheme() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_SCHEME)
             );
@@ -70,6 +74,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header contains invalid base64 encoding")
         void throwIllegalArgumentException_whenAuthorizationHeaderContainsInvalidBase64Encoding() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_BASE64)
             );
@@ -79,6 +84,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header contains invalid credentials")
         void throwIllegalArgumentException_whenAuthorizationHeaderContainsInvalidCredentials() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_CREDENTIALS)
             );
@@ -88,6 +94,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header contains invalid email address")
         void throwIllegalArgumentException_whenAuthorizationHeaderContainsInvalidEmailAddress() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_EMAIL)
             );
@@ -97,6 +104,7 @@ class BasicAuthCredentialsTest {
         @Test
         @DisplayName("Throw IllegalArgumentException when Authorization header contains invalid password")
         void throwIllegalArgumentException_whenAuthorizationHeaderContainsInvalidPassword() {
+            BasicAuthCredentials.credentials = null;
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_PASSWORD)
             );
@@ -109,7 +117,8 @@ class BasicAuthCredentialsTest {
 
         @Test
         @DisplayName("Retrieve credentials successfully when successfully validated")
-        void retrieveCredentialsSuccessfully_whenSuccessfullyValidated() {
+        void retrieveCredentials_whenSuccessfullyValidated() {
+            BasicAuthCredentials.credentials = null;
             BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
             final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
             assertEquals("user@example.com", credentials.getEmail());
@@ -118,12 +127,25 @@ class BasicAuthCredentialsTest {
         }
 
         @Test
-        @DisplayName("Retrieve null credentials successfully when not successfully validated")
+        @DisplayName("Retrieve null credentials when not successfully validated")
         void retrieveNullCredentials_whenNotSuccessfullyValidated() {
+            BasicAuthCredentials.credentials = null;
             assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(null)
             );
             assertNull(BasicAuthCredentials.getCredentials());
+        }
+
+        @Test
+        @DisplayName("Throw RuntimeException when credentials have already been validated")
+        void throwRuntimeException_whenCredentialsHaveAlreadyBeenValidated() {
+            if (BasicAuthCredentials.credentials == null) {
+                BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
+            }
+            assertThrows(RuntimeException.class, () ->
+                    BasicAuthCredentials.validate(null)
+            );
+            assertNotNull(BasicAuthCredentials.getCredentials());
         }
     }
 
