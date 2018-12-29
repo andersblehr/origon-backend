@@ -4,7 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,7 +20,7 @@ class SessionTest {
         void instantiateSession_whenSessionDataValid() {
             final Session session = Session.create(SOME_UUID, "Device", "1.0");
             assertNotNull(session);
-            setSession(null);
+            Session.dispose();
         }
 
         @Test
@@ -59,18 +58,18 @@ class SessionTest {
                         assertEquals("Missing parameter: " + UrlParams.APP_VERSION, e.getMessage());
                     }
             );
-            setSession(null);
+            Session.dispose();
         }
 
         @Test
         @DisplayName("Throw RuntimeException when session has already been created")
         void throwRuntimeException_whenSessionHasAlreadyBeenCreated() {
-            setSession(Session.create(SOME_UUID, "Device", "1.0"));
+            Session.create(SOME_UUID, "Device", "1.0");
             assertThrows(RuntimeException.class, () ->
                     Session.create(null, null, null)
             );
             assertNotNull(Session.getSession());
-            setSession(null);
+            Session.dispose();
         }
     }
 
@@ -82,7 +81,7 @@ class SessionTest {
         void retrieveSession_whenSuccessfullyCreated() {
             Session.create(SOME_UUID, "Device", "1.0");
             assertNotNull(Session.getSession());
-            setSession(null);
+            Session.dispose();
         }
 
         @Test
@@ -92,17 +91,7 @@ class SessionTest {
                     Session.create(null, "Device", "1.0")
             );
             assertNull(Session.getSession());
-            setSession(null);
-        }
-    }
-
-    private void setSession(Session session) {
-        try {
-            Field sessionField = Session.class.getDeclaredField("session");
-            sessionField.setAccessible(true);
-            sessionField.set(null, session);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            Session.dispose();
         }
     }
 }

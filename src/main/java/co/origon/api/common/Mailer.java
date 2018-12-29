@@ -224,7 +224,7 @@ public class Mailer
     private void sendEmail(String to, String subject, String body)
     {
         try {
-            if (!to.matches("\"^.+@.+\\\\..+$\"")) {
+            if (!to.matches("^.+@.+\\..+$")) {
                 throw new IllegalArgumentException("Invalid email address");
             }
 

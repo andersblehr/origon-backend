@@ -29,7 +29,7 @@ class BasicAuthCredentialsTest {
             assertEquals("user@example.com", credentials.getEmail());
             assertEquals("password", credentials.getPassword());
             assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -49,7 +49,7 @@ class BasicAuthCredentialsTest {
                         assertEquals("Missing Authorization header", e.getMessage());
                     }
             );
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -59,7 +59,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_TOO_MANY_ELEMENTS)
             );
             assertTrue(e.getMessage().startsWith("Invalid Authorization header"));
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -69,7 +69,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_SCHEME)
             );
             assertTrue(e.getMessage().startsWith("Invalid authentication scheme for HTTP basic auth"));
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -79,7 +79,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_BASE64)
             );
             assertEquals("Credentials are not base 64 encoded", e.getMessage() );
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -89,7 +89,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_CREDENTIALS)
             );
             assertTrue(e.getMessage().startsWith("Invalid basic auth credentials"));
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -99,7 +99,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_EMAIL)
             );
             assertTrue(e.getMessage().startsWith("Invalid email address"));
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -109,7 +109,7 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_PASSWORD)
             );
             assertTrue(e.getMessage().startsWith("Password is too short"));
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
     }
 
@@ -124,7 +124,7 @@ class BasicAuthCredentialsTest {
             assertEquals("user@example.com", credentials.getEmail());
             assertEquals("password", credentials.getPassword());
             assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
@@ -134,32 +134,22 @@ class BasicAuthCredentialsTest {
                     BasicAuthCredentials.validate(null)
             );
             assertNull(BasicAuthCredentials.getCredentials());
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
 
         @Test
         @DisplayName("Throw RuntimeException when credentials have already been validated")
         void throwRuntimeException_whenCredentialsHaveAlreadyBeenValidated() {
-            setCredentials(BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS));
+            BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
             assertThrows(RuntimeException.class, () ->
                     BasicAuthCredentials.validate(null)
             );
             assertNotNull(BasicAuthCredentials.getCredentials());
-            setCredentials(null);
+            BasicAuthCredentials.dispose();
         }
     }
 
     private static String b64encode(String credentials) {
         return new String(Base64.getEncoder().encode(credentials.getBytes()));
-    }
-
-    private void setCredentials(BasicAuthCredentials credentials) {
-        try {
-            Field credentialsField = BasicAuthCredentials.class.getDeclaredField("credentials");
-            credentialsField.setAccessible(true);
-            credentialsField.set(null, credentials);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
     }
 }
