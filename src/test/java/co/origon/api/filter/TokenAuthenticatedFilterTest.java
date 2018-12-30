@@ -22,12 +22,13 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class TokenAuthenticatedFilterTest {
 
-    private final static String VALID_AUTH_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
+    private final static String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private final static String VALID_EMAIL = "user@example.com";
 
     @Mock private ContainerRequestContext requestContext;
@@ -51,24 +52,24 @@ class TokenAuthenticatedFilterTest {
     class Filter {
 
         @Test
-        @DisplayName("Throw BadRequestException when missing or invalid auth token")
-        void throwNoExceptions_whenValidAuthToken() {
+        @DisplayName("Throw no exceptions when device token is valid")
+        void throwNoExceptions_whenValidDeviceToken() {
             // given
             when(requestContext.getUriInfo())
                     .thenReturn(uriInfo);
             when(uriInfo.getQueryParameters())
                     .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
-                    .thenReturn(VALID_AUTH_TOKEN);
-            when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            lenient().when(daoFactory.daoFor(DeviceCredentials.class))
                     .thenReturn(tokenCredentialsDao);
-            when(tokenCredentialsDao.get(VALID_AUTH_TOKEN))
+            when(tokenCredentialsDao.get(VALID_DEVICE_TOKEN))
                     .thenReturn(tokenCredentials);
             when(tokenCredentials.dateExpires())
                     .thenReturn(new Date(System.currentTimeMillis() + 1000L));
             when(tokenCredentials.email())
                     .thenReturn(VALID_EMAIL);
-            when(daoFactory.daoFor(MemberProxy.class))
+            lenient().when(daoFactory.daoFor(MemberProxy.class))
                     .thenReturn(memberProxyDao);
             when(memberProxyDao.get(VALID_EMAIL))
                     .thenReturn(memberProxy);
@@ -83,8 +84,8 @@ class TokenAuthenticatedFilterTest {
         }
 
         @Test
-        @DisplayName("Throw BadRequestException when missing or invalid auth token")
-        void throwBadRequestException_whenMissingOrInvalidAuthToken() {
+        @DisplayName("Throw BadRequestException when missing or invalid device token")
+        void throwBadRequestException_whenMissingOrInvalidDeviceToken() {
 
         }
     }

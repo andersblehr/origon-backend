@@ -132,6 +132,14 @@ public class OMemberProxy implements MemberProxy {
         ofy().delete().keys(redundantAuthMetaKeys).now();
     }
 
+    public Set<Key<OAuthMeta>> getAuthMetaKeys() {
+        return authMetaKeys;
+    }
+
+    public Set<Key<OMembership>> getMembershipKeys() {
+        return membershipKeys;
+    }
+
     @OnLoad
     public void instantiateNullSets()
     {
