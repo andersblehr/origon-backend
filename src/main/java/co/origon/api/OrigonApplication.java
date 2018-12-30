@@ -1,8 +1,8 @@
 package co.origon.api;
 
-import co.origon.api.controllers.AuthController;
-import co.origon.api.controllers.ConfigController;
-import co.origon.api.controllers.ReplicationController;
+import co.origon.api.controller.AuthController;
+import co.origon.api.controller.ConfigController;
+import co.origon.api.controller.ReplicationController;
 
 import org.glassfish.jersey.server.ResourceConfig;
 

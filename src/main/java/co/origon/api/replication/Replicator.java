@@ -1,7 +1,7 @@
 package co.origon.api.replication;
 
 import co.origon.api.common.Mailer;
-import co.origon.api.entities.*;
+import co.origon.api.model.entity.*;
 import com.googlecode.objectify.Key;
 
 import java.util.*;

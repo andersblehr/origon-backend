@@ -1,4 +1,4 @@
-package co.origon.api.exceptions;
+package co.origon.api.exception;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Session;

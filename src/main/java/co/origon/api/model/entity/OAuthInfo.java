@@ -1,4 +1,4 @@
-package co.origon.api.entities;
+package co.origon.api.model.entity;
 
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;

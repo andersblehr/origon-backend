@@ -4,12 +4,9 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import co.origon.api.common.Config;
-import com.googlecode.objectify.ObjectifyService;
+import co.origon.api.model.entity.*;
 
-import co.origon.api.entities.OAuthInfo;
-import co.origon.api.entities.OAuthMeta;
-import co.origon.api.entities.OMemberProxy;
-import co.origon.api.entities.*;
+import com.googlecode.objectify.ObjectifyService;
 
 
 public class OrigonBootstrapper implements ServletContextListener

@@ -1,6 +1,6 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
-import co.origon.api.annotations.JwtAuthenticated;
+import co.origon.api.annotation.JwtAuthenticated;
 import co.origon.api.common.Config;
 import co.origon.api.common.Config.Category;
 import co.origon.api.common.Config.Setting;

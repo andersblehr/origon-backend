@@ -1,4 +1,4 @@
-package co.origon.api.controllers;
+package co.origon.api.controller;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,13 +9,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.annotations.LanguageSupported;
-import co.origon.api.annotations.SessionDataValidated;
-import co.origon.api.entities.OAuthMeta;
+import co.origon.api.annotation.LanguageSupported;
+import co.origon.api.annotation.SessionDataValidated;
+import co.origon.api.model.entity.OAuthMeta;
 import co.origon.api.common.*;
-import co.origon.api.entities.OOrigo;
-import co.origon.api.entities.OReplicatedEntity;
-import co.origon.api.annotations.TokenAuthenticated;
+import co.origon.api.model.entity.OOrigo;
+import co.origon.api.model.entity.OReplicatedEntity;
+import co.origon.api.annotation.TokenAuthenticated;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
