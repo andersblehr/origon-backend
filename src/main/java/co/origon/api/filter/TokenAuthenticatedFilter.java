@@ -3,10 +3,12 @@ package co.origon.api.filter;
 import co.origon.api.annotation.TokenAuthenticated;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.entity.OAuthMeta;
-import co.origon.api.model.entity.OMemberProxy;
+import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.api.entity.MemberProxy;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -20,29 +22,31 @@ import java.util.Date;
 @Priority(3)
 public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
+    @Inject
+    private DaoFactory daoFactory;
+
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        final String authToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.AUTH_TOKEN);
-        final OAuthMeta authMeta;
-        try {
-            authMeta = OAuthMeta.get(authToken);
-        } catch (NullPointerException | IllegalArgumentException e) {
-            throw new BadRequestException("Missing or invalid query parameter: " + UrlParams.AUTH_TOKEN, e);
+        final String deviceToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
+        if (deviceToken == null || deviceToken.length() != 40) {
+            throw new BadRequestException("Missing or invalid query parameter: " + UrlParams.DEVICE_TOKEN);
         }
-        if (authMeta == null) {
+
+        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+        if (deviceCredentials == null) {
             throw new BadRequestException("Cannot authenticate unknown auth token");
         }
-        if (authMeta.getDateExpires().before(new Date())) {
+        if (deviceCredentials.dateExpires().before(new Date())) {
             throw new NotAuthorizedException("Auth token has expired");
         }
 
-        final OMemberProxy userProxy = OMemberProxy.get(authMeta.getEmail());
-        if (!userProxy.didRegister()) {
-            throw new BadRequestException("Cannot authenticate unknown or inactive user " + authMeta.getEmail());
+        final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());
+        if (!userProxy.isRegistered()) {
+            throw new BadRequestException("Cannot authenticate unknown or inactive user " + deviceCredentials.email());
         }
 
-        final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        if (credentials != null && !credentials.getEmail().equals(authMeta.getEmail())) {
+        final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+        if (basicAuthCredentials != null && !basicAuthCredentials.getEmail().equals(deviceCredentials.email())) {
             throw new BadRequestException("Basic auth credentials do not match records for auth token provided");
         }
     }

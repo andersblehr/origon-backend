@@ -1,21 +1,24 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
 import co.origon.api.common.UrlParams;
-import co.origon.api.entities.OAuthMeta;
+import co.origon.api.model.api.Dao;
+import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.api.entity.MemberProxy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 
-import java.util.UUID;
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,11 +28,18 @@ import static org.mockito.Mockito.when;
 class TokenAuthenticatedFilterTest {
 
     private final static String VALID_AUTH_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
+    private final static String VALID_EMAIL = "user@example.com";
 
     @Mock private ContainerRequestContext requestContext;
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
+    @Mock private DaoFactory daoFactory;
+    @Mock private Dao<DeviceCredentials> tokenCredentialsDao;
+    @Mock private DeviceCredentials tokenCredentials;
+    @Mock private Dao<MemberProxy> memberProxyDao;
+    @Mock private MemberProxy memberProxy;
 
+    @InjectMocks
     private TokenAuthenticatedFilter tokenAuthenticatedFilter;
 
     @BeforeEach
@@ -48,20 +58,26 @@ class TokenAuthenticatedFilterTest {
                     .thenReturn(uriInfo);
             when(uriInfo.getQueryParameters())
                     .thenReturn(queryParameters);
-            when(queryParameters.getFirst(UrlParams.AUTH_TOKEN))
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_AUTH_TOKEN);
-/*            when(OAuthMeta.get(VALID_AUTH_TOKEN))
-                    .thenReturn(OAuthMeta.builder()
-                            .authToken(VALID_AUTH_TOKEN)
-                            .email("user@example.com")
-                            .deviceId(UUID.randomUUID().toString())
-                            .deviceType("Mockito")
-                            .build()
-                    );
+            when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(tokenCredentialsDao);
+            when(tokenCredentialsDao.get(VALID_AUTH_TOKEN))
+                    .thenReturn(tokenCredentials);
+            when(tokenCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() + 1000L));
+            when(tokenCredentials.email())
+                    .thenReturn(VALID_EMAIL);
+            when(daoFactory.daoFor(MemberProxy.class))
+                    .thenReturn(memberProxyDao);
+            when(memberProxyDao.get(VALID_EMAIL))
+                    .thenReturn(memberProxy);
+            when(memberProxy.isRegistered())
+                    .thenReturn(true);
 
             // when
             tokenAuthenticatedFilter.filter(requestContext);
-*/
+
             // then
             assertTrue(true);
         }

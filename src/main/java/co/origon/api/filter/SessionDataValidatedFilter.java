@@ -3,7 +3,7 @@ package co.origon.api.filter;
 import co.origon.api.annotation.SessionDataValidated;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.entity.OAuthMeta;
+import co.origon.api.model.ofy.entity.OAuthMeta;
 
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
@@ -18,15 +18,15 @@ public class SessionDataValidatedFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        final String authToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.AUTH_TOKEN);
+        final String authToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
         final String appVersion = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.APP_VERSION);
         String deviceId = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_ID);
         String deviceType = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TYPE);
 
         if (authToken != null && deviceId == null && deviceType == null) {
             final OAuthMeta authMeta = OAuthMeta.get(authToken);
-            deviceId = authMeta.getDeviceId();
-            deviceType = authMeta.getDeviceType();
+            deviceId = authMeta.deviceId();
+            deviceType = authMeta.deviceType();
         }
 
         try {

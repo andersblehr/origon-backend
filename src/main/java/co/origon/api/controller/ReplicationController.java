@@ -11,10 +11,10 @@ import javax.ws.rs.core.Response.Status;
 
 import co.origon.api.annotation.LanguageSupported;
 import co.origon.api.annotation.SessionDataValidated;
-import co.origon.api.model.entity.OAuthMeta;
+import co.origon.api.model.ofy.entity.OAuthMeta;
 import co.origon.api.common.*;
-import co.origon.api.model.entity.OOrigo;
-import co.origon.api.model.entity.OReplicatedEntity;
+import co.origon.api.model.ofy.entity.OOrigo;
+import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.annotation.TokenAuthenticated;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -33,15 +33,15 @@ public class ReplicationController {
     public Response replicate(
             List<OReplicatedEntity> entitiesToReplicate,
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion,
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
         checkReplicationDate(replicationDate);
 
-        Dao.getDao().replicateEntities(entitiesToReplicate, authMeta.getEmail(), Mailer.forLanguage(language));
-        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
+        ODao.getDao().replicateEntities(entitiesToReplicate, authMeta.email(), Mailer.forLanguage(language));
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(authMeta.email(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
@@ -59,13 +59,13 @@ public class ReplicationController {
     @Path("fetch")
     public Response fetchEntities(
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         final OAuthMeta authMeta = OAuthMeta.get(authToken);
         checkReplicationDate(replicationDate);
 
-        final List<OReplicatedEntity> fetchedEntities = Dao.getDao().fetchEntities(authMeta.getEmail(), replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(authMeta.email(), replicationDate);
         Session.log(fetchedEntities.size() + " entities fetched");
 
         return Response
@@ -78,10 +78,10 @@ public class ReplicationController {
     @Path("member")
     public Response lookupMember(
             @QueryParam(UrlParams.IDENTIFIER) String memberId,
-            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        List<OReplicatedEntity> memberEntities = Dao.getDao().lookupMemberEntities(memberId);
+        List<OReplicatedEntity> memberEntities = ODao.getDao().lookupMemberEntities(memberId);
         if (memberEntities == null) {
             throw new NotFoundException();
         }
@@ -95,10 +95,10 @@ public class ReplicationController {
     @Path("origo")
     public Response lookupOrigo(
             @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
-            @QueryParam(UrlParams.AUTH_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        OOrigo origo = Dao.getDao().lookupOrigo(internalJoinCode);
+        OOrigo origo = ODao.getDao().lookupOrigo(internalJoinCode);
         if (origo == null) {
             throw new NotFoundException();
         }

@@ -1,4 +1,4 @@
-package co.origon.api.model.entity;
+package co.origon.api.model.ofy.entity;
 
 import java.lang.reflect.Field;
 import java.util.Date;

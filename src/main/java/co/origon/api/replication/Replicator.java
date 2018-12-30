@@ -1,7 +1,7 @@
 package co.origon.api.replication;
 
 import co.origon.api.common.Mailer;
-import co.origon.api.model.entity.*;
+import co.origon.api.model.ofy.entity.*;
 import com.googlecode.objectify.Key;
 
 import java.util.*;
@@ -44,13 +44,13 @@ public class Replicator
         if (proxyId.equals(userEmail)) {
             OMemberProxy memberProxy = OMemberProxy.get(userEmail);
 
-            if (memberProxy.getMemberId() == null || memberProxy.getMemberName() == null || !memberProxy.getMemberName().equals(member.name)) {
-                if (memberProxy.getMemberId() == null) {
-                    memberProxy.setMemberId(member.entityId);
+            if (memberProxy.memberId() == null || memberProxy.memberName() == null || !memberProxy.memberName().equals(member.name)) {
+                if (memberProxy.memberId() == null) {
+                    memberProxy.memberId(member.entityId);
                 }
 
-                if (memberProxy.getMemberName() == null || !memberProxy.getMemberName().equals(member.name)) {
-                    memberProxy.setMemberName(member.name);
+                if (memberProxy.memberName() == null || !memberProxy.memberName().equals(member.name)) {
+                    memberProxy.memberName(member.name);
                 }
 
                 touchedMemberProxies.add(memberProxy);
@@ -154,7 +154,7 @@ public class Replicator
         Set<String> anchoredProxyIds = new HashSet<>();
 
         for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
-            anchoredProxyIds.add(memberProxy.getProxyId());
+            anchoredProxyIds.add(memberProxy.proxyId());
         }
 
         Set<Key<OMember>> driftingMemberKeys = new HashSet<>();
@@ -179,7 +179,7 @@ public class Replicator
             Map<String, OMemberProxy> driftingMemberProxiesByProxyId = new HashMap<>();
 
             for (OMemberProxy driftingMemberProxy : ofy().load().keys(driftingMemberProxyKeys).values()) {
-                driftingMemberProxiesByProxyId.put(driftingMemberProxy.getProxyId(), driftingMemberProxy);
+                driftingMemberProxiesByProxyId.put(driftingMemberProxy.proxyId(), driftingMemberProxy);
             }
 
             for (OMember driftingMember : driftingMembers) {
@@ -190,7 +190,7 @@ public class Replicator
                 OMemberProxy reanchoredMemberProxy = new OMemberProxy(currentMember.email, driftingMemberProxy);
 
                 for (OAuthMeta authMetaItem : ofy().load().keys(reanchoredMemberProxy.getAuthMetaKeys()).values()) {
-                    authMetaItem.setEmail(currentMember.email);
+                    authMetaItem.email(currentMember.email);
                     reanchoredAuthMetaItems.add(authMetaItem);
                 }
 
@@ -215,7 +215,7 @@ public class Replicator
     private void updateAffectedMembershipKeys()
     {
         for (OMemberProxy memberProxy : affectedMemberProxiesByKey.values()) {
-            Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeysByProxyId.get(memberProxy.getProxyId());
+            Set<Key<OMembership>> addedMembershipKeysForMember = addedMembershipKeysByProxyId.get(memberProxy.proxyId());
 
             if (addedMembershipKeysForMember != null) {
                 memberProxy.getMembershipKeys().addAll(addedMembershipKeysForMember);

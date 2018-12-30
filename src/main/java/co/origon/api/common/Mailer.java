@@ -16,15 +16,15 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import co.origon.api.model.entity.OMemberProxy;
+import co.origon.api.model.ofy.entity.OMemberProxy;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import co.origon.api.model.entity.OMember;
-import co.origon.api.model.entity.OMembership;
-import co.origon.api.model.entity.OOrigo;
+import co.origon.api.model.ofy.entity.OMember;
+import co.origon.api.model.ofy.entity.OMembership;
+import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.common.Config.Category;
 import co.origon.api.common.Config.Setting;
 
@@ -361,39 +361,39 @@ public class Mailer
 
         if (language == Language.NORWEGIAN) {
             if (origo == null) {
-                invitationBody = String.format("%s (%s) har lagt inn epostadressen din på Origon", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) har lagt inn epostadressen din på Origon", userProxy.memberName(), userProxy.proxyId());
             } else if (origo.isPrivate()) {
                 invitationBody = "Du har blitt lagt til i en privat liste på Origon";
             } else if (origo.isResidence()) {
-                invitationBody = String.format("%s (%s) har lagt inn husstanden din på Origon", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) har lagt inn husstanden din på Origon", userProxy.memberName(), userProxy.proxyId());
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) har lagt deg inn som familiemedlem i den delte kontaktlista \"%s\" på Origon", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) har lagt deg inn som familiemedlem i den delte kontaktlista \"%s\" på Origon", userProxy.memberName(), userProxy.proxyId(), origo.name);
             } else {
-                invitationBody = String.format("%s (%s) har lagt deg inn i den delte kontaktlista \"%s\" på Origon", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) har lagt deg inn i den delte kontaktlista \"%s\" på Origon", userProxy.memberName(), userProxy.proxyId(), origo.name);
             }
         } else if (language == Language.GERMAN) {
             if (origo == null) {
-                invitationBody = String.format("%s (%s) hat deine E-Mail-Adresse in Origon eingetragen", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) hat deine E-Mail-Adresse in Origon eingetragen", userProxy.memberName(), userProxy.proxyId());
             } else if (origo.isPrivate()) {
                 invitationBody = "Du bist in eine private Liste bei Origon eingetragen worden";
             } else if (origo.isResidence()) {
-                invitationBody = String.format("%s (%s) hat deinen Haushalt bei Origon eingetragen", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) hat deinen Haushalt bei Origon eingetragen", userProxy.memberName(), userProxy.proxyId());
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) hat dich als Familienmitglied in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) hat dich als Familienmitglied in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", userProxy.memberName(), userProxy.proxyId(), origo.name);
             } else {
-                invitationBody = String.format("%s (%s) hat dich in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) hat dich in die geteilte Kontaktliste \"%s\" bei Origon eingetragen", userProxy.memberName(), userProxy.proxyId(), origo.name);
             }
         } else {
             if (origo == null) {
-                invitationBody = String.format("%s (%s) has added your email address on Origon", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) has added your email address on Origon", userProxy.memberName(), userProxy.proxyId());
             } else if (origo.isPrivate()) {
                 invitationBody = "You have been added to a private list on Origon";
             } else if (origo.isResidence()) {
-                invitationBody = String.format("%s (%s) has added your household on Origon", userProxy.getMemberName(), userProxy.getProxyId());
+                invitationBody = String.format("%s (%s) has added your household on Origon", userProxy.memberName(), userProxy.proxyId());
             } else if (membership.isAssociate() && !origo.isForMinors) {
-                invitationBody = String.format("%s (%s) has added you as a family member in the shared contact list '%s' on Origon", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) has added you as a family member in the shared contact list '%s' on Origon", userProxy.memberName(), userProxy.proxyId(), origo.name);
             } else {
-                invitationBody = String.format("%s (%s) has added you to the shared contact list '%s' on Origon", userProxy.getMemberName(), userProxy.getProxyId(), origo.name);
+                invitationBody = String.format("%s (%s) has added you to the shared contact list '%s' on Origon", userProxy.memberName(), userProxy.proxyId(), origo.name);
             }
         }
         
@@ -428,7 +428,7 @@ public class Mailer
                                   availabilityInfo(language, invitee.email) + "\n" +
                                   "\n" +
                                   bestRegards(language),
-                                  inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
+                                  inviteeGivenName, userProxy.memberName(), userProxy.proxyId(), oldEmail, invitee.email);
         } else if (language == Language.GERMAN) {
             emailChangeNotificationText =
                     String.format("%s,\n" +
@@ -438,7 +438,7 @@ public class Mailer
                                   availabilityInfo(language, invitee.email) + "\n" +
                                   "\n" +
                                   bestRegards(language),
-                                  inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
+                                  inviteeGivenName, userProxy.memberName(), userProxy.proxyId(), oldEmail, invitee.email);
         } else {
             emailChangeNotificationText = 
                     String.format("%s,\n" +
@@ -448,7 +448,7 @@ public class Mailer
                                   availabilityInfo(Language.ENGLISH, invitee.email) + "\n" +
                                   "\n" +
                                   bestRegards(Language.ENGLISH),
-                                  inviteeGivenName, userProxy.getMemberName(), userProxy.getProxyId(), oldEmail, invitee.email);
+                                  inviteeGivenName, userProxy.memberName(), userProxy.proxyId(), oldEmail, invitee.email);
         }
 
         return emailChangeNotificationText;
