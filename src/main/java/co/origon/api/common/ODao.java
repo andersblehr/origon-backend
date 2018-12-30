@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import co.origon.api.model.entity.*;
+import co.origon.api.model.ofy.entity.*;
 import co.origon.api.replication.Replicator;
 
 import com.googlecode.objectify.Key;
@@ -15,14 +15,14 @@ import com.googlecode.objectify.Key;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
-public class Dao
+public class ODao
 {
-    private static final Dao dao = new Dao();
+    private static final ODao dao = new ODao();
 
     private Set<Key<OReplicatedEntity>> referencedEntityKeys;
 
 
-    public static Dao getDao() {
+    public static ODao getDao() {
         return dao;
     }
 

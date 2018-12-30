@@ -4,8 +4,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import co.origon.api.common.Config;
-import co.origon.api.model.entity.*;
 
+import co.origon.api.model.ofy.entity.*;
 import com.googlecode.objectify.ObjectifyService;
 
 

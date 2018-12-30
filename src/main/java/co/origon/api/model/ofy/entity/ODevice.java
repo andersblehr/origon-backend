@@ -1,4 +1,4 @@
-package co.origon.api.model.entity;
+package co.origon.api.model.ofy.entity;
 
 import java.util.Date;
 import java.util.Map;

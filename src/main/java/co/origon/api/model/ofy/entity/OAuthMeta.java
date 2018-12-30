@@ -1,12 +1,14 @@
-package co.origon.api.model.entity;
+package co.origon.api.model.ofy.entity;
 
 import java.util.Date;
 
+import co.origon.api.model.api.entity.DeviceCredentials;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -15,18 +17,15 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 @Cache(expirationSeconds = 600)
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Getter
-public class OAuthMeta {
-    @Id
-    private String authToken;
+@Setter
+@Accessors(fluent = true)
+public class OAuthMeta implements DeviceCredentials {
 
-    @Setter
+    @Id private String authToken;
     private String email;
     private String deviceId;
     private String deviceType;
-
-    @Builder.Default
     private Date dateExpires = dateExpires();
 
     public static OAuthMeta get(String authToken) {
@@ -48,7 +47,19 @@ public class OAuthMeta {
         ofy().delete().entity(this);
     }
 
-    private static Date dateExpires() {
+    @Override
+    public DeviceCredentials deviceToken(String deviceToken) {
+        authToken = deviceToken;
+        return this;
+    }
+
+    @Override
+    public String deviceToken() {
+        return authToken;
+    }
+
+    @Override
+    public Date dateExpires() {
         return new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
     }
 }

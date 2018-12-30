@@ -77,7 +77,7 @@ class BasicAuthCredentialsTest {
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(AUTH_HEADER_INVALID_BASE64)
             );
-            assertEquals("Credentials are not base 64 encoded", e.getMessage() );
+            assertEquals("DeviceCredentials are not base 64 encoded", e.getMessage() );
             BasicAuthCredentials.dispose();
         }
 

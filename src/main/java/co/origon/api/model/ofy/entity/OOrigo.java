@@ -1,4 +1,4 @@
-package co.origon.api.model.entity;
+package co.origon.api.model.ofy.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -46,7 +46,7 @@ public class BasicAuthCredentials {
         try {
             credentialsString = new String(Base64.getDecoder().decode(authElements[1].getBytes()));
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Credentials are not base 64 encoded");
+            throw new IllegalArgumentException("DeviceCredentials are not base 64 encoded");
         }
 
         final String[] credentials = credentialsString.split(":");
