@@ -57,7 +57,6 @@ public class BasicAuthCredentials {
         if (!credentials[0].matches("^.+@.+\\..+$")) {
             throw new IllegalArgumentException("Invalid email address: " + credentials[0]);
         }
-
         if (credentials[1].length() < LENGTH_PASSWORD_MIN) {
             throw new IllegalArgumentException("Password is too short: " + credentials[1]);
         }
