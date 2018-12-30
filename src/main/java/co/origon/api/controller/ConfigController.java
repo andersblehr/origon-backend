@@ -1,7 +1,7 @@
-package co.origon.api.controllers;
+package co.origon.api.controller;
 
 import co.origon.api.common.Config;
-import co.origon.api.annotations.JwtAuthenticated;
+import co.origon.api.annotation.JwtAuthenticated;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -16,15 +16,15 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import co.origon.api.entities.OMemberProxy;
+import co.origon.api.model.entity.OMemberProxy;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import co.origon.api.entities.OMember;
-import co.origon.api.entities.OMembership;
-import co.origon.api.entities.OOrigo;
+import co.origon.api.model.entity.OMember;
+import co.origon.api.model.entity.OMembership;
+import co.origon.api.model.entity.OOrigo;
 import co.origon.api.common.Config.Category;
 import co.origon.api.common.Config.Setting;
 

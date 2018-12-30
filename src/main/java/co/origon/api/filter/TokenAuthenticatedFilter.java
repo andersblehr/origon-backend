@@ -1,10 +1,10 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
-import co.origon.api.annotations.TokenAuthenticated;
+import co.origon.api.annotation.TokenAuthenticated;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
-import co.origon.api.entities.OAuthMeta;
-import co.origon.api.entities.OMemberProxy;
+import co.origon.api.model.entity.OAuthMeta;
+import co.origon.api.model.entity.OMemberProxy;
 
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;

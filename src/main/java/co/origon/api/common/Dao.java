@@ -7,9 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import co.origon.api.entities.*;
-
+import co.origon.api.model.entity.*;
 import co.origon.api.replication.Replicator;
+
 import com.googlecode.objectify.Key;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;

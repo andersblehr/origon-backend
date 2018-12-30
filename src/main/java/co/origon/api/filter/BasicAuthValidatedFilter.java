@@ -1,6 +1,6 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
-import co.origon.api.annotations.BasicAuthValidated;
+import co.origon.api.annotation.BasicAuthValidated;
 import co.origon.api.common.BasicAuthCredentials;
 
 import javax.annotation.Priority;

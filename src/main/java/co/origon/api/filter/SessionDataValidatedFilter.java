@@ -1,9 +1,9 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
-import co.origon.api.annotations.SessionDataValidated;
+import co.origon.api.annotation.SessionDataValidated;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.entities.OAuthMeta;
+import co.origon.api.model.entity.OAuthMeta;
 
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;

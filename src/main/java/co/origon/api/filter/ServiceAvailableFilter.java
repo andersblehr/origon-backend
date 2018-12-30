@@ -1,4 +1,4 @@
-package co.origon.api.filters;
+package co.origon.api.filter;
 
 import co.origon.api.common.Config;
 import co.origon.api.common.Config.Category;
