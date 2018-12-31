@@ -22,6 +22,8 @@ import java.util.Date;
 @Priority(3)
 public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
+    static String UNAUTHORIZED_WWW_AUTHENTICATE_HEADER = "login";
+
     private DaoFactory daoFactory;
 
     @Inject
@@ -32,26 +34,23 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) {
         final String deviceToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
-        if (deviceToken == null || deviceToken.length() != 40) {
-            throw new BadRequestException("Missing or invalid query parameter: " + UrlParams.DEVICE_TOKEN);
-        }
+        if (deviceToken == null || deviceToken.length() == 0)
+            throw new BadRequestException("Missing query parameter: " + UrlParams.DEVICE_TOKEN);
+        if (deviceToken.length() != 40)
+            throw new BadRequestException("Invalid device token: " + deviceToken);
 
         final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
-        if (deviceCredentials == null) {
-            throw new BadRequestException("Cannot authenticate unknown auth token");
-        }
-        if (deviceCredentials.dateExpires().before(new Date())) {
-            throw new NotAuthorizedException("Auth token has expired");
-        }
+        if (deviceCredentials == null)
+            throw new BadRequestException("Cannot authenticate unknown device token");
+        if (deviceCredentials.dateExpires().before(new Date()))
+            throw new NotAuthorizedException("Device token has expired", UNAUTHORIZED_WWW_AUTHENTICATE_HEADER);
 
         final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());
-        if (!userProxy.isRegistered()) {
-            throw new BadRequestException("Cannot authenticate unknown or inactive user " + deviceCredentials.email());
-        }
+        if (userProxy == null || !userProxy.isRegistered())
+            throw new BadRequestException("Cannot authenticate unknown or inactive user: " + deviceCredentials.email());
 
         final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
-        if (basicAuthCredentials != null && !basicAuthCredentials.getEmail().equals(deviceCredentials.email())) {
-            throw new BadRequestException("Basic auth credentials do not match records for auth token provided");
-        }
+        if (!basicAuthCredentials.getEmail().equals(deviceCredentials.email()))
+            throw new BadRequestException("Basic auth credentials do not match records for provided device token");
     }
 }
