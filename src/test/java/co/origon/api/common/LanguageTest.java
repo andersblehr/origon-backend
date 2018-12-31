@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LanguageTest {
 
     @Nested
-    class FromCode {
+    class WhenFromCode {
 
         @Test
         @DisplayName("Given supported language, then create instance")
