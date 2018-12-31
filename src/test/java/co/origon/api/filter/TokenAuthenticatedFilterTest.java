@@ -48,7 +48,7 @@ class TokenAuthenticatedFilterTest {
     }
 
     @Nested
-    class Filter {
+    class WhenFilter {
 
         @Test
         @DisplayName("Given valid device token, throw run to completion")
