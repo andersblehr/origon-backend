@@ -2,8 +2,6 @@ package co.origon.api.common;
 
 import lombok.Getter;
 
-import java.util.Base64;
-
 @Getter
 public class BasicAuthCredentials {
     private static ThreadLocal<BasicAuthCredentials> localCredentials;
@@ -44,7 +42,7 @@ public class BasicAuthCredentials {
 
         final String credentialsString;
         try {
-            credentialsString = new String(Base64.getDecoder().decode(authElements[1].getBytes()));
+            credentialsString = Base64.decode(authElements[1]);
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("DeviceCredentials are not base 64 encoded");
         }
