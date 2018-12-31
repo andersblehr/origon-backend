@@ -22,7 +22,6 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @Entity
 @Cache(expirationSeconds = 600)
-@NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
@@ -35,7 +34,11 @@ public class OMemberProxy implements MemberProxy {
     @IgnoreSave(IfEmpty.class) @Singular private Set<Key<OAuthMeta>> authMetaKeys;
     @IgnoreSave(IfEmpty.class) @Singular private Set<Key<OMembership>> membershipKeys;
     
-    
+    public OMemberProxy() {
+        authMetaKeys = new HashSet<>();
+        membershipKeys = new HashSet<>();
+    }
+
     public OMemberProxy(OMember member)
     {
         this(member.getProxyId());
@@ -46,10 +49,9 @@ public class OMemberProxy implements MemberProxy {
     
     public OMemberProxy(String proxyId)
     {
+        this();
+
         this.proxyId = proxyId;
-        
-        authMetaKeys = new HashSet<>();
-        membershipKeys = new HashSet<>();
     }
 
     
