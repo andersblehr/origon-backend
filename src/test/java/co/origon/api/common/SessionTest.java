@@ -16,16 +16,16 @@ class SessionTest {
     class Create {
 
         @Test
-        @DisplayName("Instantiate session when session data is valid")
-        void instantiateSession_whenSessionDataValid() {
+        @DisplayName("Given valid session data, then create session")
+        void givenValideSessionData_thenCreateSession() {
             final Session session = Session.create(SOME_UUID, "Device", "1.0");
             assertNotNull(session);
             Session.dispose();
         }
 
         @Test
-        @DisplayName("Throw IllegalArgumentException when session data is missing or invalid")
-        void throwIllegalArgumentException_whenSessionDataMissingOrInvalid() {
+        @DisplayName("Given invalid session data, then throw IllegalArgumentException")
+        void givenInvalidSessionData_thenThrowIllegalArgumentException() {
             assertAll("Invalid session data",
                     () -> {
                         Throwable e = assertThrows(IllegalArgumentException.class, () ->
@@ -62,9 +62,9 @@ class SessionTest {
         }
 
         @Test
-        @DisplayName("Throw RuntimeException when session has already been created")
-        void throwRuntimeException_whenSessionHasAlreadyBeenCreated() {
-            Session.create(SOME_UUID, "Device", "1.0");
+        @DisplayName("Given existing session, then throw RuntimeException")
+        void givenExistingSession_thenThrowRuntimeException() {
+            Session.create(SOME_UUID, "Some device", "1.0");
             assertThrows(RuntimeException.class, () ->
                     Session.create(null, null, null)
             );
@@ -77,20 +77,20 @@ class SessionTest {
     class GetSession {
 
         @Test
-        @DisplayName("Retrieve session successfully when successfully created")
-        void retrieveSession_whenSuccessfullyCreated() {
+        @DisplayName("Given successfully created session, then Retrieve session successfully")
+        void givenSuccessfullyCreatedSession_thenRetrieveSessionSuccessfully() {
             Session.create(SOME_UUID, "Device", "1.0");
             assertNotNull(Session.getSession());
             Session.dispose();
         }
 
         @Test
-        @DisplayName("Retrieve null session when not successfully created")
-        void retrieveNullSession_whenNotSuccessfullyCreated() {
+        @DisplayName("Given failed session creation, then throw RuntimeException")
+        void givenFailedSessionCreation_thenThrowRuntimeException() {
             assertThrows(IllegalArgumentException.class, () ->
                     Session.create(null, "Device", "1.0")
             );
-            assertNull(Session.getSession());
+            assertThrows(RuntimeException.class, Session::getSession);
             Session.dispose();
         }
     }

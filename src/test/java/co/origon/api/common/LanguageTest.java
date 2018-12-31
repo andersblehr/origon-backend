@@ -12,15 +12,16 @@ class LanguageTest {
     class FromCode {
 
         @Test
-        @DisplayName("Create instance when language is supported")
-        void createInstance_whenLanguageIsSupported() {
+        @DisplayName("Given supported language, then create instance")
+        void givenSupportedLanguage_thenCreateInstance() {
             assertEquals(Language.ENGLISH, Language.fromCode("en"));
             assertEquals(Language.GERMAN, Language.fromCode("de"));
             assertEquals(Language.NORWEGIAN, Language.fromCode("nb"));
         }
 
         @Test
-        void throwIllegalArgumentException_whenUnknownLanguuage() {
+        @DisplayName("Given unsupported language, then throw IllegalArgumentException")
+        void givenUnsupportedLanguage_thenThrowIllegalArgumentException() {
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
                     Language.fromCode("da")
             );
