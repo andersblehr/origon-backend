@@ -30,12 +30,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TokenAuthenticatedFilterTest {
 
-    private final static String VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
-    private final static String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private final static String VALID_EMAIL = "user@example.com";
-
+    private final static String VALID_CREDENTIALS = "Basic " + encode(VALID_EMAIL + ":password");
+    private final static String NON_MATCHING_CREDENTIALS = "Basic " + encode("other@email.com:password");
+    private final static String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private final static String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
-    private final static String NON_MATCHING_CREDENTIALS = "Basic " + encode("user@example.org:password");
 
     @Mock private DaoFactory daoFactory;
     @Mock private ContainerRequestContext requestContext;
