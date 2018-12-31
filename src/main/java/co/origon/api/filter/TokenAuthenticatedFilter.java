@@ -22,8 +22,12 @@ import java.util.Date;
 @Priority(3)
 public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
-    @Inject
     private DaoFactory daoFactory;
+
+    @Inject
+    TokenAuthenticatedFilter(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
