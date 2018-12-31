@@ -1,5 +1,6 @@
 package co.origon.api.exceptions;
 
+import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Session;
 
 import javax.ws.rs.*;
@@ -13,10 +14,11 @@ import java.util.logging.Level;
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
     public Response toResponse(WebApplicationException e) {
+        Session.dispose();
+        BasicAuthCredentials.dispose();
         if (Status.fromStatusCode(e.getResponse().getStatus()) != Status.NOT_FOUND) {
             Session.log(Level.WARNING, e.getResponse().getStatus() + ": " + e.getMessage());
         }
-
         return e.getResponse();
     }
 }

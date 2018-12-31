@@ -8,7 +8,7 @@ import java.util.logging.Logger;
 import static com.google.common.base.Preconditions.checkArgument;
 
 public class Session {
-    private static ThreadLocal<Session> localSession = ThreadLocal.withInitial(() -> null);
+    private static ThreadLocal<Session> localSession;
     private static final Logger LOGGER = Logger.getLogger(OrigonApplication.class.getName());
 
     private final String deviceId;
@@ -16,15 +16,16 @@ public class Session {
     private final String appVersion;
 
     public static Session create(String deviceId, String deviceType, String appVersion) {
-        if (localSession.get() != null) {
+        if (localSession != null)
             throw new RuntimeException("Session instance has already been created");
-        }
         final Session session = new Session(deviceId, deviceType, appVersion);
         localSession = ThreadLocal.withInitial(() -> session);
         return localSession.get();
     }
 
     public static Session getSession() {
+        if (localSession == null)
+            throw new RuntimeException("Session instance has not been created, cannot get");
         return localSession.get();
     }
 
@@ -41,7 +42,7 @@ public class Session {
     }
 
     public static void dispose() {
-        localSession = ThreadLocal.withInitial(() -> null);
+        localSession = null;
     }
 
     private Session(String deviceId, String deviceType, String appVersion) {

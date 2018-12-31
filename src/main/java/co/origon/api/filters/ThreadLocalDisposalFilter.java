@@ -21,7 +21,7 @@ public class ThreadLocalDisposalFilter implements ContainerResponseFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-        BasicAuthCredentials.dispose();
         Session.dispose();
+        BasicAuthCredentials.dispose();
     }
 }
