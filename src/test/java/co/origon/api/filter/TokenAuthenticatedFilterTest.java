@@ -12,7 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.util.Date;
@@ -26,53 +30,57 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TokenAuthenticatedFilterTest {
 
-    private final static String VALID_AUTH_HEADER = "Basic " + encode("user@example.com:password");
+    private final static String VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
     private final static String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private final static String VALID_EMAIL = "user@example.com";
+
+    private final static String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
+    private final static String NON_MATCHING_CREDENTIALS = "Basic " + encode("user@example.org:password");
 
     @Mock private DaoFactory daoFactory;
     @Mock private ContainerRequestContext requestContext;
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
-    @Mock private Dao<DeviceCredentials> tokenCredentialsDao;
-    @Mock private DeviceCredentials tokenCredentials;
-    @Mock private Dao<MemberProxy> memberProxyDao;
-    @Mock private MemberProxy memberProxy;
+    @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
+    @Mock private DeviceCredentials deviceCredentials;
+    @Mock private Dao<MemberProxy> userProxyDao;
+    @Mock private MemberProxy userProxy;
 
     private TokenAuthenticatedFilter tokenAuthenticatedFilter;
-
-    @BeforeEach
-    void setUp() {
-        BasicAuthCredentials.validate(VALID_AUTH_HEADER);
-        tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
-    }
 
     @Nested
     class WhenFilter {
 
-        @Test
-        @DisplayName("Given valid device token, throw run to completion")
-        void givenValidDeviceToken_thenRunToCompletion() {
-            // given
+        @BeforeEach
+        void setUp() {
             when(requestContext.getUriInfo())
                     .thenReturn(uriInfo);
             when(uriInfo.getQueryParameters())
                     .thenReturn(queryParameters);
+
+            BasicAuthCredentials.validate(VALID_CREDENTIALS);
+            tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
+        }
+
+        @Test
+        @DisplayName("Given valid device token, run to completion")
+        void givenValidDeviceToken_thenRunToCompletion() {
+            // given
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))
-                    .thenReturn(tokenCredentialsDao);
-            when(tokenCredentialsDao.get(VALID_DEVICE_TOKEN))
-                    .thenReturn(tokenCredentials);
-            when(tokenCredentials.dateExpires())
-                    .thenReturn(new Date(System.currentTimeMillis() + 1000L));
-            when(tokenCredentials.email())
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(deviceCredentials);
+            when(deviceCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() + 60000L));
+            when(deviceCredentials.email())
                     .thenReturn(VALID_EMAIL);
+            when(userProxyDao.get(VALID_EMAIL))
+                    .thenReturn(userProxy);
             lenient().when(daoFactory.daoFor(MemberProxy.class))
-                    .thenReturn(memberProxyDao);
-            when(memberProxyDao.get(VALID_EMAIL))
-                    .thenReturn(memberProxy);
-            when(memberProxy.isRegistered())
+                    .thenReturn(userProxyDao);
+            when(userProxy.isRegistered())
                     .thenReturn(true);
 
             // when
@@ -83,14 +91,181 @@ class TokenAuthenticatedFilterTest {
         }
 
         @Test
+        @DisplayName("Given no device token, throw BadRequestException")
+        void givenNoDeviceToken_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(null, "");
+
+            assertAll("Missing device token",
+                    // then
+                    () -> {
+                        final Throwable eNull = assertThrows(BadRequestException.class, () ->
+                                // when
+                                tokenAuthenticatedFilter.filter(requestContext)
+                        );
+                        assertEquals("Missing query parameter: " + UrlParams.DEVICE_TOKEN, eNull.getMessage());
+                    },
+
+                    // then
+                    () -> {
+                        final Throwable eEmpty = assertThrows(BadRequestException.class, () ->
+                                // when
+                                tokenAuthenticatedFilter.filter(requestContext)
+                        );
+                        assertEquals("Missing query parameter: " + UrlParams.DEVICE_TOKEN, eEmpty.getMessage());
+                    }
+            );
+        }
+
+        @Test
         @DisplayName("Given invalid device token, throw BadRequestException")
         void givenInvalidDeviceToken_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(INVALID_DEVICE_TOKEN);
 
+            // then
+            final Throwable e = assertThrows(BadRequestException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            assertEquals("Invalid device token: " + INVALID_DEVICE_TOKEN, e.getMessage());
         }
-    }
 
-    @AfterEach
-    void tearDown() {
-        BasicAuthCredentials.dispose();
+        @Test
+        @DisplayName("Given unknown device token, throw BadRequestException")
+        void givenUnknownDeviceToken_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(null);
+
+            // then
+            final Throwable e = assertThrows(BadRequestException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            assertEquals("Cannot authenticate unknown device token", e.getMessage());
+        }
+
+        @Test
+        @DisplayName("Given unknown device token, throw BadRequestException")
+        void givenExpiredDeviceToken_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(deviceCredentials);
+            when(deviceCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() - 60000L));
+
+            // then
+            final WebApplicationException e = assertThrows(NotAuthorizedException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            final String wwwAuthenticate = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
+            assertEquals("Device token has expired", e.getMessage());
+            assertEquals(TokenAuthenticatedFilter.UNAUTHORIZED_WWW_AUTHENTICATE_HEADER, wwwAuthenticate);
+        }
+
+        @Test
+        @DisplayName("Given unknown user, throw BadRequestException")
+        void givenUnknownUser_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            lenient().when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(deviceCredentials);
+            when(deviceCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() + 60000L));
+            when(deviceCredentials.email())
+                    .thenReturn(VALID_EMAIL);
+            lenient().when(daoFactory.daoFor(MemberProxy.class))
+                    .thenReturn(userProxyDao);
+            when(userProxyDao.get(VALID_EMAIL))
+                    .thenReturn(null);
+
+            // then
+            final Throwable e = assertThrows(BadRequestException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
+        }
+
+        @Test
+        @DisplayName("Given unknown user, throw BadRequestException")
+        void givenNonRegisteredUser_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            lenient().when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(deviceCredentials);
+            when(deviceCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() + 60000L));
+            when(deviceCredentials.email())
+                    .thenReturn(VALID_EMAIL);
+            lenient().when(daoFactory.daoFor(MemberProxy.class))
+                    .thenReturn(userProxyDao);
+            when(userProxyDao.get(VALID_EMAIL))
+                    .thenReturn(userProxy);
+            when(userProxy.isRegistered())
+                    .thenReturn(false);
+
+            // then
+            final Throwable e = assertThrows(BadRequestException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
+        }
+
+
+        @Test
+        @DisplayName("Given non-matching credentials, throw BadRequestException")
+        void givenNonMatchingCredentials_thenThrowBadRequestException() {
+            // given
+            when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
+                    .thenReturn(VALID_DEVICE_TOKEN);
+            lenient().when(daoFactory.daoFor(DeviceCredentials.class))
+                    .thenReturn(deviceCredentialsDao);
+            when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN))
+                    .thenReturn(deviceCredentials);
+            when(deviceCredentials.dateExpires())
+                    .thenReturn(new Date(System.currentTimeMillis() + 60000L));
+            when(deviceCredentials.email())
+                    .thenReturn(VALID_EMAIL);
+            lenient().when(daoFactory.daoFor(MemberProxy.class))
+                    .thenReturn(userProxyDao);
+            when(userProxyDao.get(VALID_EMAIL))
+                    .thenReturn(userProxy);
+            when(userProxy.isRegistered())
+                    .thenReturn(true);
+
+            BasicAuthCredentials.dispose();
+            BasicAuthCredentials.validate(NON_MATCHING_CREDENTIALS);
+
+            // then
+            final Throwable e = assertThrows(BadRequestException.class, () ->
+                    // when
+                    tokenAuthenticatedFilter.filter(requestContext)
+            );
+            assertEquals("Basic auth credentials do not match records for provided device token", e.getMessage());
+        }
+        @AfterEach
+        void tearDown() {
+            BasicAuthCredentials.dispose();
+        }
     }
 }
