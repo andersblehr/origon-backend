@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import co.origon.api.model.api.entity.MemberProxy;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
@@ -22,10 +24,9 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @Entity
 @Cache(expirationSeconds = 600)
-@AllArgsConstructor
-@Setter
-@Getter
+@Data
 @Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class OMemberProxy implements MemberProxy {
     @Id private String proxyId;
     private String memberId;

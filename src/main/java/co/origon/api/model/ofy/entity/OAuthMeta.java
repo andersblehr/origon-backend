@@ -3,23 +3,21 @@ package co.origon.api.model.ofy.entity;
 import java.util.Date;
 
 import co.origon.api.model.api.entity.DeviceCredentials;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
-import lombok.*;
+import lombok.Data;
 import lombok.experimental.Accessors;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 
 @Entity
 @Cache(expirationSeconds = 600)
-@NoArgsConstructor
-@AllArgsConstructor
-@Setter
-@Getter
+@Data
 @Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class OAuthMeta implements DeviceCredentials {
 
     @Id private String authToken;
@@ -27,25 +25,6 @@ public class OAuthMeta implements DeviceCredentials {
     private String deviceId;
     private String deviceType;
     private Date dateExpires = dateExpires();
-
-    public static OAuthMeta get(String authToken) {
-        if (authToken == null) {
-            throw new NullPointerException("Auth token is null");
-        }
-        if (authToken.length() != 40) {
-            throw new IllegalArgumentException("Invalid auth token: " + authToken);
-        }
-
-        return ofy().load().type(OAuthMeta.class).id(authToken).now();
-    }
-
-    public void save() {
-        ofy().save().entity(this).now();
-    }
-
-    public void delete() {
-        ofy().delete().entity(this);
-    }
 
     @Override
     public DeviceCredentials deviceToken(String deviceToken) {
@@ -60,6 +39,8 @@ public class OAuthMeta implements DeviceCredentials {
 
     @Override
     public Date dateExpires() {
-        return new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
+        if (dateExpires == null)
+            dateExpires = new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
+        return dateExpires;
     }
 }
