@@ -138,13 +138,12 @@ class BasicAuthCredentialsTest {
         }
 
         @Test
-        @DisplayName("Given unsuccessfully validated credentials, then throw RuntimeException")
-        void givenUnsuccessfullyValidatedCredentials_thenThrowRuntimeException() {
+        @DisplayName("Given unsuccessfully validated credentials, then return null")
+        void givenUnsuccessfullyValidatedCredentials_thenReturnNull() {
             assertThrows(IllegalArgumentException.class, () ->
                     BasicAuthCredentials.validate(null)
             );
-            assertThrows(RuntimeException.class, BasicAuthCredentials::getCredentials);
-            BasicAuthCredentials.dispose();
+            assertNull(BasicAuthCredentials.getCredentials());
         }
     }
 }

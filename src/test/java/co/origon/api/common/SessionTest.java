@@ -85,13 +85,12 @@ class SessionTest {
         }
 
         @Test
-        @DisplayName("Given failed session creation, then throw RuntimeException")
-        void givenFailedSessionCreation_thenThrowRuntimeException() {
+        @DisplayName("Given failed session creation, then return null")
+        void givenFailedSessionCreation_thenReturnNull() {
             assertThrows(IllegalArgumentException.class, () ->
                     Session.create(null, "Device", "1.0")
             );
-            assertThrows(RuntimeException.class, Session::getSession);
-            Session.dispose();
+            assertNull(Session.getSession());
         }
     }
 }

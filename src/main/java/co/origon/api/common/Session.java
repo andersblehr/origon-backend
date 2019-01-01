@@ -24,9 +24,7 @@ public class Session {
     }
 
     public static Session getSession() {
-        if (localSession == null)
-            throw new RuntimeException("Session instance has not been created, cannot get");
-        return localSession.get();
+        return localSession != null ? localSession.get() : null;
     }
 
     public static void log(String message) {
