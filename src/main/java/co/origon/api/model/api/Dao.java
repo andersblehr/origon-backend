@@ -11,4 +11,8 @@ public interface Dao<E extends Entity> {
     Collection<E> get(Collection<String> keys);
     void save(Collection<E> entities);
     void delete(Collection<E> entities);
+
+    default boolean exists(String key) {
+        return get(key) != null;
+    }
 }
