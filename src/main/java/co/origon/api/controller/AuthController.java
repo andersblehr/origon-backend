@@ -86,8 +86,10 @@ public class AuthController {
                 .deviceId(deviceId)
                 .deviceType(deviceType);
         final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
-        final MemberProxy userProxy = userProxyDao.create()
-                .proxyId(basicAuthCredentials.email())
+        final MemberProxy userProxy = userProxyDao.exists(basicAuthCredentials.email())
+                ? userProxyDao.get(basicAuthCredentials.email())
+                : userProxyDao.create();
+        userProxy.proxyId(basicAuthCredentials.email())
                 .passwordHash(basicAuthCredentials.passwordHash())
                 .deviceToken(deviceToken);
 
