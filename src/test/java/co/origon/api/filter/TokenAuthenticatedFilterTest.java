@@ -30,22 +30,22 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class TokenAuthenticatedFilterTest {
 
-    private final static String VALID_EMAIL = "user@example.com";
-    private final static String VALID_CREDENTIALS = "Basic " + encode(VALID_EMAIL + ":password");
-    private final static String NON_MATCHING_CREDENTIALS = "Basic " + encode("other@email.com:password");
-    private final static String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
-    private final static String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
+    private static final String VALID_EMAIL = "user@example.com";
+    private static final String VALID_CREDENTIALS = "Basic " + encode(VALID_EMAIL + ":password");
+    private static final String NON_MATCHING_CREDENTIALS = "Basic " + encode("other@email.com:password");
+    private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
+    private static final String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
+
+    private TokenAuthenticatedFilter tokenAuthenticatedFilter;
 
     @Mock private DaoFactory daoFactory;
-    @Mock private ContainerRequestContext requestContext;
-    @Mock private UriInfo uriInfo;
-    @Mock private MultivaluedMap<String, String> queryParameters;
     @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
     @Mock private DeviceCredentials deviceCredentials;
     @Mock private Dao<MemberProxy> userProxyDao;
     @Mock private MemberProxy userProxy;
-
-    private TokenAuthenticatedFilter tokenAuthenticatedFilter;
+    @Mock private ContainerRequestContext requestContext;
+    @Mock private UriInfo uriInfo;
+    @Mock private MultivaluedMap<String, String> queryParameters;
 
     @Nested
     class WhenFilter {

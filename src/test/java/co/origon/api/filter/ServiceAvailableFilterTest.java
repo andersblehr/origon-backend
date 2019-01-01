@@ -26,12 +26,12 @@ class ServiceAvailableFilterTest {
     private static final String STATUS_OK = "OK";
     private static final String STATUS_NOK = "testing";
 
-    @Mock private ContainerRequestContext requestContext;
+    private ServiceAvailableFilter serviceAvailableFilter;
+
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<Config> configDao;
     @Mock private Config systemConfig;
-
-    private ServiceAvailableFilter serviceAvailableFilter;
+    @Mock private ContainerRequestContext requestContext;
 
     @Nested
     class WhenFilter {

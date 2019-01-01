@@ -22,12 +22,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class BasicAuthValidatedFilterTest {
 
-    private final static String VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
-    private final static String INVALID_CREDENTIALS = encode("user@example.com:password");
-
-    @Mock private ContainerRequestContext requestContext;
+    private static final String VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
+    private static final String INVALID_CREDENTIALS = encode("user@example.com:password");
 
     private BasicAuthValidatedFilter basicAuthValidatedFilter = new BasicAuthValidatedFilter();
+
+    @Mock private ContainerRequestContext requestContext;
 
     @Nested
     class WhenFilter {
