@@ -23,11 +23,11 @@ class LanguageSupportedFilterTest {
     private static final String UNSUPPORTED_LANGUAGE = "hr";
     private static final String INVALID_LANGUAGE_CODE = "harr";
 
+    private LanguageSupportedFilter languageSupportedFilter = new LanguageSupportedFilter();
+
     @Mock private ContainerRequestContext requestContext;
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
-
-    private LanguageSupportedFilter languageSupportedFilter = new LanguageSupportedFilter();
 
     @Nested
     class WhenFilter {

@@ -12,13 +12,19 @@ import org.json.JSONObject;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-@Setter
 @Accessors(fluent = true)
 public class Config implements co.origon.api.model.api.entity.Config {
 
-    @Id private String category;
+    @Id @Setter  private String category;
     private String configJson;
     @IgnoreSave private JSONObject jsonObject;
+
+    @Override
+    public co.origon.api.model.api.entity.Config configJson(String configJson) {
+        this.configJson = configJson;
+        loadJsonObject();
+        return this;
+    }
 
     @Override
     public String getString(String setting) {

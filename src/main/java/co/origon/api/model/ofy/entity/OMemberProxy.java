@@ -23,8 +23,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 @Entity
 @Cache(expirationSeconds = 600)
 @AllArgsConstructor
-@Getter
 @Setter
+@Getter
 @Accessors(fluent = true)
 public class OMemberProxy implements MemberProxy {
     @Id private String proxyId;

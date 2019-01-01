@@ -35,15 +35,15 @@ class JwtAuthenticatedFilterTest {
     private static final String AUTH_HEADER_INVALID_SCHEME = "Basic user@example.com:password";
     private static final String AUTH_HEADER_INVALID_JWT_TOKEN = "Bearer thisisnotajwttoken";
 
-    private final static String JWT_ISSUER = "issuer";
-    private final static String JWT_SECRET = "secret";
+    private static final String JWT_ISSUER = "issuer";
+    private static final String JWT_SECRET = "secret";
 
-    @Mock private ContainerRequestContext requestContext;
+    private JwtAuthenticatedFilter jwtAuthenticatedFilter;
+
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<Config> configDao;
     @Mock private Config jwtConfig;
-
-    private JwtAuthenticatedFilter jwtAuthenticatedFilter;
+    @Mock private ContainerRequestContext requestContext;
 
     @Nested
     class WhenFilter {

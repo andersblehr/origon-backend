@@ -3,9 +3,12 @@ package co.origon.api.filter;
 import co.origon.api.annotation.SessionDataValidated;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
+import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.ofy.entity.OAuthMeta;
 
 import javax.annotation.Priority;
+import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -16,17 +19,26 @@ import javax.ws.rs.ext.Provider;
 @Priority(4)
 public class SessionDataValidatedFilter implements ContainerRequestFilter {
 
+    private DaoFactory daoFactory;
+
+    @Inject
+    SessionDataValidatedFilter(DaoFactory daoFactory) {
+        this.daoFactory = daoFactory;
+    }
+
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        final String authToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
+        final String deviceToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
         final String appVersion = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.APP_VERSION);
         String deviceId = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_ID);
         String deviceType = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TYPE);
 
-        if (authToken != null && deviceId == null && deviceType == null) {
-            final OAuthMeta authMeta = OAuthMeta.get(authToken);
-            deviceId = authMeta.deviceId();
-            deviceType = authMeta.deviceType();
+        if (isSet(deviceToken) && !isSet(deviceId) && !isSet(deviceType)) {
+            final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+            if (deviceCredentials == null)
+                throw new BadRequestException("Incomplete session data and unknown device token");
+            deviceId = deviceCredentials.deviceId();
+            deviceType = deviceCredentials.deviceType();
         }
 
         try {
@@ -34,5 +46,9 @@ public class SessionDataValidatedFilter implements ContainerRequestFilter {
         } catch (IllegalArgumentException e) {
             throw new BadRequestException("Invalid session data", e);
         }
+    }
+
+    private boolean isSet(String string) {
+        return string != null && string.length() > 0;
     }
 }

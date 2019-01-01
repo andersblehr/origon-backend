@@ -17,8 +17,8 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 @Cache(expirationSeconds = 600)
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
 @Setter
+@Getter
 @Accessors(fluent = true)
 public class OAuthMeta implements DeviceCredentials {
 
