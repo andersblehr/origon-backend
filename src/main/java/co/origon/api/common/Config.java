@@ -1,5 +1,7 @@
 package co.origon.api.common;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.googlecode.objectify.annotation.*;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -9,10 +11,9 @@ import org.json.JSONObject;
 
 @Entity
 @Cache(expirationSeconds = 60)
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
+@Data
 @Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Config implements co.origon.api.model.api.entity.Config {
 
     @Id @Setter  private String category;
