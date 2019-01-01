@@ -9,19 +9,18 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import co.origon.api.annotation.BasicAuthValidated;
 import co.origon.api.annotation.LanguageSupported;
 import co.origon.api.annotation.SessionDataValidated;
 import co.origon.api.annotation.TokenAuthenticated;
 import co.origon.api.common.*;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
-import co.origon.api.model.ofy.entity.OAuthInfo;
-import co.origon.api.model.ofy.entity.OAuthMeta;
-import co.origon.api.model.ofy.entity.OMemberProxy;
+import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
-import co.origon.api.annotation.BasicAuthValidated;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -47,22 +46,23 @@ public class AuthController {
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        checkNotRegistered(credentials.getEmail());
+        checkNotRegistered(credentials.email());
 
-        final OAuthInfo authInfo = OAuthInfo.builder()
+        final Dao<OtpCredentials> dao = daoFactory.daoFor(OtpCredentials.class);
+        final OtpCredentials otpCredentials = dao.create()
                 .deviceId(deviceId)
-                .email(credentials.getEmail())
-                .passwordHash(credentials.getPasswordHash())
-                .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE))
-                .build();
-        authInfo.save();
+                .email(credentials.email())
+                .passwordHash(credentials.passwordHash())
+                .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE));
+        dao.save(otpCredentials);
 
-        Mailer.forLanguage(language).sendRegistrationEmail(credentials.getEmail(), authInfo.getActivationCode());
-        Session.log("Sent user activation code to new user " + credentials.getEmail());
+        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
+        mailer.sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
+        Session.log("Sent user activation code to new user " + credentials.email());
 
         return Response
                 .status(Status.CREATED)
-                .entity(authInfo)
+                .entity(otpCredentials)
                 .build();
     }
 
@@ -76,27 +76,27 @@ public class AuthController {
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
-        final OAuthInfo authInfo = checkAwaitingActivation(basicAuthCredentials);
+        final OtpCredentials otpCredentials = checkAwaitingActivation(basicAuthCredentials);
         checkDeviceTokenFormat(deviceToken);
 
         final Dao<DeviceCredentials> deviceCredentialsDao = daoFactory.daoFor(DeviceCredentials.class);
         final DeviceCredentials deviceCredentials = deviceCredentialsDao.create()
                 .deviceToken(deviceToken)
-                .email(basicAuthCredentials.getEmail())
+                .email(basicAuthCredentials.email())
                 .deviceId(deviceId)
                 .deviceType(deviceType);
         final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
         final MemberProxy userProxy = userProxyDao.create()
-                .proxyId(basicAuthCredentials.getEmail())
-                .passwordHash(basicAuthCredentials.getPasswordHash())
+                .proxyId(basicAuthCredentials.email())
+                .passwordHash(basicAuthCredentials.passwordHash())
                 .deviceToken(deviceToken);
 
         deviceCredentialsDao.save(deviceCredentials);
         userProxyDao.save(userProxy);
-        authInfo.delete();
+        daoFactory.daoFor(OtpCredentials.class).delete(otpCredentials);
 
-        Session.log("Persisted new auth token for user " + basicAuthCredentials.getEmail());
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(basicAuthCredentials.getEmail());
+        Session.log("Persisted new auth token for user " + basicAuthCredentials.email());
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(basicAuthCredentials.email());
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
         return Response
@@ -112,25 +112,25 @@ public class AuthController {
     public Response loginUser(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.DEVICE_ID) String deviceId,
             @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        final OMemberProxy userProxy = checkAuthenticated(credentials);
-        checkDeviceTokenFormat(authToken);
+        final MemberProxy userProxy = checkAuthenticated(credentials);
+        checkDeviceTokenFormat(deviceToken);
 
-        userProxy.refreshDeviceToken(authToken, deviceId);
-        new OAuthMeta()
-                .email(credentials.getEmail())
-                .authToken(authToken)
+        userProxy.refreshDeviceToken(deviceToken, deviceId);
+        final Dao<DeviceCredentials> dao = daoFactory.daoFor(DeviceCredentials.class);
+        dao.save(dao.create()
+                .email(credentials.email())
+                .deviceToken(deviceToken)
                 .deviceId(deviceId)
-                .deviceType(deviceType)
-                .save();
+                .deviceType(deviceType));
 
-        Session.log("Persisted new auth token for user " + credentials.getEmail());
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(credentials.getEmail(), replicationDate);
+        Session.log("Persisted new auth token for user " + credentials.email());
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(credentials.email(), replicationDate);
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
         return Response
@@ -145,15 +145,16 @@ public class AuthController {
     @TokenAuthenticated
     public Response changePassword(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail());
-        userProxy.passwordHash(credentials.getPasswordHash());
-        userProxy.save();
+        final Dao<MemberProxy> dao = daoFactory.daoFor(MemberProxy.class);
+        final MemberProxy userProxy = dao.get(credentials.email());
+        userProxy.passwordHash(credentials.passwordHash());
+        dao.save(userProxy);
 
-        Session.log("Saved new password hash for " + credentials.getEmail());
+        Session.log("Saved new password hash for " + credentials.email());
 
         return Response
                 .status(Status.CREATED)
@@ -166,19 +167,21 @@ public class AuthController {
     @LanguageSupported
     public Response resetPassword(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.DEVICE_ID) String deviceId,
             @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
             @QueryParam(UrlParams.APP_VERSION) String appVersion,
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail());
-        userProxy.passwordHash(credentials.getPasswordHash());
-        userProxy.save();
+        final Dao<MemberProxy> dao = daoFactory.daoFor(MemberProxy.class);
+        final MemberProxy userProxy = dao.get(credentials.email());
+        userProxy.passwordHash(credentials.passwordHash());
+        dao.save(userProxy);
 
-        Mailer.forLanguage(language).sendPasswordResetEmail(credentials.getEmail(), credentials.getPassword());
-        Session.log("Sent temporary password to " + credentials.getEmail());
+        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
+        mailer.sendPasswordResetEmail(credentials.email(), credentials.password());
+        Session.log("Sent temporary password to " + credentials.email());
 
         return Response
                 .status(Status.CREATED)
@@ -191,61 +194,62 @@ public class AuthController {
     @LanguageSupported
     public Response sendActivationCode(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion,
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
-        final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-        final OAuthMeta authMeta = OAuthMeta.get(authToken);
-        final String activationCode = credentials.getPassword();  // Not pretty, but how I chose to do it back then..
-        final OAuthInfo authInfo = OAuthInfo.builder()
-                .deviceId(authMeta.deviceId())
-                .email(credentials.getEmail())
-                .activationCode(activationCode)
-                .build();
-        authInfo.save();
+        final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+        final String activationCode = basicAuthCredentials.password();  // Not pretty...
+        final Dao<OtpCredentials> dao = daoFactory.daoFor(OtpCredentials.class);
+        final OtpCredentials otpCredentials = dao.create()
+                .deviceId(deviceCredentials.deviceId())
+                .email(basicAuthCredentials.email())
+                .activationCode(activationCode);
+        dao.save(otpCredentials);
 
-        Mailer.forLanguage(language).sendEmailActivationCode(credentials.getEmail(), activationCode);
-        Session.log("Sent email activation code to " + credentials.getEmail());
+        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
+        mailer.sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
+        Session.log("Sent email activation code to " + basicAuthCredentials.email());
 
         return Response
                 .status(Status.CREATED)
-                .entity(authInfo)
+                .entity(otpCredentials)
                 .build();
     }
 
-    private static void checkNotRegistered(String email) {
+    private void checkNotRegistered(String email) {
         try {
-            final OMemberProxy userProxy = OMemberProxy.get(email);
-            checkArgument(!userProxy.isRegistered(), "User is already registered");
+            final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(email);
+            checkArgument(userProxy == null || !userProxy.isRegistered(), "User is already registered");
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(e.getMessage(), e, Status.CONFLICT);
         }
     }
 
-    private static OAuthInfo checkAwaitingActivation(BasicAuthCredentials credentials) {
+    private OtpCredentials checkAwaitingActivation(BasicAuthCredentials credentials) {
         try {
-            checkNotRegistered(credentials.getEmail());
+            checkNotRegistered(credentials.email());
         } catch (WebApplicationException e) {
             throw new BadRequestException("Cannot activate an active user", e);
         }
 
-        final OAuthInfo authInfo = OAuthInfo.get(credentials.getEmail());
-        if (authInfo == null) {
-            throw new BadRequestException("User " + credentials.getEmail() + " is not awaiting activation, cannot activate");
+        final OtpCredentials otpCredentials = daoFactory.daoFor(OtpCredentials.class).get(credentials.email());
+        if (otpCredentials == null) {
+            throw new BadRequestException("User " + credentials.email() + " is not awaiting activation, cannot activate");
         }
-        if (!authInfo.getPasswordHash().equals(credentials.getPasswordHash())) {
+        if (!otpCredentials.passwordHash().equals(credentials.passwordHash())) {
             throw new NotAuthorizedException("Incorrect password");
         }
 
-        return authInfo;
+        return otpCredentials;
     }
 
-    private static OMemberProxy checkAuthenticated(BasicAuthCredentials credentials) {
+    private MemberProxy checkAuthenticated(BasicAuthCredentials credentials) {
         try {
-            final OMemberProxy userProxy = OMemberProxy.get(credentials.getEmail());
-            checkArgument(userProxy.isRegistered(), "User " + credentials.getEmail() + " is not registered");
-            checkArgument(userProxy.passwordHash().equals(credentials.getPasswordHash()), "Invalid password");
+            final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(credentials.email());
+            checkArgument(userProxy.isRegistered(), "User " + credentials.email() + " is not registered");
+            checkArgument(userProxy.passwordHash().equals(credentials.passwordHash()), "Invalid password");
 
             return userProxy;
         } catch (IllegalArgumentException e) {
@@ -253,10 +257,10 @@ public class AuthController {
         }
     }
 
-    private static void checkDeviceTokenFormat(String authToken) {
+    private void checkDeviceTokenFormat(String deviceToken) {
         try {
-            checkNotNull(authToken, "Missing parmaeter: " + UrlParams.DEVICE_TOKEN);
-            checkArgument(authToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + authToken);
+            checkNotNull(deviceToken, "Missing parmaeter: " + UrlParams.DEVICE_TOKEN);
+            checkArgument(deviceToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + deviceToken);
         } catch (IllegalArgumentException | NullPointerException e) {
             throw new BadRequestException(e.getMessage(), e);
         }

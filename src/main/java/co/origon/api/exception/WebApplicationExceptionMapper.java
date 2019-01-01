@@ -16,8 +16,12 @@ public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplica
     public Response toResponse(WebApplicationException e) {
         Session.dispose();
         BasicAuthCredentials.dispose();
-        if (Status.fromStatusCode(e.getResponse().getStatus()) != Status.NOT_FOUND) {
+        final Status status = Status.fromStatusCode(e.getResponse().getStatus());
+        if (status != Status.NOT_FOUND) {
             Session.log(Level.WARNING, e.getResponse().getStatus() + ": " + e.getMessage());
+        }
+        if (status == Status.INTERNAL_SERVER_ERROR) {
+            e.printStackTrace();
         }
         return e.getResponse();
     }
