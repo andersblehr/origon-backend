@@ -5,8 +5,11 @@ import co.origon.api.model.api.Entity;
 import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
+import co.origon.api.model.api.entity.OtpCredentials;
+import co.origon.api.model.ofy.entity.OAuthInfo;
 import co.origon.api.model.ofy.entity.OAuthMeta;
 import co.origon.api.model.ofy.entity.OMemberProxy;
+
 import com.googlecode.objectify.Key;
 
 import java.util.Collection;
@@ -22,28 +25,24 @@ public class DaoOfy<E extends Entity> implements Dao<E> {
         this.clazz = clazz;
     }
 
+    private DaoOfy() {
+
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public E create() {
-        if (clazz.equals(MemberProxy.class))
-            return (E) new OMemberProxy();
-        if (clazz.equals(DeviceCredentials.class))
-            return (E) new OAuthMeta();
-
-        return null;
+        try {
+            return (E) ofyClass().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException("Error instantiating Ofy class: " + clazz.getName(), e);
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public E get(String key) {
-        if (clazz.equals(Config.class))
-            return (E) ofy().load().type(co.origon.api.common.Config.class).id(key).now();
-        if (clazz.equals(DeviceCredentials.class))
-            return (E) ofy().load().type(OAuthMeta.class).id(key).now();
-        if (clazz.equals(MemberProxy.class))
-            return (E) ofy().load().type(OMemberProxy.class).id(key).now();
-
-        return null;
+        return (E) ofy().load().type(ofyClass()).id(key).now();
     }
 
     @Override
@@ -74,5 +73,18 @@ public class DaoOfy<E extends Entity> implements Dao<E> {
     @Override
     public void delete(Collection<E> entities) {
         ofy().delete().entities(entities).now();
+    }
+
+    private Class ofyClass() {
+        if (clazz.equals(Config.class))
+            return co.origon.api.common.Config.class;
+        if (clazz.equals(DeviceCredentials.class))
+            return OAuthMeta.class;
+        if (clazz.equals(MemberProxy.class))
+            return OMemberProxy.class;
+        if (clazz.equals(OtpCredentials.class))
+            return OAuthInfo.class;
+
+        return null;
     }
 }

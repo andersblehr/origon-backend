@@ -3,6 +3,7 @@ package co.origon.api.controller;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -11,11 +12,14 @@ import javax.ws.rs.core.Response.Status;
 
 import co.origon.api.annotation.LanguageSupported;
 import co.origon.api.annotation.SessionDataValidated;
-import co.origon.api.model.ofy.entity.OAuthMeta;
+import co.origon.api.annotation.TokenAuthenticated;
 import co.origon.api.common.*;
+import co.origon.api.model.api.Dao;
+import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.Config;
+import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
-import co.origon.api.annotation.TokenAuthenticated;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -27,21 +31,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @SessionDataValidated
 public class ReplicationController {
 
+    @Inject
+    private DaoFactory daoFactory;
+
     @POST
     @Path("replicate")
     @LanguageSupported
     public Response replicate(
             List<OReplicatedEntity> entitiesToReplicate,
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion,
             @QueryParam(UrlParams.LANGUAGE) String language
     ) {
-        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
         checkReplicationDate(replicationDate);
 
-        ODao.getDao().replicateEntities(entitiesToReplicate, authMeta.email(), Mailer.forLanguage(language));
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(authMeta.email(), replicationDate);
+        Dao<Config> configDao = daoFactory.daoFor(Config.class);
+        ODao.getDao().replicateEntities(entitiesToReplicate, deviceCredentials.email(), new Mailer(language, configDao));
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(deviceCredentials.email(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
@@ -59,13 +67,13 @@ public class ReplicationController {
     @Path("fetch")
     public Response fetchEntities(
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        final OAuthMeta authMeta = OAuthMeta.get(authToken);
+        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
         checkReplicationDate(replicationDate);
 
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(authMeta.email(), replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(deviceCredentials.email(), replicationDate);
         Session.log(fetchedEntities.size() + " entities fetched");
 
         return Response
