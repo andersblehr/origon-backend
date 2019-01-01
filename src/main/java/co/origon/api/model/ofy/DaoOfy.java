@@ -2,6 +2,7 @@ package co.origon.api.model.ofy;
 
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.Entity;
+import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.ofy.entity.OAuthMeta;
@@ -35,10 +36,12 @@ public class DaoOfy<E extends Entity> implements Dao<E> {
     @Override
     @SuppressWarnings("unchecked")
     public E get(String key) {
-        if (clazz.equals(MemberProxy.class))
-            return (E) ofy().load().type(OMemberProxy.class).id(key).now();
+        if (clazz.equals(Config.class))
+            return (E) ofy().load().type(co.origon.api.common.Config.class).id(key).now();
         if (clazz.equals(DeviceCredentials.class))
             return (E) ofy().load().type(OAuthMeta.class).id(key).now();
+        if (clazz.equals(MemberProxy.class))
+            return (E) ofy().load().type(OMemberProxy.class).id(key).now();
 
         return null;
     }

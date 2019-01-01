@@ -1,5 +1,8 @@
 package co.origon.api.filter;
 
+import co.origon.api.annotation.BasicAuthValidated;
+import co.origon.api.common.BasicAuthCredentials;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -53,6 +56,11 @@ class BasicAuthValidatedFilterTest {
                     basicAuthValidatedFilter.filter(requestContext)
             );
             assertEquals("Invalid basic auth credentials", e.getMessage());
+        }
+
+        @AfterEach
+        void tearDown() {
+            BasicAuthCredentials.dispose();
         }
     }
 }

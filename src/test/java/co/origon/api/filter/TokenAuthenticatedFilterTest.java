@@ -52,19 +52,18 @@ class TokenAuthenticatedFilterTest {
 
         @BeforeEach
         void setUp() {
-            when(requestContext.getUriInfo())
-                    .thenReturn(uriInfo);
-            when(uriInfo.getQueryParameters())
-                    .thenReturn(queryParameters);
-
-            BasicAuthCredentials.validate(VALID_CREDENTIALS);
             tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
+            BasicAuthCredentials.validate(VALID_CREDENTIALS);
         }
 
         @Test
         @DisplayName("Given valid device token, run to completion")
         void givenValidDeviceToken_thenRunToCompletion() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))
@@ -93,6 +92,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given no device token, throw BadRequestException")
         void givenNoDeviceToken_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(null, "");
 
@@ -121,6 +124,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given invalid device token, throw BadRequestException")
         void givenInvalidDeviceToken_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(INVALID_DEVICE_TOKEN);
 
@@ -136,6 +143,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given unknown device token, throw BadRequestException")
         void givenUnknownDeviceToken_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             when(daoFactory.daoFor(DeviceCredentials.class))
@@ -155,6 +166,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given unknown device token, throw BadRequestException")
         void givenExpiredDeviceToken_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             when(daoFactory.daoFor(DeviceCredentials.class))
@@ -169,15 +184,19 @@ class TokenAuthenticatedFilterTest {
                     // when
                     tokenAuthenticatedFilter.filter(requestContext)
             );
-            final String wwwAuthenticate = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
             assertEquals("Device token has expired", e.getMessage());
-            assertEquals(TokenAuthenticatedFilter.UNAUTHORIZED_WWW_AUTHENTICATE_HEADER, wwwAuthenticate);
+            final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
+            assertEquals(TokenAuthenticatedFilter.WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH, authChallenge);
         }
 
         @Test
         @DisplayName("Given unknown user, throw BadRequestException")
         void givenUnknownUser_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))
@@ -205,6 +224,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given unknown user, throw BadRequestException")
         void givenNonRegisteredUser_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))
@@ -235,6 +258,10 @@ class TokenAuthenticatedFilterTest {
         @DisplayName("Given non-matching credentials, throw BadRequestException")
         void givenNonMatchingCredentials_thenThrowBadRequestException() {
             // given
+            when(requestContext.getUriInfo())
+                    .thenReturn(uriInfo);
+            when(uriInfo.getQueryParameters())
+                    .thenReturn(queryParameters);
             when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN))
                     .thenReturn(VALID_DEVICE_TOKEN);
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))

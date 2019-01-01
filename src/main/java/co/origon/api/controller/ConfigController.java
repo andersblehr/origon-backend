@@ -1,11 +1,12 @@
 package co.origon.api.controller;
 
-import co.origon.api.common.Config;
 import co.origon.api.annotation.JwtAuthenticated;
+import co.origon.api.model.api.Dao;
+import co.origon.api.model.api.DaoFactory;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import co.origon.api.model.api.entity.Config;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -13,6 +14,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 @Path("configs")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -23,52 +25,42 @@ public class ConfigController {
     @Context
     private HttpServletRequest request;
 
+    @Inject
+    private DaoFactory daoFactory;
+
     @POST
     @Path("{category}")
     public Response createConfig(String configJson, @PathParam("category") String category) {
         try {
-            Config.create(category, configJson);
-            return Response.created(new URI(request.getContextPath() + request.getPathInfo())).build();
-        } catch (JSONException e) {
-            throw new BadRequestException("Invalid config JSON: " + configJson, e);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("An unexpected error occurred", e);
+            final Dao<Config> configDao = daoFactory.daoFor(Config.class);
+            configDao.save(configDao.create()
+                    .category(category)
+                    .configJson(configJson));
+            return Response
+                    .created(new URI(request.getContextPath() + request.getPathInfo()))
+                    .build();
+        } catch (URISyntaxException e) {
+            throw new InternalServerErrorException("URI syntax error", e);
         }
     }
 
     @GET
     @Path("{category}")
     public Response getConfig(@PathParam("category") String category) {
-        final JSONObject configJson = doGetConfig(category);
-        if (configJson == null) {
+        final String configJson = daoFactory.daoFor(Config.class).get(category).configJson();
+        if (configJson == null)
             throw new NotFoundException("No configuration settings for category: " + category);
-        }
-
-        return Response.ok(configJson.toString()).build();
+        return Response.ok(configJson).build();
     }
 
     @DELETE
     @Path("{category}")
     public Response deleteConfig(@PathParam("category") String category) {
-        if (doGetConfig(category) == null) {
+        final Dao<Config> configDao = daoFactory.daoFor(Config.class);
+        final Config config = configDao.get(category);
+        if (config == null)
             throw new NotFoundException("No configuration settings for category: " + category);
-        }
-
-        try {
-            Config.delete(category);
-            return Response.ok().build();
-        } catch (Exception e) {
-            throw new InternalServerErrorException("An unexpected error occurred", e);
-        }
-    }
-
-    private JSONObject doGetConfig(String category) {
-        try {
-            return Config.get(category);
-        } catch (JSONException e) {
-            throw new InternalServerErrorException("Illegal config JSON for category: " + category, e);
-        } catch (Exception e) {
-            throw new InternalServerErrorException("An unexpected error occurred", e);
-        }
+        configDao.delete(configDao.get(category));
+        return Response.ok().build();
     }
 }
