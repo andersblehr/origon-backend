@@ -25,9 +25,9 @@ class BasicAuthCredentialsTest {
         @DisplayName("Given valid credentials, then validate successfully")
         void givenValidCredentials_thenValidateSuccessfully() {
             final BasicAuthCredentials credentials = BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
-            assertEquals("user@example.com", credentials.getEmail());
-            assertEquals("password", credentials.getPassword());
-            assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
+            assertEquals("user@example.com", credentials.email());
+            assertEquals("password", credentials.password());
+            assertEquals(Crypto.generatePasswordHash("password"), credentials.passwordHash());
             BasicAuthCredentials.dispose();
         }
 
@@ -131,9 +131,9 @@ class BasicAuthCredentialsTest {
         void givenSuccessfullyValidatedCredentials_thenRetrieveCredentialsSuccessfully() {
             BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
             final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
-            assertEquals("user@example.com", credentials.getEmail());
-            assertEquals("password", credentials.getPassword());
-            assertEquals(Crypto.generatePasswordHash("password"), credentials.getPasswordHash());
+            assertEquals("user@example.com", credentials.email());
+            assertEquals("password", credentials.password());
+            assertEquals(Crypto.generatePasswordHash("password"), credentials.passwordHash());
             BasicAuthCredentials.dispose();
         }
 

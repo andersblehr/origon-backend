@@ -1,8 +1,10 @@
 package co.origon.api.common;
 
 import lombok.Getter;
+import lombok.experimental.Accessors;
 
 @Getter
+@Accessors(fluent = true)
 public class BasicAuthCredentials {
     private static ThreadLocal<BasicAuthCredentials> localCredentials;
     private static final int LENGTH_PASSWORD_MIN = 6;
