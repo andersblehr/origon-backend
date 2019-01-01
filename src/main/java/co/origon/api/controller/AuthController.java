@@ -235,12 +235,10 @@ public class AuthController {
         }
 
         final OtpCredentials otpCredentials = daoFactory.daoFor(OtpCredentials.class).get(credentials.email());
-        if (otpCredentials == null) {
+        if (otpCredentials == null)
             throw new BadRequestException("User " + credentials.email() + " is not awaiting activation, cannot activate");
-        }
-        if (!otpCredentials.passwordHash().equals(credentials.passwordHash())) {
+        if (!otpCredentials.passwordHash().equals(credentials.passwordHash()))
             throw new NotAuthorizedException("Incorrect password");
-        }
 
         return otpCredentials;
     }

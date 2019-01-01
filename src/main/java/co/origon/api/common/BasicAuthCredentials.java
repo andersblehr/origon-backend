@@ -23,9 +23,7 @@ public class BasicAuthCredentials {
     }
 
     public static BasicAuthCredentials getCredentials() {
-        if (localCredentials == null)
-            throw new RuntimeException("No basic auth credentials have been validated, cannot get");
-        return localCredentials.get();
+        return localCredentials != null ? localCredentials.get() : null;
     }
 
     public static void dispose() {
