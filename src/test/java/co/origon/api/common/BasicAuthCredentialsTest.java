@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class BasicAuthCredentialsTest {
 
     private static final String AUTH_HEADER_VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
-    private static final String AUTH_HEADER_TOO_MANY_ELEMENTS = "Basic user@example.com password";
+    private static final String AUTH_HEADER_INVALID_NO_OF_ELEMENTS = "This is not a valid basic auth header";
     private static final String AUTH_HEADER_INVALID_SCHEME = "Bearer user@example.com:password";
     private static final String AUTH_HEADER_INVALID_BASE64 = "Basic user@example.com:password";
     private static final String AUTH_HEADER_INVALID_CREDENTIALS = "Basic " + encode("user@example.com;password");
@@ -55,7 +55,7 @@ class BasicAuthCredentialsTest {
         @DisplayName("Given invalid number of elements in Authorization header, then throw IllegalArgumentException")
         void givenInvalidNumberOfElementsInAuthorizationHeader_thenThrowIllegalArgumentException() {
             Throwable e = assertThrows(IllegalArgumentException.class, () ->
-                    BasicAuthCredentials.validate(AUTH_HEADER_TOO_MANY_ELEMENTS)
+                    BasicAuthCredentials.validate(AUTH_HEADER_INVALID_NO_OF_ELEMENTS)
             );
             assertTrue(e.getMessage().startsWith("Invalid Authorization header"));
             BasicAuthCredentials.dispose();

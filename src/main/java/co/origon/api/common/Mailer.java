@@ -12,21 +12,24 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import co.origon.api.model.ofy.entity.OMemberProxy;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
+import co.origon.api.model.api.DaoFactory;
+import co.origon.api.model.api.entity.Config;
+import co.origon.api.model.api.entity.Config.Category;
+import co.origon.api.model.api.entity.Config.Setting;
 import co.origon.api.model.ofy.entity.OMember;
+import co.origon.api.model.ofy.entity.OMemberProxy;
 import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
-import co.origon.api.common.Config.Category;
-import co.origon.api.common.Config.Setting;
 
 
 public class Mailer
@@ -35,7 +38,9 @@ public class Mailer
     private static final String MAILER_TO = "to";
     private static final String MAILER_SUBJECT = "subject";
     private static final String MAILER_BODY = "body";
-    
+
+    @Inject
+    private DaoFactory daoFactory;
     private final Language language;
 
 
@@ -206,7 +211,7 @@ public class Mailer
     
     private String createJwtBearerToken() {
         try {
-            final JSONObject jwtConfig = Config.get(Category.JWT);
+            final Config jwtConfig = daoFactory.daoFor(Config.class).get(Category.JWT);
             final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
             final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Setting.EXPIRES_IN_SECONDS));
             
@@ -233,7 +238,8 @@ public class Mailer
             requestBody.put(MAILER_SUBJECT, subject);
             requestBody.put(MAILER_BODY, body);
 
-            final URL mailerUrl = new URL(Config.get(Category.MAILER).getString(Setting.BASE_URL) + MAILER_RESOURCE_PATH);
+            final Config mailerConfig = daoFactory.daoFor(Config.class).get(Category.MAILER);
+            final URL mailerUrl = new URL(mailerConfig.getString(Setting.BASE_URL) + MAILER_RESOURCE_PATH);
             final HttpURLConnection connection = (HttpURLConnection)mailerUrl.openConnection();
             connection.setDoInput(true);
             connection.setDoOutput(true);

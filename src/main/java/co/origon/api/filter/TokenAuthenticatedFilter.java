@@ -22,7 +22,7 @@ import java.util.Date;
 @Priority(3)
 public class TokenAuthenticatedFilter implements ContainerRequestFilter {
 
-    static String UNAUTHORIZED_WWW_AUTHENTICATE_HEADER = "login";
+    static String WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH = "login";
 
     private DaoFactory daoFactory;
 
@@ -43,7 +43,7 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
         if (deviceCredentials == null)
             throw new BadRequestException("Cannot authenticate unknown device token");
         if (deviceCredentials.dateExpires().before(new Date()))
-            throw new NotAuthorizedException("Device token has expired", UNAUTHORIZED_WWW_AUTHENTICATE_HEADER);
+            throw new NotAuthorizedException("Device token has expired", WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH);
 
         final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());
         if (userProxy == null || !userProxy.isRegistered())
