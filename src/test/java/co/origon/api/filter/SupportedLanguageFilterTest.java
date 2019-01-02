@@ -17,13 +17,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class LanguageSupportedFilterTest {
+class SupportedLanguageFilterTest {
 
     private static final String SUPPORTED_LANGUAGE = "en";
     private static final String UNSUPPORTED_LANGUAGE = "hr";
     private static final String INVALID_LANGUAGE_CODE = "harr";
 
-    private LanguageSupportedFilter languageSupportedFilter = new LanguageSupportedFilter();
+    private SupportedLanguageFilter supportedLanguageFilter = new SupportedLanguageFilter();
 
     @Mock private ContainerRequestContext requestContext;
     @Mock private UriInfo uriInfo;
@@ -45,7 +45,7 @@ class LanguageSupportedFilterTest {
                     .thenReturn(SUPPORTED_LANGUAGE);
 
             // when
-            languageSupportedFilter.filter(requestContext);
+            supportedLanguageFilter.filter(requestContext);
 
             // then
             assertTrue(true);
@@ -67,7 +67,7 @@ class LanguageSupportedFilterTest {
                     () -> {
                         final Throwable eNull = assertThrows(BadRequestException.class, () ->
                                 // when
-                                languageSupportedFilter.filter(requestContext)
+                                supportedLanguageFilter.filter(requestContext)
                         );
                         assertEquals("Missing parameter: " + UrlParams.LANGUAGE, eNull.getMessage());
                     },
@@ -76,7 +76,7 @@ class LanguageSupportedFilterTest {
                     () -> {
                         final Throwable eEmpty = assertThrows(BadRequestException.class, () ->
                                 // when
-                                languageSupportedFilter.filter(requestContext)
+                                supportedLanguageFilter.filter(requestContext)
                         );
                         assertEquals("Missing parameter: " + UrlParams.LANGUAGE, eEmpty.getMessage());
                     }
@@ -97,7 +97,7 @@ class LanguageSupportedFilterTest {
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    languageSupportedFilter.filter(requestContext)
+                    supportedLanguageFilter.filter(requestContext)
             );
             assertEquals("Invalid language code: " + INVALID_LANGUAGE_CODE, e.getMessage());
         }
@@ -116,7 +116,7 @@ class LanguageSupportedFilterTest {
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    languageSupportedFilter.filter(requestContext)
+                    supportedLanguageFilter.filter(requestContext)
             );
             assertEquals("Invalid or unsupported language: " + UNSUPPORTED_LANGUAGE, e.getMessage());
         }

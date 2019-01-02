@@ -19,12 +19,12 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class BasicAuthValidatedFilterTest {
+class ValidBasicAuthCredentialsFilterTest {
 
     private static final String VALID_CREDENTIALS = "Basic " + encode("user@example.com:password");
     private static final String INVALID_CREDENTIALS = encode("user@example.com:password");
 
-    private BasicAuthValidatedFilter basicAuthValidatedFilter = new BasicAuthValidatedFilter();
+    private ValidBasicAuthCredentialsFilter validBasicAuthCredentialsFilter = new ValidBasicAuthCredentialsFilter();
 
     @Mock private ContainerRequestContext requestContext;
 
@@ -39,7 +39,7 @@ class BasicAuthValidatedFilterTest {
             when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
                     .thenReturn(VALID_CREDENTIALS);
             // when
-            basicAuthValidatedFilter.filter(requestContext);
+            validBasicAuthCredentialsFilter.filter(requestContext);
             // then
             assertTrue(true);
         }
@@ -53,7 +53,7 @@ class BasicAuthValidatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    basicAuthValidatedFilter.filter(requestContext)
+                    validBasicAuthCredentialsFilter.filter(requestContext)
             );
             assertEquals("Invalid basic auth credentials", e.getMessage());
         }

@@ -28,7 +28,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class TokenAuthenticatedFilterTest {
+class ValidDeviceTokenFilterTest {
 
     private static final String VALID_EMAIL = "user@example.com";
     private static final String VALID_CREDENTIALS = "Basic " + encode(VALID_EMAIL + ":password");
@@ -45,7 +45,7 @@ class TokenAuthenticatedFilterTest {
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
 
-    private TokenAuthenticatedFilter tokenAuthenticatedFilter;
+    private ValidDeviceTokenFilter validDeviceTokenFilter;
 
     @Nested
     @DisplayName("filter()")
@@ -54,7 +54,7 @@ class TokenAuthenticatedFilterTest {
         @BeforeEach
         void setUp() {
             BasicAuthCredentials.validate(VALID_CREDENTIALS);
-            tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
+            validDeviceTokenFilter = new ValidDeviceTokenFilter(daoFactory);
         }
 
         @Test
@@ -83,7 +83,7 @@ class TokenAuthenticatedFilterTest {
                     .thenReturn(true);
 
             // when
-            tokenAuthenticatedFilter.filter(requestContext);
+            validDeviceTokenFilter.filter(requestContext);
 
             // then
             assertTrue(true);
@@ -105,7 +105,7 @@ class TokenAuthenticatedFilterTest {
                     () -> {
                         final Throwable eNull = assertThrows(BadRequestException.class, () ->
                                 // when
-                                tokenAuthenticatedFilter.filter(requestContext)
+                                validDeviceTokenFilter.filter(requestContext)
                         );
                         assertEquals("Missing query parameter: " + UrlParams.DEVICE_TOKEN, eNull.getMessage());
                     },
@@ -114,7 +114,7 @@ class TokenAuthenticatedFilterTest {
                     () -> {
                         final Throwable eEmpty = assertThrows(BadRequestException.class, () ->
                                 // when
-                                tokenAuthenticatedFilter.filter(requestContext)
+                                validDeviceTokenFilter.filter(requestContext)
                         );
                         assertEquals("Missing query parameter: " + UrlParams.DEVICE_TOKEN, eEmpty.getMessage());
                     }
@@ -135,7 +135,7 @@ class TokenAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Invalid device token: " + INVALID_DEVICE_TOKEN, e.getMessage());
         }
@@ -158,7 +158,7 @@ class TokenAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Cannot authenticate unknown device token", e.getMessage());
         }
@@ -183,11 +183,11 @@ class TokenAuthenticatedFilterTest {
             // then
             final WebApplicationException e = assertThrows(NotAuthorizedException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Device token has expired", e.getMessage());
             final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-            assertEquals(TokenAuthenticatedFilter.WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH, authChallenge);
+            assertEquals(ValidDeviceTokenFilter.WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH, authChallenge);
         }
 
         @Test
@@ -216,7 +216,7 @@ class TokenAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
         }
@@ -249,7 +249,7 @@ class TokenAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
         }
@@ -286,7 +286,7 @@ class TokenAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    tokenAuthenticatedFilter.filter(requestContext)
+                    validDeviceTokenFilter.filter(requestContext)
             );
             assertEquals("Basic auth credentials do not match records for provided device token", e.getMessage());
         }

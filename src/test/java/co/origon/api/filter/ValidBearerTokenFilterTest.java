@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class JwtAuthenticatedFilterTest {
+class ValidBearerTokenFilterTest {
 
     private static final String AUTH_HEADER_INVALID_NO_OF_ELEMENTS = "This is not a valid Bearer token header";
     private static final String AUTH_HEADER_INVALID_SCHEME = "Basic user@example.com:password";
@@ -43,7 +43,7 @@ class JwtAuthenticatedFilterTest {
     @Mock private Config jwtConfig;
     @Mock private ContainerRequestContext requestContext;
 
-    private JwtAuthenticatedFilter jwtAuthenticatedFilter;
+    private ValidBearerTokenFilter validBearerTokenFilter;
 
     @Nested
     @DisplayName("filter()")
@@ -51,7 +51,7 @@ class JwtAuthenticatedFilterTest {
 
         @BeforeEach
         void setUp() {
-            jwtAuthenticatedFilter = new JwtAuthenticatedFilter(daoFactory);
+            validBearerTokenFilter = new ValidBearerTokenFilter(daoFactory);
         }
 
         @Test
@@ -68,7 +68,7 @@ class JwtAuthenticatedFilterTest {
                     .thenReturn(JWT_SECRET);
 
             // when
-            jwtAuthenticatedFilter.filter(requestContext);
+            validBearerTokenFilter.filter(requestContext);
 
             // then
             assertTrue(true);
@@ -86,7 +86,7 @@ class JwtAuthenticatedFilterTest {
                     () -> {
                         final Throwable eNull = assertThrows(BadRequestException.class, () ->
                                 // when
-                                jwtAuthenticatedFilter.filter(requestContext)
+                                validBearerTokenFilter.filter(requestContext)
                         );
                         assertEquals("Missing Authorization header", eNull.getMessage());
                     },
@@ -95,7 +95,7 @@ class JwtAuthenticatedFilterTest {
                     () -> {
                         final Throwable eEmpty = assertThrows(BadRequestException.class, () ->
                                 // when
-                                jwtAuthenticatedFilter.filter(requestContext)
+                                validBearerTokenFilter.filter(requestContext)
                         );
                         assertEquals("Missing Authorization header", eEmpty.getMessage());
                     }
@@ -112,7 +112,7 @@ class JwtAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    jwtAuthenticatedFilter.filter(requestContext)
+                    validBearerTokenFilter.filter(requestContext)
             );
             assertEquals("Invalid Authorization header: " + AUTH_HEADER_INVALID_NO_OF_ELEMENTS, e.getMessage());
         }
@@ -127,7 +127,7 @@ class JwtAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    jwtAuthenticatedFilter.filter(requestContext)
+                    validBearerTokenFilter.filter(requestContext)
             );
             assertEquals("Invalid authentication scheme for Bearer token: Basic", e.getMessage());
         }
@@ -148,11 +148,11 @@ class JwtAuthenticatedFilterTest {
             // then
             final WebApplicationException e = assertThrows(NotAuthorizedException.class, () ->
                     // when
-                    jwtAuthenticatedFilter.filter(requestContext)
+                    validBearerTokenFilter.filter(requestContext)
             );
             assertEquals("JWT token has expired", e.getMessage());
             final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-            assertEquals(JwtAuthenticatedFilter.WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN, authChallenge);
+            assertEquals(ValidBearerTokenFilter.WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN, authChallenge);
         }
 
         @Test
@@ -171,7 +171,7 @@ class JwtAuthenticatedFilterTest {
             // then
             final Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    jwtAuthenticatedFilter.filter(requestContext)
+                    validBearerTokenFilter.filter(requestContext)
             );
             assertEquals("Invalid JWT token", e.getMessage());
         }

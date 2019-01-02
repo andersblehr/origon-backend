@@ -1,6 +1,6 @@
 package co.origon.api.controller;
 
-import co.origon.api.annotation.JwtAuthenticated;
+import co.origon.api.annotation.ValidBearerToken;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 
@@ -19,7 +19,7 @@ import java.net.URISyntaxException;
 @Path("configs")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@JwtAuthenticated
+@ValidBearerToken
 public class ConfigController {
 
     @Context

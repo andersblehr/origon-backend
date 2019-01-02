@@ -1,11 +1,10 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.SessionDataValidated;
+import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
-import co.origon.api.model.ofy.entity.OAuthMeta;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -15,14 +14,14 @@ import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@SessionDataValidated
+@ValidSessionData
 @Priority(4)
-public class SessionDataValidatedFilter implements ContainerRequestFilter {
+public class ValidSessionDataFilter implements ContainerRequestFilter {
 
     private DaoFactory daoFactory;
 
     @Inject
-    SessionDataValidatedFilter(DaoFactory daoFactory) {
+    ValidSessionDataFilter(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
