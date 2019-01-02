@@ -86,7 +86,7 @@ public class ReplicationController {
     @Path("member")
     public Response lookupMember(
             @QueryParam(UrlParams.IDENTIFIER) String memberId,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         List<OReplicatedEntity> memberEntities = ODao.getDao().lookupMemberEntities(memberId);
@@ -103,7 +103,7 @@ public class ReplicationController {
     @Path("origo")
     public Response lookupOrigo(
             @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String authToken,
+            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
         OOrigo origo = ODao.getDao().lookupOrigo(internalJoinCode);
