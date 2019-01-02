@@ -26,14 +26,15 @@ class ServiceAvailableFilterTest {
     private static final String STATUS_OK = "OK";
     private static final String STATUS_NOK = "testing";
 
-    private ServiceAvailableFilter serviceAvailableFilter;
-
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<Config> configDao;
     @Mock private Config systemConfig;
     @Mock private ContainerRequestContext requestContext;
 
+    private ServiceAvailableFilter serviceAvailableFilter;
+
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @BeforeEach

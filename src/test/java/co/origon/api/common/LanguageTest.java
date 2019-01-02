@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class LanguageTest {
 
     @Nested
+    @DisplayName("fromCode()")
     class WhenFromCode {
 
         @Test

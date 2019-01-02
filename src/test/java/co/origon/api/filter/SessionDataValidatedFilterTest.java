@@ -25,8 +25,6 @@ class SessionDataValidatedFilterTest {
     private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private static final String VALID_DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
 
-    private SessionDataValidatedFilter sessionDataValidatedFilter;
-
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
     @Mock private DeviceCredentials deviceCredentials;
@@ -34,7 +32,10 @@ class SessionDataValidatedFilterTest {
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
 
+    private SessionDataValidatedFilter sessionDataValidatedFilter;
+
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @BeforeEach

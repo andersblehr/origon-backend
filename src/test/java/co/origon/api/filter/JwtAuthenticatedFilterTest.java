@@ -38,14 +38,15 @@ class JwtAuthenticatedFilterTest {
     private static final String JWT_ISSUER = "issuer";
     private static final String JWT_SECRET = "secret";
 
-    private JwtAuthenticatedFilter jwtAuthenticatedFilter;
-
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<Config> configDao;
     @Mock private Config jwtConfig;
     @Mock private ContainerRequestContext requestContext;
 
+    private JwtAuthenticatedFilter jwtAuthenticatedFilter;
+
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @BeforeEach

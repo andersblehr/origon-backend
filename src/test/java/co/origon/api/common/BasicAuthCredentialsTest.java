@@ -19,6 +19,7 @@ class BasicAuthCredentialsTest {
     private static final String AUTH_HEADER_INVALID_PASSWORD = "Basic " + encode("user@example.com:pwd");
 
     @Nested
+    @DisplayName("validate()")
     class WhenValidate {
 
         @Test
@@ -124,6 +125,7 @@ class BasicAuthCredentialsTest {
     }
 
     @Nested
+    @DisplayName("getCredentials()")
     class WhenGetCredentials {
 
         @Test
