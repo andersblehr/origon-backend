@@ -22,11 +22,9 @@ public class DaoOfy<E extends Entity> implements Dao<E> {
     private Class<E> clazz;
 
     DaoOfy(Class<E> clazz) {
+        if (ofyClass(clazz) == null)
+            throw new RuntimeException("Unsupported Ofy class: " + clazz.getName());
         this.clazz = clazz;
-    }
-
-    private DaoOfy() {
-
     }
 
     @Override
@@ -76,6 +74,10 @@ public class DaoOfy<E extends Entity> implements Dao<E> {
     }
 
     private Class ofyClass() {
+        return ofyClass(clazz);
+    }
+
+    private Class ofyClass(Class clazz) {
         if (clazz.equals(Config.class))
             return co.origon.api.common.Config.class;
         if (clazz.equals(DeviceCredentials.class))
