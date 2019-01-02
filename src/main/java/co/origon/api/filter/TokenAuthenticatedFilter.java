@@ -49,8 +49,10 @@ public class TokenAuthenticatedFilter implements ContainerRequestFilter {
         if (userProxy == null || !userProxy.isRegistered())
             throw new BadRequestException("Cannot authenticate unknown or inactive user: " + deviceCredentials.email());
 
-        final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
-        if (basicAuthCredentials != null && !basicAuthCredentials.email().equals(deviceCredentials.email()))
-            throw new BadRequestException("Basic auth credentials do not match records for provided device token");
+        if (BasicAuthCredentials.hasCredentials()) {
+            final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+            if (basicAuthCredentials != null && !basicAuthCredentials.email().equals(deviceCredentials.email()))
+                throw new BadRequestException("Basic auth credentials do not match records for provided device token");
+        }
     }
 }
