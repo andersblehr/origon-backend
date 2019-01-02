@@ -30,6 +30,7 @@ class LanguageSupportedFilterTest {
     @Mock private MultivaluedMap<String, String> queryParameters;
 
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @Test

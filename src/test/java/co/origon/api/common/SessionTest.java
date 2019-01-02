@@ -13,6 +13,7 @@ class SessionTest {
     private static final String SOME_UUID = UUID.randomUUID().toString();
 
     @Nested
+    @DisplayName("create()")
     class WhenCreate {
 
         @Test
@@ -74,6 +75,7 @@ class SessionTest {
     }
 
     @Nested
+    @DisplayName("getSession()")
     class WhenGetSession {
 
         @Test

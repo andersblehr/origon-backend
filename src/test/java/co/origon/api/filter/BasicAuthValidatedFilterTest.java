@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.BasicAuthValidated;
 import co.origon.api.common.BasicAuthCredentials;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,6 +29,7 @@ class BasicAuthValidatedFilterTest {
     @Mock private ContainerRequestContext requestContext;
 
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @Test

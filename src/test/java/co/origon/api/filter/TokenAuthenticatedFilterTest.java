@@ -36,8 +36,6 @@ class TokenAuthenticatedFilterTest {
     private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private static final String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
 
-    private TokenAuthenticatedFilter tokenAuthenticatedFilter;
-
     @Mock private DaoFactory daoFactory;
     @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
     @Mock private DeviceCredentials deviceCredentials;
@@ -47,13 +45,16 @@ class TokenAuthenticatedFilterTest {
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
 
+    private TokenAuthenticatedFilter tokenAuthenticatedFilter;
+
     @Nested
+    @DisplayName("filter()")
     class WhenFilter {
 
         @BeforeEach
         void setUp() {
-            tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
             BasicAuthCredentials.validate(VALID_CREDENTIALS);
+            tokenAuthenticatedFilter = new TokenAuthenticatedFilter(daoFactory);
         }
 
         @Test
