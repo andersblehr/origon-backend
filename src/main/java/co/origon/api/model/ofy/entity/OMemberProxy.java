@@ -71,12 +71,10 @@ public class OMemberProxy implements MemberProxy {
         return memberProxy != null ? memberProxy : new OMemberProxy(email);
     }
 
-    public void save() {
-        ofy().save().entity(this).now();
-    }
-
-    public void delete() {
-        ofy().delete().entity(this);
+    @Override
+    public MemberProxy key(String key) {
+        proxyId = key;
+        return this;
     }
 
     @Override
