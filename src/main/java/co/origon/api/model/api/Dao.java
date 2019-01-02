@@ -12,7 +12,9 @@ public interface Dao<E extends Entity> {
     void save(Collection<E> entities);
     void delete(Collection<E> entities);
 
-    default boolean exists(String key) {
-        return get(key) != null;
+    @SuppressWarnings("unchecked")
+    default E produce(String key) {
+        E entity = get(key);
+        return entity != null ? entity : (E) create().key(key);
     }
 }

@@ -80,16 +80,13 @@ public class AuthController {
         checkDeviceTokenFormat(deviceToken);
 
         final Dao<DeviceCredentials> deviceCredentialsDao = daoFactory.daoFor(DeviceCredentials.class);
+        final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
         final DeviceCredentials deviceCredentials = deviceCredentialsDao.create()
                 .deviceToken(deviceToken)
                 .email(basicAuthCredentials.email())
                 .deviceId(deviceId)
                 .deviceType(deviceType);
-        final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
-        final MemberProxy userProxy = userProxyDao.exists(basicAuthCredentials.email())
-                ? userProxyDao.get(basicAuthCredentials.email())
-                : userProxyDao.create();
-        userProxy.proxyId(basicAuthCredentials.email())
+        final MemberProxy userProxy = userProxyDao.produce(basicAuthCredentials.email())
                 .passwordHash(basicAuthCredentials.passwordHash())
                 .deviceToken(deviceToken);
 
@@ -97,7 +94,7 @@ public class AuthController {
         userProxyDao.save(userProxy);
         daoFactory.daoFor(OtpCredentials.class).delete(otpCredentials);
 
-        Session.log("Persisted new auth token for user " + basicAuthCredentials.email());
+        Session.log("Persisted new device token for user " + basicAuthCredentials.email());
         final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(basicAuthCredentials.email());
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
@@ -131,7 +128,7 @@ public class AuthController {
                 .deviceId(deviceId)
                 .deviceType(deviceType));
 
-        Session.log("Persisted new auth token for user " + credentials.email());
+        Session.log("Persisted new device token for user " + credentials.email());
         final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(credentials.email(), replicationDate);
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
