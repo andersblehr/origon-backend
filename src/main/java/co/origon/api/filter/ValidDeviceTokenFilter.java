@@ -1,6 +1,6 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.TokenAuthenticated;
+import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.DaoFactory;
@@ -18,16 +18,16 @@ import javax.ws.rs.ext.Provider;
 import java.util.Date;
 
 @Provider
-@TokenAuthenticated
+@ValidDeviceToken
 @Priority(3)
-public class TokenAuthenticatedFilter implements ContainerRequestFilter {
+public class ValidDeviceTokenFilter implements ContainerRequestFilter {
 
     static String WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH = "login";
 
     private DaoFactory daoFactory;
 
     @Inject
-    TokenAuthenticatedFilter(DaoFactory daoFactory) {
+    ValidDeviceTokenFilter(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 

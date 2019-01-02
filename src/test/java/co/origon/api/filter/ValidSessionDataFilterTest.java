@@ -20,7 +20,7 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class SessionDataValidatedFilterTest {
+class ValidSessionDataFilterTest {
 
     private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
     private static final String VALID_DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
@@ -32,7 +32,7 @@ class SessionDataValidatedFilterTest {
     @Mock private UriInfo uriInfo;
     @Mock private MultivaluedMap<String, String> queryParameters;
 
-    private SessionDataValidatedFilter sessionDataValidatedFilter;
+    private ValidSessionDataFilter validSessionDataFilter;
 
     @Nested
     @DisplayName("filter()")
@@ -40,7 +40,7 @@ class SessionDataValidatedFilterTest {
 
         @BeforeEach
         void setUp() {
-            sessionDataValidatedFilter = new SessionDataValidatedFilter(daoFactory);
+            validSessionDataFilter = new ValidSessionDataFilter(daoFactory);
         }
 
         @Test
@@ -61,7 +61,7 @@ class SessionDataValidatedFilterTest {
                     .thenReturn("Device");
 
             // when
-            sessionDataValidatedFilter.filter(requestContext);
+            validSessionDataFilter.filter(requestContext);
 
             // then
             assertTrue(true);
@@ -93,7 +93,7 @@ class SessionDataValidatedFilterTest {
                     .thenReturn("Device");
 
             // when
-            sessionDataValidatedFilter.filter(requestContext);
+            validSessionDataFilter.filter(requestContext);
 
             // then
             assertTrue(true);
@@ -119,7 +119,7 @@ class SessionDataValidatedFilterTest {
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    sessionDataValidatedFilter.filter(requestContext)
+                    validSessionDataFilter.filter(requestContext)
             );
             assertEquals("Invalid session data", e.getMessage());
         }
@@ -144,7 +144,7 @@ class SessionDataValidatedFilterTest {
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    sessionDataValidatedFilter.filter(requestContext)
+                    validSessionDataFilter.filter(requestContext)
             );
             assertEquals("Invalid session data", e.getMessage());
         }
@@ -173,7 +173,7 @@ class SessionDataValidatedFilterTest {
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
                     // when
-                    sessionDataValidatedFilter.filter(requestContext)
+                    validSessionDataFilter.filter(requestContext)
             );
             assertEquals("Incomplete session data and unknown device token", e.getMessage());
         }

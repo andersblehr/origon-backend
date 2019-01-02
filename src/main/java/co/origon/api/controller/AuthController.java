@@ -9,10 +9,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.annotation.BasicAuthValidated;
-import co.origon.api.annotation.LanguageSupported;
-import co.origon.api.annotation.SessionDataValidated;
-import co.origon.api.annotation.TokenAuthenticated;
+import co.origon.api.annotation.SupportedLanguage;
+import co.origon.api.annotation.ValidBasicAuthCredentials;
+import co.origon.api.annotation.ValidDeviceToken;
+import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.common.*;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
@@ -27,8 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
-@BasicAuthValidated
-@SessionDataValidated
+@ValidBasicAuthCredentials
+@ValidSessionData
 public class AuthController {
     private static final int LENGTH_ACTIVATION_CODE = 6;
 
@@ -37,7 +37,7 @@ public class AuthController {
 
     @GET
     @Path("register")
-    @LanguageSupported
+    @SupportedLanguage
     public Response registerUser(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.DEVICE_ID) String deviceId,
@@ -144,7 +144,7 @@ public class AuthController {
     
     @GET
     @Path("change")
-    @TokenAuthenticated
+    @ValidDeviceToken
     public Response changePassword(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
@@ -165,8 +165,8 @@ public class AuthController {
     
     @GET
     @Path("reset")
-    @TokenAuthenticated
-    @LanguageSupported
+    @ValidDeviceToken
+    @SupportedLanguage
     public Response resetPassword(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
@@ -192,8 +192,8 @@ public class AuthController {
     
     @GET
     @Path("sendcode")
-    @TokenAuthenticated
-    @LanguageSupported
+    @ValidDeviceToken
+    @SupportedLanguage
     public Response sendActivationCode(
             @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
             @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,

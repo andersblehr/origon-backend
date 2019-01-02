@@ -1,6 +1,6 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.LanguageSupported;
+import co.origon.api.annotation.SupportedLanguage;
 import co.origon.api.common.Language;
 import co.origon.api.common.UrlParams;
 
@@ -13,9 +13,9 @@ import javax.ws.rs.ext.Provider;
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Provider
-@LanguageSupported
+@SupportedLanguage
 @Priority(5)
-public class LanguageSupportedFilter implements ContainerRequestFilter {
+public class SupportedLanguageFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {

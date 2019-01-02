@@ -10,9 +10,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.annotation.LanguageSupported;
-import co.origon.api.annotation.SessionDataValidated;
-import co.origon.api.annotation.TokenAuthenticated;
+import co.origon.api.annotation.SupportedLanguage;
+import co.origon.api.annotation.ValidSessionData;
+import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.common.*;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
@@ -27,8 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Path("model")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@TokenAuthenticated
-@SessionDataValidated
+@ValidDeviceToken
+@ValidSessionData
 public class ReplicationController {
 
     @Inject
@@ -36,7 +36,7 @@ public class ReplicationController {
 
     @POST
     @Path("replicate")
-    @LanguageSupported
+    @SupportedLanguage
     public Response replicate(
             List<OReplicatedEntity> entitiesToReplicate,
             @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,

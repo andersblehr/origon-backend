@@ -1,6 +1,6 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.JwtAuthenticated;
+import co.origon.api.annotation.ValidBearerToken;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.Config.Category;
@@ -20,16 +20,16 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-@JwtAuthenticated
+@ValidBearerToken
 @Priority(2)
-public class JwtAuthenticatedFilter implements ContainerRequestFilter {
+public class ValidBearerTokenFilter implements ContainerRequestFilter {
 
     static String WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN = "renew";
 
     private DaoFactory daoFactory;
 
     @Inject
-    JwtAuthenticatedFilter(DaoFactory daoFactory) {
+    ValidBearerTokenFilter(DaoFactory daoFactory) {
         this.daoFactory = daoFactory;
     }
 
