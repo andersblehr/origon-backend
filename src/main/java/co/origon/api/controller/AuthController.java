@@ -149,8 +149,8 @@ public class AuthController {
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
         final Dao<MemberProxy> dao = daoFactory.daoFor(MemberProxy.class);
-        final MemberProxy userProxy = dao.get(credentials.email());
-        userProxy.passwordHash(credentials.passwordHash());
+        final MemberProxy userProxy = dao.get(credentials.email())
+                .passwordHash(credentials.passwordHash());
         dao.save(userProxy);
 
         Session.log("Saved new password hash for " + credentials.email());
@@ -174,8 +174,8 @@ public class AuthController {
     ) {
         final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
         final Dao<MemberProxy> dao = daoFactory.daoFor(MemberProxy.class);
-        final MemberProxy userProxy = dao.get(credentials.email());
-        userProxy.passwordHash(credentials.passwordHash());
+        final MemberProxy userProxy = dao.get(credentials.email())
+                .passwordHash(credentials.passwordHash());
         dao.save(userProxy);
 
         final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
