@@ -40,6 +40,7 @@ class ValidBasicAuthCredentialsFilterTest {
                     .thenReturn(VALID_CREDENTIALS);
             // when
             validBasicAuthCredentialsFilter.filter(requestContext);
+
             // then
             assertTrue(true);
         }
