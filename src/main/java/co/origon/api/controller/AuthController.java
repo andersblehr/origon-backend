@@ -22,9 +22,6 @@ import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
 @ValidBasicAuthCredentials
@@ -218,24 +215,19 @@ public class AuthController {
     }
 
     private void checkNotRegistered(String email) {
-        try {
-            final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(email);
-            checkArgument(userProxy == null || !userProxy.isRegistered(), "User is already registered");
-        } catch (IllegalArgumentException e) {
-            throw new WebApplicationException(e.getMessage(), e, Status.CONFLICT);
-        }
+        final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(email);
+        if (userProxy != null && userProxy.isRegistered())
+            throw new WebApplicationException("User is already registered", Status.CONFLICT);
     }
 
     private OtpCredentials checkAwaitingActivation(BasicAuthCredentials credentials) {
-        try {
-            checkNotRegistered(credentials.email());
-        } catch (WebApplicationException e) {
-            throw new BadRequestException("Cannot activate an active user", e);
-        }
+        final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(credentials.email());
+        if (userProxy != null && userProxy.isRegistered())
+            throw new BadRequestException("Cannot activate an active user");
 
         final OtpCredentials otpCredentials = daoFactory.daoFor(OtpCredentials.class).get(credentials.email());
         if (otpCredentials == null)
-            throw new BadRequestException("User " + credentials.email() + " is not awaiting activation, cannot activate");
+            throw new BadRequestException("User is not awaiting activation, cannot activate");
         if (!otpCredentials.passwordHash().equals(credentials.passwordHash()))
             throw new NotAuthorizedException("Incorrect password");
 
@@ -243,24 +235,19 @@ public class AuthController {
     }
 
     private MemberProxy checkAuthenticated(BasicAuthCredentials credentials) {
-        try {
-            final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(credentials.email());
-            checkArgument(userProxy.isRegistered(), "User " + credentials.email() + " is not registered");
-            checkArgument(userProxy.passwordHash().equals(credentials.passwordHash()), "Invalid password");
+        final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(credentials.email());
+        if (!userProxy.isRegistered())
+            throw new BadRequestException("User is not registered, cannot authenticate");
+        if (!userProxy.passwordHash().equals(credentials.passwordHash()))
+            throw new NotAuthorizedException("Invalid password");
 
-            return userProxy;
-        } catch (IllegalArgumentException e) {
-            throw new NotAuthorizedException(e.getMessage(), e);
-        }
+        return userProxy;
     }
 
     private void checkDeviceTokenFormat(String deviceToken) {
-        try {
-            checkNotNull(deviceToken, "Missing parmaeter: " + UrlParams.DEVICE_TOKEN);
-            checkArgument(deviceToken.matches("^[a-z0-9]{40}$"), "Invalid token format: " + deviceToken);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new BadRequestException(e.getMessage(), e);
-        }
+        if (deviceToken == null || deviceToken.length() == 0)
+            throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_TOKEN);
+        if (!deviceToken.matches("^[a-z0-9]{40}$"))
+            throw new BadRequestException("Invalid device token format: " + deviceToken);
     }
-
 }
