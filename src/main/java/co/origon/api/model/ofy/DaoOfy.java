@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
-public class DaoOfy<E extends Entity> implements Dao<E> {
+public class DaoOfy<E extends Entity<E>> implements Dao<E> {
 
     private Class<E> clazz;
 

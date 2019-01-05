@@ -7,7 +7,7 @@ import co.origon.api.model.api.Entity;
 public class DaoFactoryOfy implements DaoFactory {
 
     @Override
-    public <E extends Entity> Dao<E> daoFor(Class<E> c) {
+    public <E extends Entity<E>> Dao<E> daoFor(Class<E> c) {
         return new DaoOfy<>(c);
     }
 }
