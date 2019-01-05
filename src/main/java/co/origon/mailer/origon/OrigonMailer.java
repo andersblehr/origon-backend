@@ -1,4 +1,4 @@
-package co.origon.api.common;
+package co.origon.mailer.origon;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,12 +16,14 @@ import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import co.origon.api.model.api.Dao;
 import org.json.JSONObject;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
+import co.origon.api.common.Language;
+import co.origon.api.model.api.Dao;
+import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.Config.Category;
 import co.origon.api.model.api.entity.Config.Setting;
@@ -29,9 +31,10 @@ import co.origon.api.model.ofy.entity.OMember;
 import co.origon.api.model.ofy.entity.OMemberProxy;
 import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
+import co.origon.mailer.api.Mailer;
 
 
-public class Mailer
+public class OrigonMailer implements Mailer
 {
     private static final String MAILER_RESOURCE_PATH = "/mailer";
     private static final String MAILER_TO = "to";
@@ -41,9 +44,9 @@ public class Mailer
     private final Language language;
     private final Dao<Config> configDao;
 
-    public Mailer(String languageCode, Dao<Config> configDao) {
-        this.language = Language.fromCode(languageCode);
-        this.configDao = configDao;
+    OrigonMailer(String languageCode, DaoFactory daoFactory) {
+        language = Language.fromCode(languageCode);
+        configDao = daoFactory.daoFor(Config.class);
     }
 
     public void sendInvitation(String invitationEmail, OMemberProxy userProxy)

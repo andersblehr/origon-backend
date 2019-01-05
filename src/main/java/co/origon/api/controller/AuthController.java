@@ -14,9 +14,9 @@ import co.origon.api.annotation.ValidBasicAuthCredentials;
 import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.common.*;
+import co.origon.mailer.api.MailerFactory;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
@@ -29,8 +29,8 @@ import co.origon.api.model.ofy.entity.OReplicatedEntity;
 public class AuthController {
     private static final int LENGTH_ACTIVATION_CODE = 6;
 
-    @Inject
-    private DaoFactory daoFactory;
+    @Inject private DaoFactory daoFactory;
+    @Inject private MailerFactory mailerFactory;
 
     @GET
     @Path("register")
@@ -53,8 +53,7 @@ public class AuthController {
                 .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE));
         dao.save(otpCredentials);
 
-        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
-        mailer.sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
+        mailerFactory.mailer(language).sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
         Session.log("Sent user activation code to new user " + credentials.email());
 
         return Response
@@ -175,8 +174,7 @@ public class AuthController {
                 .passwordHash(credentials.passwordHash());
         dao.save(userProxy);
 
-        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
-        mailer.sendPasswordResetEmail(credentials.email(), credentials.password());
+        mailerFactory.mailer(language).sendPasswordResetEmail(credentials.email(), credentials.password());
         Session.log("Sent temporary password to " + credentials.email());
 
         return Response
@@ -204,8 +202,7 @@ public class AuthController {
                 .activationCode(activationCode);
         dao.save(otpCredentials);
 
-        final Mailer mailer = new Mailer(language, daoFactory.daoFor(Config.class));
-        mailer.sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
+        mailerFactory.mailer(language).sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
         Session.log("Sent email activation code to " + basicAuthCredentials.email());
 
         return Response

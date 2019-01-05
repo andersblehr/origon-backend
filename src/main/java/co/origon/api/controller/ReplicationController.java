@@ -14,9 +14,8 @@ import co.origon.api.annotation.SupportedLanguage;
 import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.common.*;
-import co.origon.api.model.api.Dao;
+import co.origon.mailer.api.MailerFactory;
 import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
@@ -34,6 +33,9 @@ public class ReplicationController {
     @Inject
     private DaoFactory daoFactory;
 
+    @Inject
+    private MailerFactory mailerFactory;
+
     @POST
     @Path("replicate")
     @SupportedLanguage
@@ -47,8 +49,7 @@ public class ReplicationController {
         final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
         checkReplicationDate(replicationDate);
 
-        Dao<Config> configDao = daoFactory.daoFor(Config.class);
-        ODao.getDao().replicateEntities(entitiesToReplicate, deviceCredentials.email(), new Mailer(language, configDao));
+        ODao.getDao().replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailerFactory.mailer(language));
         final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(deviceCredentials.email(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
