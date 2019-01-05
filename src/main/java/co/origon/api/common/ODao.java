@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import co.origon.mailer.api.Mailer;
 import co.origon.api.model.ofy.entity.*;
 import co.origon.api.replication.Replicator;
 

@@ -1,6 +1,6 @@
 package co.origon.api.replication;
 
-import co.origon.api.common.Mailer;
+import co.origon.mailer.api.Mailer;
 import co.origon.api.model.ofy.entity.*;
 import com.googlecode.objectify.Key;
 
