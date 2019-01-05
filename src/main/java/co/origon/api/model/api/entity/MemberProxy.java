@@ -4,7 +4,7 @@ import co.origon.api.model.api.Entity;
 
 import java.util.Collection;
 
-public interface MemberProxy extends Entity {
+public interface MemberProxy extends Entity<MemberProxy> {
 
     MemberProxy proxyId(String proxyId);
     MemberProxy memberId(String memberId);

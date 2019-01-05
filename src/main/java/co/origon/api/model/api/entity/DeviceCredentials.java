@@ -4,7 +4,7 @@ import co.origon.api.model.api.Entity;
 
 import java.util.Date;
 
-public interface DeviceCredentials extends Entity {
+public interface DeviceCredentials extends Entity<DeviceCredentials> {
 
     DeviceCredentials email(String email);
     DeviceCredentials deviceToken(String deviceToken);
