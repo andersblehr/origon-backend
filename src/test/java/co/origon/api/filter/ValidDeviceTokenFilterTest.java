@@ -2,6 +2,7 @@ package co.origon.api.filter;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
+import co.origon.api.common.WwwAuthenticateChallenge;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
@@ -187,7 +188,7 @@ class ValidDeviceTokenFilterTest {
             );
             assertEquals("Device token has expired", e.getMessage());
             final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-            assertEquals(ValidDeviceTokenFilter.WWW_AUTHENTICATE_CHALLENGE_BASIC_AUTH, authChallenge);
+            assertEquals(WwwAuthenticateChallenge.BASIC_AUTH, authChallenge);
         }
 
         @Test

@@ -4,13 +4,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class SessionTest {
 
-    private static final String SOME_UUID = UUID.randomUUID().toString();
+    private static final String SOME_UUID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
 
     @Nested
     @DisplayName("create()")

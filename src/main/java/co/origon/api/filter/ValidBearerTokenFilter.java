@@ -1,6 +1,7 @@
 package co.origon.api.filter;
 
 import co.origon.api.annotation.ValidBearerToken;
+import co.origon.api.common.WwwAuthenticateChallenge;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.Config.Category;
@@ -23,8 +24,6 @@ import javax.ws.rs.ext.Provider;
 @ValidBearerToken
 @Priority(2)
 public class ValidBearerTokenFilter implements ContainerRequestFilter {
-
-    static String WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN = "renew";
 
     private DaoFactory daoFactory;
 
@@ -52,7 +51,7 @@ public class ValidBearerTokenFilter implements ContainerRequestFilter {
                     .build()
                     .verify(jwt);
         } catch (TokenExpiredException e) {
-            throw new NotAuthorizedException("JWT token has expired", WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN);
+            throw new NotAuthorizedException("JWT token has expired", WwwAuthenticateChallenge.BEARER_TOKEN);
         } catch (Exception e) {
             throw new BadRequestException("Invalid JWT token", e);
         }
