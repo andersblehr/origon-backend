@@ -72,7 +72,7 @@ class AuthControllerTest {
         @DisplayName("Given new user, then return OTP credentials")
         void givenNewUser_thenReturnOtpCredentials() {
             // given
-            givenUserRegistered(false);
+            giveUserRegistered(false);
 
             // given: Create OTP credentials
             lenient().when(daoFactory.daoFor(OtpCredentials.class))
@@ -119,7 +119,7 @@ class AuthControllerTest {
         @DisplayName("Given existing user, then return 409 CONFLICT")
         void givenExistingUser_thenReturn409Conflict() {
             // given
-            givenUserRegistered(true);
+            giveUserRegistered(true);
 
             // then
             WebApplicationException e = assertThrows(WebApplicationException.class, () ->
@@ -145,11 +145,11 @@ class AuthControllerTest {
         @DisplayName("Given non-invited user, then activate user and return no user entities")
         void givenNonInvitedUser_thenActivateUserAndReturnNoUserEntities() {
             // given
-            givenUserRegistered(false);
-            givenUserHasValidCredentials(true);
-            givenUserGetsDeviceCredentials();
-            givenUserIsActivated(false);
-            givenUserReceivesEntities(0);
+            giveUserRegistered(false);
+            giveValidOtpCredentials(true);
+            giveDeviceCredentialsCreated();
+            giveUserIsActivated(false);
+            giveUserReceivesEntities(0);
 
             // when
             Response response = authController.activateUser(
@@ -175,11 +175,11 @@ class AuthControllerTest {
         @DisplayName("Given invited user, then activate user and return user entities")
         void givenInvitedUser_thenActivateUserAndReturnUserEntities() {
             // given
-            givenUserRegistered(false);
-            givenUserHasValidCredentials(true);
-            givenUserGetsDeviceCredentials();
-            givenUserIsActivated(true);
-            givenUserReceivesEntities(10);
+            giveUserRegistered(false);
+            giveValidOtpCredentials(true);
+            giveDeviceCredentialsCreated();
+            giveUserIsActivated(true);
+            giveUserReceivesEntities(10);
 
             // when
             Response response = authController.activateUser(
@@ -205,7 +205,7 @@ class AuthControllerTest {
         @DisplayName("Given existing user, then return 400 BAD_REQUEST")
         void givenExistingUser_thenReturn400BadRequest() {
             // given
-            givenUserRegistered(true);
+            giveUserRegistered(true);
 
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
@@ -225,8 +225,8 @@ class AuthControllerTest {
         @DisplayName("Given no OTP credentials, then return 400 BAD_REQUEST")
         void givenNoOtpCredentials_thenReturn400BadRequest() {
             // given
-            givenUserRegistered(false);
-            givenUserHasOtpCredentials(false);
+            giveUserRegistered(false);
+            giveOtpCredentials(false);
 
             // then
             Throwable e = assertThrows(BadRequestException.class, () ->
@@ -246,8 +246,8 @@ class AuthControllerTest {
         @DisplayName("Given mismatched credentials, then return 401 UNAUTHORIZED")
         void givenMismatchedCredentials_thenReturn401Unauthorized() {
             // given
-            givenUserRegistered(false);
-            givenUserHasValidCredentials(false);
+            giveUserRegistered(false);
+            giveValidOtpCredentials(false);
 
             // then
             WebApplicationException e = assertThrows(NotAuthorizedException.class, () ->
@@ -269,12 +269,11 @@ class AuthControllerTest {
         @DisplayName("Given invalid device token, then return 400 BAD_REQUEST")
         void givenInvalidDeviceToken_thenReturn400BadRequest() {
             // given
-            givenUserRegistered(false);
-            givenUserHasValidCredentials(true);
+            giveUserRegistered(false);
+            giveValidOtpCredentials(true);
 
             // then
             assertAll("Invalid device token",
-                    // then
                     () -> {
                         final Throwable eNull = assertThrows(BadRequestException.class, () ->
                                 // when
@@ -288,8 +287,6 @@ class AuthControllerTest {
                         );
                         assertEquals("Missing parameter: " + UrlParams.DEVICE_TOKEN, eNull.getMessage());
                     },
-
-                    // then
                     () -> {
                         final Throwable eInvalid = assertThrows(BadRequestException.class, () ->
                                 // when
@@ -306,20 +303,20 @@ class AuthControllerTest {
             );
         }
 
-        private void givenUserHasOtpCredentials(boolean hasCredentials) {
+        private void giveOtpCredentials(boolean available) {
             lenient().when(daoFactory.daoFor(OtpCredentials.class))
                     .thenReturn(otpCredentialsDao);
             when(otpCredentialsDao.get(USER_EMAIL))
-                    .thenReturn(hasCredentials ? otpCredentials : null);
+                    .thenReturn(available ? otpCredentials : null);
         }
 
-        private void givenUserHasValidCredentials(boolean valid) {
-            givenUserHasOtpCredentials(true);
+        private void giveValidOtpCredentials(boolean valid) {
+            giveOtpCredentials(true);
             when(otpCredentials.passwordHash())
                     .thenReturn(valid? BasicAuthCredentials.getCredentials().passwordHash() : "invalid");
         }
 
-        private void givenUserGetsDeviceCredentials() {
+        private void giveDeviceCredentialsCreated() {
             lenient().when(daoFactory.daoFor(DeviceCredentials.class))
                     .thenReturn(deviceCredentialsDao);
             when(deviceCredentialsDao.create())
@@ -334,7 +331,7 @@ class AuthControllerTest {
                     .thenReturn(deviceCredentials);
         }
 
-        private void givenUserIsActivated(boolean invited) {
+        private void giveUserIsActivated(boolean invited) {
             when(userProxyDao.produce(USER_EMAIL))
                     .thenReturn(userProxy);
             when(userProxy.passwordHash(BasicAuthCredentials.getCredentials().passwordHash()))
@@ -348,7 +345,7 @@ class AuthControllerTest {
             }
         }
 
-        private void givenUserReceivesEntities(int count) {
+        private void giveUserReceivesEntities(int count) {
             when(daoFactory.legacyDao())
                     .thenReturn(legacyDao);
             when(legacyDao.fetchEntities(USER_EMAIL))
@@ -378,7 +375,7 @@ class AuthControllerTest {
         Session.dispose();
     }
 
-    private void givenUserRegistered(boolean registered) {
+    private void giveUserRegistered(boolean registered) {
         lenient().when(daoFactory.daoFor(MemberProxy.class))
                 .thenReturn(userProxyDao);
         when(userProxyDao.get(USER_EMAIL))
