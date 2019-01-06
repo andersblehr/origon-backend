@@ -1,5 +1,6 @@
 package co.origon.api.filter;
 
+import co.origon.api.common.WwwAuthenticateChallenge;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;
@@ -152,7 +153,7 @@ class ValidBearerTokenFilterTest {
             );
             assertEquals("JWT token has expired", e.getMessage());
             final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-            assertEquals(ValidBearerTokenFilter.WWW_AUTHENTICATE_CHALLENGE_BEARER_TOKEN, authChallenge);
+            assertEquals(WwwAuthenticateChallenge.BEARER_TOKEN, authChallenge);
         }
 
         @Test

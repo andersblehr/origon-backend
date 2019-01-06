@@ -91,7 +91,7 @@ public class AuthController {
         daoFactory.daoFor(OtpCredentials.class).delete(otpCredentials);
 
         Session.log("Persisted new device token for user " + basicAuthCredentials.email());
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(basicAuthCredentials.email());
+        final List<OReplicatedEntity> fetchedEntities = daoFactory.legacyDao().fetchEntities(basicAuthCredentials.email());
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
         return Response
@@ -125,7 +125,7 @@ public class AuthController {
                 .deviceType(deviceType));
 
         Session.log("Persisted new device token for user " + credentials.email());
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(credentials.email(), replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = daoFactory.legacyDao().fetchEntities(credentials.email(), replicationDate);
         Session.log("Returning " + fetchedEntities.size() + " entities");
 
         return Response
@@ -226,7 +226,7 @@ public class AuthController {
         if (otpCredentials == null)
             throw new BadRequestException("User is not awaiting activation, cannot activate");
         if (!otpCredentials.passwordHash().equals(credentials.passwordHash()))
-            throw new NotAuthorizedException("Incorrect password");
+            throw new NotAuthorizedException("Incorrect password", WwwAuthenticateChallenge.BASIC_AUTH);
 
         return otpCredentials;
     }
@@ -236,7 +236,7 @@ public class AuthController {
         if (!userProxy.isRegistered())
             throw new BadRequestException("User is not registered, cannot authenticate");
         if (!userProxy.passwordHash().equals(credentials.passwordHash()))
-            throw new NotAuthorizedException("Invalid password");
+            throw new NotAuthorizedException("Invalid password", WwwAuthenticateChallenge.BASIC_AUTH);
 
         return userProxy;
     }

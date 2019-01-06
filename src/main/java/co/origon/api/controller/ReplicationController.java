@@ -49,8 +49,9 @@ public class ReplicationController {
         final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
         checkReplicationDate(replicationDate);
 
-        ODao.getDao().replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailerFactory.mailer(language));
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(deviceCredentials.email(), replicationDate);
+        final ODao legacyDao = daoFactory.legacyDao();
+        legacyDao.replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailerFactory.mailer(language));
+        final List<OReplicatedEntity> fetchedEntities = legacyDao.fetchEntities(deviceCredentials.email(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))
                 .collect(Collectors.toList());
@@ -74,7 +75,7 @@ public class ReplicationController {
         final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
         checkReplicationDate(replicationDate);
 
-        final List<OReplicatedEntity> fetchedEntities = ODao.getDao().fetchEntities(deviceCredentials.email(), replicationDate);
+        final List<OReplicatedEntity> fetchedEntities = daoFactory.legacyDao().fetchEntities(deviceCredentials.email(), replicationDate);
         Session.log(fetchedEntities.size() + " entities fetched");
 
         return Response
@@ -90,7 +91,7 @@ public class ReplicationController {
             @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        List<OReplicatedEntity> memberEntities = ODao.getDao().lookupMemberEntities(memberId);
+        List<OReplicatedEntity> memberEntities = daoFactory.legacyDao().lookupMemberEntities(memberId);
         if (memberEntities == null) {
             throw new NotFoundException();
         }
@@ -107,7 +108,7 @@ public class ReplicationController {
             @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
             @QueryParam(UrlParams.APP_VERSION) String appVersion
     ) {
-        OOrigo origo = ODao.getDao().lookupOrigo(internalJoinCode);
+        OOrigo origo = daoFactory.legacyDao().lookupOrigo(internalJoinCode);
         if (origo == null) {
             throw new NotFoundException();
         }

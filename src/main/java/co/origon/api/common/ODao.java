@@ -18,14 +18,7 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class ODao
 {
-    private static final ODao dao = new ODao();
-
     private Set<Key<OReplicatedEntity>> referencedEntityKeys;
-
-
-    public static ODao getDao() {
-        return dao;
-    }
 
 
     private Set<OReplicatedEntity> fetchMembershipEntities(OMembership membership, Date deviceReplicationDate)
