@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -41,12 +42,19 @@ public class OrigonMailer implements Mailer
     private static final String MAILER_SUBJECT = "subject";
     private static final String MAILER_BODY = "body";
 
-    private final Language language;
     private final Dao<Config> configDao;
+    private Language language;
 
-    OrigonMailer(String languageCode, DaoFactory daoFactory) {
-        language = Language.fromCode(languageCode);
+    @Inject
+    OrigonMailer(DaoFactory daoFactory) {
         configDao = daoFactory.daoFor(Config.class);
+        language = Language.NORWEGIAN;
+    }
+
+    @Override
+    public Mailer language(String languageCode) {
+        this.language = Language.fromCode(languageCode);
+        return this;
     }
 
     public void sendInvitation(String invitationEmail, OMemberProxy userProxy)

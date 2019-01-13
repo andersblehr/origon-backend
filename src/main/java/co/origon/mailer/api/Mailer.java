@@ -6,6 +6,8 @@ import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
 
 public interface Mailer {
+    Mailer language(String languageCode);
+
     void sendRegistrationEmail(String email, String activationCode);
     void sendPasswordResetEmail(String email, String temporaryPassword);
     void sendEmailActivationCode(String email, String activationCode);
