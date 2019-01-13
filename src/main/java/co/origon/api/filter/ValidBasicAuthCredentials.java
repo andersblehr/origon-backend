@@ -1,4 +1,4 @@
-package co.origon.api.annotation;
+package co.origon.api.filter;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.ElementType;

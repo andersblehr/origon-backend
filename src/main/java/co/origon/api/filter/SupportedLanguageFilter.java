@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.SupportedLanguage;
 import co.origon.api.common.Language;
 import co.origon.api.common.UrlParams;
 

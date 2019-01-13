@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.DaoFactory;
