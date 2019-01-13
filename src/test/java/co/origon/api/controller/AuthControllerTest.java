@@ -9,7 +9,6 @@ import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.mailer.api.Mailer;
-import co.origon.mailer.api.MailerFactory;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -52,7 +51,6 @@ class AuthControllerTest {
     @Mock private DeviceCredentials deviceCredentials;
     @Mock private ODao legacyDao;
     @Mock private List<OReplicatedEntity> fetchedEntities;
-    @Mock private MailerFactory mailerFactory;
     @Mock private Mailer mailer;
 
     @InjectMocks
@@ -89,7 +87,7 @@ class AuthControllerTest {
                     .thenReturn(otpCredentials);
 
             // given: Send registration email
-            when(mailerFactory.mailer(LANGUAGE))
+            when(mailer.language(anyString()))
                     .thenReturn(mailer);
             lenient().when(otpCredentials.activationCode())
                     .thenReturn(ACTIVATION_CODE);

@@ -14,11 +14,11 @@ import co.origon.api.annotation.SupportedLanguage;
 import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.common.*;
-import co.origon.mailer.api.MailerFactory;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.mailer.api.Mailer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -30,11 +30,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ValidSessionData
 public class ReplicationController {
 
-    @Inject
-    private DaoFactory daoFactory;
-
-    @Inject
-    private MailerFactory mailerFactory;
+    @Inject private DaoFactory daoFactory;
+    @Inject private Mailer mailer;
 
     @POST
     @Path("replicate")
@@ -50,7 +47,7 @@ public class ReplicationController {
         checkReplicationDate(replicationDate);
 
         final ODao legacyDao = daoFactory.legacyDao();
-        legacyDao.replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailerFactory.mailer(language));
+        legacyDao.replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailer.language(language));
         final List<OReplicatedEntity> fetchedEntities = legacyDao.fetchEntities(deviceCredentials.email(), replicationDate);
         final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
                 .filter(entity -> !entitiesToReplicate.contains(entity))

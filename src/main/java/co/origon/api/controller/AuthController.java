@@ -14,13 +14,13 @@ import co.origon.api.annotation.ValidBasicAuthCredentials;
 import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.annotation.ValidSessionData;
 import co.origon.api.common.*;
-import co.origon.mailer.api.MailerFactory;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.mailer.api.Mailer;
 
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
@@ -30,7 +30,7 @@ public class AuthController {
     private static final int LENGTH_ACTIVATION_CODE = 6;
 
     @Inject private DaoFactory daoFactory;
-    @Inject private MailerFactory mailerFactory;
+    @Inject private Mailer mailer;
 
     @GET
     @Path("register")
@@ -53,7 +53,7 @@ public class AuthController {
                 .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE));
         dao.save(otpCredentials);
 
-        mailerFactory.mailer(language).sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
+        mailer.language(language).sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
         Session.log("Sent user activation code to new user " + credentials.email());
 
         return Response
@@ -116,13 +116,14 @@ public class AuthController {
         final MemberProxy userProxy = checkAuthenticated(credentials);
         checkDeviceTokenFormat(deviceToken);
 
-        userProxy.refreshDeviceToken(deviceToken, deviceId);
         final Dao<DeviceCredentials> dao = daoFactory.daoFor(DeviceCredentials.class);
-        dao.save(dao.create()
+        final DeviceCredentials deviceCredentials = dao.create()
                 .email(credentials.email())
                 .deviceToken(deviceToken)
                 .deviceId(deviceId)
-                .deviceType(deviceType));
+                .deviceType(deviceType);
+        dao.save(deviceCredentials);
+        userProxy.refreshDeviceToken(deviceToken, deviceId);
 
         Session.log("Persisted new device token for user " + credentials.email());
         final List<OReplicatedEntity> fetchedEntities = daoFactory.legacyDao().fetchEntities(credentials.email(), replicationDate);
@@ -174,7 +175,7 @@ public class AuthController {
                 .passwordHash(credentials.passwordHash());
         dao.save(userProxy);
 
-        mailerFactory.mailer(language).sendPasswordResetEmail(credentials.email(), credentials.password());
+        mailer.language(language).sendPasswordResetEmail(credentials.email(), credentials.password());
         Session.log("Sent temporary password to " + credentials.email());
 
         return Response
@@ -202,7 +203,7 @@ public class AuthController {
                 .activationCode(activationCode);
         dao.save(otpCredentials);
 
-        mailerFactory.mailer(language).sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
+        mailer.language(language).sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
         Session.log("Sent email activation code to " + basicAuthCredentials.email());
 
         return Response
