@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.ValidBasicAuthCredentials;
 import co.origon.api.common.BasicAuthCredentials;
 
 import javax.annotation.Priority;

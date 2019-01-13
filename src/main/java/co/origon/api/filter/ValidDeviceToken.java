@@ -1,4 +1,4 @@
-package co.origon.api.annotation;
+package co.origon.api.filter;
 
 import javax.ws.rs.NameBinding;
 import java.lang.annotation.ElementType;
@@ -9,4 +9,4 @@ import java.lang.annotation.Target;
 @NameBinding
 @Target({ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface SupportedLanguage {}
+public @interface ValidDeviceToken {}

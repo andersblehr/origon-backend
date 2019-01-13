@@ -10,9 +10,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import co.origon.api.annotation.SupportedLanguage;
-import co.origon.api.annotation.ValidSessionData;
-import co.origon.api.annotation.ValidDeviceToken;
+import co.origon.api.filter.SupportedLanguage;
+import co.origon.api.filter.ValidSessionData;
+import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.common.*;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;

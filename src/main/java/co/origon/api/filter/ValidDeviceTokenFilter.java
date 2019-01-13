@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.ValidDeviceToken;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
 import co.origon.api.common.WwwAuthenticateChallenge;

@@ -1,6 +1,5 @@
 package co.origon.api.filter;
 
-import co.origon.api.annotation.ValidBearerToken;
 import co.origon.api.common.WwwAuthenticateChallenge;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;

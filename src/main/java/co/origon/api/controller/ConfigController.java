@@ -1,6 +1,6 @@
 package co.origon.api.controller;
 
-import co.origon.api.annotation.ValidBearerToken;
+import co.origon.api.filter.ValidBearerToken;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 
