@@ -12,6 +12,7 @@ import co.origon.api.model.ofy.entity.OMemberProxy;
 
 import com.googlecode.objectify.Key;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,8 @@ public class DaoOfy<E extends Entity<E>> implements Dao<E> {
     @SuppressWarnings("unchecked")
     public E create() {
         try {
-            return (E) ofyClass().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+            return (E) ofyClass().getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException("Error instantiating Ofy class: " + clazz.getName(), e);
         }
     }
