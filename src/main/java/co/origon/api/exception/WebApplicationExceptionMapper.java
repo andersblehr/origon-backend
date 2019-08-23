@@ -13,16 +13,16 @@ import java.util.logging.Level;
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {
 
-    public Response toResponse(WebApplicationException e) {
-        Session.dispose();
-        BasicAuthCredentials.dispose();
-        final Status status = Status.fromStatusCode(e.getResponse().getStatus());
-        if (status != Status.NOT_FOUND) {
-            Session.log(Level.WARNING, e.getResponse().getStatus() + ": " + e.getMessage());
-        }
-        if (status == Status.INTERNAL_SERVER_ERROR) {
-            e.printStackTrace();
-        }
-        return e.getResponse();
+  public Response toResponse(WebApplicationException e) {
+    Session.dispose();
+    BasicAuthCredentials.dispose();
+    final Status status = Status.fromStatusCode(e.getResponse().getStatus());
+    if (status != Status.NOT_FOUND) {
+      Session.log(Level.WARNING, e.getResponse().getStatus() + ": " + e.getMessage());
     }
+    if (status == Status.INTERNAL_SERVER_ERROR) {
+      e.printStackTrace();
+    }
+    return e.getResponse();
+  }
 }

@@ -6,21 +6,33 @@ import java.util.Collection;
 
 public interface MemberProxy extends Entity<MemberProxy> {
 
-    MemberProxy proxyId(String proxyId);
-    MemberProxy memberId(String memberId);
-    MemberProxy memberName(String memberName);
-    MemberProxy passwordHash(String passwordHash);
-    MemberProxy deviceToken(String deviceToken);
-    MemberProxy deviceTokens(Collection<String> deviceTokens);
-    MemberProxy membershipIds(Collection<String> membershipIds);
+  MemberProxy proxyId(String proxyId);
 
-    String proxyId();
-    String memberId();
-    String memberName();
-    String passwordHash();
-    Collection<String> deviceTokens();
-    Collection<String> membershipIds();
+  MemberProxy memberId(String memberId);
 
-    boolean isRegistered();
-    void refreshDeviceToken(String deviceToken, String deviceId);
+  MemberProxy memberName(String memberName);
+
+  MemberProxy passwordHash(String passwordHash);
+
+  MemberProxy deviceToken(String deviceToken);
+
+  MemberProxy deviceTokens(Collection<String> deviceTokens);
+
+  MemberProxy membershipIds(Collection<String> membershipIds);
+
+  String proxyId();
+
+  String memberId();
+
+  String memberName();
+
+  String passwordHash();
+
+  Collection<String> deviceTokens();
+
+  Collection<String> membershipIds();
+
+  boolean isRegistered();
+
+  void refreshDeviceToken(String deviceToken, String deviceId);
 }

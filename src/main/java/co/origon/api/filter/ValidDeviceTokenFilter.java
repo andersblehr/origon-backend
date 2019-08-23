@@ -22,35 +22,42 @@ import java.util.Date;
 @Priority(3)
 public class ValidDeviceTokenFilter implements ContainerRequestFilter {
 
-    private DaoFactory daoFactory;
+  private DaoFactory daoFactory;
 
-    @Inject
-    ValidDeviceTokenFilter(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+  @Inject
+  ValidDeviceTokenFilter(DaoFactory daoFactory) {
+    this.daoFactory = daoFactory;
+  }
+
+  @Override
+  public void filter(ContainerRequestContext requestContext) {
+    final String deviceToken =
+        requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
+    if (deviceToken == null || deviceToken.length() == 0)
+      throw new BadRequestException("Missing query parameter: " + UrlParams.DEVICE_TOKEN);
+    if (deviceToken.length() != 40)
+      throw new BadRequestException("Invalid device token: " + deviceToken);
+
+    final DeviceCredentials deviceCredentials =
+        daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+    if (deviceCredentials == null)
+      throw new BadRequestException("Cannot authenticate unknown device token");
+    if (deviceCredentials.dateExpires().before(new Date()))
+      throw new NotAuthorizedException(
+          "Device token has expired", WwwAuthenticateChallenge.BASIC_AUTH);
+
+    final MemberProxy userProxy =
+        daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());
+    if (userProxy == null || !userProxy.isRegistered())
+      throw new BadRequestException(
+          "Cannot authenticate unknown or inactive user: " + deviceCredentials.email());
+
+    if (BasicAuthCredentials.hasCredentials()) {
+      final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+      if (basicAuthCredentials != null
+          && !basicAuthCredentials.email().equals(deviceCredentials.email()))
+        throw new BadRequestException(
+            "Basic auth credentials do not match records for provided device token");
     }
-
-    @Override
-    public void filter(ContainerRequestContext requestContext) {
-        final String deviceToken = requestContext.getUriInfo().getQueryParameters().getFirst(UrlParams.DEVICE_TOKEN);
-        if (deviceToken == null || deviceToken.length() == 0)
-            throw new BadRequestException("Missing query parameter: " + UrlParams.DEVICE_TOKEN);
-        if (deviceToken.length() != 40)
-            throw new BadRequestException("Invalid device token: " + deviceToken);
-
-        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
-        if (deviceCredentials == null)
-            throw new BadRequestException("Cannot authenticate unknown device token");
-        if (deviceCredentials.dateExpires().before(new Date()))
-            throw new NotAuthorizedException("Device token has expired", WwwAuthenticateChallenge.BASIC_AUTH);
-
-        final MemberProxy userProxy = daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());
-        if (userProxy == null || !userProxy.isRegistered())
-            throw new BadRequestException("Cannot authenticate unknown or inactive user: " + deviceCredentials.email());
-
-        if (BasicAuthCredentials.hasCredentials()) {
-            final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
-            if (basicAuthCredentials != null && !basicAuthCredentials.email().equals(deviceCredentials.email()))
-                throw new BadRequestException("Basic auth credentials do not match records for provided device token");
-        }
-    }
+  }
 }

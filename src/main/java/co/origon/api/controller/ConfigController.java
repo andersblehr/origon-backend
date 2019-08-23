@@ -22,45 +22,39 @@ import java.net.URISyntaxException;
 @ValidBearerToken
 public class ConfigController {
 
-    @Context
-    private HttpServletRequest request;
+  @Context private HttpServletRequest request;
 
-    @Inject
-    private DaoFactory daoFactory;
+  @Inject private DaoFactory daoFactory;
 
-    @POST
-    @Path("{category}")
-    public Response createConfig(String configJson, @PathParam("category") String category) {
-        try {
-            final Dao<Config> configDao = daoFactory.daoFor(Config.class);
-            configDao.save(configDao.create()
-                    .category(category)
-                    .configJson(configJson));
-            return Response
-                    .created(new URI(request.getContextPath() + request.getPathInfo()))
-                    .build();
-        } catch (URISyntaxException e) {
-            throw new InternalServerErrorException("URI syntax error", e);
-        }
+  @POST
+  @Path("{category}")
+  public Response createConfig(String configJson, @PathParam("category") String category) {
+    try {
+      final Dao<Config> configDao = daoFactory.daoFor(Config.class);
+      configDao.save(configDao.create().category(category).configJson(configJson));
+      return Response.created(new URI(request.getContextPath() + request.getPathInfo())).build();
+    } catch (URISyntaxException e) {
+      throw new InternalServerErrorException("URI syntax error", e);
     }
+  }
 
-    @GET
-    @Path("{category}")
-    public Response getConfig(@PathParam("category") String category) {
-        final String configJson = daoFactory.daoFor(Config.class).get(category).configJson();
-        if (configJson == null)
-            throw new NotFoundException("No configuration settings for category: " + category);
-        return Response.ok(configJson).build();
-    }
+  @GET
+  @Path("{category}")
+  public Response getConfig(@PathParam("category") String category) {
+    final String configJson = daoFactory.daoFor(Config.class).get(category).configJson();
+    if (configJson == null)
+      throw new NotFoundException("No configuration settings for category: " + category);
+    return Response.ok(configJson).build();
+  }
 
-    @DELETE
-    @Path("{category}")
-    public Response deleteConfig(@PathParam("category") String category) {
-        final Dao<Config> configDao = daoFactory.daoFor(Config.class);
-        final Config config = configDao.get(category);
-        if (config == null)
-            throw new NotFoundException("No configuration settings for category: " + category);
-        configDao.delete(configDao.get(category));
-        return Response.ok().build();
-    }
+  @DELETE
+  @Path("{category}")
+  public Response deleteConfig(@PathParam("category") String category) {
+    final Dao<Config> configDao = daoFactory.daoFor(Config.class);
+    final Config config = configDao.get(category);
+    if (config == null)
+      throw new NotFoundException("No configuration settings for category: " + category);
+    configDao.delete(configDao.get(category));
+    return Response.ok().build();
+  }
 }

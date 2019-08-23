@@ -13,25 +13,23 @@ import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Subclass;
 
-
 @Subclass
 @Cache(expirationSeconds = 600)
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(value = {"origoKey", "userKey"}, ignoreUnknown = true)
-public class ODevice extends OReplicatedEntity
-{
-    public String type;
-    public String name;
-    public Date lastSeen;
-    
-    public @Ignore OMember user;
-    public @Ignore Map<String, String> userRef;
-    public Key<OMember> userKey;
+@JsonIgnoreProperties(
+    value = {"origoKey", "userKey"},
+    ignoreUnknown = true)
+public class ODevice extends OReplicatedEntity {
+  public String type;
+  public String name;
+  public Date lastSeen;
 
-    
-    public ODevice()
-    {
-        super();
-    }
+  public @Ignore OMember user;
+  public @Ignore Map<String, String> userRef;
+  public Key<OMember> userKey;
+
+  public ODevice() {
+    super();
+  }
 }

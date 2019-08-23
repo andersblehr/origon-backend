@@ -24,35 +24,35 @@ import javax.ws.rs.ext.Provider;
 @Priority(2)
 public class ValidBearerTokenFilter implements ContainerRequestFilter {
 
-    private DaoFactory daoFactory;
+  private DaoFactory daoFactory;
 
-    @Inject
-    ValidBearerTokenFilter(DaoFactory daoFactory) {
-        this.daoFactory = daoFactory;
+  @Inject
+  ValidBearerTokenFilter(DaoFactory daoFactory) {
+    this.daoFactory = daoFactory;
+  }
+
+  @Override
+  public void filter(ContainerRequestContext requestContext) {
+    final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+    if (authorizationHeader == null || authorizationHeader.length() == 0)
+      throw new BadRequestException("Missing Authorization header");
+
+    final String[] authElements = authorizationHeader.split(" ");
+    if (authElements.length != 2)
+      throw new BadRequestException("Invalid Authorization header: " + authorizationHeader);
+    if (!authElements[0].equals("Bearer"))
+      throw new BadRequestException(
+          "Invalid authentication scheme for Bearer token: " + authElements[0]);
+
+    try {
+      final String jwt = authElements[1];
+      final Config jwtConfig = daoFactory.daoFor(Config.class).get(Category.JWT);
+      JWT.require(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET))).build().verify(jwt);
+    } catch (TokenExpiredException e) {
+      throw new NotAuthorizedException(
+          "JWT token has expired", WwwAuthenticateChallenge.BEARER_TOKEN);
+    } catch (Exception e) {
+      throw new BadRequestException("Invalid JWT token", e);
     }
-
-    @Override
-    public void filter(ContainerRequestContext requestContext) {
-        final String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
-        if (authorizationHeader == null || authorizationHeader.length() == 0)
-            throw new BadRequestException("Missing Authorization header");
-
-        final String[] authElements = authorizationHeader.split(" ");
-        if (authElements.length != 2)
-            throw new BadRequestException("Invalid Authorization header: " + authorizationHeader);
-        if (!authElements[0].equals("Bearer"))
-            throw new BadRequestException("Invalid authentication scheme for Bearer token: " + authElements[0]);
-
-        try {
-            final String jwt = authElements[1];
-            final Config jwtConfig = daoFactory.daoFor(Config.class).get(Category.JWT);
-            JWT.require(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET)))
-                    .build()
-                    .verify(jwt);
-        } catch (TokenExpiredException e) {
-            throw new NotAuthorizedException("JWT token has expired", WwwAuthenticateChallenge.BEARER_TOKEN);
-        } catch (Exception e) {
-            throw new BadRequestException("Invalid JWT token", e);
-        }
-    }
+  }
 }

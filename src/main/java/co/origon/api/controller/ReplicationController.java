@@ -30,97 +30,95 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ValidSessionData
 public class ReplicationController {
 
-    @Inject private DaoFactory daoFactory;
-    @Inject private Mailer mailer;
+  @Inject private DaoFactory daoFactory;
+  @Inject private Mailer mailer;
 
-    @POST
-    @Path("replicate")
-    @SupportedLanguage
-    public Response replicate(
-            List<OReplicatedEntity> entitiesToReplicate,
-            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-            @QueryParam(UrlParams.APP_VERSION) String appVersion,
-            @QueryParam(UrlParams.LANGUAGE) String language
-    ) {
-        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
-        checkReplicationDate(replicationDate);
+  @POST
+  @Path("replicate")
+  @SupportedLanguage
+  public Response replicate(
+      List<OReplicatedEntity> entitiesToReplicate,
+      @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
+      @QueryParam(UrlParams.APP_VERSION) String appVersion,
+      @QueryParam(UrlParams.LANGUAGE) String language) {
+    final DeviceCredentials deviceCredentials =
+        daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+    checkReplicationDate(replicationDate);
 
-        final ODao legacyDao = daoFactory.legacyDao();
-        legacyDao.replicateEntities(entitiesToReplicate, deviceCredentials.email(), mailer.language(language));
-        final List<OReplicatedEntity> fetchedEntities = legacyDao.fetchEntities(deviceCredentials.email(), replicationDate);
-        final List<OReplicatedEntity> entitiesToReturn = fetchedEntities.stream()
-                .filter(entity -> !entitiesToReplicate.contains(entity))
-                .collect(Collectors.toList());
+    final ODao legacyDao = daoFactory.legacyDao();
+    legacyDao.replicateEntities(
+        entitiesToReplicate, deviceCredentials.email(), mailer.language(language));
+    final List<OReplicatedEntity> fetchedEntities =
+        legacyDao.fetchEntities(deviceCredentials.email(), replicationDate);
+    final List<OReplicatedEntity> entitiesToReturn =
+        fetchedEntities.stream()
+            .filter(entity -> !entitiesToReplicate.contains(entity))
+            .collect(Collectors.toList());
 
-        Session.log(entitiesToReplicate.size() + "+" + entitiesToReturn.size() + " entities replicated");
+    Session.log(
+        entitiesToReplicate.size() + "+" + entitiesToReturn.size() + " entities replicated");
 
-        return Response
-                .status(entitiesToReplicate.size() > 0 ? Status.CREATED : Status.OK)
-                .entity(entitiesToReturn.size() > 0 ? entitiesToReturn : null)
-                .lastModified(new Date())
-                .build();
+    return Response.status(entitiesToReplicate.size() > 0 ? Status.CREATED : Status.OK)
+        .entity(entitiesToReturn.size() > 0 ? entitiesToReturn : null)
+        .lastModified(new Date())
+        .build();
+  }
+
+  @GET
+  @Path("fetch")
+  public Response fetchEntities(
+      @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
+      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+    final DeviceCredentials deviceCredentials =
+        daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+    checkReplicationDate(replicationDate);
+
+    final List<OReplicatedEntity> fetchedEntities =
+        daoFactory.legacyDao().fetchEntities(deviceCredentials.email(), replicationDate);
+    Session.log(fetchedEntities.size() + " entities fetched");
+
+    return Response.ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
+        .lastModified(new Date())
+        .build();
+  }
+
+  @GET
+  @Path("member")
+  public Response lookupMember(
+      @QueryParam(UrlParams.IDENTIFIER) String memberId,
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
+      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+    List<OReplicatedEntity> memberEntities = daoFactory.legacyDao().lookupMemberEntities(memberId);
+    if (memberEntities == null) {
+      throw new NotFoundException();
     }
 
-    @GET
-    @Path("fetch")
-    public Response fetchEntities(
-            @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-            @QueryParam(UrlParams.APP_VERSION) String appVersion
-    ) {
-        final DeviceCredentials deviceCredentials = daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
-        checkReplicationDate(replicationDate);
+    return Response.ok(memberEntities).build();
+  }
 
-        final List<OReplicatedEntity> fetchedEntities = daoFactory.legacyDao().fetchEntities(deviceCredentials.email(), replicationDate);
-        Session.log(fetchedEntities.size() + " entities fetched");
-
-        return Response
-                .ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
-                .lastModified(new Date())
-                .build();
+  @GET
+  @Path("origo")
+  public Response lookupOrigo(
+      @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
+      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+    OOrigo origo = daoFactory.legacyDao().lookupOrigo(internalJoinCode);
+    if (origo == null) {
+      throw new NotFoundException();
     }
 
-    @GET
-    @Path("member")
-    public Response lookupMember(
-            @QueryParam(UrlParams.IDENTIFIER) String memberId,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-            @QueryParam(UrlParams.APP_VERSION) String appVersion
-    ) {
-        List<OReplicatedEntity> memberEntities = daoFactory.legacyDao().lookupMemberEntities(memberId);
-        if (memberEntities == null) {
-            throw new NotFoundException();
-        }
+    return Response.ok(origo).build();
+  }
 
-        return Response
-                .ok(memberEntities)
-                .build();
+  private static void checkReplicationDate(Date replicationDate) {
+    try {
+      checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
+      checkArgument(
+          replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
+    } catch (IllegalArgumentException | NullPointerException e) {
+      throw new BadRequestException(e.getMessage(), e);
     }
-
-    @GET
-    @Path("origo")
-    public Response lookupOrigo(
-            @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
-            @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-            @QueryParam(UrlParams.APP_VERSION) String appVersion
-    ) {
-        OOrigo origo = daoFactory.legacyDao().lookupOrigo(internalJoinCode);
-        if (origo == null) {
-            throw new NotFoundException();
-        }
-
-        return Response
-                .ok(origo)
-                .build();
-    }
-
-    private static void checkReplicationDate(Date replicationDate) {
-        try {
-            checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
-            checkArgument(replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
-        } catch (IllegalArgumentException | NullPointerException e) {
-            throw new BadRequestException(e.getMessage(), e);
-        }
-    }
+  }
 }
