@@ -16,8 +16,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class OAuthInfo implements OtpCredentials {
-    @Id private String email;
-    private String deviceId;
-    private String passwordHash;
-    private String activationCode;
+  @Id private String email;
+  private String deviceId;
+  private String passwordHash;
+  private String activationCode;
 }

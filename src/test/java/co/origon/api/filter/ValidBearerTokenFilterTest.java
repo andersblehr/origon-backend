@@ -32,163 +32,169 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class ValidBearerTokenFilterTest {
 
-    private static final String AUTH_HEADER_INVALID_NO_OF_ELEMENTS = "This is not a valid Bearer token header";
-    private static final String AUTH_HEADER_INVALID_SCHEME = "Basic user@example.com:password";
-    private static final String AUTH_HEADER_INVALID_JWT_TOKEN = "Bearer thisisnotajwttoken";
+  private static final String AUTH_HEADER_INVALID_NO_OF_ELEMENTS =
+      "This is not a valid Bearer token header";
+  private static final String AUTH_HEADER_INVALID_SCHEME = "Basic user@example.com:password";
+  private static final String AUTH_HEADER_INVALID_JWT_TOKEN = "Bearer thisisnotajwttoken";
 
-    private static final String JWT_ISSUER = "issuer";
-    private static final String JWT_SECRET = "secret";
+  private static final String JWT_ISSUER = "issuer";
+  private static final String JWT_SECRET = "secret";
 
-    @Mock private DaoFactory daoFactory;
-    @Mock private Dao<Config> configDao;
-    @Mock private Config jwtConfig;
-    @Mock private ContainerRequestContext requestContext;
+  @Mock private DaoFactory daoFactory;
+  @Mock private Dao<Config> configDao;
+  @Mock private Config jwtConfig;
+  @Mock private ContainerRequestContext requestContext;
 
-    private ValidBearerTokenFilter validBearerTokenFilter;
+  private ValidBearerTokenFilter validBearerTokenFilter;
 
-    @Nested
-    @DisplayName("filter()")
-    class WhenFilter {
+  @Nested
+  @DisplayName("filter()")
+  class WhenFilter {
 
-        @BeforeEach
-        void setUp() {
-            validBearerTokenFilter = new ValidBearerTokenFilter(daoFactory);
-        }
-
-        @Test
-        @DisplayName("Given valid credentials, then run to completion")
-        void givenValidCredentials_thenRunToCompletion() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn("Bearer " + getJwtToken(1000, 60000));
-            when(daoFactory.daoFor(Config.class))
-                    .thenReturn(configDao);
-            when(configDao.get(Category.JWT))
-                    .thenReturn(jwtConfig);
-            when(jwtConfig.getString(Setting.SECRET))
-                    .thenReturn(JWT_SECRET);
-
-            // when
-            validBearerTokenFilter.filter(requestContext);
-
-            // then
-            assertTrue(true);
-        }
-
-        @Test
-        @DisplayName("Given no Authorization header, then throw BadRequestException")
-        void givenNoAuthorizationHeader_thenThrowBadRequestException() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn(null, "");
-
-            assertAll("Missing Authorization header",
-                    // then
-                    () -> {
-                        final Throwable eNull = assertThrows(BadRequestException.class, () ->
-                                // when
-                                validBearerTokenFilter.filter(requestContext)
-                        );
-                        assertEquals("Missing Authorization header", eNull.getMessage());
-                    },
-
-                    // then
-                    () -> {
-                        final Throwable eEmpty = assertThrows(BadRequestException.class, () ->
-                                // when
-                                validBearerTokenFilter.filter(requestContext)
-                        );
-                        assertEquals("Missing Authorization header", eEmpty.getMessage());
-                    }
-            );
-        }
-
-        @Test
-        @DisplayName("Given invalid number of elements in Authorization header, then throw BadRequestException")
-        void givenInvalidNumberOfElementsInAuthorizationHeader_thenThrowBadRequestException() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn(AUTH_HEADER_INVALID_NO_OF_ELEMENTS);
-
-            // then
-            final Throwable e = assertThrows(BadRequestException.class, () ->
-                    // when
-                    validBearerTokenFilter.filter(requestContext)
-            );
-            assertEquals("Invalid Authorization header: " + AUTH_HEADER_INVALID_NO_OF_ELEMENTS, e.getMessage());
-        }
-
-        @Test
-        @DisplayName("Given invalid scheme in Authorization header, then throw BadRequestException")
-        void givenInvalidSchemeInAuthorizationHeader_thenThrowBadRequestException() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn(AUTH_HEADER_INVALID_SCHEME);
-
-            // then
-            final Throwable e = assertThrows(BadRequestException.class, () ->
-                    // when
-                    validBearerTokenFilter.filter(requestContext)
-            );
-            assertEquals("Invalid authentication scheme for Bearer token: Basic", e.getMessage());
-        }
-
-        @Test
-        @DisplayName("Given expired credentials, then throw NotAuthorizedException")
-        void givenExpiredCredentials_thenThrowNotAuthorizedException() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn("Bearer " + getJwtToken(60000, 1000));
-            when(daoFactory.daoFor(Config.class))
-                    .thenReturn(configDao);
-            when(configDao.get(Category.JWT))
-                    .thenReturn(jwtConfig);
-            when(jwtConfig.getString(Setting.SECRET))
-                    .thenReturn(JWT_SECRET);
-
-            // then
-            final WebApplicationException e = assertThrows(NotAuthorizedException.class, () ->
-                    // when
-                    validBearerTokenFilter.filter(requestContext)
-            );
-            assertEquals("JWT token has expired", e.getMessage());
-            final String authChallenge = e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-            assertEquals(WwwAuthenticateChallenge.BEARER_TOKEN, authChallenge);
-        }
-
-        @Test
-        @DisplayName("Given invalid credentials, then throw BadRequestException")
-        void givenInvalidCredentials_thenThrowBadRequestException() {
-            // given
-            when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
-                    .thenReturn(AUTH_HEADER_INVALID_JWT_TOKEN);
-            when(daoFactory.daoFor(Config.class))
-                    .thenReturn(configDao);
-            when(configDao.get(Category.JWT))
-                    .thenReturn(jwtConfig);
-            when(jwtConfig.getString(Setting.SECRET))
-                    .thenReturn(JWT_SECRET);
-
-            // then
-            final Throwable e = assertThrows(BadRequestException.class, () ->
-                    // when
-                    validBearerTokenFilter.filter(requestContext)
-            );
-            assertEquals("Invalid JWT token", e.getMessage());
-        }
+    @BeforeEach
+    void setUp() {
+      validBearerTokenFilter = new ValidBearerTokenFilter(daoFactory);
     }
 
-    private static String getJwtToken(int ageMillis, int validMillis) {
-        final long issuedAtMillis = System.currentTimeMillis() - ageMillis;
-        try {
-            return JWT.create()
-                    .withIssuer(JWT_ISSUER)
-                    .withIssuedAt(new Date(issuedAtMillis))
-                    .withExpiresAt(new Date(issuedAtMillis + validMillis))
-                    .sign(Algorithm.HMAC256(JWT_SECRET));
-        } catch (UnsupportedEncodingException e) {
-            fail(e);
-            throw new RuntimeException(e);
-        }
+    @Test
+    @DisplayName("Given valid credentials, then run to completion")
+    void givenValidCredentials_thenRunToCompletion() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
+          .thenReturn("Bearer " + getJwtToken(1000, 60000));
+      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
+      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
+      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
+
+      // when
+      validBearerTokenFilter.filter(requestContext);
+
+      // then
+      assertTrue(true);
     }
+
+    @Test
+    @DisplayName("Given no Authorization header, then throw BadRequestException")
+    void givenNoAuthorizationHeader_thenThrowBadRequestException() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)).thenReturn(null, "");
+
+      assertAll(
+          "Missing Authorization header",
+          // then
+          () -> {
+            final Throwable eNull =
+                assertThrows(
+                    BadRequestException.class,
+                    () ->
+                        // when
+                        validBearerTokenFilter.filter(requestContext));
+            assertEquals("Missing Authorization header", eNull.getMessage());
+          },
+
+          // then
+          () -> {
+            final Throwable eEmpty =
+                assertThrows(
+                    BadRequestException.class,
+                    () ->
+                        // when
+                        validBearerTokenFilter.filter(requestContext));
+            assertEquals("Missing Authorization header", eEmpty.getMessage());
+          });
+    }
+
+    @Test
+    @DisplayName(
+        "Given invalid number of elements in Authorization header, then throw BadRequestException")
+    void givenInvalidNumberOfElementsInAuthorizationHeader_thenThrowBadRequestException() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
+          .thenReturn(AUTH_HEADER_INVALID_NO_OF_ELEMENTS);
+
+      // then
+      final Throwable e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  validBearerTokenFilter.filter(requestContext));
+      assertEquals(
+          "Invalid Authorization header: " + AUTH_HEADER_INVALID_NO_OF_ELEMENTS, e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Given invalid scheme in Authorization header, then throw BadRequestException")
+    void givenInvalidSchemeInAuthorizationHeader_thenThrowBadRequestException() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
+          .thenReturn(AUTH_HEADER_INVALID_SCHEME);
+
+      // then
+      final Throwable e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  validBearerTokenFilter.filter(requestContext));
+      assertEquals("Invalid authentication scheme for Bearer token: Basic", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Given expired credentials, then throw NotAuthorizedException")
+    void givenExpiredCredentials_thenThrowNotAuthorizedException() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
+          .thenReturn("Bearer " + getJwtToken(60000, 1000));
+      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
+      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
+      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
+
+      // then
+      final WebApplicationException e =
+          assertThrows(
+              NotAuthorizedException.class,
+              () ->
+                  // when
+                  validBearerTokenFilter.filter(requestContext));
+      assertEquals("JWT token has expired", e.getMessage());
+      final String authChallenge =
+          e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
+      assertEquals(WwwAuthenticateChallenge.BEARER_TOKEN, authChallenge);
+    }
+
+    @Test
+    @DisplayName("Given invalid credentials, then throw BadRequestException")
+    void givenInvalidCredentials_thenThrowBadRequestException() {
+      // given
+      when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
+          .thenReturn(AUTH_HEADER_INVALID_JWT_TOKEN);
+      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
+      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
+      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
+
+      // then
+      final Throwable e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  validBearerTokenFilter.filter(requestContext));
+      assertEquals("Invalid JWT token", e.getMessage());
+    }
+  }
+
+  private static String getJwtToken(int ageMillis, int validMillis) {
+    final long issuedAtMillis = System.currentTimeMillis() - ageMillis;
+    try {
+      return JWT.create()
+          .withIssuer(JWT_ISSUER)
+          .withIssuedAt(new Date(issuedAtMillis))
+          .withExpiresAt(new Date(issuedAtMillis + validMillis))
+          .sign(Algorithm.HMAC256(JWT_SECRET));
+    } catch (UnsupportedEncodingException e) {
+      fail(e);
+      throw new RuntimeException(e);
+    }
+  }
 }

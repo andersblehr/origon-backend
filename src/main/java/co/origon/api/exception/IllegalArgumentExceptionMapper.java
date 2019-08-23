@@ -12,10 +12,10 @@ import java.util.logging.Level;
 @Provider
 public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
-    public Response toResponse(IllegalArgumentException e) {
-        Session.dispose();
-        BasicAuthCredentials.dispose();
-        Session.log(Level.WARNING, "Illegal argument: " + e.getMessage());
-        return Response.status(Status.BAD_REQUEST).build();
-    }
+  public Response toResponse(IllegalArgumentException e) {
+    Session.dispose();
+    BasicAuthCredentials.dispose();
+    Session.log(Level.WARNING, "Illegal argument: " + e.getMessage());
+    return Response.status(Status.BAD_REQUEST).build();
+  }
 }

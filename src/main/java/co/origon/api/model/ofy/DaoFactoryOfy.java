@@ -7,14 +7,14 @@ import co.origon.api.model.api.Entity;
 
 public class DaoFactoryOfy implements DaoFactory {
 
-    @Override
-    public <E extends Entity<E>> Dao<E> daoFor(Class<E> c) {
-        return new DaoOfy<>(c);
-    }
+  @Override
+  public <E extends Entity<E>> Dao<E> daoFor(Class<E> c) {
+    return new DaoOfy<>(c);
+  }
 
-    // TODO: Factor this into overall DAO architecture
-    @Override
-    public ODao legacyDao() {
-        return new ODao();
-    }
+  // TODO: Factor this into overall DAO architecture
+  @Override
+  public ODao legacyDao() {
+    return new ODao();
+  }
 }

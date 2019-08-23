@@ -15,17 +15,18 @@ import javax.inject.Singleton;
 
 public class OrigonApplication extends ResourceConfig {
 
-    public OrigonApplication() {
-        register(new AuthController());
-        register(new ConfigController());
-        register(new ReplicationController());
+  public OrigonApplication() {
+    register(new AuthController());
+    register(new ConfigController());
+    register(new ReplicationController());
 
-        register(new AbstractBinder() {
-            @Override
-            protected void configure() {
-                bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
-                bindAsContract(OrigonMailer.class).to(Mailer.class).in(Singleton.class);
-            }
+    register(
+        new AbstractBinder() {
+          @Override
+          protected void configure() {
+            bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
+            bindAsContract(OrigonMailer.class).to(Mailer.class).in(Singleton.class);
+          }
         });
-    }
+  }
 }

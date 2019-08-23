@@ -13,9 +13,10 @@ import javax.ws.rs.ext.Provider;
 @Priority(1)
 public class ThreadLocalDisposalFilter implements ContainerResponseFilter {
 
-    @Override
-    public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
-        Session.dispose();
-        BasicAuthCredentials.dispose();
-    }
+  @Override
+  public void filter(
+      ContainerRequestContext requestContext, ContainerResponseContext responseContext) {
+    Session.dispose();
+    BasicAuthCredentials.dispose();
+  }
 }

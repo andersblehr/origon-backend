@@ -12,11 +12,11 @@ import java.util.logging.Level;
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
 
-    public Response toResponse(RuntimeException e) {
-        Session.dispose();
-        BasicAuthCredentials.dispose();
-        Session.log(Level.SEVERE, "Runtime exception: " + e.getMessage());
-        e.printStackTrace();
-        return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-    }
+  public Response toResponse(RuntimeException e) {
+    Session.dispose();
+    BasicAuthCredentials.dispose();
+    Session.log(Level.SEVERE, "Runtime exception: " + e.getMessage());
+    e.printStackTrace();
+    return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+  }
 }
