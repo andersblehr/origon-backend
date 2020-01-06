@@ -5,7 +5,7 @@
 * Java 1.8 (not later, as Google App Engine doesn't yet support it).
 * Google Cloud SDK.
 * Maven.
-* Ruby 5.0 or later with `bundler`.
+* Ruby 2.5 or later with `bundler`.
 * An HTTP client such as Postman or `curl`.
 
 ## Start backend components
