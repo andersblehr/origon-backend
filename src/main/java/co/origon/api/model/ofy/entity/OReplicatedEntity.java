@@ -1,5 +1,6 @@
 package co.origon.api.model.ofy.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,7 +31,7 @@ import com.googlecode.objectify.condition.IfFalse;
   @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")
 })
 public abstract class OReplicatedEntity {
-  public @Parent Key<OOrigo> origoKey;
+  public @Parent Key<OOrigo> parentKey;
   public @Id String entityId;
 
   public @Ignore String origoId;
@@ -46,6 +47,9 @@ public abstract class OReplicatedEntity {
   @SuppressWarnings("unchecked")
   public <T extends OReplicatedEntity> void internaliseRelationships() {
     try {
+      dateReplicated = new Date();
+      parentKey = Key.create(OOrigo.class, origoId);
+
       Field[] fields = this.getClass().getFields();
 
       for (Field field : fields) {
@@ -57,13 +61,11 @@ public abstract class OReplicatedEntity {
           if (referencedEntity != null) {
             Field keyField = this.getClass().getField(field.getName() + "Key");
             keyField.set(
-                this, Key.create(origoKey, (Class<T>) classOfField, referencedEntity.entityId));
+                this, Key.create(parentKey, (Class<T>) classOfField, referencedEntity.entityId));
           }
         }
       }
-    } catch (IllegalAccessException e) {
-      throw new RuntimeException(e);
-    } catch (NoSuchFieldException e) {
+    } catch (IllegalAccessException | NoSuchFieldException e) {
       throw new RuntimeException(e);
     }
   }
@@ -72,7 +74,7 @@ public abstract class OReplicatedEntity {
   @SuppressWarnings("unchecked")
   public <T extends OReplicatedEntity> void externaliseRelationships() {
     try {
-      origoId = origoKey.getRaw().getName();
+      origoId = parentKey.getRaw().getName();
 
       Field origoRefField = getOrigoRefField();
 
@@ -105,6 +107,15 @@ public abstract class OReplicatedEntity {
     }
   }
 
+  @JsonIgnore
+  @SuppressWarnings("unchecked")
+  public <T extends OReplicatedEntity> Key<T> getEntityKey() {
+    if (parentKey == null) {
+      parentKey = Key.create(OOrigo.class, origoId);
+    }
+    return Key.create(parentKey, (Class<T>)getClass(), entityId);
+  }
+
   private Field getOrigoRefField() {
     try {
       return this.getClass().getField("origoRef");
@@ -120,6 +131,10 @@ public abstract class OReplicatedEntity {
     entityRef.put("entityId", entityId);
 
     return entityRef;
+  }
+
+  public boolean isPersisted() {
+    return dateReplicated != null;
   }
 
   @Override
