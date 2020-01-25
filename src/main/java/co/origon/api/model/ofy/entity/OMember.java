@@ -1,5 +1,6 @@
 package co.origon.api.model.ofy.entity;
 
+import com.googlecode.objectify.Key;
 import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,6 +38,16 @@ public class OMember extends OReplicatedEntity {
 
   public OMember() {
     super();
+  }
+
+  @JsonIgnore
+  public Key<OMember> getEntityKey() {
+    return Key.create(Key.create(OOrigo.class, "~" + entityId), OMember.class, entityId);
+  }
+
+  @JsonIgnore
+  public Key<OMemberProxy> getProxyKey() {
+    return Key.create(OMemberProxy.class, getProxyId());
   }
 
   @JsonIgnore

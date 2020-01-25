@@ -63,7 +63,7 @@ public class OMemberProxy implements MemberProxy {
   }
 
   public OMemberProxy(String proxyId, OMemberProxy instanceToClone) {
-    this.proxyId = proxyId;
+    this(proxyId);
 
     memberId = instanceToClone.memberId;
     passwordHash = instanceToClone.passwordHash;

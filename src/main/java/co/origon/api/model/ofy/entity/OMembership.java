@@ -40,6 +40,14 @@ public class OMembership extends OReplicatedEntity {
   }
 
   @JsonIgnore
+  public Key<OOrigo> getOrigoKey() {
+    if (parentKey == null) {
+      parentKey = Key.create(OOrigo.class, origoId);
+    }
+    return Key.create(parentKey, OOrigo.class, origoId);
+  }
+
+  @JsonIgnore
   public boolean isAssociate() {
     return type.equals("A");
   }
@@ -62,7 +70,7 @@ public class OMembership extends OReplicatedEntity {
     isInvitable =
         isInvitable
             && type != null
-                & (type.equals("P") || type.equals("R") || type.equals("L") || type.equals("A"));
+                && (type.equals("P") || type.equals("R") || type.equals("L") || type.equals("A"));
     isInvitable =
         isInvitable
             && ((status == null && type.equals("A"))

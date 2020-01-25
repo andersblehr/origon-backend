@@ -74,7 +74,6 @@ public class AuthController {
     checkDeviceTokenFormat(deviceToken);
 
     final Dao<DeviceCredentials> deviceCredentialsDao = daoFactory.daoFor(DeviceCredentials.class);
-    final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
     final DeviceCredentials deviceCredentials =
         deviceCredentialsDao
             .create()
@@ -82,6 +81,7 @@ public class AuthController {
             .email(basicAuthCredentials.email())
             .deviceId(deviceId)
             .deviceType(deviceType);
+    final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
     final MemberProxy userProxy =
         userProxyDao
             .produce(basicAuthCredentials.email())

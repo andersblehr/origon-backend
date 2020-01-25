@@ -39,18 +39,17 @@ public class OOrigo extends OReplicatedEntity {
     super();
   }
 
-  public boolean takesPrecedenceOver(OOrigo origo) {
-    boolean takesPrecedence = false;
-
-    if (origo == null) {
-      takesPrecedence = true;
-    } else if (type != null && !type.equals("~")) {
-      if (origo.isPrivate() || !origo.isResidence()) {
-        takesPrecedence = !isPrivate();
-      }
+  public boolean takesPrecedenceOver(OOrigo other) {
+    if (other == null) {
+      return true;
     }
-
-    return takesPrecedence;
+    if (type == null || type.equals("~")) {
+      return false;
+    }
+    if (!other.isResidence()) {
+      return !isPrivate();
+    }
+    return false;
   }
 
   @JsonIgnore

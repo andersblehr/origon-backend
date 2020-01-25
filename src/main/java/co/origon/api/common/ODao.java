@@ -1,19 +1,21 @@
 package co.origon.api.common;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
+import co.origon.api.model.ofy.entity.OMemberProxy;
+import co.origon.api.model.ofy.entity.OMembership;
+import co.origon.api.model.ofy.entity.OOrigo;
+import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.model.ofy.entity.OReplicatedEntityRef;
+import co.origon.api.replication.Replicator;
+import co.origon.mailer.api.Mailer;
+import com.googlecode.objectify.Key;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import co.origon.mailer.api.Mailer;
-import co.origon.api.model.ofy.entity.*;
-import co.origon.api.replication.Replicator;
-
-import com.googlecode.objectify.Key;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class ODao {
   private Set<Key<OReplicatedEntity>> referencedEntityKeys;
@@ -28,12 +30,12 @@ public class ODao {
           ofy()
               .load()
               .type(OReplicatedEntity.class)
-              .ancestor(membership.origoKey)
+              .ancestor(membership.parentKey)
               .filter("dateReplicated >", deviceReplicationDate)
               .list();
     } else {
       fetchedEntities =
-          ofy().load().type(OReplicatedEntity.class).ancestor(membership.origoKey).list();
+          ofy().load().type(OReplicatedEntity.class).ancestor(membership.parentKey).list();
     }
 
     for (OReplicatedEntity entity : fetchedEntities) {
@@ -54,7 +56,7 @@ public class ODao {
     if (memberProxy != null) {
       referencedEntityKeys = new HashSet<>();
 
-      for (OMembership membership : ofy().load().keys(memberProxy.getMembershipKeys()).values()) {
+      for (OMembership membership : ofy().load().keys(memberProxy.membershipKeys()).values()) {
         if (membership.type.equals("R") && !membership.isExpired) {
           memberEntities.addAll(fetchMembershipEntities(membership, null));
         }
@@ -89,7 +91,7 @@ public class ODao {
 
     OMemberProxy memberProxy = OMemberProxy.get(userEmail);
     Collection<OMembership> memberships =
-        ofy().load().keys(memberProxy.getMembershipKeys()).values();
+        ofy().load().keys(memberProxy.membershipKeys()).values();
 
     Set<OReplicatedEntity> fetchedEntities = new HashSet<>();
 
@@ -114,10 +116,9 @@ public class ODao {
     return new ArrayList<>(fetchedEntities);
   }
 
-  public void replicateEntities(
-      List<OReplicatedEntity> entityList, String userEmail, Mailer mailer) {
-    if (entityList.size() > 0) {
-      new Replicator().replicate(entityList, userEmail, mailer);
+  public void replicateEntities(List<OReplicatedEntity> entities, String userEmail, Mailer mailer) {
+    if (entities.size() > 0) {
+      new Replicator(userEmail, mailer).replicate(entities);
     }
   }
 }
