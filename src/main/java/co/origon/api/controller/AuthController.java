@@ -1,19 +1,12 @@
 package co.origon.api.controller;
 
-import java.util.*;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
-
+import co.origon.api.common.BasicAuthCredentials;
+import co.origon.api.common.Session;
+import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidBasicAuthCredentials;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.common.*;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
@@ -21,12 +14,31 @@ import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.mailer.api.Mailer;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import javax.inject.Inject;
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotAuthorizedException;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
 @ValidBasicAuthCredentials
 @ValidSessionData
 public class AuthController {
+
+  public static final String WWW_AUTH_CHALLENGE_BASIC_AUTH = "login";
+
   private static final int LENGTH_ACTIVATION_CODE = 6;
 
   @Inject private DaoFactory daoFactory;
@@ -222,7 +234,7 @@ public class AuthController {
     if (otpCredentials == null)
       throw new BadRequestException("User is not awaiting activation, cannot activate");
     if (!otpCredentials.passwordHash().equals(credentials.passwordHash()))
-      throw new NotAuthorizedException("Incorrect password", WwwAuthenticateChallenge.BASIC_AUTH);
+      throw new NotAuthorizedException("Incorrect password", WWW_AUTH_CHALLENGE_BASIC_AUTH);
 
     return otpCredentials;
   }
@@ -232,7 +244,7 @@ public class AuthController {
     if (!userProxy.isRegistered())
       throw new BadRequestException("User is not registered, cannot authenticate");
     if (!userProxy.passwordHash().equals(credentials.passwordHash()))
-      throw new NotAuthorizedException("Invalid password", WwwAuthenticateChallenge.BASIC_AUTH);
+      throw new NotAuthorizedException("Invalid password", WWW_AUTH_CHALLENGE_BASIC_AUTH);
 
     return userProxy;
   }

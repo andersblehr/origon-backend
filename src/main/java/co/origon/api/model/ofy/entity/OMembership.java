@@ -21,7 +21,7 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
-    value = {"origoKey", "memberKey"},
+    value = {"parentKey", "memberKey"},
     ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity {
   public String type;

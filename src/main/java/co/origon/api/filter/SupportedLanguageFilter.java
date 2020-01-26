@@ -1,6 +1,6 @@
 package co.origon.api.filter;
 
-import co.origon.api.common.Language;
+import co.origon.mailer.api.Mailer.Language;
 import co.origon.api.common.UrlParams;
 
 import javax.annotation.Priority;

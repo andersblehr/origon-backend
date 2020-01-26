@@ -229,7 +229,7 @@ class AuthControllerTest {
       assertEquals("Incorrect password", e.getMessage());
       final String authChallenge =
           e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-      assertEquals(WwwAuthenticateChallenge.BASIC_AUTH, authChallenge);
+      assertEquals(AuthController.WWW_AUTH_CHALLENGE_BASIC_AUTH, authChallenge);
     }
 
     @Test
