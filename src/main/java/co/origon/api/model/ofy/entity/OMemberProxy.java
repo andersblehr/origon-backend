@@ -45,16 +45,21 @@ public class OMemberProxy implements MemberProxy {
   @Singular
   private Set<Key<OMembership>> membershipKeys;
 
+  public OMemberProxy() {
+    this.authMetaKeys = new HashSet<>();
+    this.membershipKeys = new HashSet<>();
+  }
+
+  public OMemberProxy(String proxyId) {
+    this();
+
+    this.proxyId = proxyId;
+  }
+
   public OMemberProxy(OMember member) {
     this(member.getProxyId());
 
     this.memberId = member.entityId;
-  }
-
-  public OMemberProxy(String proxyId) {
-    this.proxyId = proxyId;
-    this.authMetaKeys = new HashSet<>();
-    this.membershipKeys = new HashSet<>();
   }
 
   public OMemberProxy(String proxyId, OMemberProxy instanceToClone) {
