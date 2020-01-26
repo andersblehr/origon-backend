@@ -8,24 +8,26 @@ import co.origon.api.model.ofy.DaoFactoryOfy;
 import co.origon.api.service.ReplicationService;
 import co.origon.mailer.api.Mailer;
 import co.origon.mailer.origon.OrigonMailer;
-
+import javax.inject.Singleton;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
-
-import javax.inject.Singleton;
 
 public class OrigonApplication extends ResourceConfig {
 
   public OrigonApplication() {
-    register(new AuthController());
-    register(new ConfigController());
-    register(new ReplicationController());
+    register(AuthController.class);
+    register(ConfigController.class);
+    register(ReplicationController.class);
+    register(ReplicationService.class);
 
     register(
         new AbstractBinder() {
           @Override
           protected void configure() {
-            bind(new ReplicationService()).to(ReplicationService.class);
+            bindAsContract(AuthController.class).in(Singleton.class);
+            bindAsContract(ConfigController.class).in(Singleton.class);
+            bindAsContract(ReplicationController.class).in(Singleton.class);
+            bindAsContract(ReplicationService.class).in(Singleton.class);
 
             bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
             bindAsContract(OrigonMailer.class).to(Mailer.class).in(Singleton.class);
