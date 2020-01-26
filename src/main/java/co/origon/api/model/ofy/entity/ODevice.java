@@ -18,7 +18,7 @@ import com.googlecode.objectify.annotation.Subclass;
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
-    value = {"origoKey", "userKey"},
+    value = {"parentKey", "userKey"},
     ignoreUnknown = true)
 public class ODevice extends OReplicatedEntity {
   public String type;

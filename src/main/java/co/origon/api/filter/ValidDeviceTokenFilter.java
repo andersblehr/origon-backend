@@ -2,7 +2,7 @@ package co.origon.api.filter;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
-import co.origon.api.common.WwwAuthenticateChallenge;
+import co.origon.api.controller.AuthController;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
@@ -44,7 +44,7 @@ public class ValidDeviceTokenFilter implements ContainerRequestFilter {
       throw new BadRequestException("Cannot authenticate unknown device token");
     if (deviceCredentials.dateExpires().before(new Date()))
       throw new NotAuthorizedException(
-          "Device token has expired", WwwAuthenticateChallenge.BASIC_AUTH);
+          "Device token has expired", AuthController.WWW_AUTH_CHALLENGE_BASIC_AUTH);
 
     final MemberProxy userProxy =
         daoFactory.daoFor(MemberProxy.class).get(deviceCredentials.email());

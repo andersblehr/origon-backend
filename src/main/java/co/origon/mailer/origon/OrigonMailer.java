@@ -22,7 +22,6 @@ import org.json.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import co.origon.api.common.Language;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;

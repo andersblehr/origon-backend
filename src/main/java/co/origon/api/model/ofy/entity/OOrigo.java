@@ -19,7 +19,7 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
-    value = {"origoKey", "parentOrigoKey"},
+    value = {"parentKey"},
     ignoreUnknown = true)
 public class OOrigo extends OReplicatedEntity {
   public @IgnoreSave(IfNull.class) String name;
