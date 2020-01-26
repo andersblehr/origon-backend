@@ -19,7 +19,7 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
-    value = {"origoKey"},
+    value = {"entityKey", "origoKey", "proxyKey", "proxyId"},
     ignoreUnknown = true)
 public class OMember extends OReplicatedEntity {
   public String name;
@@ -40,17 +40,14 @@ public class OMember extends OReplicatedEntity {
     super();
   }
 
-  @JsonIgnore
   public Key<OMember> getEntityKey() {
     return Key.create(Key.create(OOrigo.class, "~" + entityId), OMember.class, entityId);
   }
 
-  @JsonIgnore
   public Key<OMemberProxy> getProxyKey() {
     return Key.create(OMemberProxy.class, getProxyId());
   }
 
-  @JsonIgnore
   public String getProxyId() {
     return hasEmail() ? email : entityId;
   }

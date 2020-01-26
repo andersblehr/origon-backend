@@ -2,7 +2,6 @@ package co.origon.api.model.ofy;
 
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.Entity;
-import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
@@ -10,6 +9,7 @@ import co.origon.api.model.ofy.entity.OAuthInfo;
 import co.origon.api.model.ofy.entity.OAuthMeta;
 import co.origon.api.model.ofy.entity.OMemberProxy;
 
+import co.origon.api.common.Config;
 import com.googlecode.objectify.Key;
 
 import java.lang.reflect.InvocationTargetException;
@@ -80,7 +80,7 @@ public class DaoOfy<E extends Entity<E>> implements Dao<E> {
   }
 
   private Class ofyClass(Class clazz) {
-    if (clazz.equals(Config.class)) return co.origon.api.common.Config.class;
+    if (clazz.equals(co.origon.api.model.api.entity.Config.class)) return Config.class;
     if (clazz.equals(DeviceCredentials.class)) return OAuthMeta.class;
     if (clazz.equals(MemberProxy.class)) return OMemberProxy.class;
     if (clazz.equals(OtpCredentials.class)) return OAuthInfo.class;
