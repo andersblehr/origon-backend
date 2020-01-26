@@ -1,9 +1,6 @@
 package co.origon.api.model.ofy.entity;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import co.origon.api.model.api.entity.MemberProxy;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -16,11 +13,13 @@ import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.condition.IfEmpty;
 import com.googlecode.objectify.condition.IfNull;
-
-import lombok.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+import lombok.Data;
+import lombok.Singular;
 import lombok.experimental.Accessors;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 @Entity
 @Cache(expirationSeconds = 600)
@@ -140,14 +139,6 @@ public class OMemberProxy implements MemberProxy {
             .collect(Collectors.toSet());
 
     ofy().delete().keys(redundantAuthMetaKeys).now();
-  }
-
-  public Set<Key<OAuthMeta>> getAuthMetaKeys() {
-    return authMetaKeys;
-  }
-
-  public Set<Key<OMembership>> getMembershipKeys() {
-    return membershipKeys;
   }
 
   @OnLoad

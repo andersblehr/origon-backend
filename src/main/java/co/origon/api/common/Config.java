@@ -2,8 +2,13 @@ package co.origon.api.common;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.googlecode.objectify.annotation.*;
-import lombok.*;
+import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.annotation.Entity;
+import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.IgnoreSave;
+import com.googlecode.objectify.annotation.OnLoad;
+import lombok.Data;
+import lombok.Setter;
 import lombok.experimental.Accessors;
 import org.json.JSONException;
 import org.json.JSONObject;
