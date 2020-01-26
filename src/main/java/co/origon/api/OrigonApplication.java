@@ -5,6 +5,7 @@ import co.origon.api.controller.ConfigController;
 import co.origon.api.controller.ReplicationController;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.ofy.DaoFactoryOfy;
+import co.origon.api.service.ReplicationService;
 import co.origon.mailer.api.Mailer;
 import co.origon.mailer.origon.OrigonMailer;
 
@@ -24,6 +25,8 @@ public class OrigonApplication extends ResourceConfig {
         new AbstractBinder() {
           @Override
           protected void configure() {
+            bind(new ReplicationService()).to(ReplicationService.class);
+
             bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
             bindAsContract(OrigonMailer.class).to(Mailer.class).in(Singleton.class);
           }
