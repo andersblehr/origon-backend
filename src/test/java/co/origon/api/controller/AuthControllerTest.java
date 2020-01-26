@@ -1,32 +1,42 @@
 package co.origon.api.controller;
 
-import co.origon.api.common.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import co.origon.api.common.BasicAuthCredentials;
+import co.origon.api.common.Session;
+import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
-
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.service.ReplicationService;
 import co.origon.mailer.api.Mailer;
-import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-
+import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import java.util.List;
-
-import static co.origon.api.common.Base64.encode;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class AuthControllerTest {
@@ -34,8 +44,7 @@ class AuthControllerTest {
   private static final String USER_ID = "3eca0277-b8aa-4293-a028-44e0746c3082";
   private static final String USER_EMAIL = "user@example.com";
   private static final String USER_PASSWORD = "password";
-  private static final String AUTHORIZATION_HEADER =
-      "Basic " + encode(USER_EMAIL + ":" + USER_PASSWORD);
+  private static final String AUTHORIZATION_HEADER = getAuthorizationHeader();
   private static final String DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
   private static final String DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
   private static final String DEVICE_TYPE = "Device";
@@ -43,6 +52,7 @@ class AuthControllerTest {
   private static final String LANGUAGE = "nb";
   private static final String ACTIVATION_CODE = "abcdef";
 
+  @Mock private ReplicationService replicationService;
   @Mock private DaoFactory daoFactory;
   @Mock private Dao<MemberProxy> userProxyDao;
   @Mock private MemberProxy userProxy;
@@ -50,7 +60,6 @@ class AuthControllerTest {
   @Mock private OtpCredentials otpCredentials;
   @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
   @Mock private DeviceCredentials deviceCredentials;
-  @Mock private ODao legacyDao;
   @Mock private List<OReplicatedEntity> fetchedEntities;
   @Mock private Mailer mailer;
 
@@ -143,7 +152,7 @@ class AuthControllerTest {
       verifyDeviceCredentials();
       verifyUserProxy();
       verify(otpCredentialsDao).delete(otpCredentials);
-      verify(legacyDao).fetchEntities(USER_EMAIL);
+      verify(replicationService).fetch(USER_EMAIL);
 
       assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
       assertNull(response.getLocation());
@@ -169,7 +178,7 @@ class AuthControllerTest {
       verifyDeviceCredentials();
       verifyUserProxy();
       verify(otpCredentialsDao).delete(otpCredentials);
-      verify(legacyDao).fetchEntities(USER_EMAIL);
+      verify(replicationService).fetch(USER_EMAIL);
 
       assertEquals(Status.OK.getStatusCode(), response.getStatus());
       assertEquals(USER_ID, response.getLocation().toString());
@@ -270,8 +279,7 @@ class AuthControllerTest {
 
     private void establishInvited(boolean invited) {
       when(userProxy.memberId()).thenReturn(invited ? USER_ID : null);
-      when(daoFactory.legacyDao()).thenReturn(legacyDao);
-      when(legacyDao.fetchEntities(USER_EMAIL)).thenReturn(fetchedEntities);
+      when(replicationService.fetch(USER_EMAIL)).thenReturn(fetchedEntities);
       when(fetchedEntities.size()).thenReturn(invited ? 10 : 0);
     }
 
@@ -327,5 +335,10 @@ class AuthControllerTest {
   void tearDown() {
     BasicAuthCredentials.dispose();
     Session.dispose();
+  }
+
+  private static String getAuthorizationHeader() {
+    final String credentials = USER_EMAIL + ":" + USER_PASSWORD;
+    return "Basic " + new String(java.util.Base64.getEncoder().encode(credentials.getBytes()));
   }
 }

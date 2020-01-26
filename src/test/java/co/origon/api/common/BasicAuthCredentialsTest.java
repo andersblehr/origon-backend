@@ -1,12 +1,14 @@
 package co.origon.api.common;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-
-import static co.origon.api.common.Base64.encode;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class BasicAuthCredentialsTest {
 
@@ -34,7 +36,8 @@ class BasicAuthCredentialsTest {
           BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
       assertEquals("user@example.com", credentials.email());
       assertEquals("password", credentials.password());
-      assertEquals(Crypto.generatePasswordHash("password"), credentials.passwordHash());
+      assertEquals(
+          BasicAuthCredentials.generatePasswordHash("password"), credentials.passwordHash());
       BasicAuthCredentials.dispose();
     }
 
@@ -147,7 +150,8 @@ class BasicAuthCredentialsTest {
       final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
       assertEquals("user@example.com", credentials.email());
       assertEquals("password", credentials.password());
-      assertEquals(Crypto.generatePasswordHash("password"), credentials.passwordHash());
+      assertEquals(
+          BasicAuthCredentials.generatePasswordHash("password"), credentials.passwordHash());
       BasicAuthCredentials.dispose();
     }
 
@@ -158,5 +162,9 @@ class BasicAuthCredentialsTest {
       assertThrows(RuntimeException.class, BasicAuthCredentials::getCredentials);
       BasicAuthCredentials.dispose();
     }
+  }
+
+  private static String encode(String toBeEncoded) {
+    return new String(java.util.Base64.getEncoder().encode(toBeEncoded.getBytes()));
   }
 }

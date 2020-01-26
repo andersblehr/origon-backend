@@ -13,6 +13,7 @@ import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.service.ReplicationService;
 import co.origon.mailer.api.Mailer;
 import java.util.Date;
 import java.util.List;
@@ -41,6 +42,7 @@ public class AuthController {
 
   private static final int LENGTH_ACTIVATION_CODE = 6;
 
+  @Inject private ReplicationService replicationService;
   @Inject private DaoFactory daoFactory;
   @Inject private Mailer mailer;
 
@@ -106,7 +108,7 @@ public class AuthController {
 
     Session.log("Persisted new device token for user " + basicAuthCredentials.email());
     final List<OReplicatedEntity> fetchedEntities =
-        daoFactory.legacyDao().fetchEntities(basicAuthCredentials.email());
+        replicationService.fetch(basicAuthCredentials.email());
     Session.log("Returning " + fetchedEntities.size() + " entities");
 
     return Response.status(fetchedEntities.size() > 0 ? Status.OK : Status.NO_CONTENT)
@@ -141,7 +143,7 @@ public class AuthController {
 
     Session.log("Persisted new device token for user " + credentials.email());
     final List<OReplicatedEntity> fetchedEntities =
-        daoFactory.legacyDao().fetchEntities(credentials.email(), replicationDate);
+        replicationService.fetch(credentials.email(), replicationDate);
     Session.log("Returning " + fetchedEntities.size() + " entities");
 
     return Response.ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
