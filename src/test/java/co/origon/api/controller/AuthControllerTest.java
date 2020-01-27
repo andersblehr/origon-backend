@@ -11,6 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import co.origon.api.common.BasicAuthCredentials;
+import co.origon.api.common.Mailer;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.Dao;
@@ -20,7 +21,6 @@ import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.service.ReplicationService;
-import co.origon.mailer.api.Mailer;
 import java.util.List;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
@@ -90,7 +90,7 @@ class AuthControllerTest {
       lenient().when(otpCredentials.activationCode(anyString())).thenReturn(otpCredentials);
 
       // given: Send registration email
-      when(mailer.language(anyString())).thenReturn(mailer);
+      when(mailer.using(anyString())).thenReturn(mailer);
       lenient().when(otpCredentials.activationCode()).thenReturn(ACTIVATION_CODE);
 
       // when

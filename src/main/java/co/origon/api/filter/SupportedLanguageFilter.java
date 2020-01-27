@@ -1,8 +1,8 @@
 package co.origon.api.filter;
 
-import co.origon.mailer.api.Mailer.Language;
 import co.origon.api.common.UrlParams;
 
+import co.origon.api.common.Mailer;
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -26,7 +26,7 @@ public class SupportedLanguageFilter implements ContainerRequestFilter {
       throw new BadRequestException("Invalid language code: " + languageCode);
 
     try {
-      Language.fromCode(languageCode);
+      Mailer.Language.fromCode(languageCode);
     } catch (IllegalArgumentException e) {
       throw new BadRequestException("Invalid or unsupported language: " + languageCode, e);
     }

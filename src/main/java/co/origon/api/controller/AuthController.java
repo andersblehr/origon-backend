@@ -1,6 +1,7 @@
 package co.origon.api.controller;
 
 import co.origon.api.common.BasicAuthCredentials;
+import co.origon.api.common.Mailer;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
@@ -14,7 +15,6 @@ import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.service.ReplicationService;
-import co.origon.mailer.api.Mailer;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -67,8 +67,7 @@ public class AuthController {
             .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE));
     dao.save(otpCredentials);
 
-    mailer
-        .language(language)
+    mailer.using(language)
         .sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
     Session.log("Sent user activation code to new user " + credentials.email());
 
@@ -187,7 +186,7 @@ public class AuthController {
         dao.get(credentials.email()).passwordHash(credentials.passwordHash());
     dao.save(userProxy);
 
-    mailer.language(language).sendPasswordResetEmail(credentials.email(), credentials.password());
+    mailer.using(language).sendPasswordResetEmail(credentials.email(), credentials.password());
     Session.log("Sent temporary password to " + credentials.email());
 
     return Response.status(Status.CREATED).build();
@@ -214,7 +213,7 @@ public class AuthController {
             .activationCode(activationCode);
     dao.save(otpCredentials);
 
-    mailer.language(language).sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
+    mailer.using(language).sendEmailActivationCode(basicAuthCredentials.email(), activationCode);
     Session.log("Sent email activation code to " + basicAuthCredentials.email());
 
     return Response.status(Status.CREATED).entity(otpCredentials).build();
