@@ -40,6 +40,8 @@ public class OMember extends OReplicatedEntity {
     super();
   }
 
+  @Override
+  @SuppressWarnings("unchecked")
   public Key<OMember> getEntityKey() {
     return Key.create(Key.create(OOrigo.class, "~" + entityId), OMember.class, entityId);
   }
