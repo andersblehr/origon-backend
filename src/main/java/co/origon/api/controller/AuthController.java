@@ -2,6 +2,7 @@ package co.origon.api.controller;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Mailer;
+import co.origon.api.common.Matcher;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
@@ -253,7 +254,7 @@ public class AuthController {
   private void checkDeviceTokenFormat(String deviceToken) {
     if (deviceToken == null || deviceToken.length() == 0)
       throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_TOKEN);
-    if (!deviceToken.matches("^[a-z0-9]{40}$"))
+    if (!Matcher.isDeviceToken(deviceToken))
       throw new BadRequestException("Invalid device token format: " + deviceToken);
   }
 }

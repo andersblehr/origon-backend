@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import co.origon.api.common.Mailer;
+import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
@@ -56,12 +57,9 @@ public class ReplicationController {
         daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
     checkReplicationDate(replicationDate);
 
-    replicationService.replicate(
-        entities, deviceCredentials.email(), mailer.using(language));
-    final List<OReplicatedEntity> fetchedEntities =
-        replicationService.fetch(deviceCredentials.email(), replicationDate);
+    replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
     final List<OReplicatedEntity> returnableEntities =
-        fetchedEntities.stream()
+        replicationService.fetch(deviceCredentials.email(), replicationDate).stream()
             .filter(entity -> !entities.contains(entity))
             .collect(Collectors.toList());
 

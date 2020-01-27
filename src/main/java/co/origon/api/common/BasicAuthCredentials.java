@@ -118,7 +118,7 @@ public class BasicAuthCredentials {
     final String[] credentials = credentialsString.split(":");
     if (credentials.length != 2)
       throw new IllegalArgumentException("Invalid basic auth credentials: " + credentialsString);
-    if (!credentials[0].matches("^.+@.+\\..+$"))
+    if (!Matcher.isEmailAddress(credentials[0]))
       throw new IllegalArgumentException("Invalid email address: " + credentials[0]);
     if (credentials[1].length() < MIN_PASSWORD_LENGTH)
       throw new IllegalArgumentException("Password is too short: " + credentials[1]);

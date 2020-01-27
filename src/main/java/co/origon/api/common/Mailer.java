@@ -1,5 +1,11 @@
 package co.origon.api.common;
 
+import co.origon.api.model.ofy.entity.OMember;
+import co.origon.api.model.ofy.entity.OMemberProxy;
+import co.origon.api.model.ofy.entity.OMembership;
+import co.origon.api.model.ofy.entity.OOrigo;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import java.io.BufferedReader;
@@ -13,20 +19,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-
 import org.json.JSONObject;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-
-import co.origon.api.model.ofy.entity.OMember;
-import co.origon.api.model.ofy.entity.OMemberProxy;
-import co.origon.api.model.ofy.entity.OMembership;
-import co.origon.api.model.ofy.entity.OOrigo;
 
 public class Mailer {
   private static final String JWT_CFG = "origon.jwt";
@@ -45,7 +41,11 @@ public class Mailer {
   private Language language;
 
   public Mailer using(String languageCode) {
-    return new Mailer(Language.fromCode(languageCode));
+    return using(Language.fromCode(languageCode));
+  }
+
+  public Mailer using(Language language) {
+    return new Mailer(language);
   }
 
   public void sendInvitation(String invitationEmail, OMemberProxy userProxy) {
@@ -254,7 +254,7 @@ public class Mailer {
 
   private void sendEmail(String to, String subject, String body) {
     try {
-      if (!to.matches("^.+@.+\\..+$")) {
+      if (!Matcher.isEmailAddress(to)) {
         throw new IllegalArgumentException("Invalid email address");
       }
 
