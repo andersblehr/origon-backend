@@ -2,6 +2,7 @@ package co.origon.api.replication;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import co.origon.api.common.Mailer;
 import co.origon.api.common.Pair;
 import co.origon.api.model.ofy.entity.OAuthMeta;
 import co.origon.api.model.ofy.entity.OMember;
@@ -10,7 +11,6 @@ import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.model.ofy.entity.OReplicatedEntityRef;
-import co.origon.mailer.api.Mailer;
 import com.googlecode.objectify.Key;
 import java.util.HashSet;
 import java.util.List;

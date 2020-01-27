@@ -1,5 +1,7 @@
-package co.origon.mailer.origon;
+package co.origon.api.common;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -12,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
-import javax.inject.Inject;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -22,36 +23,29 @@ import org.json.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
-import co.origon.api.model.api.entity.Config.Category;
-import co.origon.api.model.api.entity.Config.Setting;
 import co.origon.api.model.ofy.entity.OMember;
 import co.origon.api.model.ofy.entity.OMemberProxy;
 import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
-import co.origon.mailer.api.Mailer;
 
-public class OrigonMailer implements Mailer {
+public class Mailer {
+  private static final String JWT_CFG = "origon.jwt";
+  private static final String JWT_CFG_ISSUER = "issuer";
+  private static final String JWT_CFG_SECRET = "secret";
+  private static final String JWT_CFG_EXPIRES_IN_SECONDS = "expiresInSeconds";
+
+  private static final String MAILER_CFG = "origon.mailer";
+  private static final String MAILER_CFG_BASE_URL = "baseUrl";
+
   private static final String MAILER_RESOURCE_PATH = "/mailer";
   private static final String MAILER_TO = "to";
   private static final String MAILER_SUBJECT = "subject";
   private static final String MAILER_BODY = "body";
 
-  private final Dao<Config> configDao;
   private Language language;
 
-  @Inject
-  OrigonMailer(DaoFactory daoFactory) {
-    configDao = daoFactory.daoFor(Config.class);
-    language = Language.NORWEGIAN;
-  }
-
-  @Override
-  public Mailer language(String languageCode) {
-    this.language = Language.fromCode(languageCode);
-    return this;
+  public Mailer using(String languageCode) {
+    return new Mailer(Language.fromCode(languageCode));
   }
 
   public void sendInvitation(String invitationEmail, OMemberProxy userProxy) {
@@ -238,17 +232,21 @@ public class OrigonMailer implements Mailer {
     }
   }
 
+  private Mailer(Language language) {
+    this.language = language;
+  }
+
   private String createJwtBearerToken() {
     try {
-      final Config jwtConfig = configDao.get(Category.JWT);
+      final Config jwtConfig = ConfigFactory.load().getConfig(JWT_CFG);
       final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Setting.EXPIRES_IN_SECONDS));
+      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(JWT_CFG_EXPIRES_IN_SECONDS));
 
       return JWT.create()
-          .withIssuer(jwtConfig.getString(Setting.ISSUER))
+          .withIssuer(jwtConfig.getString(JWT_CFG_ISSUER))
           .withIssuedAt(Date.from(now))
           .withExpiresAt(Date.from(jwtExpiry))
-          .sign(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET)));
+          .sign(Algorithm.HMAC256(jwtConfig.getString(JWT_CFG_SECRET)));
     } catch (Exception e) {
       throw new RuntimeException("Error during JWT creatiion", e);
     }
@@ -265,9 +263,9 @@ public class OrigonMailer implements Mailer {
       requestBody.put(MAILER_SUBJECT, subject);
       requestBody.put(MAILER_BODY, body);
 
-      final Config mailerConfig = configDao.get(Category.MAILER);
+      final Config mailerConfig = ConfigFactory.load().getConfig(MAILER_CFG);
       final URL mailerUrl =
-          new URL(mailerConfig.getString(Setting.BASE_URL) + MAILER_RESOURCE_PATH);
+          new URL(mailerConfig.getString(MAILER_CFG_BASE_URL) + MAILER_RESOURCE_PATH);
       final HttpURLConnection connection = (HttpURLConnection) mailerUrl.openConnection();
       connection.setDoInput(true);
       connection.setDoOutput(true);
@@ -559,5 +557,27 @@ public class OrigonMailer implements Mailer {
     }
 
     return emailChangeNotificationText;
+  }
+
+  public enum Language {
+    ENGLISH("en"),
+    GERMAN("de"),
+    NORWEGIAN("nb");
+
+    private final String languageCoode;
+
+    Language(String languageCoode) {
+      this.languageCoode = languageCoode;
+    }
+
+    public static Language fromCode(String languageCoode) {
+      for (Language language : Language.values()) {
+        if (language.languageCoode.equals(languageCoode)) {
+          return language;
+        }
+      }
+
+      throw new IllegalArgumentException("Unknown or unsupported language: " + languageCoode);
+    }
   }
 }

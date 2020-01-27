@@ -3,6 +3,7 @@ package co.origon.api.controller;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import co.origon.api.common.Mailer;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
@@ -13,7 +14,6 @@ import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.service.ReplicationService;
-import co.origon.mailer.api.Mailer;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -57,7 +57,7 @@ public class ReplicationController {
     checkReplicationDate(replicationDate);
 
     replicationService.replicate(
-        entities, deviceCredentials.email(), mailer.language(language));
+        entities, deviceCredentials.email(), mailer.using(language));
     final List<OReplicatedEntity> fetchedEntities =
         replicationService.fetch(deviceCredentials.email(), replicationDate);
     final List<OReplicatedEntity> returnableEntities =
