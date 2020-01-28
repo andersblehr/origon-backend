@@ -6,7 +6,9 @@ import co.origon.api.model.ofy.entity.OMemberProxy;
 import com.googlecode.objectify.Key;
 import java.util.Collection;
 import java.util.stream.Collectors;
+import javax.inject.Singleton;
 
+@Singleton
 public class MemberProxyRepository {
   public OMemberProxy fetchById(String id) {
     return ofy().load().key(keyFromId(id)).now();

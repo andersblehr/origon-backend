@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -33,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+@Singleton
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
 @ValidBasicAuthCredentials
@@ -68,7 +70,8 @@ public class AuthController {
             .activationCode(UUID.randomUUID().toString().substring(0, LENGTH_ACTIVATION_CODE));
     dao.save(otpCredentials);
 
-    mailer.using(language)
+    mailer
+        .using(language)
         .sendRegistrationEmail(credentials.email(), otpCredentials.activationCode());
     Session.log("Sent user activation code to new user " + credentials.email());
 
