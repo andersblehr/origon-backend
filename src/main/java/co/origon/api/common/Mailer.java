@@ -19,11 +19,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
+import javax.inject.Singleton;
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import lombok.NoArgsConstructor;
 import org.json.JSONObject;
 
+@Singleton
+@NoArgsConstructor
 public class Mailer {
   private static final String JWT_CFG = "origon.jwt";
   private static final String JWT_CFG_ISSUER = "issuer";

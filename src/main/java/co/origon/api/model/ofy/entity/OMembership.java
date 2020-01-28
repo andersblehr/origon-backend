@@ -1,23 +1,19 @@
 package co.origon.api.model.ofy.entity;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNull;
+import java.util.Map;
 
 @Subclass
-@Cache(expirationSeconds = 600)
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
@@ -70,7 +66,7 @@ public class OMembership extends OReplicatedEntity {
     isInvitable =
         isInvitable
             && type != null
-                && (type.equals("P") || type.equals("R") || type.equals("L") || type.equals("A"));
+            && (type.equals("P") || type.equals("R") || type.equals("L") || type.equals("A"));
     isInvitable =
         isInvitable
             && ((status == null && type.equals("A"))

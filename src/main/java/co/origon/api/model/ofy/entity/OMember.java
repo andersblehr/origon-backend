@@ -1,21 +1,16 @@
 package co.origon.api.model.ofy.entity;
 
-import com.googlecode.objectify.Key;
-import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-
-import com.googlecode.objectify.annotation.Cache;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.condition.IfNull;
+import java.util.Date;
 
 @Subclass
-@Cache(expirationSeconds = 600)
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
