@@ -6,7 +6,6 @@ import co.origon.api.model.api.entity.MemberProxy;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.Cache;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.IgnoreSave;
@@ -22,7 +21,6 @@ import lombok.Singular;
 import lombok.experimental.Accessors;
 
 @Entity
-@Cache(expirationSeconds = 600)
 @Data
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
