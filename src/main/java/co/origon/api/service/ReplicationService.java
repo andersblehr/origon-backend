@@ -26,7 +26,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
+@Singleton
 public class ReplicationService {
 
   @Inject private MemberProxyRepository memberProxyRepository;

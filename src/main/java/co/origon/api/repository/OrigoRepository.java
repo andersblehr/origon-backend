@@ -6,7 +6,9 @@ import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import com.googlecode.objectify.Key;
 import java.util.Collection;
+import javax.inject.Singleton;
 
+@Singleton
 public class OrigoRepository {
 
   public Collection<OOrigo> fetchByKeys(Collection<Key<OOrigo>> keys) {

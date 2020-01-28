@@ -5,7 +5,9 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import co.origon.api.model.ofy.entity.OMembership;
 import com.googlecode.objectify.Key;
 import java.util.Collection;
+import javax.inject.Singleton;
 
+@Singleton
 public class MembershipRepository {
 
   public Collection<OMembership> fetchByKeys(Collection<Key<OMembership>> keys) {
