@@ -13,6 +13,9 @@ import co.origon.api.model.ofy.entity.OMembership;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.model.ofy.entity.OReplicatedEntity;
 import co.origon.api.model.ofy.entity.OReplicatedEntityRef;
+import co.origon.api.repository.MemberProxyRepository;
+import co.origon.api.repository.MembershipRepository;
+import co.origon.api.repository.OrigoRepository;
 import com.googlecode.objectify.Key;
 import java.util.Date;
 import java.util.HashSet;
@@ -26,21 +29,38 @@ import javax.inject.Inject;
 
 public class ReplicationService {
 
+  @Inject private MemberProxyRepository memberProxyRepository;
+  @Inject private MembershipRepository membershipRepository;
+  @Inject private OrigoRepository origoRepository;
   @Inject private Mailer rootMailer;
 
   public void replicate(List<OReplicatedEntity> entities, String userEmail, Language language) {
     final OMemberProxy userProxy = OMemberProxy.get(userEmail);
     final Mailer mailer = rootMailer.using(language);
-    final Map<String, OMemberProxy> proxiesByMemberId = processMembers(entities, userProxy, mailer);
-    processMemberships(entities, proxiesByMemberId, userProxy, mailer);
+
+    final Map<Key<OMemberProxy>, OMember> membersByProxyKey =
+        entities.stream()
+            .filter(entity -> entity.getClass().equals(OMember.class))
+            .map(entity -> (OMember) entity)
+            .peek(member -> alignProxyIfUser(member, userProxy))
+            .collect(Collectors.toMap(OMember::getProxyKey, member -> member));
+    final List<OMembership> memberships =
+        entities.stream()
+            .filter(entity -> entity.getClass().equals(OMembership.class))
+            .map(entity -> (OMembership) entity)
+            .collect(Collectors.toList());
+
+    final Map<String, OMemberProxy> proxiesByMemberId =
+        processMembers(membersByProxyKey, userProxy, mailer);
+    processMemberships(memberships, proxiesByMemberId, userProxy, mailer);
 
     ofy().save().entities(entities);
     ofy()
         .delete()
         .entities(
             entities.stream()
-                .filter(entity -> entity.isExpired)
-                .filter(entity -> OReplicatedEntityRef.class.isAssignableFrom(entity.getClass())));
+                .filter(entity -> OReplicatedEntityRef.class.isAssignableFrom(entity.getClass()))
+                .filter(entity -> entity.isExpired));
   }
 
   public List<OReplicatedEntity> fetch(String userEmail) {
@@ -48,7 +68,7 @@ public class ReplicationService {
   }
 
   public List<OReplicatedEntity> fetch(String userEmail, Date deviceReplicatedAt) {
-    return ofy().load().keys(OMemberProxy.get(userEmail).membershipKeys()).values().stream()
+    return membershipRepository.fetchByKeys(OMemberProxy.get(userEmail).membershipKeys()).stream()
         .flatMap(
             membership ->
                 membership.isFetchable()
@@ -59,10 +79,10 @@ public class ReplicationService {
   }
 
   public List<OReplicatedEntity> lookupMember(String memberId) {
-    return Optional.ofNullable(ofy().load().key(Key.create(OMemberProxy.class, memberId)).now())
+    return Optional.ofNullable(memberProxyRepository.fetchById(memberId))
         .map(
             proxy ->
-                ofy().load().keys(proxy.membershipKeys()).values().stream()
+                membershipRepository.fetchByKeys(proxy.membershipKeys()).stream()
                     .filter(membership -> membership.type.equals("R") && !membership.isExpired)
                     .flatMap(membership -> fetchMembershipEntities(membership, null))
                     .distinct()
@@ -71,25 +91,13 @@ public class ReplicationService {
   }
 
   public OOrigo lookupOrigo(String internalJoinCode) {
-    return (OOrigo)
-        ofy()
-            .load()
-            .type(OReplicatedEntity.class)
-            .filter("internalJoinCode", internalJoinCode)
-            .first()
-            .now();
+    return origoRepository.fetchByInternalJoinCode(internalJoinCode);
   }
 
   private Map<String, OMemberProxy> processMembers(
-      List<OReplicatedEntity> entities, OMemberProxy userProxy, Mailer mailer) {
-    final Map<Key<OMemberProxy>, OMember> membersByProxyKey =
-        entities.stream()
-            .filter(entity -> entity.getClass().equals(OMember.class))
-            .map(entity -> (OMember) entity)
-            .peek(member -> alignProxyIfUser(member, userProxy))
-            .collect(Collectors.toMap(OMember::getProxyKey, member -> member));
+      Map<Key<OMemberProxy>, OMember> membersByProxyKey, OMemberProxy userProxy, Mailer mailer) {
     final Map<String, OMemberProxy> proxiesByMemberId =
-        ofy().load().keys(membersByProxyKey.keySet()).values().stream()
+        memberProxyRepository.fetchByKeys(membersByProxyKey.keySet()).stream()
             .collect(Collectors.toMap(OMemberProxy::memberId, proxy -> proxy));
     final List<Pair<OMember, Optional<OMemberProxy>>> membersWithMaybeProxy =
         membersByProxyKey.values().stream()
@@ -102,27 +110,26 @@ public class ReplicationService {
             .filter(pair -> pair.left().hasEmail() && pair.left().isPersisted())
             .filter(pair -> !pair.right().isPresent())
             .collect(Collectors.toMap(pair -> pair.left().getProxyKey(), Pair::left));
-    final Map<String, OMemberProxy> staleProxiesByMemberId =
-        ofy().load().keys(membersWithEmailChangeByProxyKey.keySet()).values().stream()
-            .collect(Collectors.toMap(OMemberProxy::memberId, proxy -> proxy));
+    final Map<String, OMemberProxy> staleProxiesById =
+        memberProxyRepository.fetchByKeys(membersWithEmailChangeByProxyKey.keySet()).stream()
+            .collect(Collectors.toMap(OMemberProxy::proxyId, proxy -> proxy));
     final Map<String, OMemberProxy> updatedProxiesByMemberId =
         membersWithEmailChangeByProxyKey.values().stream()
             .peek(
                 member ->
-                    reauthorise(member, staleProxiesByMemberId.get(member.entityId).authMetaKeys()))
+                    reauthorise(member, staleProxiesById.get(member.getProxyId()).authMetaKeys()))
             .peek(
                 member ->
                     sendNotification(
                         member,
-                        staleProxiesByMemberId.get(member.entityId).proxyId(),
+                        staleProxiesById.get(member.getProxyId()).proxyId(),
                         userProxy,
                         mailer))
             .map(
-                member ->
-                    new OMemberProxy(member.email, staleProxiesByMemberId.get(member.entityId)))
+                member -> new OMemberProxy(member.email, staleProxiesById.get(member.getProxyId())))
             .collect(Collectors.toMap(OMemberProxy::memberId, proxy -> proxy));
 
-    ofy().delete().entities(staleProxiesByMemberId.values());
+    memberProxyRepository.deleteByIds(staleProxiesById.keySet());
 
     return membersWithMaybeProxy.stream()
         .map(pair -> pair.right().orElse(updatedProxiesByMemberId.get(pair.left().entityId)))
@@ -130,15 +137,13 @@ public class ReplicationService {
   }
 
   private void processMemberships(
-      List<OReplicatedEntity> entities,
+      List<OMembership> memberships,
       Map<String, OMemberProxy> proxiesByMemberId,
       OMemberProxy userProxy,
       Mailer mailer) {
     final Set<Key<OOrigo>> origoKeys = new HashSet<>();
     final Map<String, List<OMembership>> invitableMembershipsByMemberId =
-        entities.stream()
-            .filter(entity -> entity.getClass().equals(OMembership.class))
-            .map(entity -> (OMembership) entity)
+        memberships.stream()
             .peek(
                 membership ->
                     proxiesByMemberId
@@ -150,13 +155,13 @@ public class ReplicationService {
             .peek(membership -> origoKeys.add(membership.getOrigoKey()))
             .collect(Collectors.groupingBy(membership -> membership.member.entityId));
     final Map<String, OOrigo> origosById =
-        ofy().load().keys(origoKeys).values().stream()
+        origoRepository.fetchByKeys(origoKeys).stream()
             .collect(Collectors.toMap(origo -> origo.entityId, origo -> origo));
 
     invitableMembershipsByMemberId.values().stream()
         .map(
-            memberships ->
-                memberships.stream()
+            invitableMemberships ->
+                invitableMemberships.stream()
                     .reduce(null, (some, other) -> getPrioritised(some, other, origosById)))
         .forEach(
             membership ->

@@ -1,15 +1,9 @@
 package co.origon.api.model.ofy.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -20,6 +14,10 @@ import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.condition.IfFalse;
+import java.lang.reflect.Field;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "entityClass")
@@ -113,7 +111,7 @@ public abstract class OReplicatedEntity {
     if (parentKey == null) {
       parentKey = Key.create(OOrigo.class, origoId);
     }
-    return Key.create(parentKey, (Class<T>)getClass(), entityId);
+    return Key.create(parentKey, (Class<T>) getClass(), entityId);
   }
 
   private Field getOrigoRefField() {
@@ -125,7 +123,7 @@ public abstract class OReplicatedEntity {
   }
 
   private Map<String, String> createEntityRef(String entityClass, String entityId) {
-    Map<String, String> entityRef = new HashMap<String, String>();
+    Map<String, String> entityRef = new HashMap<>();
 
     entityRef.put("entityClass", entityClass);
     entityRef.put("entityId", entityId);
