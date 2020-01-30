@@ -1,7 +1,7 @@
 package co.origon.api.model.ofy;
 
 import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.Entity;
+import co.origon.api.model.api.entity.Entity;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;

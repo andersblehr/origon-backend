@@ -38,4 +38,9 @@ public class OAuthMeta implements DeviceCredentials {
       dateExpires = new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
     return dateExpires;
   }
+
+  @Override
+  public String id() {
+    return authToken;
+  }
 }

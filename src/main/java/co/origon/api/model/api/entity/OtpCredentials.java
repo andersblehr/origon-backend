@@ -1,7 +1,5 @@
 package co.origon.api.model.api.entity;
 
-import co.origon.api.model.api.Entity;
-
 public interface OtpCredentials extends Entity<OtpCredentials> {
 
   OtpCredentials email(String email);

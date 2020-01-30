@@ -2,7 +2,7 @@ package co.origon.api.model.ofy;
 
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.Entity;
+import co.origon.api.model.api.entity.Entity;
 
 public class DaoFactoryOfy implements DaoFactory {
 

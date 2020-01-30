@@ -6,9 +6,7 @@ import co.origon.api.controller.ConfigController;
 import co.origon.api.controller.ReplicationController;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.ofy.DaoFactoryOfy;
-import co.origon.api.repository.MemberProxyRepository;
-import co.origon.api.repository.MembershipRepository;
-import co.origon.api.repository.OrigoRepository;
+import co.origon.api.repository.ofy.RepositoryFactoryOfy;
 import co.origon.api.service.ReplicationService;
 import javax.inject.Singleton;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -28,13 +26,10 @@ public class OrigonApplication extends ResourceConfig {
 
             bindAsContract(ReplicationService.class);
 
-            bindAsContract(MemberProxyRepository.class);
-            bindAsContract(MembershipRepository.class);
-            bindAsContract(OrigoRepository.class);
+            bindAsContract(RepositoryFactoryOfy.class).to(RepositoryFactoryOfy.class);
+            bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
 
             bindAsContract(Mailer.class);
-
-            bindAsContract(DaoFactoryOfy.class).to(DaoFactory.class).in(Singleton.class);
           }
         });
   }
