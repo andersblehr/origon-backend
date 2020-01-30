@@ -1,12 +1,10 @@
 package co.origon.api.model.api.entity;
 
-import co.origon.api.model.api.Entity;
+import co.origon.api.model.EntityKey;
 
 import java.util.Collection;
 
 public interface MemberProxy extends Entity<MemberProxy> {
-
-  MemberProxy proxyId(String proxyId);
 
   MemberProxy memberId(String memberId);
 
@@ -18,9 +16,7 @@ public interface MemberProxy extends Entity<MemberProxy> {
 
   MemberProxy deviceTokens(Collection<String> deviceTokens);
 
-  MemberProxy membershipIds(Collection<String> membershipIds);
-
-  String proxyId();
+  MemberProxy membershipKeys(Collection<EntityKey> membershipKeys);
 
   String memberId();
 
@@ -30,7 +26,7 @@ public interface MemberProxy extends Entity<MemberProxy> {
 
   Collection<String> deviceTokens();
 
-  Collection<String> membershipIds();
+  Collection<EntityKey> membershipKeys();
 
   boolean isRegistered();
 

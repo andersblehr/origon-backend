@@ -1,5 +1,6 @@
 package co.origon.api.model.api;
 
+import co.origon.api.model.api.entity.Entity;
 import java.util.Collection;
 
 public interface Dao<E extends Entity<E>> {

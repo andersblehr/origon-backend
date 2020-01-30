@@ -17,4 +17,9 @@ public class OAuthInfo implements OtpCredentials {
   private String deviceId;
   private String passwordHash;
   private String activationCode;
+
+  @Override
+  public String id() {
+    return email;
+  }
 }

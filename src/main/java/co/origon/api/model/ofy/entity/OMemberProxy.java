@@ -2,6 +2,7 @@ package co.origon.api.model.ofy.entity;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
+import co.origon.api.model.EntityKey;
 import co.origon.api.model.api.entity.MemberProxy;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
@@ -40,7 +41,7 @@ public class OMemberProxy implements MemberProxy {
 
   @IgnoreSave(IfEmpty.class)
   @Singular
-  private Set<Key<OMembership>> membershipKeys;
+  private Set<EntityKey> membershipKeys;
 
   public OMemberProxy() {
     this.authMetaKeys = new HashSet<>();
@@ -54,7 +55,7 @@ public class OMemberProxy implements MemberProxy {
   }
 
   public OMemberProxy(OMember member) {
-    this(member.getProxyId());
+    this(member.proxyId());
 
     this.memberId = member.entityId;
   }
@@ -74,12 +75,6 @@ public class OMemberProxy implements MemberProxy {
   }
 
   @Override
-  public MemberProxy key(String key) {
-    proxyId = key;
-    return this;
-  }
-
-  @Override
   public MemberProxy deviceToken(String deviceToken) {
     authMetaKeys.add(Key.create(OAuthMeta.class, deviceToken));
     return this;
@@ -95,12 +90,8 @@ public class OMemberProxy implements MemberProxy {
   }
 
   @Override
-  public MemberProxy membershipIds(Collection<String> membershipIds) {
-    membershipKeys =
-        membershipIds.stream()
-            .map(membershipId -> Key.create(OMembership.class, membershipId))
-            .collect(Collectors.toSet());
-    return this;
+  public MemberProxy membershipKeys(Collection<EntityKey> membershipKeys) {
+    return null;
   }
 
   @Override
@@ -111,10 +102,8 @@ public class OMemberProxy implements MemberProxy {
   }
 
   @Override
-  public Collection<String> membershipIds() {
-    return membershipKeys.stream()
-        .map(membershipKey -> membershipKey.getRaw().getName())
-        .collect(Collectors.toSet());
+  public String id() {
+    return proxyId;
   }
 
   @Override

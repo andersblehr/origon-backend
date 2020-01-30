@@ -1,7 +1,5 @@
 package co.origon.api.model.api.entity;
 
-import co.origon.api.model.api.Entity;
-
 import java.util.Date;
 
 public interface DeviceCredentials extends Entity<DeviceCredentials> {

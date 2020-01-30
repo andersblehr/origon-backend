@@ -1,5 +1,6 @@
 package co.origon.api.model.ofy.entity;
 
+import co.origon.api.model.api.entity.ReplicatedEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -8,13 +9,12 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
-import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
-import com.googlecode.objectify.condition.IfFalse;
 import java.lang.reflect.Field;
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,18 +28,18 @@ import java.util.Map;
   @Type(value = OOrigo.class, name = "OOrigo"),
   @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")
 })
-public abstract class OReplicatedEntity {
-  public @Parent Key<OOrigo> parentKey;
-  public @Id String entityId;
+public class OReplicatedEntity implements ReplicatedEntity {
+  protected @Parent Key<OOrigo> parentKey;
+  protected @Id String entityId;
 
-  public @Ignore String origoId;
-  public @Ignore String entityClass;
-  public @IgnoreSave(IfFalse.class) boolean isExpired;
+  protected @Ignore String origoId;
+  protected @Ignore String entityClass;
+  protected boolean isExpired;
 
-  public String createdBy;
-  public String modifiedBy;
-  public Date dateCreated;
-  public @Index Date dateReplicated;
+  protected String createdBy;
+  protected String modifiedBy;
+  protected Date dateCreated;
+  protected @Index Date dateReplicated;
 
   @OnSave
   @SuppressWarnings("unchecked")
@@ -105,13 +105,75 @@ public abstract class OReplicatedEntity {
     }
   }
 
-  @JsonIgnore
-  @SuppressWarnings("unchecked")
-  public <T extends OReplicatedEntity> Key<T> getEntityKey() {
-    if (parentKey == null) {
-      parentKey = Key.create(OOrigo.class, origoId);
+  @Override
+  public boolean equals(Object other) {
+    boolean areEqual = false;
+
+    if (OReplicatedEntity.class.isAssignableFrom(other.getClass())) {
+      areEqual = (other.hashCode() == this.hashCode());
     }
-    return Key.create(parentKey, (Class<T>) getClass(), entityId);
+
+    return areEqual;
+  }
+
+  @Override
+  public int hashCode() {
+    return String.format("%s$%s", origoId, entityId).hashCode();
+  }
+
+  @Override
+  public String entityClass() {
+    return entityClass;
+  }
+
+  @Override
+  public String id() {
+    return entityId;
+  }
+
+  @Override
+  public String parentId() {
+    return origoId;
+  }
+
+  @Override
+  public String createdBy() {
+    return createdBy;
+  }
+
+  @Override
+  public Instant createdAt() {
+    return dateCreated.toInstant();
+  }
+
+  @Override
+  public String modifiedBy() {
+    return modifiedBy;
+  }
+
+  @Override
+  public Instant modifiedAt() {
+    return dateReplicated.toInstant();
+  }
+
+  @Override
+  public boolean isExpired() {
+    return isExpired;
+  }
+
+  @Override
+  public boolean isEntityRef() {
+    return false;
+  }
+
+  @Override
+  public boolean isMembership() {
+    return false;
+  }
+
+  @Override
+  public boolean isMember() {
+    return false;
   }
 
   private Field getOrigoRefField() {
@@ -129,25 +191,5 @@ public abstract class OReplicatedEntity {
     entityRef.put("entityId", entityId);
 
     return entityRef;
-  }
-
-  public boolean isPersisted() {
-    return dateReplicated != null;
-  }
-
-  @Override
-  public boolean equals(Object other) {
-    boolean areEqual = false;
-
-    if (OReplicatedEntity.class.isAssignableFrom(other.getClass())) {
-      areEqual = (other.hashCode() == this.hashCode());
-    }
-
-    return areEqual;
-  }
-
-  @Override
-  public int hashCode() {
-    return String.format("%s$%s", origoId, entityId).hashCode();
   }
 }

@@ -1,5 +1,7 @@
 package co.origon.api.model.ofy.entity;
 
+import co.origon.api.model.api.entity.Origo;
+import co.origon.api.model.api.entity.ReplicatedEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -18,44 +20,72 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(
     value = {"parentKey"},
     ignoreUnknown = true)
-public class OOrigo extends OReplicatedEntity {
-  public @IgnoreSave(IfNull.class) String name;
-  public String type;
 
-  public @IgnoreSave(IfNull.class) String descriptionText;
-  public @IgnoreSave(IfNull.class) String address;
-  public @IgnoreSave(IfNull.class) String location;
-  public @IgnoreSave(IfNull.class) String telephone;
-  public @IgnoreSave(IfNull.class) String permissions;
-  public @IgnoreSave(IfFalse.class) boolean isForMinors;
+public class OOrigo extends OReplicatedEntity implements Origo {
+  private String name;
+  private String type;
 
-  public @IgnoreSave(IfNull.class) String joinCode;
-  public @Index(IfNotNull.class) @IgnoreSave(IfNull.class) String internalJoinCode;
+  private String descriptionText;
+  private String address;
+  private String location;
+  private String telephone;
+  private String permissions;
+  private boolean isForMinors;
+
+  private String joinCode;
+  private @Index(IfNotNull.class) String internalJoinCode;
 
   public OOrigo() {
     super();
   }
 
-  public boolean takesPrecedenceOver(OOrigo other) {
-    if (other == null) {
-      return true;
-    }
-    if (type == null || type.equals("~")) {
-      return false;
-    }
-    if (!other.isResidence()) {
-      return !isPrivate();
-    }
-    return false;
+  @Override
+  public String name() {
+    return name;
   }
 
-  @JsonIgnore
-  public boolean isResidence() {
-    return type != null && type.equals("residence");
+  @Override
+  public String type() {
+    return type;
   }
 
-  @JsonIgnore
-  public boolean isPrivate() {
-    return type != null && type.equals("private");
+  @Override
+  public String description() {
+    return descriptionText;
+  }
+
+  @Override
+  public String address() {
+    return address;
+  }
+
+  @Override
+  public String location() {
+    return location;
+  }
+
+  @Override
+  public String telephone() {
+    return telephone;
+  }
+
+  @Override
+  public String permissions() {
+    return permissions;
+  }
+
+  @Override
+  public boolean isForMinors() {
+    return isForMinors;
+  }
+
+  @Override
+  public String joinCode() {
+    return joinCode;
+  }
+
+  @Override
+  public String internalJoinCode() {
+    return internalJoinCode;
   }
 }

@@ -1,5 +1,6 @@
 package co.origon.api.model.ofy.entity;
 
+import co.origon.api.model.api.entity.Member;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -8,6 +9,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
 import com.googlecode.objectify.condition.IfNull;
+import java.time.Instant;
 import java.util.Date;
 
 @Subclass
@@ -16,40 +18,73 @@ import java.util.Date;
 @JsonIgnoreProperties(
     value = {"entityKey", "parentKey", "proxyKey", "proxyId"},
     ignoreUnknown = true)
-public class OMember extends OReplicatedEntity {
-  public String name;
-  public String gender;
-  public @IgnoreSave(IfNull.class) Date dateOfBirth;
-  public @IgnoreSave(IfNull.class) String mobilePhone;
-  public @IgnoreSave(IfNull.class) String email;
-  public @IgnoreSave(IfNull.class) String settings;
+public class OMember extends OReplicatedEntity implements Member {
+  private String name;
+  private String gender;
+  private Date dateOfBirth;
+  private String mobilePhone;
+  private String email;
 
-  public @IgnoreSave(IfNull.class) boolean isMinor;
-  public @IgnoreSave(IfNull.class) String fatherId;
-  public @IgnoreSave(IfNull.class) String motherId;
+  private String motherId;
+  private String fatherId;
+  private boolean isMinor;
 
-  public @IgnoreSave(IfNull.class) String createdIn;
-  public @IgnoreSave(IfNull.class) Date activeSince;
+  private String createdIn;
+  private Date activeSince;
+
+  private String settings;
 
   public OMember() {
     super();
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  public Key<OMember> getEntityKey() {
-    return Key.create(Key.create(OOrigo.class, "~" + entityId), OMember.class, entityId);
+  public String name() {
+    return name;
   }
 
-  public Key<OMemberProxy> getProxyKey() {
-    return Key.create(OMemberProxy.class, getProxyId());
+  @Override
+  public String gender() {
+    return gender;
   }
 
-  public String getProxyId() {
-    return hasEmail() ? email : entityId;
+  @Override
+  public Instant dateOfBirth() {
+    return dateOfBirth.toInstant();
   }
 
-  public boolean hasEmail() {
-    return email != null && email.length() > 0;
+  @Override
+  public String mobilePhone() {
+    return mobilePhone;
+  }
+
+  @Override
+  public String email() {
+    return email;
+  }
+
+  @Override
+  public String motherId() {
+    return motherId;
+  }
+
+  @Override
+  public String fatherId() {
+    return fatherId;
+  }
+
+  @Override
+  public boolean isMinor() {
+    return isMinor;
+  }
+
+  @Override
+  public String createdIn() {
+    return createdIn;
+  }
+
+  @Override
+  public Instant activeSince() {
+    return activeSince.toInstant();
   }
 }
