@@ -10,6 +10,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Accessors(fluent = true)
 public class BasicAuthCredentials {
+
   private static ThreadLocal<BasicAuthCredentials> localCredentials;
 
   // private static final String DEFAULT_SALT = "RKPAAXYFRYDVM3";

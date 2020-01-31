@@ -14,7 +14,8 @@ import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
-import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.model.api.entity.ReplicatedEntity;
+import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,7 @@ public class AuthController {
 
   private static final int LENGTH_ACTIVATION_CODE = 6;
 
+  @Inject private AuthService authService;
   @Inject private ReplicationService replicationService;
   @Inject private DaoFactory daoFactory;
   @Inject private Mailer mailer;
@@ -101,7 +103,8 @@ public class AuthController {
     final Dao<MemberProxy> userProxyDao = daoFactory.daoFor(MemberProxy.class);
     final MemberProxy userProxy =
         userProxyDao
-            .produce(basicAuthCredentials.email())
+            .create() // TODO
+            // .produce(basicAuthCredentials.email())
             .passwordHash(basicAuthCredentials.passwordHash())
             .deviceToken(deviceToken);
 
@@ -110,7 +113,7 @@ public class AuthController {
     daoFactory.daoFor(OtpCredentials.class).delete(otpCredentials);
 
     Session.log("Persisted new device token for user " + basicAuthCredentials.email());
-    final List<OReplicatedEntity> fetchedEntities =
+    final List<ReplicatedEntity> fetchedEntities =
         replicationService.fetch(basicAuthCredentials.email());
     Session.log("Returning " + fetchedEntities.size() + " entities");
 
@@ -142,10 +145,10 @@ public class AuthController {
             .deviceId(deviceId)
             .deviceType(deviceType);
     dao.save(deviceCredentials);
-    userProxy.refreshDeviceToken(deviceToken, deviceId);
+    authService.refreshDeviceToken(userProxy, deviceId, deviceToken);
 
     Session.log("Persisted new device token for user " + credentials.email());
-    final List<OReplicatedEntity> fetchedEntities =
+    final List<ReplicatedEntity> fetchedEntities =
         replicationService.fetch(credentials.email(), replicationDate);
     Session.log("Returning " + fetchedEntities.size() + " entities");
 

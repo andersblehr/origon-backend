@@ -2,13 +2,12 @@ package co.origon.api.exception;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Session;
-
-import javax.ws.rs.*;
+import java.util.logging.Level;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-import java.util.logging.Level;
 
 @Provider
 public class WebApplicationExceptionMapper implements ExceptionMapper<WebApplicationException> {

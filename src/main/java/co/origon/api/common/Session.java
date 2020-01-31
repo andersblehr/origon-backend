@@ -1,13 +1,13 @@
 package co.origon.api.common;
 
-import co.origon.api.OrigonApplication;
+import static com.google.common.base.Preconditions.checkArgument;
 
+import co.origon.api.OrigonApplication;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 public class Session {
+
   private static ThreadLocal<Session> localSession;
   private static final Logger LOGGER = Logger.getLogger(OrigonApplication.class.getName());
 

@@ -4,7 +4,6 @@ import co.origon.api.model.api.entity.Member;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.Membership;
 import co.origon.api.model.api.entity.Origo;
-import co.origon.api.model.ofy.entity.OOrigo;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.typesafe.config.Config;

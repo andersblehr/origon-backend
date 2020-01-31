@@ -1,15 +1,12 @@
 package co.origon.api.filter;
 
-import co.origon.api.common.UrlParams;
-
 import co.origon.api.common.Mailer;
+import co.origon.api.common.UrlParams;
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Provider
 @SupportedLanguage

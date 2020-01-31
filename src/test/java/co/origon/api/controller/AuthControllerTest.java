@@ -19,7 +19,7 @@ import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
-import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.model.api.entity.ReplicatedEntity;
 import co.origon.api.service.ReplicationService;
 import java.util.List;
 import javax.ws.rs.BadRequestException;
@@ -60,7 +60,7 @@ class AuthControllerTest {
   @Mock private OtpCredentials otpCredentials;
   @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
   @Mock private DeviceCredentials deviceCredentials;
-  @Mock private List<OReplicatedEntity> fetchedEntities;
+  @Mock private List<ReplicatedEntity> fetchedEntities;
   @Mock private Mailer mailer;
 
   @InjectMocks private AuthController authController;
@@ -304,7 +304,7 @@ class AuthControllerTest {
     }
 
     private void establishActivated() {
-      when(userProxyDao.produce(USER_EMAIL)).thenReturn(userProxy);
+      // when(userProxyDao.produce(USER_EMAIL)).thenReturn(userProxy); // TODO
       when(userProxy.passwordHash(BasicAuthCredentials.getCredentials().passwordHash()))
           .thenReturn(userProxy);
       when(userProxy.deviceToken(DEVICE_TOKEN)).thenReturn(userProxy);

@@ -1,7 +1,6 @@
 package co.origon.api.model.api.entity;
 
 import co.origon.api.model.EntityKey;
-
 import java.util.Collection;
 
 public interface MemberProxy extends Entity<MemberProxy> {
@@ -29,6 +28,4 @@ public interface MemberProxy extends Entity<MemberProxy> {
   Collection<EntityKey> membershipKeys();
 
   boolean isRegistered();
-
-  void refreshDeviceToken(String deviceToken, String deviceId);
 }

@@ -1,6 +1,7 @@
 package co.origon.api.model.api.entity;
 
 public interface Config extends Entity<Config> {
+
   interface Category {
     String JWT = "jwt";
     String MAILER = "mailer";

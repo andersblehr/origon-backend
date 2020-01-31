@@ -1,18 +1,13 @@
 package co.origon.api.model.ofy.entity;
 
 import co.origon.api.model.api.entity.Origo;
-import co.origon.api.model.api.entity.ReplicatedEntity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.annotation.Subclass;
-import com.googlecode.objectify.condition.IfFalse;
 import com.googlecode.objectify.condition.IfNotNull;
-import com.googlecode.objectify.condition.IfNull;
 
 @Subclass
 @JsonSerialize
@@ -20,7 +15,6 @@ import com.googlecode.objectify.condition.IfNull;
 @JsonIgnoreProperties(
     value = {"parentKey"},
     ignoreUnknown = true)
-
 public class OOrigo extends OReplicatedEntity implements Origo {
   private String name;
   private String type;

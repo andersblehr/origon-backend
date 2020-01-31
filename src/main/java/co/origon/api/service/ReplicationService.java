@@ -32,13 +32,13 @@ import javax.inject.Singleton;
 @Singleton
 public class ReplicationService {
 
-  private Repository<MemberProxy> memberProxyRepository;
-  private Repository<DeviceCredentials> deviceCredentialsRepository;
-  private Repository<Membership> membershipRepository;
-  private Repository<Origo> origoRepository;
-  private Repository<ReplicatedEntity> entityRepository;
+  private final Repository<MemberProxy> memberProxyRepository;
+  private final Repository<DeviceCredentials> deviceCredentialsRepository;
+  private final Repository<Membership> membershipRepository;
+  private final Repository<Origo> origoRepository;
+  private final Repository<ReplicatedEntity> entityRepository;
 
-  private Mailer rootMailer;
+  private final Mailer rootMailer;
 
   @Inject
   public ReplicationService(RepositoryFactory repositoryFactory, Mailer mailer) {
@@ -52,7 +52,7 @@ public class ReplicationService {
   }
 
   public void replicate(List<ReplicatedEntity> entities, String userEmail, Language language) {
-    final MemberProxy userProxy = memberProxyRepository.getById(userEmail).orElse();
+    final MemberProxy userProxy = memberProxyRepository.getById(userEmail).orElse(null); // TODO
     final Mailer mailer = rootMailer.using(language);
 
     final Map<EntityKey, Member> membersByProxyKey =
@@ -145,8 +145,11 @@ public class ReplicationService {
                 member ->
                     sendNotification(
                         member, staleProxiesById.get(member.proxyId()).id(), userProxy, mailer))
-            .map(member -> new OMemberProxy(member.email(), staleProxiesById.get(member.proxyId())))
-            .collect(Collectors.toMap(OMemberProxy::memberId, proxy -> proxy));
+            .map(
+                member ->
+                    new OMemberProxy(
+                        member.email())) // TODO: ... , staleProxiesById.get(member.proxyId())))
+            .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
 
     memberProxyRepository.deleteByIds(staleProxiesById.keySet());
 

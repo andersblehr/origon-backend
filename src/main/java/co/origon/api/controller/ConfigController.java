@@ -3,19 +3,24 @@ package co.origon.api.controller;
 import co.origon.api.filter.ValidBearerToken;
 import co.origon.api.model.api.Dao;
 import co.origon.api.model.api.DaoFactory;
-
 import co.origon.api.model.api.entity.Config;
-
+import java.net.URI;
+import java.net.URISyntaxException;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.InternalServerErrorException;
+import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import java.net.URI;
-import java.net.URISyntaxException;
 
 @Singleton
 @Path("configs")

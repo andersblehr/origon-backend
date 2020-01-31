@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.googlecode.objectify.Key;
-import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
-import com.googlecode.objectify.condition.IfNull;
 import java.time.Instant;
 import java.util.Date;
 

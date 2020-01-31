@@ -12,8 +12,8 @@ import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
-import co.origon.api.model.ofy.entity.OOrigo;
-import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.model.api.entity.Origo;
+import co.origon.api.model.api.entity.ReplicatedEntity;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +50,7 @@ public class ReplicationController {
   @Path("replicate")
   @SupportedLanguage
   public Response replicate(
-      List<OReplicatedEntity> entities,
+      List<ReplicatedEntity> entities,
       @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion,
@@ -60,7 +60,7 @@ public class ReplicationController {
     checkReplicationDate(replicationDate);
 
     replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
-    final List<OReplicatedEntity> returnableEntities =
+    final List<ReplicatedEntity> returnableEntities =
         replicationService.fetch(deviceCredentials.email(), replicationDate).stream()
             .filter(entity -> !entities.contains(entity))
             .collect(Collectors.toList());
@@ -83,7 +83,7 @@ public class ReplicationController {
         daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
     checkReplicationDate(replicationDate);
 
-    final List<OReplicatedEntity> fetchedEntities =
+    final List<ReplicatedEntity> fetchedEntities =
         replicationService.fetch(deviceCredentials.email(), replicationDate);
     Session.log(fetchedEntities.size() + " entities fetched");
 
@@ -98,7 +98,7 @@ public class ReplicationController {
       @QueryParam(UrlParams.IDENTIFIER) String memberId,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
-    List<OReplicatedEntity> memberEntities = replicationService.lookupMember(memberId);
+    List<ReplicatedEntity> memberEntities = replicationService.lookupMember(memberId);
     if (memberEntities == null) {
       throw new NotFoundException();
     }
@@ -112,7 +112,7 @@ public class ReplicationController {
       @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
-    OOrigo origo = replicationService.lookupOrigo(internalJoinCode);
+    Origo origo = replicationService.lookupOrigo(internalJoinCode);
     if (origo == null) {
       throw new NotFoundException();
     }
