@@ -4,7 +4,6 @@ import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
-
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;

@@ -1,22 +1,20 @@
 package co.origon.api.model.ofy;
 
+import static com.googlecode.objectify.ObjectifyService.ofy;
+
+import co.origon.api.common.Config;
 import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.entity.Entity;
 import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.api.entity.Entity;
 import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.ofy.entity.OAuthInfo;
 import co.origon.api.model.ofy.entity.OAuthMeta;
 import co.origon.api.model.ofy.entity.OMemberProxy;
-
-import co.origon.api.common.Config;
 import com.googlecode.objectify.Key;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.stream.Collectors;
-
-import static com.googlecode.objectify.ObjectifyService.ofy;
 
 public class DaoOfy<E extends Entity<E>> implements Dao<E> {
 

@@ -47,4 +47,9 @@ public class Config implements co.origon.api.model.api.entity.Config {
       throw new RuntimeException("Could not load JSON object from datastore", e);
     }
   }
+
+  @Override
+  public String id() {
+    return category;
+  }
 }

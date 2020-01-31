@@ -19,9 +19,15 @@ public interface Repository<T> {
 
   Collection<T> getByParentId(String parentId, Instant modifiedAfter);
 
-  Collection<T> getByPropertyValue(String property, String value);
+  Collection<T> getByPropertyValue(String property, Object value);
+
+  void save(T entity);
 
   void save(Collection<T> entities);
+
+  void deleteById(String id);
+
+  void deleteByKey(EntityKey key);
 
   void deleteByIds(Collection<String> ids);
 

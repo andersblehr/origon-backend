@@ -1,7 +1,5 @@
 package co.origon.api.model.ofy.entity;
 
-import static com.googlecode.objectify.ObjectifyService.ofy;
-
 import co.origon.api.model.EntityKey;
 import co.origon.api.model.api.entity.MemberProxy;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -26,6 +24,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class OMemberProxy implements MemberProxy {
+
   @Id private String proxyId;
   private String memberId;
 
@@ -69,11 +68,6 @@ public class OMemberProxy implements MemberProxy {
     membershipKeys = instanceToClone.membershipKeys;
   }
 
-  public static OMemberProxy get(String email) {
-    OMemberProxy memberProxy = ofy().load().type(OMemberProxy.class).id(email).now();
-    return memberProxy != null ? memberProxy : new OMemberProxy(email);
-  }
-
   @Override
   public MemberProxy deviceToken(String deviceToken) {
     authMetaKeys.add(Key.create(OAuthMeta.class, deviceToken));
@@ -109,23 +103,6 @@ public class OMemberProxy implements MemberProxy {
   @Override
   public boolean isRegistered() {
     return passwordHash != null;
-  }
-
-  @Override
-  public void refreshDeviceToken(String deviceToken, String deviceId) {
-    final Collection<Key<OAuthMeta>> redundantAuthMetaKeys =
-        ofy().load().keys(authMetaKeys).values().stream()
-            .filter(authMeta -> authMeta.deviceId().equals(deviceId))
-            .map(authMeta -> Key.create(OAuthMeta.class, authMeta.authToken()))
-            .collect(Collectors.toSet());
-
-    authMetaKeys.add(Key.create(OAuthMeta.class, deviceToken));
-    authMetaKeys =
-        authMetaKeys.stream()
-            .filter(key -> !redundantAuthMetaKeys.contains(key))
-            .collect(Collectors.toSet());
-
-    ofy().delete().keys(redundantAuthMetaKeys).now();
   }
 
   @OnLoad

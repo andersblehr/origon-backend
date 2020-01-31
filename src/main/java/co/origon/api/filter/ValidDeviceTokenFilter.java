@@ -6,7 +6,7 @@ import co.origon.api.controller.AuthController;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.MemberProxy;
-
+import java.util.Date;
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
@@ -14,8 +14,6 @@ import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.ext.Provider;
-
-import java.util.Date;
 
 @Provider
 @ValidDeviceToken

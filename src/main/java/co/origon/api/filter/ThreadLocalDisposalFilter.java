@@ -2,7 +2,6 @@ package co.origon.api.filter;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Session;
-
 import javax.annotation.Priority;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;

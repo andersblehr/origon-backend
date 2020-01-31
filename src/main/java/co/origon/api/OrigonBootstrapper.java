@@ -1,12 +1,18 @@
 package co.origon.api;
 
+import co.origon.api.common.Config;
+import co.origon.api.model.ofy.entity.OAuthInfo;
+import co.origon.api.model.ofy.entity.OAuthMeta;
+import co.origon.api.model.ofy.entity.ODevice;
+import co.origon.api.model.ofy.entity.OMember;
+import co.origon.api.model.ofy.entity.OMemberProxy;
+import co.origon.api.model.ofy.entity.OMembership;
+import co.origon.api.model.ofy.entity.OOrigo;
+import co.origon.api.model.ofy.entity.OReplicatedEntity;
+import co.origon.api.model.ofy.entity.OReplicatedEntityRef;
+import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-
-import co.origon.api.common.Config;
-
-import co.origon.api.model.ofy.entity.*;
-import com.googlecode.objectify.ObjectifyService;
 
 public class OrigonBootstrapper implements ServletContextListener {
   @Override

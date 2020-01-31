@@ -8,6 +8,7 @@ import co.origon.api.repository.api.Repository;
 import com.googlecode.objectify.Key;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Singleton;
@@ -63,13 +64,28 @@ public class RepositoryOfy<T> implements Repository<T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public Collection<T> getByPropertyValue(String property, String value) {
+  public Collection<T> getByPropertyValue(String property, Object value) {
     return (Collection<T>) ofy().load().type(clazz).filter(property, value).list();
+  }
+
+  @Override
+  public void save(T entity) {
+    ofy().save().entity(entity);
   }
 
   @Override
   public void save(Collection<T> entities) {
     ofy().save().entities(entities);
+  }
+
+  @Override
+  public void deleteById(String id) {
+    deleteByIds(Collections.singletonList(id));
+  }
+
+  @Override
+  public void deleteByKey(EntityKey key) {
+    deleteByKeys(Collections.singletonList(key));
   }
 
   @Override

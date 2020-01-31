@@ -1,6 +1,6 @@
 package co.origon.api.model.api.entity;
 
-import com.sun.tools.javac.util.List;
+import java.util.Arrays;
 
 public interface Membership extends ReplicatedEntity {
 
@@ -37,7 +37,7 @@ public interface Membership extends ReplicatedEntity {
     return modifiedAt() == null
         && member().hasEmail()
         && type() != null
-        && List.of("P", "R", "L", "A").contains(type())
+        && Arrays.asList("P", "R", "L", "A").contains(type())
         && ((status() == null && isAssociate())
             || (status() != null && (!status().equals("A") || type().equals("R"))));
   }

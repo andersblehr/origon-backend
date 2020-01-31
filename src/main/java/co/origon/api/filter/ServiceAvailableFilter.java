@@ -4,7 +4,6 @@ import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.api.entity.Config;
 import co.origon.api.model.api.entity.Config.Category;
 import co.origon.api.model.api.entity.Config.Setting;
-
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.ServiceUnavailableException;

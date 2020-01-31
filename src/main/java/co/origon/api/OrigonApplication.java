@@ -7,6 +7,7 @@ import co.origon.api.controller.ReplicationController;
 import co.origon.api.model.api.DaoFactory;
 import co.origon.api.model.ofy.DaoFactoryOfy;
 import co.origon.api.repository.ofy.RepositoryFactoryOfy;
+import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import javax.inject.Singleton;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
@@ -24,6 +25,7 @@ public class OrigonApplication extends ResourceConfig {
             bindAsContract(ConfigController.class);
             bindAsContract(ReplicationController.class);
 
+            bindAsContract(AuthService.class);
             bindAsContract(ReplicationService.class);
 
             bindAsContract(RepositoryFactoryOfy.class).to(RepositoryFactoryOfy.class);
