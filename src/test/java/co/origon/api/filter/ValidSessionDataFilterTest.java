@@ -8,9 +8,10 @@ import static org.mockito.Mockito.when;
 
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.DeviceCredentials;
+import co.origon.api.repository.api.Repository;
+import java.util.Date;
+import java.util.Optional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.MultivaluedMap;
@@ -30,9 +31,7 @@ class ValidSessionDataFilterTest {
   private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
   private static final String VALID_DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
 
-  @Mock private DaoFactory daoFactory;
-  @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
-  @Mock private DeviceCredentials deviceCredentials;
+  @Mock private Repository<DeviceCredentials> deviceCredentialsRepository;
   @Mock private ContainerRequestContext requestContext;
   @Mock private UriInfo uriInfo;
   @Mock private MultivaluedMap<String, String> queryParameters;
@@ -45,7 +44,7 @@ class ValidSessionDataFilterTest {
 
     @BeforeEach
     void setUp() {
-      validSessionDataFilter = new ValidSessionDataFilter(daoFactory);
+      validSessionDataFilter = new ValidSessionDataFilter(deviceCredentialsRepository);
     }
 
     @Test
@@ -80,10 +79,16 @@ class ValidSessionDataFilterTest {
       lenient().when(queryParameters.getFirst(UrlParams.APP_VERSION)).thenReturn("1.0");
       lenient().when(queryParameters.getFirst(UrlParams.DEVICE_ID)).thenReturn(null);
       lenient().when(queryParameters.getFirst(UrlParams.DEVICE_TYPE)).thenReturn(null);
-      when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.deviceId()).thenReturn(VALID_DEVICE_ID);
-      when(deviceCredentials.deviceType()).thenReturn("Device");
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(
+              Optional.of(
+                  DeviceCredentials.builder()
+                      .email("some")
+                      .deviceId(VALID_DEVICE_ID)
+                      .deviceType("some")
+                      .deviceToken(VALID_DEVICE_TOKEN)
+                      .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+                      .build()));
 
       // when
       validSessionDataFilter.filter(requestContext);
@@ -147,8 +152,7 @@ class ValidSessionDataFilterTest {
       lenient().when(queryParameters.getFirst(UrlParams.APP_VERSION)).thenReturn(null);
       lenient().when(queryParameters.getFirst(UrlParams.DEVICE_ID)).thenReturn(null);
       lenient().when(queryParameters.getFirst(UrlParams.DEVICE_TYPE)).thenReturn(null);
-      when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(null);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN)).thenReturn(Optional.empty());
 
       // then
       Throwable e =

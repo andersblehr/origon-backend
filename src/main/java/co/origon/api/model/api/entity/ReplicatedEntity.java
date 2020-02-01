@@ -1,7 +1,7 @@
 package co.origon.api.model.api.entity;
 
 import co.origon.api.model.EntityKey;
-import java.time.Instant;
+import java.util.Date;
 
 public interface ReplicatedEntity extends Entity<ReplicatedEntity> {
 
@@ -11,11 +11,11 @@ public interface ReplicatedEntity extends Entity<ReplicatedEntity> {
 
   String createdBy();
 
-  Instant createdAt();
+  Date createdAt();
 
   String modifiedBy();
 
-  Instant modifiedAt();
+  Date modifiedAt();
 
   boolean isExpired();
 

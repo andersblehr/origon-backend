@@ -6,9 +6,9 @@ import co.origon.api.model.EntityKey;
 import co.origon.api.model.ofy.entity.OOrigo;
 import co.origon.api.repository.api.Repository;
 import com.googlecode.objectify.Key;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Singleton;
@@ -52,13 +52,13 @@ public class RepositoryOfy<T> implements Repository<T> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public Collection<T> getByParentId(String parentId, Instant modifiedAfter) {
+  public Collection<T> getByParentId(String parentId, Date modifiedAfter) {
     return (Collection<T>)
         ofy()
             .load()
             .type(clazz)
             .ancestor(Key.create(OOrigo.class, parentId))
-            .filter("dateReplicated >", modifiedAfter != null ? modifiedAfter : Instant.MIN)
+            .filter("dateReplicated >", modifiedAfter != null ? modifiedAfter : new Date(0L))
             .list();
   }
 
@@ -69,8 +69,9 @@ public class RepositoryOfy<T> implements Repository<T> {
   }
 
   @Override
-  public void save(T entity) {
-    ofy().save().entity(entity);
+  public T save(T entity) {
+    ofy().save().entity(entity).now();
+    return entity;
   }
 
   @Override

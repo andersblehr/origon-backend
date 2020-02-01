@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.objectify.annotation.Subclass;
-import java.time.Instant;
 import java.util.Date;
 
 @Subclass
@@ -46,8 +45,8 @@ public class OMember extends OReplicatedEntity implements Member {
   }
 
   @Override
-  public Instant dateOfBirth() {
-    return dateOfBirth.toInstant();
+  public Date dateOfBirth() {
+    return dateOfBirth;
   }
 
   @Override
@@ -81,7 +80,7 @@ public class OMember extends OReplicatedEntity implements Member {
   }
 
   @Override
-  public Instant activeSince() {
-    return activeSince.toInstant();
+  public Date activeSince() {
+    return activeSince;
   }
 }

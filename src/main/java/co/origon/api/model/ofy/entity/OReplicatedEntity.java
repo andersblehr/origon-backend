@@ -13,7 +13,6 @@ import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Parent;
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -141,8 +140,8 @@ public class OReplicatedEntity implements ReplicatedEntity {
   }
 
   @Override
-  public Instant createdAt() {
-    return dateCreated.toInstant();
+  public Date createdAt() {
+    return dateCreated;
   }
 
   @Override
@@ -151,8 +150,8 @@ public class OReplicatedEntity implements ReplicatedEntity {
   }
 
   @Override
-  public Instant modifiedAt() {
-    return dateReplicated.toInstant();
+  public Date modifiedAt() {
+    return dateReplicated;
   }
 
   @Override

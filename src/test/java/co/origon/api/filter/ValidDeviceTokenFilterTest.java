@@ -4,17 +4,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
 import co.origon.api.controller.AuthController;
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.DeviceCredentials;
-import co.origon.api.model.api.entity.MemberProxy;
+import co.origon.api.model.DeviceCredentials;
+import co.origon.api.model.MemberProxy;
+import co.origon.api.repository.api.Repository;
 import java.util.Date;
+import java.util.Optional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
@@ -34,23 +33,52 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ValidDeviceTokenFilterTest {
 
-  private static final String VALID_EMAIL = "user@example.com";
-  private static final String VALID_CREDENTIALS = "Basic " + encode(VALID_EMAIL + ":password");
+  private static final String USER_ID = "3eca0277-b8aa-4293-a028-44e0746c3082";
+  private static final String USER_EMAIL = "user@example.com";
+  private static final String BASIC_AUTH_CREDENTIALS = "Basic " + encode(USER_EMAIL + ":password");
   private static final String NON_MATCHING_CREDENTIALS =
       "Basic " + encode("other@email.com:password");
+  private static final String DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
   private static final String VALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
   private static final String INVALID_DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61XYZ";
 
-  @Mock private DaoFactory daoFactory;
-  @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
-  @Mock private DeviceCredentials deviceCredentials;
-  @Mock private Dao<MemberProxy> userProxyDao;
-  @Mock private MemberProxy userProxy;
+  @Mock private Repository<DeviceCredentials> deviceCredentialsRepository;
+  @Mock private Repository<MemberProxy> userProxyRepository;
   @Mock private ContainerRequestContext requestContext;
   @Mock private UriInfo uriInfo;
   @Mock private MultivaluedMap<String, String> queryParameters;
 
   private ValidDeviceTokenFilter validDeviceTokenFilter;
+
+  private final MemberProxy registeredUserProxy =
+      MemberProxy.builder()
+          .id(USER_EMAIL)
+          .memberId(USER_ID)
+          .passwordHash("some")
+          .addDeviceTokens(VALID_DEVICE_TOKEN)
+          .build();
+  private final MemberProxy unregisteredUserProxy =
+      MemberProxy.builder()
+          .id(USER_EMAIL)
+          .memberId(USER_ID)
+          .addDeviceTokens(VALID_DEVICE_TOKEN)
+          .build();
+  private final DeviceCredentials validDeviceCredentials =
+      DeviceCredentials.builder()
+          .email(USER_EMAIL)
+          .deviceId(DEVICE_ID)
+          .deviceToken(VALID_DEVICE_TOKEN)
+          .deviceType("some")
+          .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+          .build();
+  private final DeviceCredentials expiredDeviceCredentials =
+      DeviceCredentials.builder()
+          .email(USER_EMAIL)
+          .deviceId(DEVICE_ID)
+          .deviceToken(VALID_DEVICE_TOKEN)
+          .deviceType("some")
+          .expiresAt(new Date(System.currentTimeMillis() - 1000L))
+          .build();
 
   @Nested
   @DisplayName("filter()")
@@ -58,8 +86,9 @@ class ValidDeviceTokenFilterTest {
 
     @BeforeEach
     void setUp() {
-      BasicAuthCredentials.validate(VALID_CREDENTIALS);
-      validDeviceTokenFilter = new ValidDeviceTokenFilter(daoFactory);
+      BasicAuthCredentials.validate(BASIC_AUTH_CREDENTIALS);
+      validDeviceTokenFilter =
+          new ValidDeviceTokenFilter(deviceCredentialsRepository, userProxyRepository);
     }
 
     @Test
@@ -69,14 +98,9 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      lenient().when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.dateExpires())
-          .thenReturn(new Date(System.currentTimeMillis() + 60000L));
-      when(deviceCredentials.email()).thenReturn(VALID_EMAIL);
-      when(userProxyDao.get(VALID_EMAIL)).thenReturn(userProxy);
-      lenient().when(daoFactory.daoFor(MemberProxy.class)).thenReturn(userProxyDao);
-      when(userProxy.isRegistered()).thenReturn(true);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(Optional.of(validDeviceCredentials));
+      when(userProxyRepository.getById(USER_EMAIL)).thenReturn(Optional.of(registeredUserProxy));
 
       // when
       validDeviceTokenFilter.filter(requestContext);
@@ -133,7 +157,7 @@ class ValidDeviceTokenFilterTest {
               () ->
                   // when
                   validDeviceTokenFilter.filter(requestContext));
-      assertEquals("Invalid device token: " + INVALID_DEVICE_TOKEN, e.getMessage());
+      assertEquals("Invalid device token", e.getMessage());
     }
 
     @Test
@@ -143,8 +167,7 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(null);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN)).thenReturn(Optional.empty());
 
       // then
       final Throwable e =
@@ -163,10 +186,8 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.dateExpires())
-          .thenReturn(new Date(System.currentTimeMillis() - 60000L));
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(Optional.of(expiredDeviceCredentials));
 
       // then
       final WebApplicationException e =
@@ -188,13 +209,9 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      lenient().when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.dateExpires())
-          .thenReturn(new Date(System.currentTimeMillis() + 60000L));
-      when(deviceCredentials.email()).thenReturn(VALID_EMAIL);
-      lenient().when(daoFactory.daoFor(MemberProxy.class)).thenReturn(userProxyDao);
-      when(userProxyDao.get(VALID_EMAIL)).thenReturn(null);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(Optional.of(validDeviceCredentials));
+      when(userProxyRepository.getById(USER_EMAIL)).thenReturn(Optional.empty());
 
       // then
       final Throwable e =
@@ -203,7 +220,7 @@ class ValidDeviceTokenFilterTest {
               () ->
                   // when
                   validDeviceTokenFilter.filter(requestContext));
-      assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
+      assertEquals("Cannot authenticate unknown user", e.getMessage());
     }
 
     @Test
@@ -213,14 +230,9 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      lenient().when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.dateExpires())
-          .thenReturn(new Date(System.currentTimeMillis() + 60000L));
-      when(deviceCredentials.email()).thenReturn(VALID_EMAIL);
-      lenient().when(daoFactory.daoFor(MemberProxy.class)).thenReturn(userProxyDao);
-      when(userProxyDao.get(VALID_EMAIL)).thenReturn(userProxy);
-      when(userProxy.isRegistered()).thenReturn(false);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(Optional.of(validDeviceCredentials));
+      when(userProxyRepository.getById(USER_EMAIL)).thenReturn(Optional.of(unregisteredUserProxy));
 
       // then
       final Throwable e =
@@ -229,7 +241,7 @@ class ValidDeviceTokenFilterTest {
               () ->
                   // when
                   validDeviceTokenFilter.filter(requestContext));
-      assertEquals("Cannot authenticate unknown or inactive user: " + VALID_EMAIL, e.getMessage());
+      assertEquals("Cannot authenticate inactive user", e.getMessage());
     }
 
     @Test
@@ -239,14 +251,9 @@ class ValidDeviceTokenFilterTest {
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
-      lenient().when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.get(VALID_DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.dateExpires())
-          .thenReturn(new Date(System.currentTimeMillis() + 60000L));
-      when(deviceCredentials.email()).thenReturn(VALID_EMAIL);
-      lenient().when(daoFactory.daoFor(MemberProxy.class)).thenReturn(userProxyDao);
-      when(userProxyDao.get(VALID_EMAIL)).thenReturn(userProxy);
-      when(userProxy.isRegistered()).thenReturn(true);
+      when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
+          .thenReturn(Optional.of(validDeviceCredentials));
+      when(userProxyRepository.getById(USER_EMAIL)).thenReturn(Optional.of(registeredUserProxy));
 
       BasicAuthCredentials.dispose();
       BasicAuthCredentials.validate(NON_MATCHING_CREDENTIALS);
