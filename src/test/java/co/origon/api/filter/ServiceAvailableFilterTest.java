@@ -6,11 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
-import co.origon.api.model.api.entity.Config.Category;
-import co.origon.api.model.api.entity.Config.Setting;
+import co.origon.api.common.Config;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.ContainerRequestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,13 +20,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 class ServiceAvailableFilterTest {
 
-  private static final String STATUS_OK = "OK";
-  private static final String STATUS_NOK = "testing";
-
-  @Mock private DaoFactory daoFactory;
-  @Mock private Dao<Config> configDao;
-  @Mock private Config systemConfig;
   @Mock private ContainerRequestContext requestContext;
+  @Mock private com.typesafe.config.Config systemConfig;
 
   private ServiceAvailableFilter serviceAvailableFilter;
 
@@ -40,16 +31,14 @@ class ServiceAvailableFilterTest {
 
     @BeforeEach
     void setUp() {
-      serviceAvailableFilter = new ServiceAvailableFilter(daoFactory);
+      serviceAvailableFilter = new ServiceAvailableFilter(systemConfig);
     }
 
     @Test
     @DisplayName("Given system status is OK, then run to completion")
     void givenSystemStatusIsOk_thenRunToCoompletion() {
       // given
-      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
-      when(configDao.get(Category.SYSTEM)).thenReturn(systemConfig);
-      when(systemConfig.getString(Setting.STATUS)).thenReturn(STATUS_OK);
+      when(systemConfig.getString(Config.SYSTEM_STATUS)).thenReturn(Config.SYSTEM_STATUS_OK);
 
       // when
       serviceAvailableFilter.filter(requestContext);
@@ -62,32 +51,31 @@ class ServiceAvailableFilterTest {
     @DisplayName("Given available but nok OK system status, then throw ServiceUnavailableException")
     void givenAvailableButNotOkSystemStatus_thenThrowServiceUnavailableException() {
       // given
-      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
-      when(configDao.get(Category.SYSTEM)).thenReturn(systemConfig);
-      when(systemConfig.getString(Setting.STATUS)).thenReturn(null, STATUS_NOK);
+      when(systemConfig.getString(Config.SYSTEM_STATUS)).thenReturn(null, Config.SYSTEM_STATUS_DOWN);
 
       assertAll(
           "System status not OK or null",
           // then
           () -> {
-            final Throwable eNull =
+            final Throwable t =
                 assertThrows(
                     ServiceUnavailableException.class,
                     () ->
                         // when
                         serviceAvailableFilter.filter(requestContext));
-            assertEquals("Service unavailable. System status: null", eNull.getMessage());
+            assertEquals("Service unavailable. System status: null", t.getMessage());
           },
 
           // then
           () -> {
-            final Throwable eEmpty =
+            final Throwable u =
                 assertThrows(
                     ServiceUnavailableException.class,
                     () ->
                         // when
                         serviceAvailableFilter.filter(requestContext));
-            assertEquals("Service unavailable. System status: " + STATUS_NOK, eEmpty.getMessage());
+            assertEquals(
+                "Service unavailable. System status: " + Config.SYSTEM_STATUS_DOWN, u.getMessage());
           });
     }
 
@@ -96,7 +84,8 @@ class ServiceAvailableFilterTest {
         "Given exception thrown when querying system status, then throw ServiceUnavailableException")
     void givenExceptionThrownWhenQueryingSystemStatus_thenThrowServiceUnavailableException() {
       // given
-      when(daoFactory.daoFor(Config.class)).thenThrow(new RuntimeException("Yup, we're testing"));
+      when(systemConfig.getString(Config.SYSTEM_STATUS))
+          .thenThrow(new RuntimeException("Yup, we're testing"));
 
       // then
       Throwable e =

@@ -7,11 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
-import co.origon.api.model.api.entity.Config.Category;
-import co.origon.api.model.api.entity.Config.Setting;
+import co.origon.api.common.Config;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.UnsupportedEncodingException;
@@ -37,12 +33,6 @@ class ValidBearerTokenFilterTest {
   private static final String AUTH_HEADER_INVALID_SCHEME = "Basic user@example.com:password";
   private static final String AUTH_HEADER_INVALID_JWT_TOKEN = "Bearer thisisnotajwttoken";
 
-  private static final String JWT_ISSUER = "issuer";
-  private static final String JWT_SECRET = "secret";
-
-  @Mock private DaoFactory daoFactory;
-  @Mock private Dao<Config> configDao;
-  @Mock private Config jwtConfig;
   @Mock private ContainerRequestContext requestContext;
 
   private ValidBearerTokenFilter validBearerTokenFilter;
@@ -53,7 +43,7 @@ class ValidBearerTokenFilterTest {
 
     @BeforeEach
     void setUp() {
-      validBearerTokenFilter = new ValidBearerTokenFilter(daoFactory);
+      validBearerTokenFilter = new ValidBearerTokenFilter();
     }
 
     @Test
@@ -62,9 +52,6 @@ class ValidBearerTokenFilterTest {
       // given
       when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
           .thenReturn("Bearer " + getJwtToken(1000, 60000));
-      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
-      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
-      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
 
       // when
       validBearerTokenFilter.filter(requestContext);
@@ -146,9 +133,6 @@ class ValidBearerTokenFilterTest {
       // given
       when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
           .thenReturn("Bearer " + getJwtToken(60000, 1000));
-      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
-      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
-      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
 
       // then
       final WebApplicationException e =
@@ -169,9 +153,6 @@ class ValidBearerTokenFilterTest {
       // given
       when(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION))
           .thenReturn(AUTH_HEADER_INVALID_JWT_TOKEN);
-      when(daoFactory.daoFor(Config.class)).thenReturn(configDao);
-      when(configDao.get(Category.JWT)).thenReturn(jwtConfig);
-      when(jwtConfig.getString(Setting.SECRET)).thenReturn(JWT_SECRET);
 
       // then
       final Throwable e =
@@ -188,10 +169,10 @@ class ValidBearerTokenFilterTest {
     final long issuedAtMillis = System.currentTimeMillis() - ageMillis;
     try {
       return JWT.create()
-          .withIssuer(JWT_ISSUER)
+          .withIssuer(Config.jwt().getString(Config.JWT_ISSUER))
           .withIssuedAt(new Date(issuedAtMillis))
           .withExpiresAt(new Date(issuedAtMillis + validMillis))
-          .sign(Algorithm.HMAC256(JWT_SECRET));
+          .sign(Algorithm.HMAC256(Config.jwt().getString(Config.JWT_SECRET)));
     } catch (UnsupportedEncodingException e) {
       fail(e);
       throw new RuntimeException(e);

@@ -1,7 +1,6 @@
 package co.origon.api.controller;
 
 import co.origon.api.common.BasicAuthCredentials;
-import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Matcher;
 import co.origon.api.common.UrlParams;
@@ -11,7 +10,7 @@ import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
 import co.origon.api.model.DeviceCredentials;
 import co.origon.api.model.MemberProxy;
-import co.origon.api.model.api.entity.ReplicatedEntity;
+import co.origon.api.model.api.ReplicatedEntity;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;

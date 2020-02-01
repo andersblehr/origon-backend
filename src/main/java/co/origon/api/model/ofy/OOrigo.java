@@ -1,6 +1,6 @@
-package co.origon.api.model.ofy.entity;
+package co.origon.api.model.ofy;
 
-import co.origon.api.model.api.entity.Origo;
+import co.origon.api.model.api.Origo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
