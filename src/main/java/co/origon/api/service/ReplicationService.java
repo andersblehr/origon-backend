@@ -4,19 +4,17 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Matcher;
 import co.origon.api.common.Pair;
+import co.origon.api.model.DeviceCredentials;
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.MemberProxy;
 import co.origon.api.model.api.entity.Entity;
 import co.origon.api.model.api.entity.Member;
-import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.Membership;
 import co.origon.api.model.api.entity.Origo;
 import co.origon.api.model.api.entity.ReplicatedEntity;
 import co.origon.api.model.api.entity.ReplicatedEntityRef;
-import co.origon.api.model.ofy.entity.OMemberProxy;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -55,12 +53,11 @@ public class ReplicationService {
     final MemberProxy userProxy = memberProxyRepository.getById(userEmail).orElse(null); // TODO
     final Mailer mailer = rootMailer.using(language);
 
-    final Map<EntityKey, Member> membersByProxyKey =
+    final Map<String, Member> membersByProxyId =
         entities.stream()
             .filter(ReplicatedEntity::isMember)
             .map(entity -> (Member) entity)
-            .peek(member -> alignProxyIfUser(member, userProxy))
-            .collect(Collectors.toMap(member -> EntityKey.from(member.id()), member -> member));
+            .collect(Collectors.toMap(Member::proxyId, member -> member));
     final List<Membership> memberships =
         entities.stream()
             .filter(ReplicatedEntity::isMembership)
@@ -68,7 +65,7 @@ public class ReplicationService {
             .collect(Collectors.toList());
 
     final Map<String, MemberProxy> proxiesByMemberId =
-        processMembers(membersByProxyKey, userProxy, mailer);
+        processMembers(membersByProxyId, userProxy, mailer);
     processMemberships(memberships, proxiesByMemberId, userProxy, mailer);
 
     entityRepository.save(entities);
@@ -79,30 +76,29 @@ public class ReplicationService {
             .collect(Collectors.toList()));
   }
 
-  public List<ReplicatedEntity> fetch(String userEmail) {
-    return fetch(userEmail, null);
+  public List<ReplicatedEntity> fetch(String email) {
+    return fetch(email, null);
   }
 
-  public List<ReplicatedEntity> fetch(String userEmail, Date deviceReplicatedAt) {
+  public List<ReplicatedEntity> fetch(String email, Date deviceReplicatedAt) {
     return memberProxyRepository
-        .getById(userEmail)
+        .getById(email)
         .map(
             proxy ->
                 membershipRepository.getByKeys(proxy.membershipKeys()).stream()
                     .flatMap(
                         membership ->
                             membership.isFetchable()
-                                ? fetchMembershipEntities(
-                                    membership, deviceReplicatedAt.toInstant())
+                                ? fetchMembershipEntities(membership, deviceReplicatedAt)
                                 : membership.isExpired() ? Stream.of(membership) : Stream.of())
                     .distinct()
                     .collect(Collectors.toList()))
         .orElse(null);
   }
 
-  public List<ReplicatedEntity> lookupMember(String memberId) {
+  public List<ReplicatedEntity> lookupMember(String email) {
     return memberProxyRepository
-        .getById(memberId)
+        .getById(email)
         .map(
             proxy ->
                 membershipRepository.getByKeys(proxy.membershipKeys()).stream()
@@ -120,12 +116,13 @@ public class ReplicationService {
   }
 
   private Map<String, MemberProxy> processMembers(
-      Map<EntityKey, Member> membersByProxyKey, MemberProxy userProxy, Mailer mailer) {
+      Map<String, Member> membersByProxyId, MemberProxy userProxy, Mailer mailer) {
     final Map<String, MemberProxy> proxiesByMemberId =
-        memberProxyRepository.getByKeys(membersByProxyKey.keySet()).stream()
+        memberProxyRepository.getByIds(membersByProxyId.keySet()).stream()
+            .map(proxy -> alignedProxyIfUser(membersByProxyId.get(proxy.id()), proxy))
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
     final List<Pair<Member, Optional<MemberProxy>>> membersWithMaybeProxy =
-        membersByProxyKey.values().stream()
+        membersByProxyId.values().stream()
             .map(member -> Pair.of(member, Optional.ofNullable(proxiesByMemberId.get(member.id()))))
             .collect(Collectors.toList());
     final Map<String, Member> membersWithEmailChangeByProxyId =
@@ -145,10 +142,7 @@ public class ReplicationService {
                 member ->
                     sendNotification(
                         member, staleProxiesById.get(member.proxyId()).id(), userProxy, mailer))
-            .map(
-                member ->
-                    new OMemberProxy(
-                        member.email())) // TODO: ... , staleProxiesById.get(member.proxyId())))
+            .map(member -> staleProxiesById.get(member.proxyId()).withId(member.email()))
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
 
     memberProxyRepository.deleteByIds(staleProxiesById.keySet());
@@ -191,22 +185,24 @@ public class ReplicationService {
                     userProxy, membership, origosById.get(membership.parentId())));
   }
 
-  private void alignProxyIfUser(Member member, MemberProxy userProxy) {
-    if (!member.id().equals(userProxy.id())) {
-      return;
+  private MemberProxy alignedProxyIfUser(Member member, MemberProxy proxy) {
+    if (!member.proxyId().equals(proxy.id())) {
+      return proxy;
     }
+    MemberProxy userProxy = proxy;
     if (userProxy.memberId() == null) {
-      userProxy.memberId(member.id());
+      userProxy = userProxy.withMemberId(member.id());
     }
-    if (userProxy.memberName() == null || !userProxy.memberName().equals(member.name())) {
-      userProxy.memberName(member.name());
+    if (!proxy.memberName().isPresent() || !proxy.memberName().get().equals(member.name())) {
+      userProxy = userProxy.withMemberName(member.name());
     }
+    return userProxy;
   }
 
   private void reauthorise(Member member, Collection<String> deviceTokens) {
     final Set<DeviceCredentials> updatedDeviceCredentials =
         deviceCredentialsRepository.getByIds(deviceTokens).stream()
-            .map(authMetaItem -> authMetaItem.email(member.email()))
+            .map(deviceCredentials -> deviceCredentials.withEmail(member.email()))
             .collect(Collectors.toSet());
 
     deviceCredentialsRepository.save(updatedDeviceCredentials);
@@ -233,7 +229,7 @@ public class ReplicationService {
   }
 
   private Stream<ReplicatedEntity> fetchMembershipEntities(
-      Membership membership, Instant deviceReplicatedAt) {
+      Membership membership, Date deviceReplicatedAt) {
     Collection<ReplicatedEntity> membershipEntities =
         entityRepository.getByParentId(membership.parentId(), deviceReplicatedAt);
     Collection<ReplicatedEntity> referencedEntities =

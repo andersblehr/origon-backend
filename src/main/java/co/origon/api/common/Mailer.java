@@ -1,7 +1,7 @@
 package co.origon.api.common;
 
+import co.origon.api.model.MemberProxy;
 import co.origon.api.model.api.entity.Member;
-import co.origon.api.model.api.entity.MemberProxy;
 import co.origon.api.model.api.entity.Membership;
 import co.origon.api.model.api.entity.Origo;
 import com.auth0.jwt.JWT;

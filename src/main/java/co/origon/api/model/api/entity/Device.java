@@ -1,6 +1,6 @@
 package co.origon.api.model.api.entity;
 
-import java.time.Instant;
+import java.util.Date;
 
 public interface Device {
 
@@ -8,7 +8,7 @@ public interface Device {
 
   String name();
 
-  Instant lastSeen();
+  Date lastSeen();
 
   Member user();
 }

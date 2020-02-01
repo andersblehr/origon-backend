@@ -1,10 +1,10 @@
 package co.origon.api.repository.ofy;
 
-import co.origon.api.model.api.entity.DeviceCredentials;
-import co.origon.api.model.api.entity.MemberProxy;
+import co.origon.api.model.DeviceCredentials;
+import co.origon.api.model.MemberProxy;
+import co.origon.api.model.OneTimeCredentials;
 import co.origon.api.model.api.entity.Membership;
 import co.origon.api.model.api.entity.Origo;
-import co.origon.api.model.api.entity.OtpCredentials;
 import co.origon.api.model.api.entity.ReplicatedEntity;
 import co.origon.api.model.ofy.entity.OAuthInfo;
 import co.origon.api.model.ofy.entity.OAuthMeta;
@@ -28,7 +28,7 @@ public class RepositoryFactoryOfy implements RepositoryFactory {
     if (clazz.equals(MemberProxy.class)) {
       return (Repository<E>) new RepositoryOfy<>(OMemberProxy.class);
     }
-    if (clazz.equals(OtpCredentials.class)) {
+    if (clazz.equals(OneTimeCredentials.class)) {
       return (Repository<E>) new RepositoryOfy<>(OAuthInfo.class);
     }
     if (clazz.equals(Membership.class)) {

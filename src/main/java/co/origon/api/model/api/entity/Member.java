@@ -1,6 +1,6 @@
 package co.origon.api.model.api.entity;
 
-import java.time.Instant;
+import java.util.Date;
 
 public interface Member extends ReplicatedEntity {
 
@@ -8,7 +8,7 @@ public interface Member extends ReplicatedEntity {
 
   String gender();
 
-  Instant dateOfBirth();
+  Date dateOfBirth();
 
   String mobilePhone();
 
@@ -22,7 +22,7 @@ public interface Member extends ReplicatedEntity {
 
   String createdIn();
 
-  Instant activeSince();
+  Date activeSince();
 
   @Override
   default String parentId() {

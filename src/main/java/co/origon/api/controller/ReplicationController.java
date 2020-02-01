@@ -10,13 +10,15 @@ import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
+import co.origon.api.model.DeviceCredentials;
 import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.DeviceCredentials;
 import co.origon.api.model.api.entity.Origo;
 import co.origon.api.model.api.entity.ReplicatedEntity;
+import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,6 +26,7 @@ import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.NotFoundException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,8 +46,12 @@ import javax.ws.rs.core.Response.Status;
 public class ReplicationController {
 
   @Inject private ReplicationService replicationService;
+  @Inject private AuthService authService;
   @Inject private DaoFactory daoFactory;
   @Inject private Mailer mailer;
+
+  private final Supplier<RuntimeException> unknownDeviceTokenThrower =
+      () -> new NotAuthorizedException("Unknown device token");
 
   @POST
   @Path("replicate")
@@ -56,7 +63,7 @@ public class ReplicationController {
       @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
     final DeviceCredentials deviceCredentials =
-        daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+        authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
     checkReplicationDate(replicationDate);
 
     replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
@@ -80,7 +87,7 @@ public class ReplicationController {
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
     final DeviceCredentials deviceCredentials =
-        daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
+        authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
     checkReplicationDate(replicationDate);
 
     final List<ReplicatedEntity> fetchedEntities =
@@ -95,10 +102,10 @@ public class ReplicationController {
   @GET
   @Path("member")
   public Response lookupMember(
-      @QueryParam(UrlParams.IDENTIFIER) String memberId,
+      @QueryParam(UrlParams.IDENTIFIER) String email,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
-    List<ReplicatedEntity> memberEntities = replicationService.lookupMember(memberId);
+    List<ReplicatedEntity> memberEntities = replicationService.lookupMember(email);
     if (memberEntities == null) {
       throw new NotFoundException();
     }

@@ -1,8 +1,8 @@
 package co.origon.api.repository.api;
 
 import co.origon.api.model.EntityKey;
-import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 
 public interface Repository<T> {
@@ -17,11 +17,11 @@ public interface Repository<T> {
 
   Collection<T> getByParentId(String parentId);
 
-  Collection<T> getByParentId(String parentId, Instant modifiedAfter);
+  Collection<T> getByParentId(String parentId, Date modifiedAfter);
 
   Collection<T> getByPropertyValue(String property, Object value);
 
-  void save(T entity);
+  T save(T entity);
 
   void save(Collection<T> entities);
 

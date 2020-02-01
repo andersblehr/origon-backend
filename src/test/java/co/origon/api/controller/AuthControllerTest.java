@@ -5,23 +5,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.anyString;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Mailer;
+import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.api.Dao;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.DeviceCredentials;
-import co.origon.api.model.api.entity.MemberProxy;
-import co.origon.api.model.api.entity.OtpCredentials;
+import co.origon.api.model.DeviceCredentials;
+import co.origon.api.model.MemberProxy;
+import co.origon.api.model.OneTimeCredentials;
 import co.origon.api.model.api.entity.ReplicatedEntity;
+import co.origon.api.repository.api.Repository;
+import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
@@ -34,7 +39,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -50,25 +54,64 @@ class AuthControllerTest {
   private static final String DEVICE_TYPE = "Device";
   private static final String APP_VERSION = "1.0";
   private static final String LANGUAGE = "nb";
-  private static final String ACTIVATION_CODE = "abcdef";
 
-  @Mock private ReplicationService replicationService;
-  @Mock private DaoFactory daoFactory;
-  @Mock private Dao<MemberProxy> userProxyDao;
-  @Mock private MemberProxy userProxy;
-  @Mock private Dao<OtpCredentials> otpCredentialsDao;
-  @Mock private OtpCredentials otpCredentials;
-  @Mock private Dao<DeviceCredentials> deviceCredentialsDao;
-  @Mock private DeviceCredentials deviceCredentials;
+  @Mock private Repository<MemberProxy> memberProxyRepository;
+  @Mock private Repository<OneTimeCredentials> oneTimeCredentialsRepository;
+  @Mock private Repository<DeviceCredentials> deviceCredentialsRepository;
   @Mock private List<ReplicatedEntity> fetchedEntities;
+  @Mock private ReplicationService replicationService;
   @Mock private Mailer mailer;
 
-  @InjectMocks private AuthController authController;
+  private AuthController authController;
+
+  private final MemberProxy invitedUserProxy =
+      MemberProxy.builder()
+          .id(USER_EMAIL)
+          .memberId(USER_ID)
+          .passwordHash("some")
+          .addDeviceTokens(DEVICE_TOKEN)
+          .build();
+  private final MemberProxy uninvitedUserProxy =
+      MemberProxy.builder()
+          .id(USER_EMAIL)
+          .passwordHash("some")
+          .addDeviceTokens(DEVICE_TOKEN)
+          .build();
+  private final OneTimeCredentials validOneTimeCredentials =
+      OneTimeCredentials.builder()
+          .email(USER_EMAIL)
+          .deviceId(DEVICE_ID)
+          .passwordHash("433ad0607f4fc7fedc58aa990107a32144327c63")
+          .activationCode("some")
+          .build();
+  private final OneTimeCredentials invalidOneTimeCredentials =
+      OneTimeCredentials.builder()
+          .email(USER_EMAIL)
+          .deviceId(DEVICE_ID)
+          .passwordHash("invalid")
+          .activationCode("some")
+          .build();
+  private final DeviceCredentials deviceCredentials =
+      DeviceCredentials.builder()
+          .email(USER_EMAIL)
+          .deviceId(DEVICE_ID)
+          .deviceToken(DEVICE_TOKEN)
+          .deviceType(DEVICE_TYPE)
+          .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+          .build();
 
   @BeforeEach
   void setUp() {
     BasicAuthCredentials.validate(AUTHORIZATION_HEADER);
     Session.create(DEVICE_ID, DEVICE_TYPE, APP_VERSION);
+    authController =
+        new AuthController(
+            new AuthService(
+                memberProxyRepository,
+                oneTimeCredentialsRepository,
+                deviceCredentialsRepository,
+                mailer),
+            replicationService);
   }
 
   @Nested
@@ -76,22 +119,13 @@ class AuthControllerTest {
   class WhenRegisterUser {
 
     @Test
-    @DisplayName("Given new user, then return OTP credentials")
-    void givenNewUser_thenReturnOtpCredentials() {
+    @DisplayName("Given new user, then return one time credentials")
+    void givenNewUser_thenReturnOneTimeCredentials() {
       // given
-      establishDidRegister(false);
-
-      // given: Create OTP credentials
-      lenient().when(daoFactory.daoFor(OtpCredentials.class)).thenReturn(otpCredentialsDao);
-      when(otpCredentialsDao.create()).thenReturn(otpCredentials);
-      when(otpCredentials.deviceId(DEVICE_ID)).thenReturn(otpCredentials);
-      when(otpCredentials.email(anyString())).thenReturn(otpCredentials);
-      when(otpCredentials.passwordHash(anyString())).thenReturn((otpCredentials));
-      lenient().when(otpCredentials.activationCode(anyString())).thenReturn(otpCredentials);
-
-      // given: Send registration email
-      when(mailer.using(anyString())).thenReturn(mailer);
-      lenient().when(otpCredentials.activationCode()).thenReturn(ACTIVATION_CODE);
+      lenient()
+          .when(oneTimeCredentialsRepository.save(any(OneTimeCredentials.class)))
+          .thenReturn(validOneTimeCredentials);
+      when(mailer.using(Language.fromCode(LANGUAGE))).thenReturn(mailer);
 
       // when
       final Response response =
@@ -99,15 +133,9 @@ class AuthControllerTest {
               AUTHORIZATION_HEADER, DEVICE_ID, DEVICE_TYPE, APP_VERSION, LANGUAGE);
 
       // then
-      verify(otpCredentials).deviceId(DEVICE_ID);
-      verify(otpCredentials).email(USER_EMAIL);
-      verify(otpCredentials).passwordHash(BasicAuthCredentials.getCredentials().passwordHash());
-      verify(otpCredentials).activationCode(anyString());
-      verify(otpCredentialsDao).save(otpCredentials);
-      verify(mailer).sendRegistrationEmail(USER_EMAIL, ACTIVATION_CODE);
-
+      verify(mailer).sendRegistrationEmail(eq(USER_EMAIL), anyString());
       assertEquals(Status.CREATED.getStatusCode(), response.getStatus());
-      assertEquals(otpCredentials, response.getEntity());
+      assertEquals(validOneTimeCredentials, response.getEntity());
     }
 
     @Test
@@ -125,7 +153,7 @@ class AuthControllerTest {
                   authController.registerUser(
                       AUTHORIZATION_HEADER, DEVICE_ID, DEVICE_TYPE, APP_VERSION, LANGUAGE));
       assertEquals(Status.CONFLICT.getStatusCode(), e.getResponse().getStatus());
-      assertEquals("User is already registered", e.getMessage());
+      assertEquals("User is already registered and active", e.getMessage());
     }
   }
 
@@ -139,9 +167,9 @@ class AuthControllerTest {
       // given
       establishInvited(false);
       establishDidRegister(false);
-      establishValidOtpCredentials(true);
+      establishValidOneTimeCredentials(true);
       establishDeviceCredentialsCreated();
-      establishActivated();
+      establishActivated(false);
 
       // when
       Response response =
@@ -149,9 +177,9 @@ class AuthControllerTest {
               AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION);
 
       // then
-      verifyDeviceCredentials();
-      verifyUserProxy();
-      verify(otpCredentialsDao).delete(otpCredentials);
+      verify(deviceCredentialsRepository).save(any(DeviceCredentials.class));
+      verify(memberProxyRepository).save(any(MemberProxy.class));
+      verify(oneTimeCredentialsRepository).deleteById(USER_EMAIL);
       verify(replicationService).fetch(USER_EMAIL);
 
       assertEquals(Status.NO_CONTENT.getStatusCode(), response.getStatus());
@@ -165,9 +193,9 @@ class AuthControllerTest {
       // given
       establishInvited(true);
       establishDidRegister(false);
-      establishValidOtpCredentials(true);
+      establishValidOneTimeCredentials(true);
       establishDeviceCredentialsCreated();
-      establishActivated();
+      establishActivated(true);
 
       // when
       Response response =
@@ -175,39 +203,40 @@ class AuthControllerTest {
               AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION);
 
       // then
-      verifyDeviceCredentials();
-      verifyUserProxy();
-      verify(otpCredentialsDao).delete(otpCredentials);
-      verify(replicationService).fetch(USER_EMAIL);
+      verify(deviceCredentialsRepository).save(any(DeviceCredentials.class));
+      verify(memberProxyRepository).save(any(MemberProxy.class));
+      verify(oneTimeCredentialsRepository).deleteById(anyString());
+      verify(replicationService).fetch(anyString());
 
       assertEquals(Status.OK.getStatusCode(), response.getStatus());
-      assertEquals(USER_ID, response.getLocation().toString());
+      assertNotNull(response.getLocation().toString());
       assertNotNull(response.getLastModified());
     }
 
     @Test
-    @DisplayName("Given existing user, then return 400 BAD_REQUEST")
-    void givenExistingUser_thenReturn400BadRequest() {
+    @DisplayName("Given existing user, then return 409 CONFLICT")
+    void givenExistingUser_thenReturn4009Conflict() {
       // given
       establishDidRegister(true);
 
       // then
-      Throwable e =
+      WebApplicationException e =
           assertThrows(
-              BadRequestException.class,
+              WebApplicationException.class,
               () ->
                   // when
                   authController.activateUser(
                       AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
-      assertEquals("Cannot activate an active user", e.getMessage());
+      assertEquals(Status.CONFLICT.getStatusCode(), e.getResponse().getStatus());
+      assertEquals("User is already registered and active", e.getMessage());
     }
 
     @Test
-    @DisplayName("Given no OTP credentials, then return 400 BAD_REQUEST")
-    void givenNoOtpCredentials_thenReturn400BadRequest() {
+    @DisplayName("Given no one time credentials, then return 400 BAD_REQUEST")
+    void givenNoOneTimeCredentials_thenReturn400BadRequest() {
       // given
       establishDidRegister(false);
-      establishOtpCredentialsAvailable(false);
+      establishOneTimeCredentialsAvailable(false, false);
 
       // then
       Throwable e =
@@ -217,7 +246,7 @@ class AuthControllerTest {
                   // when
                   authController.activateUser(
                       AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
-      assertEquals("User is not awaiting activation, cannot activate", e.getMessage());
+      assertEquals("User is not awaiting activation", e.getMessage());
     }
 
     @Test
@@ -225,7 +254,7 @@ class AuthControllerTest {
     void givenMismatchedCredentials_thenReturn401Unauthorized() {
       // given
       establishDidRegister(false);
-      establishValidOtpCredentials(false);
+      establishValidOneTimeCredentials(false);
 
       // then
       WebApplicationException e =
@@ -246,7 +275,7 @@ class AuthControllerTest {
     void givenInvalidDeviceToken_thenReturn400BadRequest() {
       // given
       establishDidRegister(false);
-      establishValidOtpCredentials(true);
+      establishValidOneTimeCredentials(true);
 
       // then
       assertAll(
@@ -278,57 +307,40 @@ class AuthControllerTest {
     }
 
     private void establishInvited(boolean invited) {
-      when(userProxy.memberId()).thenReturn(invited ? USER_ID : null);
-      when(replicationService.fetch(USER_EMAIL)).thenReturn(fetchedEntities);
-      when(fetchedEntities.size()).thenReturn(invited ? 10 : 0);
+      lenient().when(replicationService.fetch(USER_EMAIL)).thenReturn(fetchedEntities);
+      lenient().when(fetchedEntities.size()).thenReturn(invited ? 10 : 0);
     }
 
-    private void establishOtpCredentialsAvailable(boolean available) {
-      lenient().when(daoFactory.daoFor(OtpCredentials.class)).thenReturn(otpCredentialsDao);
-      when(otpCredentialsDao.get(USER_EMAIL)).thenReturn(available ? otpCredentials : null);
+    private void establishOneTimeCredentialsAvailable(boolean available, boolean valid) {
+      lenient()
+          .when(oneTimeCredentialsRepository.getById(USER_EMAIL))
+          .thenReturn(
+              available
+                  ? Optional.of(valid ? validOneTimeCredentials : invalidOneTimeCredentials)
+                  : Optional.empty());
     }
 
-    private void establishValidOtpCredentials(boolean valid) {
-      establishOtpCredentialsAvailable(true);
-      when(otpCredentials.passwordHash())
-          .thenReturn(valid ? BasicAuthCredentials.getCredentials().passwordHash() : "invalid");
+    private void establishValidOneTimeCredentials(boolean valid) {
+      establishOneTimeCredentialsAvailable(true, valid);
     }
 
     private void establishDeviceCredentialsCreated() {
-      lenient().when(daoFactory.daoFor(DeviceCredentials.class)).thenReturn(deviceCredentialsDao);
-      when(deviceCredentialsDao.create()).thenReturn(deviceCredentials);
-      when(deviceCredentials.deviceToken(DEVICE_TOKEN)).thenReturn(deviceCredentials);
-      when(deviceCredentials.email(USER_EMAIL)).thenReturn(deviceCredentials);
-      when(deviceCredentials.deviceId(DEVICE_ID)).thenReturn(deviceCredentials);
-      when(deviceCredentials.deviceType(DEVICE_TYPE)).thenReturn(deviceCredentials);
+      lenient()
+          .when(deviceCredentialsRepository.getById(USER_EMAIL))
+          .thenReturn(Optional.of(deviceCredentials));
     }
 
-    private void establishActivated() {
-      // when(userProxyDao.produce(USER_EMAIL)).thenReturn(userProxy); // TODO
-      when(userProxy.passwordHash(BasicAuthCredentials.getCredentials().passwordHash()))
-          .thenReturn(userProxy);
-      when(userProxy.deviceToken(DEVICE_TOKEN)).thenReturn(userProxy);
-    }
-
-    private void verifyDeviceCredentials() {
-      verify(deviceCredentials).deviceToken(DEVICE_TOKEN);
-      verify(deviceCredentials).email(USER_EMAIL);
-      verify(deviceCredentials).deviceId(DEVICE_ID);
-      verify(deviceCredentials).deviceType(DEVICE_TYPE);
-      verify(deviceCredentialsDao).save(deviceCredentials);
-    }
-
-    private void verifyUserProxy() {
-      verify(userProxy).passwordHash(BasicAuthCredentials.getCredentials().passwordHash());
-      verify(userProxy).deviceToken(DEVICE_TOKEN);
-      verify(userProxyDao).save(userProxy);
+    private void establishActivated(boolean invited) {
+      lenient()
+          .when(memberProxyRepository.save(any(MemberProxy.class)))
+          .thenReturn(invited ? invitedUserProxy : uninvitedUserProxy);
     }
   }
 
   private void establishDidRegister(boolean didRegister) {
-    lenient().when(daoFactory.daoFor(MemberProxy.class)).thenReturn(userProxyDao);
-    when(userProxyDao.get(USER_EMAIL)).thenReturn(userProxy);
-    when(userProxy.isRegistered()).thenReturn(didRegister);
+    lenient()
+        .when(memberProxyRepository.getById(USER_EMAIL))
+        .thenReturn(didRegister ? Optional.of(invitedUserProxy) : Optional.empty());
   }
 
   @AfterEach

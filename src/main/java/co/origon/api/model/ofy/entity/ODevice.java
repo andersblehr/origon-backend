@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Subclass;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
@@ -43,8 +42,8 @@ public class ODevice extends OReplicatedEntity implements Device {
   }
 
   @Override
-  public Instant lastSeen() {
-    return lastSeen.toInstant();
+  public Date lastSeen() {
+    return lastSeen;
   }
 
   @Override

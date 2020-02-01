@@ -2,8 +2,9 @@ package co.origon.api.filter;
 
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.DeviceCredentials;
+import co.origon.api.model.DeviceCredentials;
+import co.origon.api.repository.api.Repository;
+import co.origon.api.repository.api.RepositoryFactory;
 import javax.annotation.Priority;
 import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
@@ -16,11 +17,15 @@ import javax.ws.rs.ext.Provider;
 @Priority(4)
 public class ValidSessionDataFilter implements ContainerRequestFilter {
 
-  private DaoFactory daoFactory;
+  private final Repository<DeviceCredentials> deviceCredentialsRepository;
 
   @Inject
-  ValidSessionDataFilter(DaoFactory daoFactory) {
-    this.daoFactory = daoFactory;
+  public ValidSessionDataFilter(RepositoryFactory repositoryFactory) {
+    deviceCredentialsRepository = repositoryFactory.repositoryFor(DeviceCredentials.class);
+  }
+
+  ValidSessionDataFilter(Repository<DeviceCredentials> deviceCredentialsRepository) {
+    this.deviceCredentialsRepository = deviceCredentialsRepository;
   }
 
   @Override
@@ -36,9 +41,11 @@ public class ValidSessionDataFilter implements ContainerRequestFilter {
 
     if (isSet(deviceToken) && !isSet(deviceId) && !isSet(deviceType)) {
       final DeviceCredentials deviceCredentials =
-          daoFactory.daoFor(DeviceCredentials.class).get(deviceToken);
-      if (deviceCredentials == null)
-        throw new BadRequestException("Incomplete session data and unknown device token");
+          deviceCredentialsRepository
+              .getById(deviceToken)
+              .orElseThrow(
+                  () ->
+                      new BadRequestException("Incomplete session data and unknown device token"));
       deviceId = deviceCredentials.deviceId();
       deviceType = deviceCredentials.deviceType();
     }
