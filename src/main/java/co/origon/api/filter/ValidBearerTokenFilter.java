@@ -1,14 +1,10 @@
 package co.origon.api.filter;
 
-import co.origon.api.model.api.DaoFactory;
-import co.origon.api.model.api.entity.Config;
-import co.origon.api.model.api.entity.Config.Category;
-import co.origon.api.model.api.entity.Config.Setting;
+import co.origon.api.common.Config;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import javax.annotation.Priority;
-import javax.inject.Inject;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -22,13 +18,6 @@ import javax.ws.rs.ext.Provider;
 public class ValidBearerTokenFilter implements ContainerRequestFilter {
 
   static final String WWW_AUTH_CHALLENGE_BEARER_TOKEN = "renew";
-
-  private DaoFactory daoFactory;
-
-  @Inject
-  ValidBearerTokenFilter(DaoFactory daoFactory) {
-    this.daoFactory = daoFactory;
-  }
 
   @Override
   public void filter(ContainerRequestContext requestContext) {
@@ -45,8 +34,8 @@ public class ValidBearerTokenFilter implements ContainerRequestFilter {
 
     try {
       final String jwt = authElements[1];
-      final Config jwtConfig = daoFactory.daoFor(Config.class).get(Category.JWT);
-      JWT.require(Algorithm.HMAC256(jwtConfig.getString(Setting.SECRET))).build().verify(jwt);
+      final com.typesafe.config.Config jwtConfig = Config.jwt();
+      JWT.require(Algorithm.HMAC256(jwtConfig.getString(Config.JWT_SECRET))).build().verify(jwt);
     } catch (TokenExpiredException e) {
       throw new NotAuthorizedException("JWT token has expired", WWW_AUTH_CHALLENGE_BEARER_TOKEN);
     } catch (Exception e) {

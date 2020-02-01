@@ -20,7 +20,7 @@ import co.origon.api.common.UrlParams;
 import co.origon.api.model.DeviceCredentials;
 import co.origon.api.model.MemberProxy;
 import co.origon.api.model.OneTimeCredentials;
-import co.origon.api.model.api.entity.ReplicatedEntity;
+import co.origon.api.model.api.ReplicatedEntity;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;

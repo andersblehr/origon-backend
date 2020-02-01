@@ -1,13 +1,11 @@
 package co.origon.api.common;
 
 import co.origon.api.model.MemberProxy;
-import co.origon.api.model.api.entity.Member;
-import co.origon.api.model.api.entity.Membership;
-import co.origon.api.model.api.entity.Origo;
+import co.origon.api.model.api.Member;
+import co.origon.api.model.api.Membership;
+import co.origon.api.model.api.Origo;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -29,14 +27,6 @@ import org.json.JSONObject;
 @Singleton
 @NoArgsConstructor
 public class Mailer {
-  private static final String JWT_CFG = "origon.jwt";
-  private static final String JWT_CFG_ISSUER = "issuer";
-  private static final String JWT_CFG_SECRET = "secret";
-  private static final String JWT_CFG_EXPIRES_IN_SECONDS = "expiresInSeconds";
-
-  private static final String MAILER_CFG = "origon.mailer";
-  private static final String MAILER_CFG_BASE_URL = "baseUrl";
-
   private static final String MAILER_RESOURCE_PATH = "/mailer";
   private static final String MAILER_TO = "to";
   private static final String MAILER_SUBJECT = "subject";
@@ -241,15 +231,15 @@ public class Mailer {
 
   private String createJwtBearerToken() {
     try {
-      final Config jwtConfig = ConfigFactory.load().getConfig(JWT_CFG);
+      final com.typesafe.config.Config jwtConfig = Config.jwt();
       final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(JWT_CFG_EXPIRES_IN_SECONDS));
+      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Config.JWT_EXPIRES_IN_SECONDS));
 
       return JWT.create()
-          .withIssuer(jwtConfig.getString(JWT_CFG_ISSUER))
+          .withIssuer(jwtConfig.getString(Config.JWT_ISSUER))
           .withIssuedAt(Date.from(now))
           .withExpiresAt(Date.from(jwtExpiry))
-          .sign(Algorithm.HMAC256(jwtConfig.getString(JWT_CFG_SECRET)));
+          .sign(Algorithm.HMAC256(jwtConfig.getString(Config.JWT_SECRET)));
     } catch (Exception e) {
       throw new RuntimeException("Error during JWT creatiion", e);
     }
@@ -266,9 +256,9 @@ public class Mailer {
       requestBody.put(MAILER_SUBJECT, subject);
       requestBody.put(MAILER_BODY, body);
 
-      final Config mailerConfig = ConfigFactory.load().getConfig(MAILER_CFG);
+      final com.typesafe.config.Config mailerConfig = Config.mailer();
       final URL mailerUrl =
-          new URL(mailerConfig.getString(MAILER_CFG_BASE_URL) + MAILER_RESOURCE_PATH);
+          new URL(mailerConfig.getString(Config.MAILER_BASE_URL) + MAILER_RESOURCE_PATH);
       final HttpURLConnection connection = (HttpURLConnection) mailerUrl.openConnection();
       connection.setDoInput(true);
       connection.setDoOutput(true);

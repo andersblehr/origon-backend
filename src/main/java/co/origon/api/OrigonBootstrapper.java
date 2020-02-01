@@ -1,15 +1,14 @@
 package co.origon.api;
 
-import co.origon.api.common.Config;
-import co.origon.api.model.ofy.entity.OAuthInfo;
-import co.origon.api.model.ofy.entity.OAuthMeta;
-import co.origon.api.model.ofy.entity.ODevice;
-import co.origon.api.model.ofy.entity.OMember;
-import co.origon.api.model.ofy.entity.OMemberProxy;
-import co.origon.api.model.ofy.entity.OMembership;
-import co.origon.api.model.ofy.entity.OOrigo;
-import co.origon.api.model.ofy.entity.OReplicatedEntity;
-import co.origon.api.model.ofy.entity.OReplicatedEntityRef;
+import co.origon.api.model.ofy.OAuthInfo;
+import co.origon.api.model.ofy.OAuthMeta;
+import co.origon.api.model.ofy.ODevice;
+import co.origon.api.model.ofy.OMember;
+import co.origon.api.model.ofy.OMemberProxy;
+import co.origon.api.model.ofy.OMembership;
+import co.origon.api.model.ofy.OOrigo;
+import co.origon.api.model.ofy.OReplicatedEntity;
+import co.origon.api.model.ofy.OReplicatedEntityRef;
 import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -18,8 +17,6 @@ public class OrigonBootstrapper implements ServletContextListener {
   @Override
   public void contextInitialized(ServletContextEvent event) {
     ObjectifyService.init();
-
-    ObjectifyService.register(Config.class);
 
     ObjectifyService.register(OAuthInfo.class);
     ObjectifyService.register(OAuthMeta.class);

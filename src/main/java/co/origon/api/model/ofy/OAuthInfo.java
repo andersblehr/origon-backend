@@ -1,4 +1,4 @@
-package co.origon.api.model.ofy.entity;
+package co.origon.api.model.ofy;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;

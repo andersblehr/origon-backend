@@ -3,7 +3,7 @@ package co.origon.api.repository.ofy;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.ofy.entity.OOrigo;
+import co.origon.api.model.ofy.OOrigo;
 import co.origon.api.repository.api.Repository;
 import com.googlecode.objectify.Key;
 import java.util.Collection;

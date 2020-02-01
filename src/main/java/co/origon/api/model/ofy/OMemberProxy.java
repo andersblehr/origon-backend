@@ -1,4 +1,4 @@
-package co.origon.api.model.ofy.entity;
+package co.origon.api.model.ofy;
 
 import co.origon.api.model.EntityKey;
 import co.origon.api.model.MemberProxy;

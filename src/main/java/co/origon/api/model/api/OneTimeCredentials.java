@@ -1,4 +1,4 @@
-package co.origon.api.model.api.entity;
+package co.origon.api.model.api;
 
 public interface OneTimeCredentials extends Entity<OneTimeCredentials> {
 
