@@ -17,7 +17,7 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.model.server.OneTimeCredentials;

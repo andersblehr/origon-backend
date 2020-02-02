@@ -6,7 +6,7 @@ import co.origon.api.common.Matcher;
 import co.origon.api.common.Pair;
 import co.origon.api.model.Entity;
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.client.Member;
 import co.origon.api.model.client.Membership;
 import co.origon.api.model.client.Origo;

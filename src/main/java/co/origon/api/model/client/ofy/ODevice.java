@@ -28,6 +28,17 @@ public class ODevice extends OReplicatedEntity {
 
   @Override
   public Device fromOfy() {
-    return null;
+    return Device.builder()
+        .id(entityId)
+        .parentId(origoId)
+        .type(type)
+        .name(name)
+        .lastSeen(lastSeen)
+        .createdBy(createdBy)
+        .createdAt(dateCreated)
+        .modifiedBy(modifiedBy)
+        .modifiedAt(dateReplicated)
+        .isExpired(isExpired)
+        .build();
   }
 }

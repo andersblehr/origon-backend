@@ -1,6 +1,6 @@
 package co.origon.api.model.client.ofy;
 
-import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -138,7 +138,5 @@ public abstract class OReplicatedEntity implements OfyMapper<ReplicatedEntity> {
   }
 
   @Override
-  public ReplicatedEntity fromOfy() {
-    return null;
-  }
+  public abstract ReplicatedEntity fromOfy();
 }

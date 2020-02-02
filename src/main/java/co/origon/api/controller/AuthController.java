@@ -8,7 +8,7 @@ import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidBasicAuthCredentials;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.service.AuthService;

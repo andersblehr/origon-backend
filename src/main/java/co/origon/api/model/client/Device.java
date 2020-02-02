@@ -1,6 +1,7 @@
 package co.origon.api.model.client;
 
-import co.origon.api.model.ReplicatedEntity;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import java.util.Date;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Device extends ReplicatedEntity {
 
   private final String type;

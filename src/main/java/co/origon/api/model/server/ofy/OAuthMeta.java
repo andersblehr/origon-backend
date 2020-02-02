@@ -37,6 +37,12 @@ public class OAuthMeta implements OfyMapper<DeviceCredentials> {
 
   @Override
   public DeviceCredentials fromOfy() {
-    return null;
+    return DeviceCredentials.builder()
+        .deviceToken(authToken)
+        .userEmail(email)
+        .deviceId(deviceId)
+        .deviceType(deviceType)
+        .expiresAt(dateExpires)
+        .build();
   }
 }

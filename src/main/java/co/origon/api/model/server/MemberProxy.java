@@ -1,6 +1,8 @@
 package co.origon.api.model.server;
 
 import co.origon.api.model.EntityKey;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import java.util.Set;
 import lombok.Builder;
 import lombok.Singular;
@@ -12,6 +14,7 @@ import lombok.experimental.Accessors;
 @With
 @Builder
 @Accessors(fluent = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class MemberProxy {
 
   private final String id;

@@ -12,8 +12,10 @@ import com.googlecode.objectify.annotation.OnLoad;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class OMemberProxy implements OfyMapper<MemberProxy> {
 
   @Id private String proxyId;
