@@ -1,4 +1,4 @@
-package co.origon.api.model.ofy;
+package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.EntityKey;
 import co.origon.api.model.client.ReplicatedEntityRef;

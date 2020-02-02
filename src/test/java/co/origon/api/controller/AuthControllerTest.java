@@ -17,11 +17,11 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
+import co.origon.api.model.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.model.server.OneTimeCredentials;
-import co.origon.api.model.ReplicatedEntity;
-import co.origon.api.repository.api.Repository;
+import co.origon.api.repository.Repository;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
@@ -72,11 +72,7 @@ class AuthControllerTest {
           .deviceToken(DEVICE_TOKEN)
           .build();
   private final MemberProxy uninvitedUserProxy =
-      MemberProxy.builder()
-          .id(USER_EMAIL)
-          .passwordHash("some")
-          .deviceToken(DEVICE_TOKEN)
-          .build();
+      MemberProxy.builder().id(USER_EMAIL).passwordHash("some").deviceToken(DEVICE_TOKEN).build();
   private final OneTimeCredentials validOneTimeCredentials =
       OneTimeCredentials.builder()
           .email(USER_EMAIL)

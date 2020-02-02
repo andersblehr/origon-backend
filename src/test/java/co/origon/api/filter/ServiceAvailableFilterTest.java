@@ -52,7 +52,8 @@ class ServiceAvailableFilterTest {
     @DisplayName("Given available but nok OK system status, then throw ServiceUnavailableException")
     void givenAvailableButNotOkSystemStatus_thenThrowServiceUnavailableException() {
       // given
-      when(systemConfig.getString(Settings.SYSTEM_STATUS)).thenReturn(null, Settings.SYSTEM_STATUS_DOWN);
+      when(systemConfig.getString(Settings.SYSTEM_STATUS))
+          .thenReturn(null, Settings.SYSTEM_STATUS_DOWN);
 
       assertAll(
           "System status not OK or null",
@@ -76,7 +77,8 @@ class ServiceAvailableFilterTest {
                         // when
                         serviceAvailableFilter.filter(requestContext));
             assertEquals(
-                "Service unavailable. System status: " + Settings.SYSTEM_STATUS_DOWN, u.getMessage());
+                "Service unavailable. System status: " + Settings.SYSTEM_STATUS_DOWN,
+                u.getMessage());
           });
     }
 

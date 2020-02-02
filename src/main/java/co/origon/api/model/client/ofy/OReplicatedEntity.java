@@ -1,7 +1,6 @@
-package co.origon.api.model.ofy;
+package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.ReplicatedEntity;
-import co.origon.api.model.client.Membership;
 import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;

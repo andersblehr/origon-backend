@@ -1,4 +1,4 @@
-package co.origon.api.model.ofy;
+package co.origon.api.model.server.ofy;
 
 import co.origon.api.model.server.OneTimeCredentials;
 import co.origon.api.repository.ofy.OfyMapper;
