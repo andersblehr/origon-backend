@@ -1,4 +1,4 @@
-package co.origon.api.repository.api;
+package co.origon.api.repository;
 
 import co.origon.api.model.EntityKey;
 import java.util.Collection;

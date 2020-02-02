@@ -47,6 +47,6 @@ public class Membership extends ReplicatedEntity {
         && type() != null
         && Arrays.asList("P", "R", "L", "A").contains(type())
         && ((status() == null && isAssociate())
-        || (status() != null && (!status().equals("A") || type().equals("R"))));
+            || (status() != null && (!status().equals("A") || type().equals("R"))));
   }
 }

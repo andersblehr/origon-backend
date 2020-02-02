@@ -9,7 +9,7 @@ import static org.mockito.Mockito.when;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.server.DeviceCredentials;
-import co.origon.api.repository.api.Repository;
+import co.origon.api.repository.Repository;
 import java.util.Date;
 import java.util.Optional;
 import javax.ws.rs.BadRequestException;

@@ -1,14 +1,14 @@
 package co.origon.api;
 
-import co.origon.api.model.ofy.OAuthInfo;
-import co.origon.api.model.ofy.OAuthMeta;
-import co.origon.api.model.ofy.ODevice;
-import co.origon.api.model.ofy.OMember;
-import co.origon.api.model.ofy.OMemberProxy;
-import co.origon.api.model.ofy.OMembership;
-import co.origon.api.model.ofy.OOrigo;
-import co.origon.api.model.ofy.OReplicatedEntity;
-import co.origon.api.model.ofy.OReplicatedEntityRef;
+import co.origon.api.model.client.ofy.ODevice;
+import co.origon.api.model.client.ofy.OMember;
+import co.origon.api.model.client.ofy.OMembership;
+import co.origon.api.model.client.ofy.OOrigo;
+import co.origon.api.model.client.ofy.OReplicatedEntity;
+import co.origon.api.model.client.ofy.OReplicatedEntityRef;
+import co.origon.api.model.server.ofy.OAuthInfo;
+import co.origon.api.model.server.ofy.OAuthMeta;
+import co.origon.api.model.server.ofy.OMemberProxy;
 import com.googlecode.objectify.ObjectifyService;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;

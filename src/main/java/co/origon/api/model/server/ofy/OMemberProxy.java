@@ -1,6 +1,8 @@
-package co.origon.api.model.ofy;
+package co.origon.api.model.server.ofy;
 
 import co.origon.api.model.EntityKey;
+import co.origon.api.model.client.ofy.OMembership;
+import co.origon.api.model.client.ofy.OOrigo;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.repository.ofy.OfyMapper;
 import com.googlecode.objectify.Key;
@@ -21,11 +23,22 @@ public class OMemberProxy implements OfyMapper<MemberProxy> {
   private Set<Key<OAuthMeta>> authMetaKeys;
   private Set<Key<OMembership>> membershipKeys;
 
-  public static OMemberProxy fromModel(MemberProxy modelMemberProxy) {
+  @OnLoad
+  public void instantiateNullSets() {
+    if (authMetaKeys == null) {
+      authMetaKeys = new HashSet<>();
+    }
+    if (membershipKeys == null) {
+      membershipKeys = new HashSet<>();
+    }
+  }
+
+  public static OMemberProxy toOfy(MemberProxy modelMemberProxy) {
     return new OMemberProxy(modelMemberProxy);
   }
 
-  public MemberProxy toModel() {
+  @Override
+  public MemberProxy fromOfy() {
     return MemberProxy.builder()
         .id(proxyId)
         .memberId(memberId)
@@ -45,27 +58,17 @@ public class OMemberProxy implements OfyMapper<MemberProxy> {
         .build();
   }
 
-  @OnLoad
-  public void instantiateNullSets() {
-    if (authMetaKeys == null) {
-      authMetaKeys = new HashSet<>();
-    }
-    if (membershipKeys == null) {
-      membershipKeys = new HashSet<>();
-    }
-  }
-
-  private OMemberProxy(MemberProxy modelMemberProxy) {
-    this.proxyId = modelMemberProxy.id();
-    this.memberId = modelMemberProxy.memberId();
-    this.memberName = modelMemberProxy.memberName();
-    this.passwordHash = modelMemberProxy.passwordHash();
+  private OMemberProxy(MemberProxy memberProxy) {
+    this.proxyId = memberProxy.id();
+    this.memberId = memberProxy.memberId();
+    this.memberName = memberProxy.memberName();
+    this.passwordHash = memberProxy.passwordHash();
     this.authMetaKeys =
-        modelMemberProxy.deviceTokens().stream()
+        memberProxy.deviceTokens().stream()
             .map(token -> Key.create(OAuthMeta.class, token))
             .collect(Collectors.toSet());
     this.membershipKeys =
-        modelMemberProxy.membershipKeys().stream()
+        memberProxy.membershipKeys().stream()
             .map(
                 entityKey ->
                     Key.create(
@@ -73,10 +76,5 @@ public class OMemberProxy implements OfyMapper<MemberProxy> {
                         OMembership.class,
                         entityKey.entityId()))
             .collect(Collectors.toSet());
-  }
-
-  @Override
-  public MemberProxy fromOfy() {
-    return null;
   }
 }

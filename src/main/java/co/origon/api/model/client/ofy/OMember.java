@@ -1,7 +1,6 @@
-package co.origon.api.model.ofy;
+package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.client.Member;
-import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

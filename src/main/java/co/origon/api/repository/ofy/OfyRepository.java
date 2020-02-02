@@ -3,8 +3,8 @@ package co.origon.api.repository.ofy;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.ofy.OOrigo;
-import co.origon.api.repository.api.Repository;
+import co.origon.api.model.client.ofy.OOrigo;
+import co.origon.api.repository.Repository;
 import com.googlecode.objectify.Key;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 import javax.inject.Singleton;
 
 @Singleton
-public class RepositoryOfy<T, U extends OfyMapper<T>> implements Repository<T> {
+public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
 
   private Class<U> ofyClass;
 
-  public RepositoryOfy(Class<U> ofyClass) {
+  public OfyRepository(Class<U> ofyClass) {
     this.ofyClass = ofyClass;
   }
 
