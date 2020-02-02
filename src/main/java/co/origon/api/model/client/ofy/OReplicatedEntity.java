@@ -28,17 +28,17 @@ import java.util.Map;
   @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")
 })
 public abstract class OReplicatedEntity implements OfyMapper<ReplicatedEntity> {
-  protected @Parent Key<OOrigo> parentKey;
-  protected @Id String entityId;
+  public @Parent Key<OOrigo> parentKey;
+  public @Id String entityId;
 
-  protected @Ignore String origoId;
-  protected @Ignore String entityClass;
-  protected boolean isExpired;
+  public @Ignore String origoId;
+  public @Ignore String entityClass;
+  public boolean isExpired;
 
-  protected String createdBy;
-  protected String modifiedBy;
-  protected Date dateCreated;
-  protected @Index Date dateReplicated;
+  public String createdBy;
+  public String modifiedBy;
+  public Date dateCreated;
+  public @Index Date dateReplicated;
 
   @OnSave
   @SuppressWarnings("unchecked")

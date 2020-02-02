@@ -18,26 +18,28 @@ import java.util.Map;
     value = {"parentKey", "userKey"},
     ignoreUnknown = true)
 public class ODevice extends OReplicatedEntity {
-  private String type;
-  private String name;
-  private Date lastSeen;
+  public String type;
+  public String name;
+  public Date lastSeen;
 
-  private @Ignore OMember user;
-  private @Ignore Map<String, String> userRef;
-  private Key<OMember> userKey;
+  public @Ignore OMember user;
+  public @Ignore Map<String, String> userRef;
+  public Key<OMember> userKey;
 
   @Override
   public Device fromOfy() {
     return Device.builder()
-        .id(entityId)
-        .parentId(origoId)
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
         .type(type)
         .name(name)
         .lastSeen(lastSeen)
+        .userRef(userRef)
         .createdBy(createdBy)
-        .createdAt(dateCreated)
+        .dateCreated(dateCreated)
         .modifiedBy(modifiedBy)
-        .modifiedAt(dateReplicated)
+        .dateReplicated(dateReplicated)
         .isExpired(isExpired)
         .build();
   }

@@ -4,6 +4,9 @@ import co.origon.api.model.EntityKey;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
@@ -16,10 +19,14 @@ import lombok.experimental.SuperBuilder;
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(
+    value = {"parentKey", "referencedEntityKey", "expired"},
+    ignoreUnknown = true)
 public class ReplicatedEntityRef extends ReplicatedEntity {
 
   private final String referencedEntityId;
-  private final String referencedEntityParentId;
+  private final String referencedEntityOrigoId;
 
   @Override
   public boolean isEntityRef() {
@@ -28,6 +35,6 @@ public class ReplicatedEntityRef extends ReplicatedEntity {
 
   @JsonIgnore
   public EntityKey referencedEntityKey() {
-    return EntityKey.from(referencedEntityId(), referencedEntityParentId());
+    return EntityKey.from(referencedEntityId(), referencedEntityOrigoId());
   }
 }
