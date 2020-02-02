@@ -1,7 +1,7 @@
 package co.origon.api.model.ofy;
 
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.api.ReplicatedEntityRef;
+import co.origon.api.model.client.ReplicatedEntityRef;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,7 +18,8 @@ import com.googlecode.objectify.annotation.Subclass;
 @JsonIgnoreProperties(
     value = {"parentKey", "referencedEntityKey"},
     ignoreUnknown = true)
-public class OReplicatedEntityRef extends OReplicatedEntity implements ReplicatedEntityRef {
+public class OReplicatedEntityRef extends OReplicatedEntity {
+
   public @Ignore String referencedEntityId;
   public @Ignore String referencedEntityOrigoId;
   public Key<OReplicatedEntity> referencedEntityKey;
@@ -27,7 +28,6 @@ public class OReplicatedEntityRef extends OReplicatedEntity implements Replicate
     super();
   }
 
-  @Override
   public EntityKey referencedEntityKey() {
     return EntityKey.from(referencedEntityId, referencedEntityOrigoId);
   }
@@ -51,5 +51,10 @@ public class OReplicatedEntityRef extends OReplicatedEntity implements Replicate
 
     referencedEntityId = referencedEntityKey.getRaw().getName();
     referencedEntityOrigoId = referencedEntityKey.getParent().getRaw().getName();
+  }
+
+  @Override
+  public ReplicatedEntityRef fromOfy() {
+    return null;
   }
 }

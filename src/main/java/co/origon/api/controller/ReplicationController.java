@@ -10,9 +10,9 @@ import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.api.Origo;
-import co.origon.api.model.api.ReplicatedEntity;
+import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.Origo;
+import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
@@ -64,9 +64,10 @@ public class ReplicationController {
         authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
     checkReplicationDate(replicationDate);
 
-    replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
+    replicationService.replicate(
+        entities, deviceCredentials.userEmail(), Language.fromCode(language));
     final List<ReplicatedEntity> returnableEntities =
-        replicationService.fetch(deviceCredentials.email(), replicationDate).stream()
+        replicationService.fetch(deviceCredentials.userEmail(), replicationDate).stream()
             .filter(entity -> !entities.contains(entity))
             .collect(Collectors.toList());
 
@@ -89,7 +90,7 @@ public class ReplicationController {
     checkReplicationDate(replicationDate);
 
     final List<ReplicatedEntity> fetchedEntities =
-        replicationService.fetch(deviceCredentials.email(), replicationDate);
+        replicationService.fetch(deviceCredentials.userEmail(), replicationDate);
     Session.log(fetchedEntities.size() + " entities fetched");
 
     return Response.ok(fetchedEntities.size() > 0 ? fetchedEntities : null)

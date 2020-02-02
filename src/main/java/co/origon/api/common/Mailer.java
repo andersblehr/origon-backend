@@ -1,9 +1,9 @@
 package co.origon.api.common;
 
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.api.Member;
-import co.origon.api.model.api.Membership;
-import co.origon.api.model.api.Origo;
+import co.origon.api.model.client.Member;
+import co.origon.api.model.client.Membership;
+import co.origon.api.model.client.Origo;
+import co.origon.api.model.server.MemberProxy;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.typesafe.config.Config;

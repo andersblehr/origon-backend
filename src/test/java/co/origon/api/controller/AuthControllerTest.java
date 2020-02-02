@@ -17,10 +17,10 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.OneTimeCredentials;
-import co.origon.api.model.api.ReplicatedEntity;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
+import co.origon.api.model.server.OneTimeCredentials;
+import co.origon.api.model.ReplicatedEntity;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
@@ -69,13 +69,13 @@ class AuthControllerTest {
           .id(USER_EMAIL)
           .memberId(USER_ID)
           .passwordHash("some")
-          .addDeviceTokens(DEVICE_TOKEN)
+          .deviceToken(DEVICE_TOKEN)
           .build();
   private final MemberProxy uninvitedUserProxy =
       MemberProxy.builder()
           .id(USER_EMAIL)
           .passwordHash("some")
-          .addDeviceTokens(DEVICE_TOKEN)
+          .deviceToken(DEVICE_TOKEN)
           .build();
   private final OneTimeCredentials validOneTimeCredentials =
       OneTimeCredentials.builder()
@@ -93,7 +93,7 @@ class AuthControllerTest {
           .build();
   private final DeviceCredentials deviceCredentials =
       DeviceCredentials.builder()
-          .email(USER_EMAIL)
+          .userEmail(USER_EMAIL)
           .deviceId(DEVICE_ID)
           .deviceToken(DEVICE_TOKEN)
           .deviceType(DEVICE_TYPE)

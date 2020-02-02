@@ -1,17 +1,17 @@
 package co.origon.api.repository.ofy;
 
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.OneTimeCredentials;
-import co.origon.api.model.api.Membership;
-import co.origon.api.model.api.Origo;
-import co.origon.api.model.api.ReplicatedEntity;
+import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.Membership;
+import co.origon.api.model.client.Origo;
 import co.origon.api.model.ofy.OAuthInfo;
 import co.origon.api.model.ofy.OAuthMeta;
 import co.origon.api.model.ofy.OMemberProxy;
 import co.origon.api.model.ofy.OMembership;
 import co.origon.api.model.ofy.OOrigo;
 import co.origon.api.model.ofy.OReplicatedEntity;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
+import co.origon.api.model.server.OneTimeCredentials;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
 import javax.inject.Singleton;
@@ -21,25 +21,25 @@ public class RepositoryFactoryOfy implements RepositoryFactory {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <E> Repository<E> repositoryFor(Class<E> clazz) {
+  public <T> Repository<T> repositoryFor(Class<T> clazz) {
     if (clazz.equals(DeviceCredentials.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OAuthMeta.class);
+      return (Repository<T>) new RepositoryOfy<>(OAuthMeta.class);
     }
     if (clazz.equals(MemberProxy.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OMemberProxy.class);
+      return (Repository<T>) new RepositoryOfy<>(OMemberProxy.class);
     }
     if (clazz.equals(OneTimeCredentials.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OAuthInfo.class);
+      return (Repository<T>) new RepositoryOfy<>(OAuthInfo.class);
     }
     if (clazz.equals(Membership.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OMembership.class);
+      return (Repository<T>) new RepositoryOfy<>(OMembership.class);
     }
     if (clazz.equals(Origo.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OOrigo.class);
+      return (Repository<T>) new RepositoryOfy<>(OOrigo.class);
     }
     if (clazz.equals(ReplicatedEntity.class)) {
-      return (Repository<E>) new RepositoryOfy<>(OReplicatedEntity.class);
+      return (Repository<T>) new RepositoryOfy<>(OReplicatedEntity.class);
     }
-    return null;
+    throw new IllegalArgumentException("No Ofy mapping for class: " + clazz.getSimpleName());
   }
 }

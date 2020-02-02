@@ -3,8 +3,8 @@ package co.origon.api.filter;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
 import co.origon.api.controller.AuthController;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
 import java.util.Date;
@@ -59,14 +59,14 @@ public class ValidDeviceTokenFilter implements ContainerRequestFilter {
 
     final MemberProxy userProxy =
         memberProxyRepository
-            .getById(deviceCredentials.email())
+            .getById(deviceCredentials.userEmail())
             .orElseThrow(() -> new BadRequestException("Cannot authenticate unknown user"));
     if (!userProxy.isRegistered()) {
       throw new BadRequestException("Cannot authenticate inactive user");
     }
 
     if (BasicAuthCredentials.hasCredentials()
-        && !BasicAuthCredentials.getCredentials().email().equals(deviceCredentials.email()))
+        && !BasicAuthCredentials.getCredentials().email().equals(deviceCredentials.userEmail()))
       throw new BadRequestException(
           "Basic auth credentials do not match records for provided device token");
   }

@@ -4,9 +4,9 @@ import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Session;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.OneTimeCredentials;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
+import co.origon.api.model.server.OneTimeCredentials;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
 import java.util.Collection;
@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
@@ -37,10 +36,6 @@ public class AuthService {
 
   private final Supplier<RuntimeException> userDoesNotExistThrower =
       () -> new NotAuthorizedException("User does not exist");
-  private final Supplier<RuntimeException> userHasNoPasswordThrower =
-      () ->
-          new InternalServerErrorException(
-              "Illegal state: Registered user has no registered password");
 
   @Inject
   public AuthService(RepositoryFactory repositoryFactory, Mailer mailer) {
@@ -85,34 +80,34 @@ public class AuthService {
 
   public MemberProxy activateUser(DeviceCredentials deviceCredentials, String passwordHash) {
     final MemberProxy userProxy =
-        checkUserStatus(deviceCredentials.email(), false)
+        checkUserStatus(deviceCredentials.userEmail(), false)
             .orElse(
                 MemberProxy.builder()
-                    .id(deviceCredentials.email())
+                    .id(deviceCredentials.userEmail())
                     .passwordHash(passwordHash)
                     .build());
     final OneTimeCredentials oneTimeCredentials =
         oneTimeCredentialsRepository
-            .getById(deviceCredentials.email())
+            .getById(deviceCredentials.userEmail())
             .orElseThrow(() -> new BadRequestException("User is not awaiting activation"));
     if (!oneTimeCredentials.passwordHash().equals(passwordHash)) {
       throw new NotAuthorizedException("Incorrect password", WWW_AUTH_CHALLENGE_BASIC_AUTH);
     }
     deviceCredentialsRepository.save(deviceCredentials);
-    oneTimeCredentialsRepository.deleteById(deviceCredentials.email());
-    Session.log("Persisted new device token for user " + deviceCredentials.email());
+    oneTimeCredentialsRepository.deleteById(deviceCredentials.userEmail());
+    Session.log("Persisted new device token for user " + deviceCredentials.userEmail());
 
     return memberProxyRepository.save(userProxy);
   }
 
   public MemberProxy loginUser(DeviceCredentials deviceCredentials, String passwordHash) {
     final MemberProxy userProxy =
-        checkUserStatus(deviceCredentials.email(), true).orElseThrow(userDoesNotExistThrower);
-    if (!userProxy.passwordHash().orElseThrow(userHasNoPasswordThrower).equals(passwordHash)) {
+        checkUserStatus(deviceCredentials.userEmail(), true).orElseThrow(userDoesNotExistThrower);
+    if (!userProxy.passwordHash().equals(passwordHash)) {
       throw new NotAuthorizedException("Invalid password");
     }
     deviceCredentialsRepository.save(deviceCredentials);
-    Session.log("Persisted new device token for user " + deviceCredentials.email());
+    Session.log("Persisted new device token for user " + deviceCredentials.userEmail());
 
     return memberProxyRepository.save(
         reauthoriseUserDevice(

@@ -1,7 +1,7 @@
 package co.origon.api.model.ofy;
 
-import co.origon.api.model.api.Device;
-import co.origon.api.model.api.Member;
+import co.origon.api.model.client.Device;
+import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,7 +18,7 @@ import java.util.Map;
 @JsonIgnoreProperties(
     value = {"parentKey", "userKey"},
     ignoreUnknown = true)
-public class ODevice extends OReplicatedEntity implements Device {
+public class ODevice extends OReplicatedEntity {
   private String type;
   private String name;
   private Date lastSeen;
@@ -27,27 +27,8 @@ public class ODevice extends OReplicatedEntity implements Device {
   private @Ignore Map<String, String> userRef;
   private Key<OMember> userKey;
 
-  public ODevice() {
-    super();
-  }
-
   @Override
-  public String type() {
-    return type;
-  }
-
-  @Override
-  public String name() {
-    return name;
-  }
-
-  @Override
-  public Date lastSeen() {
-    return lastSeen;
-  }
-
-  @Override
-  public Member user() {
-    return user;
+  public Device fromOfy() {
+    return null;
   }
 }

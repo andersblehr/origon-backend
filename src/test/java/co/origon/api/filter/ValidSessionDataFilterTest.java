@@ -8,7 +8,7 @@ import static org.mockito.Mockito.when;
 
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.DeviceCredentials;
+import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.repository.api.Repository;
 import java.util.Date;
 import java.util.Optional;
@@ -83,7 +83,7 @@ class ValidSessionDataFilterTest {
           .thenReturn(
               Optional.of(
                   DeviceCredentials.builder()
-                      .email("some")
+                      .userEmail("some")
                       .deviceId(VALID_DEVICE_ID)
                       .deviceType("some")
                       .deviceToken(VALID_DEVICE_TOKEN)
