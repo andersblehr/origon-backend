@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import co.origon.api.common.Config;
+import co.origon.api.common.Settings;
+import com.typesafe.config.Config;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.ContainerRequestContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ServiceAvailableFilterTest {
 
   @Mock private ContainerRequestContext requestContext;
-  @Mock private com.typesafe.config.Config systemConfig;
+  @Mock private Config systemConfig;
 
   private ServiceAvailableFilter serviceAvailableFilter;
 
@@ -38,7 +39,7 @@ class ServiceAvailableFilterTest {
     @DisplayName("Given system status is OK, then run to completion")
     void givenSystemStatusIsOk_thenRunToCoompletion() {
       // given
-      when(systemConfig.getString(Config.SYSTEM_STATUS)).thenReturn(Config.SYSTEM_STATUS_OK);
+      when(systemConfig.getString(Settings.SYSTEM_STATUS)).thenReturn(Settings.SYSTEM_STATUS_OK);
 
       // when
       serviceAvailableFilter.filter(requestContext);
@@ -51,7 +52,7 @@ class ServiceAvailableFilterTest {
     @DisplayName("Given available but nok OK system status, then throw ServiceUnavailableException")
     void givenAvailableButNotOkSystemStatus_thenThrowServiceUnavailableException() {
       // given
-      when(systemConfig.getString(Config.SYSTEM_STATUS)).thenReturn(null, Config.SYSTEM_STATUS_DOWN);
+      when(systemConfig.getString(Settings.SYSTEM_STATUS)).thenReturn(null, Settings.SYSTEM_STATUS_DOWN);
 
       assertAll(
           "System status not OK or null",
@@ -75,7 +76,7 @@ class ServiceAvailableFilterTest {
                         // when
                         serviceAvailableFilter.filter(requestContext));
             assertEquals(
-                "Service unavailable. System status: " + Config.SYSTEM_STATUS_DOWN, u.getMessage());
+                "Service unavailable. System status: " + Settings.SYSTEM_STATUS_DOWN, u.getMessage());
           });
     }
 
@@ -84,7 +85,7 @@ class ServiceAvailableFilterTest {
         "Given exception thrown when querying system status, then throw ServiceUnavailableException")
     void givenExceptionThrownWhenQueryingSystemStatus_thenThrowServiceUnavailableException() {
       // given
-      when(systemConfig.getString(Config.SYSTEM_STATUS))
+      when(systemConfig.getString(Settings.SYSTEM_STATUS))
           .thenThrow(new RuntimeException("Yup, we're testing"));
 
       // then

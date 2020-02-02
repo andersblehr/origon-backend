@@ -1,8 +1,9 @@
 package co.origon.api.common;
 
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-public class Config {
+public class Settings {
   private static final String JWT_CFG = "origon.jwt";
   public static final String JWT_ISSUER = "issuer";
   public static final String JWT_SECRET = "secret";
@@ -16,9 +17,9 @@ public class Config {
   public static final String SYSTEM_STATUS_OK = "ok";
   public static final String SYSTEM_STATUS_DOWN = "down";
 
-  private static com.typesafe.config.Config jwt;
-  private static com.typesafe.config.Config mailer;
-  private static com.typesafe.config.Config system;
+  private static Config jwt;
+  private static Config mailer;
+  private static Config system;
 
   static {
     jwt = ConfigFactory.load().getConfig(JWT_CFG);
@@ -26,15 +27,15 @@ public class Config {
     system = ConfigFactory.load().getConfig(SYSTEM_CFG);
   }
 
-  public static com.typesafe.config.Config jwt() {
+  public static Config jwt() {
     return jwt;
   }
 
-  public static com.typesafe.config.Config mailer() {
+  public static Config mailer() {
     return mailer;
   }
 
-  public static com.typesafe.config.Config system() {
+  public static Config system() {
     return system;
   }
 }

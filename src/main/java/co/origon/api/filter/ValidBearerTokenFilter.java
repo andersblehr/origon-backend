@@ -1,9 +1,10 @@
 package co.origon.api.filter;
 
-import co.origon.api.common.Config;
+import co.origon.api.common.Settings;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.typesafe.config.Config;
 import javax.annotation.Priority;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
@@ -34,8 +35,8 @@ public class ValidBearerTokenFilter implements ContainerRequestFilter {
 
     try {
       final String jwt = authElements[1];
-      final com.typesafe.config.Config jwtConfig = Config.jwt();
-      JWT.require(Algorithm.HMAC256(jwtConfig.getString(Config.JWT_SECRET))).build().verify(jwt);
+      final Config jwtConfig = Settings.jwt();
+      JWT.require(Algorithm.HMAC256(jwtConfig.getString(Settings.JWT_SECRET))).build().verify(jwt);
     } catch (TokenExpiredException e) {
       throw new NotAuthorizedException("JWT token has expired", WWW_AUTH_CHALLENGE_BEARER_TOKEN);
     } catch (Exception e) {

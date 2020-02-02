@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
-import co.origon.api.common.Config;
+import co.origon.api.common.Settings;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import java.io.UnsupportedEncodingException;
@@ -169,10 +169,10 @@ class ValidBearerTokenFilterTest {
     final long issuedAtMillis = System.currentTimeMillis() - ageMillis;
     try {
       return JWT.create()
-          .withIssuer(Config.jwt().getString(Config.JWT_ISSUER))
+          .withIssuer(Settings.jwt().getString(Settings.JWT_ISSUER))
           .withIssuedAt(new Date(issuedAtMillis))
           .withExpiresAt(new Date(issuedAtMillis + validMillis))
-          .sign(Algorithm.HMAC256(Config.jwt().getString(Config.JWT_SECRET)));
+          .sign(Algorithm.HMAC256(Settings.jwt().getString(Settings.JWT_SECRET)));
     } catch (UnsupportedEncodingException e) {
       fail(e);
       throw new RuntimeException(e);
