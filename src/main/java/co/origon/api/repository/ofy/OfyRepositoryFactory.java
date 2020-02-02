@@ -1,6 +1,6 @@
 package co.origon.api.repository.ofy;
 
-import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.client.Membership;
 import co.origon.api.model.client.Origo;
 import co.origon.api.model.client.ofy.OMembership;

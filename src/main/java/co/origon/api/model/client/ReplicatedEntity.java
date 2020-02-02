@@ -1,5 +1,7 @@
-package co.origon.api.model;
+package co.origon.api.model.client;
 
+import co.origon.api.model.Entity;
+import co.origon.api.model.EntityKey;
 import java.util.Date;
 import lombok.Getter;
 import lombok.experimental.Accessors;

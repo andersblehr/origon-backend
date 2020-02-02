@@ -55,6 +55,16 @@ public class OReplicatedEntityRef extends OReplicatedEntity {
 
   @Override
   public ReplicatedEntityRef fromOfy() {
-    return null;
+    return ReplicatedEntityRef.builder()
+        .id(entityId)
+        .parentId(origoId)
+        .referencedEntityId(referencedEntityId)
+        .referencedEntityParentId(referencedEntityOrigoId)
+        .createdBy(createdBy)
+        .createdAt(dateCreated)
+        .modifiedBy(modifiedBy)
+        .modifiedAt(dateReplicated)
+        .isExpired(isExpired)
+        .build();
   }
 }

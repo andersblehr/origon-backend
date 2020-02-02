@@ -31,6 +31,13 @@ public class OMembership extends OReplicatedEntity {
 
   @Override
   public Membership fromOfy() {
-    return null;
+    return Membership.builder()
+        .id(entityId)
+        .parentId(origoId)
+        .type(type)
+        .isAdmin(isAdmin)
+        .status(status)
+        .affiliations(affiliations)
+        .build();
   }
 }

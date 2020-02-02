@@ -29,6 +29,24 @@ public class OOrigo extends OReplicatedEntity {
 
   @Override
   public Origo fromOfy() {
-    return null;
+    return Origo.builder()
+        .id(entityId)
+        .parentId(origoId)
+        .name(name)
+        .type(type)
+        .description(descriptionText)
+        .address(address)
+        .location(location)
+        .telephone(telephone)
+        .permissions(permissions)
+        .isForMinors(isForMinors)
+        .joinCode(joinCode)
+        .internalJoinCode(internalJoinCode)
+        .createdBy(createdBy)
+        .createdAt(dateCreated)
+        .modifiedBy(modifiedBy)
+        .modifiedAt(dateReplicated)
+        .isExpired(isExpired)
+        .build();
   }
 }

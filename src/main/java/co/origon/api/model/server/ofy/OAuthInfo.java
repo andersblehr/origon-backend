@@ -14,6 +14,11 @@ public class OAuthInfo implements OfyMapper<OneTimeCredentials> {
 
   @Override
   public OneTimeCredentials fromOfy() {
-    return null;
+    return OneTimeCredentials.builder()
+        .email(email)
+        .deviceId(deviceId)
+        .passwordHash(passwordHash)
+        .activationCode(activationCode)
+        .build();
   }
 }

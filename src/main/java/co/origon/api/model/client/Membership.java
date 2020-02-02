@@ -1,6 +1,8 @@
 package co.origon.api.model.client;
 
-import co.origon.api.model.ReplicatedEntity;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Arrays;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -13,6 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Membership extends ReplicatedEntity {
 
   private final String type;
@@ -23,14 +26,17 @@ public class Membership extends ReplicatedEntity {
   private final Origo origo;
 
   @Override
+  @JsonIgnore
   public boolean isMembership() {
     return true;
   }
 
+  @JsonIgnore
   public boolean isAssociate() {
     return type().equals("A");
   }
 
+  @JsonIgnore
   public boolean isFetchable() {
     if (isExpired() || type().equals("F")) {
       return false;
@@ -41,6 +47,7 @@ public class Membership extends ReplicatedEntity {
     return status() != null && !status().equals("-");
   }
 
+  @JsonIgnore
   public boolean isInvitable() {
     return modifiedAt() == null
         && member().hasEmail()

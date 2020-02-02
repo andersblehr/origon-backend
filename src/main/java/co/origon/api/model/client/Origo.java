@@ -1,6 +1,8 @@
 package co.origon.api.model.client;
 
-import co.origon.api.model.ReplicatedEntity;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
@@ -12,6 +14,7 @@ import lombok.experimental.SuperBuilder;
 @Getter()
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
+@JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class Origo extends ReplicatedEntity {
 
   private final String name;
@@ -25,10 +28,12 @@ public class Origo extends ReplicatedEntity {
   private final String joinCode;
   private final String internalJoinCode;
 
+  @JsonIgnore
   public boolean isResidence() {
     return type() != null && type().equals("residence");
   }
 
+  @JsonIgnore
   public boolean isPrivate() {
     return type() != null && type().equals("private");
   }
