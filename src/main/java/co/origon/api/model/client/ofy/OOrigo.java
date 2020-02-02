@@ -14,24 +14,25 @@ import com.googlecode.objectify.annotation.Subclass;
     value = {"parentKey"},
     ignoreUnknown = true)
 public class OOrigo extends OReplicatedEntity {
-  private String name;
-  private String type;
+  public String name;
+  public String type;
 
-  private String descriptionText;
-  private String address;
-  private String location;
-  private String telephone;
-  private String permissions;
-  private boolean isForMinors;
+  public String descriptionText;
+  public String address;
+  public String location;
+  public String telephone;
+  public String permissions;
+  public boolean isForMinors;
 
-  private String joinCode;
-  private String internalJoinCode;
+  public String joinCode;
+  public String internalJoinCode;
 
   @Override
   public Origo fromOfy() {
     return Origo.builder()
-        .id(entityId)
-        .parentId(origoId)
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
         .name(name)
         .type(type)
         .description(descriptionText)
@@ -43,9 +44,9 @@ public class OOrigo extends OReplicatedEntity {
         .joinCode(joinCode)
         .internalJoinCode(internalJoinCode)
         .createdBy(createdBy)
-        .createdAt(dateCreated)
+        .dateCreated(dateCreated)
         .modifiedBy(modifiedBy)
-        .modifiedAt(dateReplicated)
+        .dateReplicated(dateReplicated)
         .isExpired(isExpired)
         .build();
   }

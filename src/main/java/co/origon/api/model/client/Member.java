@@ -3,6 +3,9 @@ package co.origon.api.model.client;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Date;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -16,6 +19,10 @@ import lombok.experimental.SuperBuilder;
 @Accessors(fluent = true)
 @EqualsAndHashCode(callSuper = true)
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
+@JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(
+    value = {"entityKey", "parentKey", "proxyKey", "proxyId", "expired", "minor"},
+    ignoreUnknown = true)
 public class Member extends ReplicatedEntity {
 
   private final String name;
@@ -31,11 +38,6 @@ public class Member extends ReplicatedEntity {
   private final String settings;
 
   @Override
-  public String parentId() {
-    return "~" + id();
-  };
-
-  @Override
   @JsonIgnore
   public boolean isMember() {
     return true;
@@ -43,7 +45,7 @@ public class Member extends ReplicatedEntity {
 
   @JsonIgnore
   public String proxyId() {
-    return hasEmail() ? email : id();
+    return hasEmail() ? email : entityId();
   }
 
   @JsonIgnore

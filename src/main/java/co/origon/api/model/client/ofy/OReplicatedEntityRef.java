@@ -56,14 +56,15 @@ public class OReplicatedEntityRef extends OReplicatedEntity {
   @Override
   public ReplicatedEntityRef fromOfy() {
     return ReplicatedEntityRef.builder()
-        .id(entityId)
-        .parentId(origoId)
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
         .referencedEntityId(referencedEntityId)
-        .referencedEntityParentId(referencedEntityOrigoId)
+        .referencedEntityOrigoId(referencedEntityOrigoId)
         .createdBy(createdBy)
-        .createdAt(dateCreated)
+        .dateCreated(dateCreated)
         .modifiedBy(modifiedBy)
-        .modifiedAt(dateReplicated)
+        .dateReplicated(dateReplicated)
         .isExpired(isExpired)
         .build();
   }

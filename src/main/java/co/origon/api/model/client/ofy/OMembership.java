@@ -18,26 +18,35 @@ import java.util.Map;
     value = {"parentKey", "memberKey"},
     ignoreUnknown = true)
 public class OMembership extends OReplicatedEntity {
-  private String type;
-  private boolean isAdmin = false;
-  private String status;
-  private String affiliations;
+  public String type;
+  public boolean isAdmin = false;
+  public String status;
+  public String affiliations;
 
-  private @Ignore OMember member;
-  private @Ignore Map<String, String> memberRef;
-  private Key<OMember> memberKey;
+  public @Ignore OMember member;
+  public @Ignore Map<String, String> memberRef;
+  public Key<OMember> memberKey;
 
-  private @IgnoreSave Map<String, String> origoRef;
+  public @IgnoreSave Map<String, String> origoRef;
 
   @Override
   public Membership fromOfy() {
     return Membership.builder()
-        .id(entityId)
-        .parentId(origoId)
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
         .type(type)
         .isAdmin(isAdmin)
         .status(status)
         .affiliations(affiliations)
+        .member(member != null ? member.fromOfy() : null)
+        .memberRef(memberRef)
+        .origoRef(origoRef)
+        .createdBy(createdBy)
+        .dateCreated(dateCreated)
+        .modifiedBy(modifiedBy)
+        .dateReplicated(dateReplicated)
+        .isExpired(isExpired)
         .build();
   }
 }

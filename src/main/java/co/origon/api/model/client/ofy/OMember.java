@@ -15,26 +15,27 @@ import java.util.Date;
     value = {"entityKey", "parentKey", "proxyKey", "proxyId"},
     ignoreUnknown = true)
 public class OMember extends OReplicatedEntity {
-  private String name;
-  private String gender;
-  private Date dateOfBirth;
-  private String mobilePhone;
-  private String email;
+  public String name;
+  public String gender;
+  public Date dateOfBirth;
+  public String mobilePhone;
+  public String email;
 
-  private String motherId;
-  private String fatherId;
-  private boolean isMinor;
+  public String motherId;
+  public String fatherId;
+  public boolean isMinor;
 
-  private String createdIn;
-  private Date activeSince;
+  public String createdIn;
+  public Date activeSince;
 
-  private String settings;
+  public String settings;
 
   @Override
   public Member fromOfy() {
     return Member.builder()
-        .id(entityId)
-        .parentId(origoId)
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
         .name(name)
         .gender(gender)
         .dateOfBirth(dateOfBirth)
@@ -47,9 +48,9 @@ public class OMember extends OReplicatedEntity {
         .activeSince(activeSince)
         .settings(settings)
         .createdBy(createdBy)
-        .createdAt(dateCreated)
+        .dateCreated(dateCreated)
         .modifiedBy(modifiedBy)
-        .modifiedAt(dateReplicated)
+        .dateReplicated(dateReplicated)
         .isExpired(isExpired)
         .build();
   }

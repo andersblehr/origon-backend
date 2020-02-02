@@ -4,12 +4,11 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Matcher;
 import co.origon.api.common.Pair;
-import co.origon.api.model.Entity;
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.client.Member;
 import co.origon.api.model.client.Membership;
 import co.origon.api.model.client.Origo;
+import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.client.ReplicatedEntityRef;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
@@ -123,7 +122,9 @@ public class ReplicationService {
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
     final List<Pair<Member, Optional<MemberProxy>>> membersWithMaybeProxy =
         membersByProxyId.values().stream()
-            .map(member -> Pair.of(member, Optional.ofNullable(proxiesByMemberId.get(member.id()))))
+            .map(
+                member ->
+                    Pair.of(member, Optional.ofNullable(proxiesByMemberId.get(member.entityId()))))
             .collect(Collectors.toList());
     final Map<String, Member> membersWithEmailChangeByProxyId =
         membersWithMaybeProxy.stream()
@@ -148,7 +149,7 @@ public class ReplicationService {
     memberProxyRepository.deleteByIds(staleProxiesById.keySet());
 
     return membersWithMaybeProxy.stream()
-        .map(pair -> pair.right().orElse(updatedProxiesByMemberId.get(pair.left().id())))
+        .map(pair -> pair.right().orElse(updatedProxiesByMemberId.get(pair.left().entityId())))
         .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
   }
 
@@ -163,16 +164,16 @@ public class ReplicationService {
             .peek(
                 membership ->
                     proxiesByMemberId
-                        .get(membership.member().id())
+                        .get(membership.member().entityId())
                         .membershipKeys()
                         .add(membership.key()))
-            .filter(membership -> !membership.member().id().equals(userProxy.id()))
+            .filter(membership -> !membership.member().entityId().equals(userProxy.id()))
             .filter(Membership::isInvitable)
             .peek(membership -> origoKeys.add(membership.parentKey()))
-            .collect(Collectors.groupingBy(membership -> membership.member().id()));
+            .collect(Collectors.groupingBy(membership -> membership.member().entityId()));
     final Map<String, Origo> origosById =
         origoRepository.getByKeys(origoKeys).stream()
-            .collect(Collectors.toMap(Entity::id, origo -> origo));
+            .collect(Collectors.toMap(ReplicatedEntity::entityId, origo -> origo));
 
     invitableMembershipsByMemberId.values().stream()
         .map(
@@ -181,8 +182,7 @@ public class ReplicationService {
                     .reduce(null, (some, other) -> getPrioritised(some, other, origosById)))
         .forEach(
             membership ->
-                mailer.sendInvitation(
-                    userProxy, membership, origosById.get(membership.parentId())));
+                mailer.sendInvitation(userProxy, membership, origosById.get(membership.origoId())));
   }
 
   private MemberProxy alignedProxyIfUser(Member member, MemberProxy proxy) {
@@ -191,7 +191,7 @@ public class ReplicationService {
     }
     MemberProxy userProxy = proxy;
     if (userProxy.memberId() == null) {
-      userProxy = userProxy.withMemberId(member.id());
+      userProxy = userProxy.withMemberId(member.entityId());
     }
     if (proxy.memberName() == null || !proxy.memberName().equals(member.name())) {
       userProxy = userProxy.withMemberName(member.name());
@@ -225,13 +225,15 @@ public class ReplicationService {
     if (some == null || other == null) {
       return some == null ? other : some;
     }
-    return origosById.get(some.id()).takesPrecedenceOver(origosById.get(other.id())) ? some : other;
+    return origosById.get(some.entityId()).takesPrecedenceOver(origosById.get(other.entityId()))
+        ? some
+        : other;
   }
 
   private Stream<ReplicatedEntity> fetchMembershipEntities(
       Membership membership, Date deviceReplicatedAt) {
     Collection<ReplicatedEntity> membershipEntities =
-        entityRepository.getByParentId(membership.parentId(), deviceReplicatedAt);
+        entityRepository.getByParentId(membership.origoId(), deviceReplicatedAt);
     Collection<ReplicatedEntity> referencedEntities =
         entityRepository.getByKeys(
             membershipEntities.stream()
