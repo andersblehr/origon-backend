@@ -1,6 +1,8 @@
 package co.origon.api.model.ofy;
 
-import co.origon.api.model.api.ReplicatedEntity;
+import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.Membership;
+import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -26,7 +28,7 @@ import java.util.Map;
   @Type(value = OOrigo.class, name = "OOrigo"),
   @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")
 })
-public class OReplicatedEntity implements ReplicatedEntity {
+public abstract class OReplicatedEntity implements OfyMapper<ReplicatedEntity> {
   protected @Parent Key<OOrigo> parentKey;
   protected @Id String entityId;
 
@@ -119,61 +121,6 @@ public class OReplicatedEntity implements ReplicatedEntity {
     return String.format("%s$%s", origoId, entityId).hashCode();
   }
 
-  @Override
-  public String entityClass() {
-    return entityClass;
-  }
-
-  @Override
-  public String id() {
-    return entityId;
-  }
-
-  @Override
-  public String parentId() {
-    return origoId;
-  }
-
-  @Override
-  public String createdBy() {
-    return createdBy;
-  }
-
-  @Override
-  public Date createdAt() {
-    return dateCreated;
-  }
-
-  @Override
-  public String modifiedBy() {
-    return modifiedBy;
-  }
-
-  @Override
-  public Date modifiedAt() {
-    return dateReplicated;
-  }
-
-  @Override
-  public boolean isExpired() {
-    return isExpired;
-  }
-
-  @Override
-  public boolean isEntityRef() {
-    return false;
-  }
-
-  @Override
-  public boolean isMembership() {
-    return false;
-  }
-
-  @Override
-  public boolean isMember() {
-    return false;
-  }
-
   private Field getOrigoRefField() {
     try {
       return this.getClass().getField("origoRef");
@@ -189,5 +136,10 @@ public class OReplicatedEntity implements ReplicatedEntity {
     entityRef.put("entityId", entityId);
 
     return entityRef;
+  }
+
+  @Override
+  public ReplicatedEntity fromOfy() {
+    return null;
   }
 }

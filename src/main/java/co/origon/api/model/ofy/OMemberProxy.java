@@ -1,7 +1,8 @@
 package co.origon.api.model.ofy;
 
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.MemberProxy;
+import co.origon.api.model.server.MemberProxy;
+import co.origon.api.repository.ofy.OfyMapper;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -11,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Entity
-public class OMemberProxy {
+public class OMemberProxy implements OfyMapper<MemberProxy> {
 
   @Id private String proxyId;
   private String memberId;
@@ -57,8 +58,8 @@ public class OMemberProxy {
   private OMemberProxy(MemberProxy modelMemberProxy) {
     this.proxyId = modelMemberProxy.id();
     this.memberId = modelMemberProxy.memberId();
-    this.memberName = modelMemberProxy.memberName().orElse(null);
-    this.passwordHash = modelMemberProxy.passwordHash().orElse(null);
+    this.memberName = modelMemberProxy.memberName();
+    this.passwordHash = modelMemberProxy.passwordHash();
     this.authMetaKeys =
         modelMemberProxy.deviceTokens().stream()
             .map(token -> Key.create(OAuthMeta.class, token))
@@ -72,5 +73,10 @@ public class OMemberProxy {
                         OMembership.class,
                         entityKey.entityId()))
             .collect(Collectors.toSet());
+  }
+
+  @Override
+  public MemberProxy fromOfy() {
+    return null;
   }
 }

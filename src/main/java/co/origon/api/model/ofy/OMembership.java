@@ -1,8 +1,7 @@
 package co.origon.api.model.ofy;
 
-import co.origon.api.model.api.Member;
-import co.origon.api.model.api.Membership;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import co.origon.api.model.client.Membership;
+import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -19,7 +18,7 @@ import java.util.Map;
 @JsonIgnoreProperties(
     value = {"parentKey", "memberKey"},
     ignoreUnknown = true)
-public class OMembership extends OReplicatedEntity implements Membership {
+public class OMembership extends OReplicatedEntity {
   private String type;
   private boolean isAdmin = false;
   private String status;
@@ -31,40 +30,8 @@ public class OMembership extends OReplicatedEntity implements Membership {
 
   private @IgnoreSave Map<String, String> origoRef;
 
-  private OMembership() {
-    super();
-  }
-
-  @JsonIgnore
-  public Key<OOrigo> getOrigoKey() {
-    if (parentKey == null) {
-      parentKey = Key.create(OOrigo.class, origoId);
-    }
-    return Key.create(parentKey, OOrigo.class, origoId);
-  }
-
   @Override
-  public String type() {
-    return type;
-  }
-
-  @Override
-  public String status() {
-    return status;
-  }
-
-  @Override
-  public String affiliations() {
-    return affiliations;
-  }
-
-  @Override
-  public Member member() {
-    return member;
-  }
-
-  @Override
-  public boolean isAdmin() {
-    return isAdmin;
+  public Membership fromOfy() {
+    return null;
   }
 }

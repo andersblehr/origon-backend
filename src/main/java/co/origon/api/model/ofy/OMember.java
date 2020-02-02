@@ -1,6 +1,7 @@
 package co.origon.api.model.ofy;
 
-import co.origon.api.model.api.Member;
+import co.origon.api.model.client.Member;
+import co.origon.api.repository.ofy.OfyMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -14,7 +15,7 @@ import java.util.Date;
 @JsonIgnoreProperties(
     value = {"entityKey", "parentKey", "proxyKey", "proxyId"},
     ignoreUnknown = true)
-public class OMember extends OReplicatedEntity implements Member {
+public class OMember extends OReplicatedEntity {
   private String name;
   private String gender;
   private Date dateOfBirth;
@@ -30,57 +31,8 @@ public class OMember extends OReplicatedEntity implements Member {
 
   private String settings;
 
-  public OMember() {
-    super();
-  }
-
   @Override
-  public String name() {
-    return name;
-  }
-
-  @Override
-  public String gender() {
-    return gender;
-  }
-
-  @Override
-  public Date dateOfBirth() {
-    return dateOfBirth;
-  }
-
-  @Override
-  public String mobilePhone() {
-    return mobilePhone;
-  }
-
-  @Override
-  public String email() {
-    return email;
-  }
-
-  @Override
-  public String motherId() {
-    return motherId;
-  }
-
-  @Override
-  public String fatherId() {
-    return fatherId;
-  }
-
-  @Override
-  public boolean isMinor() {
-    return isMinor;
-  }
-
-  @Override
-  public String createdIn() {
-    return createdIn;
-  }
-
-  @Override
-  public Date activeSince() {
-    return activeSince;
+  public Member fromOfy() {
+    return null;
   }
 }

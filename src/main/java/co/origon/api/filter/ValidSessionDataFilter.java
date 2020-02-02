@@ -2,7 +2,7 @@ package co.origon.api.filter;
 
 import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
-import co.origon.api.model.DeviceCredentials;
+import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
 import javax.annotation.Priority;

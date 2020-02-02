@@ -8,9 +8,9 @@ import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidBasicAuthCredentials;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.api.ReplicatedEntity;
+import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
@@ -80,7 +80,7 @@ public class AuthController {
     final MemberProxy userProxy =
         authService.activateUser(
             DeviceCredentials.builder()
-                .email(basicAuthCredentials.email())
+                .userEmail(basicAuthCredentials.email())
                 .deviceToken(deviceToken)
                 .deviceId(deviceId)
                 .deviceType(deviceType)
@@ -111,7 +111,7 @@ public class AuthController {
     final MemberProxy userProxy =
         authService.loginUser(
             DeviceCredentials.builder()
-                .email(basicAuthCredentials.email())
+                .userEmail(basicAuthCredentials.email())
                 .deviceToken(deviceToken)
                 .deviceId(deviceId)
                 .deviceType(deviceType)

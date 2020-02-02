@@ -4,15 +4,15 @@ import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.Matcher;
 import co.origon.api.common.Pair;
-import co.origon.api.model.DeviceCredentials;
 import co.origon.api.model.EntityKey;
-import co.origon.api.model.MemberProxy;
-import co.origon.api.model.api.Entity;
-import co.origon.api.model.api.Member;
-import co.origon.api.model.api.Membership;
-import co.origon.api.model.api.Origo;
-import co.origon.api.model.api.ReplicatedEntity;
-import co.origon.api.model.api.ReplicatedEntityRef;
+import co.origon.api.model.Entity;
+import co.origon.api.model.client.Member;
+import co.origon.api.model.client.Membership;
+import co.origon.api.model.client.Origo;
+import co.origon.api.model.ReplicatedEntity;
+import co.origon.api.model.client.ReplicatedEntityRef;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
 import co.origon.api.repository.api.Repository;
 import co.origon.api.repository.api.RepositoryFactory;
 import java.util.Collection;
@@ -193,7 +193,7 @@ public class ReplicationService {
     if (userProxy.memberId() == null) {
       userProxy = userProxy.withMemberId(member.id());
     }
-    if (!proxy.memberName().isPresent() || !proxy.memberName().get().equals(member.name())) {
+    if (proxy.memberName() == null || !proxy.memberName().equals(member.name())) {
       userProxy = userProxy.withMemberName(member.name());
     }
     return userProxy;
@@ -202,7 +202,7 @@ public class ReplicationService {
   private void reauthorise(Member member, Collection<String> deviceTokens) {
     final Set<DeviceCredentials> updatedDeviceCredentials =
         deviceCredentialsRepository.getByIds(deviceTokens).stream()
-            .map(deviceCredentials -> deviceCredentials.withEmail(member.email()))
+            .map(deviceCredentials -> deviceCredentials.withUserEmail(member.email()))
             .collect(Collectors.toSet());
 
     deviceCredentialsRepository.save(updatedDeviceCredentials);

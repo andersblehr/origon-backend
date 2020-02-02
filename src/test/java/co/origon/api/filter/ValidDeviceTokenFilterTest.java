@@ -9,8 +9,8 @@ import static org.mockito.Mockito.when;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
 import co.origon.api.controller.AuthController;
-import co.origon.api.model.DeviceCredentials;
-import co.origon.api.model.MemberProxy;
+import co.origon.api.model.server.DeviceCredentials;
+import co.origon.api.model.server.MemberProxy;
 import co.origon.api.repository.api.Repository;
 import java.util.Date;
 import java.util.Optional;
@@ -55,17 +55,17 @@ class ValidDeviceTokenFilterTest {
           .id(USER_EMAIL)
           .memberId(USER_ID)
           .passwordHash("some")
-          .addDeviceTokens(VALID_DEVICE_TOKEN)
+          .deviceToken(VALID_DEVICE_TOKEN)
           .build();
   private final MemberProxy unregisteredUserProxy =
       MemberProxy.builder()
           .id(USER_EMAIL)
           .memberId(USER_ID)
-          .addDeviceTokens(VALID_DEVICE_TOKEN)
+          .deviceToken(VALID_DEVICE_TOKEN)
           .build();
   private final DeviceCredentials validDeviceCredentials =
       DeviceCredentials.builder()
-          .email(USER_EMAIL)
+          .userEmail(USER_EMAIL)
           .deviceId(DEVICE_ID)
           .deviceToken(VALID_DEVICE_TOKEN)
           .deviceType("some")
@@ -73,7 +73,7 @@ class ValidDeviceTokenFilterTest {
           .build();
   private final DeviceCredentials expiredDeviceCredentials =
       DeviceCredentials.builder()
-          .email(USER_EMAIL)
+          .userEmail(USER_EMAIL)
           .deviceId(DEVICE_ID)
           .deviceToken(VALID_DEVICE_TOKEN)
           .deviceType("some")
