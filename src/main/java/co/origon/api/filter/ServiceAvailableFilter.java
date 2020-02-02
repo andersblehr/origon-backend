@@ -1,6 +1,7 @@
 package co.origon.api.filter;
 
-import co.origon.api.common.Config;
+import co.origon.api.common.Settings;
+import com.typesafe.config.Config;
 import javax.annotation.Priority;
 import javax.ws.rs.ServiceUnavailableException;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -11,13 +12,13 @@ import javax.ws.rs.ext.Provider;
 @Priority(1)
 public class ServiceAvailableFilter implements ContainerRequestFilter {
 
-  private com.typesafe.config.Config systemConfig;
+  private Config systemConfig;
 
   public ServiceAvailableFilter() {
-    this.systemConfig = Config.system();
+    this.systemConfig = Settings.system();
   }
 
-  ServiceAvailableFilter(com.typesafe.config.Config systemConfig) {
+  ServiceAvailableFilter(Config systemConfig) {
     this.systemConfig = systemConfig;
   }
 
@@ -25,11 +26,11 @@ public class ServiceAvailableFilter implements ContainerRequestFilter {
   public void filter(ContainerRequestContext requestContext) {
     final String status;
     try {
-      status = systemConfig.getString(Config.SYSTEM_STATUS);
+      status = systemConfig.getString(Settings.SYSTEM_STATUS);
     } catch (Exception e) {
       throw new ServiceUnavailableException("System status unavailable: " + e.getMessage());
     }
-    if (status == null || !status.equals(Config.SYSTEM_STATUS_OK)) {
+    if (status == null || !status.equals(Settings.SYSTEM_STATUS_OK)) {
       throw new ServiceUnavailableException("Service unavailable. System status: " + status);
     }
   }

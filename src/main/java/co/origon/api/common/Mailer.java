@@ -6,6 +6,7 @@ import co.origon.api.model.api.Membership;
 import co.origon.api.model.api.Origo;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.typesafe.config.Config;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -231,15 +232,15 @@ public class Mailer {
 
   private String createJwtBearerToken() {
     try {
-      final com.typesafe.config.Config jwtConfig = Config.jwt();
+      final Config jwtConfig = Settings.jwt();
       final Instant now = Calendar.getInstance(TimeZone.getTimeZone("UTC")).toInstant();
-      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Config.JWT_EXPIRES_IN_SECONDS));
+      final Instant jwtExpiry = now.plusSeconds(jwtConfig.getInt(Settings.JWT_EXPIRES_IN_SECONDS));
 
       return JWT.create()
-          .withIssuer(jwtConfig.getString(Config.JWT_ISSUER))
+          .withIssuer(jwtConfig.getString(Settings.JWT_ISSUER))
           .withIssuedAt(Date.from(now))
           .withExpiresAt(Date.from(jwtExpiry))
-          .sign(Algorithm.HMAC256(jwtConfig.getString(Config.JWT_SECRET)));
+          .sign(Algorithm.HMAC256(jwtConfig.getString(Settings.JWT_SECRET)));
     } catch (Exception e) {
       throw new RuntimeException("Error during JWT creatiion", e);
     }
@@ -256,9 +257,9 @@ public class Mailer {
       requestBody.put(MAILER_SUBJECT, subject);
       requestBody.put(MAILER_BODY, body);
 
-      final com.typesafe.config.Config mailerConfig = Config.mailer();
+      final Config mailerConfig = Settings.mailer();
       final URL mailerUrl =
-          new URL(mailerConfig.getString(Config.MAILER_BASE_URL) + MAILER_RESOURCE_PATH);
+          new URL(mailerConfig.getString(Settings.MAILER_BASE_URL) + MAILER_RESOURCE_PATH);
       final HttpURLConnection connection = (HttpURLConnection) mailerUrl.openConnection();
       connection.setDoInput(true);
       connection.setDoOutput(true);
