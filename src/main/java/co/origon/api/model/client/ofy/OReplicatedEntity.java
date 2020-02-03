@@ -2,9 +2,6 @@ package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.repository.ofy.OfyMapper;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
@@ -21,14 +18,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "entityClass")
-@JsonSubTypes({
-  @Type(value = ODevice.class, name = "ODevice"),
-  @Type(value = OMember.class, name = "OMember"),
-  @Type(value = OMembership.class, name = "OMembership"),
-  @Type(value = OOrigo.class, name = "OOrigo"),
-  @Type(value = OReplicatedEntityRef.class, name = "OReplicatedEntityRef")
-})
 public abstract class OReplicatedEntity implements OfyMapper<ReplicatedEntity> {
   public @Parent Key<OOrigo> parentKey;
   public @Id String entityId;

@@ -1,20 +1,11 @@
 package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.client.Origo;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.objectify.annotation.Subclass;
 import lombok.NoArgsConstructor;
 
 @Subclass
 @NoArgsConstructor
-@JsonSerialize
-@JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(
-    value = {"parentKey"},
-    ignoreUnknown = true)
 public class OOrigo extends OReplicatedEntity {
   public String name;
   public String type;

@@ -39,11 +39,10 @@ public class AuthController {
 
   public static final String WWW_AUTH_CHALLENGE_BASIC_AUTH = "login";
 
-  private static final int LENGTH_ACTIVATION_CODE = 6;
+  private AuthService authService;
+  private ReplicationService replicationService;
 
-  @Inject private AuthService authService;
-  @Inject private ReplicationService replicationService;
-
+  @Inject
   AuthController(AuthService authService, ReplicationService replicationService) {
     this.authService = authService;
     this.replicationService = replicationService;
