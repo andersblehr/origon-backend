@@ -3,7 +3,17 @@ package co.origon.api.repository.ofy;
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
 import co.origon.api.model.EntityKey;
+import co.origon.api.model.client.Device;
+import co.origon.api.model.client.Member;
+import co.origon.api.model.client.Membership;
+import co.origon.api.model.client.Origo;
+import co.origon.api.model.client.ReplicatedEntityRef;
+import co.origon.api.model.client.ofy.ODevice;
+import co.origon.api.model.client.ofy.OMember;
+import co.origon.api.model.client.ofy.OMembership;
 import co.origon.api.model.client.ofy.OOrigo;
+import co.origon.api.model.client.ofy.OReplicatedEntity;
+import co.origon.api.model.client.ofy.OReplicatedEntityRef;
 import co.origon.api.repository.Repository;
 import com.googlecode.objectify.Key;
 import java.util.Collection;
@@ -120,10 +130,32 @@ public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
 
   private U ofyEntityFromEntity(T entity) {
     try {
-      return ofyClass.getDeclaredConstructor(entity.getClass()).newInstance(entity);
+      return ofyClass.equals(OReplicatedEntity.class)
+          ? ofyEntityFromReplicatedEntity(entity)
+          : ofyClass.getDeclaredConstructor(entity.getClass()).newInstance(entity);
     } catch (Exception e) {
-      throw new InternalServerErrorException("Ofy class lacks entity mapping constructor");
+      throw new InternalServerErrorException("Error constructing Ofy class from entity");
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private U ofyEntityFromReplicatedEntity(T entity) {
+    if (entity.getClass().equals(Device.class)) {
+      return (U) new ODevice((Device) entity);
+    }
+    if (entity.getClass().equals(Member.class)) {
+      return (U) new OMember((Member) entity);
+    }
+    if (entity.getClass().equals(Membership.class)) {
+      return (U) new OMembership((Membership) entity);
+    }
+    if (entity.getClass().equals(Origo.class)) {
+      return (U) new OOrigo((Origo) entity);
+    }
+    if (entity.getClass().equals(ReplicatedEntityRef.class)) {
+      return (U) new OReplicatedEntityRef((ReplicatedEntityRef) entity);
+    }
+    throw new InternalServerErrorException("Entity class is not mapped to an Ofy class");
   }
 
   private Collection<U> ofyEntitiesFromEntities(Collection<T> entities) {

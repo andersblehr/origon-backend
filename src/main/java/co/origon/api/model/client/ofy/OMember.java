@@ -1,21 +1,12 @@
 package co.origon.api.model.client.ofy;
 
 import co.origon.api.model.client.Member;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.objectify.annotation.Subclass;
 import java.util.Date;
 import lombok.NoArgsConstructor;
 
 @Subclass
 @NoArgsConstructor
-@JsonSerialize
-@JsonInclude(Include.NON_NULL)
-@JsonIgnoreProperties(
-    value = {"entityKey", "parentKey", "proxyKey", "proxyId"},
-    ignoreUnknown = true)
 public class OMember extends OReplicatedEntity {
   public String name;
   public String gender;
