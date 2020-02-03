@@ -10,8 +10,10 @@ import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Subclass;
 import java.util.Date;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
 @Subclass
+@NoArgsConstructor
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
@@ -25,6 +27,13 @@ public class ODevice extends OReplicatedEntity {
   public @Ignore OMember user;
   public @Ignore Map<String, String> userRef;
   public Key<OMember> userKey;
+
+  public ODevice(Device device) {
+    super(device);
+    type = device.type();
+    name = device.name();
+    lastSeen = device.lastSeen();
+  }
 
   @Override
   public Device fromOfy() {

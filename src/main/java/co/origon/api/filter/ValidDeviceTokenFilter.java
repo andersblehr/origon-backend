@@ -52,21 +52,21 @@ public class ValidDeviceTokenFilter implements ContainerRequestFilter {
         deviceCredentialsRepository
             .getById(deviceToken)
             .orElseThrow(() -> new BadRequestException("Cannot authenticate unknown device token"));
-    if (deviceCredentials.expiresAt().before(new Date())) {
+    if (deviceCredentials.dateExpires().before(new Date())) {
       throw new NotAuthorizedException(
           "Device token has expired", AuthController.WWW_AUTH_CHALLENGE_BASIC_AUTH);
     }
 
     final MemberProxy userProxy =
         memberProxyRepository
-            .getById(deviceCredentials.userEmail())
+            .getById(deviceCredentials.email())
             .orElseThrow(() -> new BadRequestException("Cannot authenticate unknown user"));
     if (!userProxy.isRegistered()) {
       throw new BadRequestException("Cannot authenticate inactive user");
     }
 
     if (BasicAuthCredentials.hasCredentials()
-        && !BasicAuthCredentials.getCredentials().email().equals(deviceCredentials.userEmail()))
+        && !BasicAuthCredentials.getCredentials().email().equals(deviceCredentials.email()))
       throw new BadRequestException(
           "Basic auth credentials do not match records for provided device token");
   }

@@ -65,19 +65,19 @@ class ValidDeviceTokenFilterTest {
           .build();
   private final DeviceCredentials validDeviceCredentials =
       DeviceCredentials.builder()
-          .userEmail(USER_EMAIL)
+          .email(USER_EMAIL)
           .deviceId(DEVICE_ID)
-          .deviceToken(VALID_DEVICE_TOKEN)
+          .authToken(VALID_DEVICE_TOKEN)
           .deviceType("some")
-          .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+          .dateExpires(new Date(System.currentTimeMillis() + 1000L))
           .build();
   private final DeviceCredentials expiredDeviceCredentials =
       DeviceCredentials.builder()
-          .userEmail(USER_EMAIL)
+          .email(USER_EMAIL)
           .deviceId(DEVICE_ID)
-          .deviceToken(VALID_DEVICE_TOKEN)
+          .authToken(VALID_DEVICE_TOKEN)
           .deviceType("some")
-          .expiresAt(new Date(System.currentTimeMillis() - 1000L))
+          .dateExpires(new Date(System.currentTimeMillis() - 1000L))
           .build();
 
   @Nested

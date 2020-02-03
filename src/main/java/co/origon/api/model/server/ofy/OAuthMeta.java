@@ -5,8 +5,10 @@ import co.origon.api.repository.ofy.OfyMapper;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import java.util.Date;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 public class OAuthMeta implements OfyMapper<DeviceCredentials> {
 
   @Id private String authToken;
@@ -35,14 +37,22 @@ public class OAuthMeta implements OfyMapper<DeviceCredentials> {
     return dateExpires;
   }
 
+  public OAuthMeta(DeviceCredentials deviceCredentials) {
+    authToken = deviceCredentials.authToken();
+    email = deviceCredentials.email();
+    deviceId = deviceCredentials.deviceId();
+    deviceType = deviceCredentials.deviceType();
+    dateExpires = deviceCredentials.dateExpires();
+  }
+
   @Override
   public DeviceCredentials fromOfy() {
     return DeviceCredentials.builder()
-        .deviceToken(authToken)
-        .userEmail(email)
+        .authToken(authToken)
+        .email(email)
         .deviceId(deviceId)
         .deviceType(deviceType)
-        .expiresAt(dateExpires)
+        .dateExpires(dateExpires)
         .build();
   }
 }

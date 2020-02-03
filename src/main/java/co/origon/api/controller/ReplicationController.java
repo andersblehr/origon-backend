@@ -10,7 +10,6 @@ import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.model.client.Origo;
 import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.service.AuthService;
@@ -60,14 +59,14 @@ public class ReplicationController {
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
+
+    checkReplicationDate(replicationDate);
     final DeviceCredentials deviceCredentials =
         authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
-    checkReplicationDate(replicationDate);
 
-    replicationService.replicate(
-        entities, deviceCredentials.userEmail(), Language.fromCode(language));
+    replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
     final List<ReplicatedEntity> returnableEntities =
-        replicationService.fetch(deviceCredentials.userEmail(), replicationDate).stream()
+        replicationService.fetch(deviceCredentials.email(), replicationDate).stream()
             .filter(entity -> !entities.contains(entity))
             .collect(Collectors.toList());
 
@@ -85,12 +84,13 @@ public class ReplicationController {
       @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+
+    checkReplicationDate(replicationDate);
     final DeviceCredentials deviceCredentials =
         authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
-    checkReplicationDate(replicationDate);
 
     final List<ReplicatedEntity> fetchedEntities =
-        replicationService.fetch(deviceCredentials.userEmail(), replicationDate);
+        replicationService.fetch(deviceCredentials.email(), replicationDate);
     Session.log(fetchedEntities.size() + " entities fetched");
 
     return Response.ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
@@ -104,12 +104,11 @@ public class ReplicationController {
       @QueryParam(UrlParams.IDENTIFIER) String email,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
-    List<ReplicatedEntity> memberEntities = replicationService.lookupMember(email);
-    if (memberEntities == null) {
-      throw new NotFoundException();
-    }
 
-    return Response.ok(memberEntities).build();
+    return replicationService
+        .lookupMember(email)
+        .map(memberEntities -> Response.ok(memberEntities).build())
+        .orElseThrow(NotFoundException::new);
   }
 
   @GET
@@ -118,19 +117,17 @@ public class ReplicationController {
       @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
-    Origo origo = replicationService.lookupOrigo(internalJoinCode);
-    if (origo == null) {
-      throw new NotFoundException();
-    }
 
-    return Response.ok(origo).build();
+    return replicationService
+        .lookupOrigo(internalJoinCode)
+        .map(origo -> Response.ok(origo).build())
+        .orElseThrow(NotFoundException::new);
   }
 
   private static void checkReplicationDate(Date replicationDate) {
     try {
       checkNotNull(replicationDate, "Missing HTTP header: " + HttpHeaders.IF_MODIFIED_SINCE);
-      checkArgument(
-          replicationDate.before(new Date()), "Invalid last replication date: " + replicationDate);
+      checkArgument(replicationDate.before(new Date()), "Last replication is in the future");
     } catch (IllegalArgumentException | NullPointerException e) {
       throw new BadRequestException(e.getMessage(), e);
     }

@@ -25,18 +25,24 @@ public class OMemberProxy implements OfyMapper<MemberProxy> {
   private Set<Key<OAuthMeta>> authMetaKeys;
   private Set<Key<OMembership>> membershipKeys;
 
-  @OnLoad
-  public void instantiateNullSets() {
-    if (authMetaKeys == null) {
-      authMetaKeys = new HashSet<>();
-    }
-    if (membershipKeys == null) {
-      membershipKeys = new HashSet<>();
-    }
-  }
-
-  public static OMemberProxy toOfy(MemberProxy modelMemberProxy) {
-    return new OMemberProxy(modelMemberProxy);
+  public OMemberProxy(MemberProxy memberProxy) {
+    proxyId = memberProxy.id();
+    memberId = memberProxy.memberId();
+    memberName = memberProxy.memberName();
+    passwordHash = memberProxy.passwordHash();
+    authMetaKeys =
+        memberProxy.deviceTokens().stream()
+            .map(token -> Key.create(OAuthMeta.class, token))
+            .collect(Collectors.toSet());
+    membershipKeys =
+        memberProxy.membershipKeys().stream()
+            .map(
+                entityKey ->
+                    Key.create(
+                        Key.create(OOrigo.class, entityKey.parentId()),
+                        OMembership.class,
+                        entityKey.entityId()))
+            .collect(Collectors.toSet());
   }
 
   @Override
@@ -60,23 +66,13 @@ public class OMemberProxy implements OfyMapper<MemberProxy> {
         .build();
   }
 
-  private OMemberProxy(MemberProxy memberProxy) {
-    this.proxyId = memberProxy.id();
-    this.memberId = memberProxy.memberId();
-    this.memberName = memberProxy.memberName();
-    this.passwordHash = memberProxy.passwordHash();
-    this.authMetaKeys =
-        memberProxy.deviceTokens().stream()
-            .map(token -> Key.create(OAuthMeta.class, token))
-            .collect(Collectors.toSet());
-    this.membershipKeys =
-        memberProxy.membershipKeys().stream()
-            .map(
-                entityKey ->
-                    Key.create(
-                        Key.create(OOrigo.class, entityKey.parentId()),
-                        OMembership.class,
-                        entityKey.entityId()))
-            .collect(Collectors.toSet());
+  @OnLoad
+  public void instantiateNullSets() {
+    if (authMetaKeys == null) {
+      authMetaKeys = new HashSet<>();
+    }
+    if (membershipKeys == null) {
+      membershipKeys = new HashSet<>();
+    }
   }
 }

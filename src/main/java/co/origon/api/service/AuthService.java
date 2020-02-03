@@ -80,38 +80,38 @@ public class AuthService {
 
   public MemberProxy activateUser(DeviceCredentials deviceCredentials, String passwordHash) {
     final MemberProxy userProxy =
-        checkUserStatus(deviceCredentials.userEmail(), false)
+        checkUserStatus(deviceCredentials.email(), false)
             .orElse(
                 MemberProxy.builder()
-                    .id(deviceCredentials.userEmail())
+                    .id(deviceCredentials.email())
                     .passwordHash(passwordHash)
                     .build());
     final OneTimeCredentials oneTimeCredentials =
         oneTimeCredentialsRepository
-            .getById(deviceCredentials.userEmail())
+            .getById(deviceCredentials.email())
             .orElseThrow(() -> new BadRequestException("User is not awaiting activation"));
     if (!oneTimeCredentials.passwordHash().equals(passwordHash)) {
       throw new NotAuthorizedException("Incorrect password", WWW_AUTH_CHALLENGE_BASIC_AUTH);
     }
     deviceCredentialsRepository.save(deviceCredentials);
-    oneTimeCredentialsRepository.deleteById(deviceCredentials.userEmail());
-    Session.log("Persisted new device token for user " + deviceCredentials.userEmail());
+    oneTimeCredentialsRepository.deleteById(deviceCredentials.email());
+    Session.log("Persisted new device token for user " + deviceCredentials.email());
 
     return memberProxyRepository.save(userProxy);
   }
 
   public MemberProxy loginUser(DeviceCredentials deviceCredentials, String passwordHash) {
     final MemberProxy userProxy =
-        checkUserStatus(deviceCredentials.userEmail(), true).orElseThrow(userDoesNotExistThrower);
+        checkUserStatus(deviceCredentials.email(), true).orElseThrow(userDoesNotExistThrower);
     if (!userProxy.passwordHash().equals(passwordHash)) {
       throw new NotAuthorizedException("Invalid password");
     }
     deviceCredentialsRepository.save(deviceCredentials);
-    Session.log("Persisted new device token for user " + deviceCredentials.userEmail());
+    Session.log("Persisted new device token for user " + deviceCredentials.email());
 
     return memberProxyRepository.save(
         reauthoriseUserDevice(
-            userProxy, deviceCredentials.deviceId(), deviceCredentials.deviceToken()));
+            userProxy, deviceCredentials.deviceId(), deviceCredentials.authToken()));
   }
 
   public void changePassword(BasicAuthCredentials credentials) {
@@ -161,7 +161,7 @@ public class AuthService {
     final Collection<String> revokedDeviceTokens =
         deviceCredentialsRepository.getByIds(userProxy.deviceTokens()).stream()
             .filter(deviceCredentials -> deviceCredentials.deviceId().equals(deviceId))
-            .map(DeviceCredentials::deviceToken)
+            .map(DeviceCredentials::authToken)
             .collect(Collectors.toSet());
     deviceCredentialsRepository.deleteByIds(revokedDeviceTokens);
 

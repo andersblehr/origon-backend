@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.inject.Singleton;
+import javax.ws.rs.InternalServerErrorException;
 
 @Singleton
 public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
@@ -70,13 +71,13 @@ public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
 
   @Override
   public T save(T entity) {
-    ofy().save().entity(entity).now();
+    ofy().save().entity(ofyEntityFromEntity(entity)).now();
     return entity;
   }
 
   @Override
   public void save(Collection<T> entities) {
-    ofy().save().entities(entities);
+    ofy().save().entities(ofyEntitiesFromEntities(entities));
   }
 
   @Override
@@ -115,5 +116,17 @@ public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
 
   private Collection<Key<U>> ofyKeysFromKeys(Collection<EntityKey> keys) {
     return keys.stream().map(this::ofyKeyFromKey).collect(Collectors.toSet());
+  }
+
+  private U ofyEntityFromEntity(T entity) {
+    try {
+      return ofyClass.getDeclaredConstructor(entity.getClass()).newInstance(entity);
+    } catch (Exception e) {
+      throw new InternalServerErrorException("Ofy class lacks entity mapping constructor");
+    }
+  }
+
+  private Collection<U> ofyEntitiesFromEntities(Collection<T> entities) {
+    return entities.stream().map(this::ofyEntityFromEntity).collect(Collectors.toSet());
   }
 }
