@@ -89,11 +89,11 @@ class AuthControllerTest {
           .build();
   private final DeviceCredentials deviceCredentials =
       DeviceCredentials.builder()
-          .userEmail(USER_EMAIL)
+          .email(USER_EMAIL)
           .deviceId(DEVICE_ID)
-          .deviceToken(DEVICE_TOKEN)
+          .authToken(DEVICE_TOKEN)
           .deviceType(DEVICE_TYPE)
-          .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+          .dateExpires(new Date(System.currentTimeMillis() + 1000L))
           .build();
 
   @BeforeEach

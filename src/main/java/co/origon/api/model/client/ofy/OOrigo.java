@@ -6,8 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.googlecode.objectify.annotation.Subclass;
+import lombok.NoArgsConstructor;
 
 @Subclass
+@NoArgsConstructor
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
@@ -16,16 +18,28 @@ import com.googlecode.objectify.annotation.Subclass;
 public class OOrigo extends OReplicatedEntity {
   public String name;
   public String type;
-
   public String descriptionText;
   public String address;
   public String location;
   public String telephone;
   public String permissions;
   public boolean isForMinors;
-
   public String joinCode;
   public String internalJoinCode;
+
+  public OOrigo(Origo origo) {
+    super(origo);
+    name = origo.name();
+    type = origo.type();
+    descriptionText = origo.descriptionText();
+    address = origo.address();
+    location = origo.location();
+    telephone = origo.telephone();
+    permissions = origo.permissions();
+    isForMinors = origo.isForMinors();
+    joinCode = origo.joinCode();
+    internalJoinCode = origo.internalJoinCode();
+  }
 
   @Override
   public Origo fromOfy() {
@@ -35,7 +49,7 @@ public class OOrigo extends OReplicatedEntity {
         .entityClass(entityClass)
         .name(name)
         .type(type)
-        .description(descriptionText)
+        .descriptionText(descriptionText)
         .address(address)
         .location(location)
         .telephone(telephone)

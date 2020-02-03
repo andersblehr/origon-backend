@@ -17,8 +17,10 @@ import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "entityClass")
 @JsonSubTypes({
   @Type(value = ODevice.class, name = "ODevice"),
@@ -36,9 +38,20 @@ public abstract class OReplicatedEntity implements OfyMapper<ReplicatedEntity> {
   public boolean isExpired;
 
   public String createdBy;
-  public String modifiedBy;
   public Date dateCreated;
+  public String modifiedBy;
   public @Index Date dateReplicated;
+
+  public OReplicatedEntity(ReplicatedEntity entity) {
+    entityId = entity.entityId();
+    origoId = entity.origoId();
+    entityClass = entity.entityClass();
+    isExpired = entity.isExpired();
+    createdBy = entity.createdBy();
+    dateCreated = entity.dateCreated();
+    modifiedBy = entity.modifiedBy();
+    dateReplicated = entity.dateReplicated();
+  }
 
   @OnSave
   @SuppressWarnings("unchecked")

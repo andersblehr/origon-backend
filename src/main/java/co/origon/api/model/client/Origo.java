@@ -26,7 +26,7 @@ public class Origo extends ReplicatedEntity {
 
   private final String name;
   private final String type;
-  private final String description;
+  private final String descriptionText;
   private final String address;
   private final String location;
   private final String telephone;

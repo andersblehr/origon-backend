@@ -15,11 +15,11 @@ import lombok.experimental.Accessors;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class DeviceCredentials {
 
-  private final String deviceToken;
-  private final String userEmail;
+  private final String authToken;
+  private final String email;
   private final String deviceId;
   private final String deviceType;
 
   @Builder.Default
-  private final Date expiresAt = new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
+  private final Date dateExpires = new Date(System.currentTimeMillis() + 30 * 86400 * 1000L);
 }

@@ -95,7 +95,7 @@ public class ReplicationService {
         .orElse(null);
   }
 
-  public List<ReplicatedEntity> lookupMember(String email) {
+  public Optional<List<ReplicatedEntity>> lookupMember(String email) {
     return memberProxyRepository
         .getById(email)
         .map(
@@ -104,14 +104,12 @@ public class ReplicationService {
                     .filter(membership -> membership.type().equals("R") && !membership.isExpired())
                     .flatMap(membership -> fetchMembershipEntities(membership, null))
                     .distinct()
-                    .collect(Collectors.toList()))
-        .orElse(null);
+                    .collect(Collectors.toList()));
   }
 
-  public Origo lookupOrigo(String internalJoinCode) {
+  public Optional<Origo> lookupOrigo(String internalJoinCode) {
     return origoRepository.getByPropertyValue("internalJoinCode", internalJoinCode).stream()
-        .findFirst()
-        .orElse(null);
+        .findFirst();
   }
 
   private Map<String, MemberProxy> processMembers(
@@ -202,7 +200,7 @@ public class ReplicationService {
   private void reauthorise(Member member, Collection<String> deviceTokens) {
     final Set<DeviceCredentials> updatedDeviceCredentials =
         deviceCredentialsRepository.getByIds(deviceTokens).stream()
-            .map(deviceCredentials -> deviceCredentials.withUserEmail(member.email()))
+            .map(deviceCredentials -> deviceCredentials.withEmail(member.email()))
             .collect(Collectors.toSet());
 
     deviceCredentialsRepository.save(updatedDeviceCredentials);

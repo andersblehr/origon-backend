@@ -10,8 +10,10 @@ import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.IgnoreSave;
 import com.googlecode.objectify.annotation.Subclass;
 import java.util.Map;
+import lombok.NoArgsConstructor;
 
 @Subclass
+@NoArgsConstructor
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
@@ -22,12 +24,18 @@ public class OMembership extends OReplicatedEntity {
   public boolean isAdmin = false;
   public String status;
   public String affiliations;
-
   public @Ignore OMember member;
   public @Ignore Map<String, String> memberRef;
   public Key<OMember> memberKey;
-
   public @IgnoreSave Map<String, String> origoRef;
+
+  public OMembership(Membership membership) {
+    super(membership);
+    type = membership.type();
+    isAdmin = membership.isAdmin();
+    status = membership.status();
+    affiliations = membership.affiliations();
+  }
 
   @Override
   public Membership fromOfy() {

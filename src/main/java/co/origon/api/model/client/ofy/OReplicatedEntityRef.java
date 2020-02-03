@@ -1,6 +1,5 @@
 package co.origon.api.model.client.ofy;
 
-import co.origon.api.model.EntityKey;
 import co.origon.api.model.client.ReplicatedEntityRef;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,8 +10,10 @@ import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.OnLoad;
 import com.googlecode.objectify.annotation.OnSave;
 import com.googlecode.objectify.annotation.Subclass;
+import lombok.NoArgsConstructor;
 
 @Subclass
+@NoArgsConstructor
 @JsonSerialize
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(
@@ -24,12 +25,26 @@ public class OReplicatedEntityRef extends OReplicatedEntity {
   public @Ignore String referencedEntityOrigoId;
   public Key<OReplicatedEntity> referencedEntityKey;
 
-  public OReplicatedEntityRef() {
-    super();
+  public OReplicatedEntityRef(ReplicatedEntityRef entityRef) {
+    super(entityRef);
+    referencedEntityId = entityRef.referencedEntityId();
+    referencedEntityOrigoId = entityRef.referencedEntityOrigoId();
   }
 
-  public EntityKey referencedEntityKey() {
-    return EntityKey.from(referencedEntityId, referencedEntityOrigoId);
+  @Override
+  public ReplicatedEntityRef fromOfy() {
+    return ReplicatedEntityRef.builder()
+        .entityId(entityId)
+        .origoId(origoId)
+        .entityClass(entityClass)
+        .referencedEntityId(referencedEntityId)
+        .referencedEntityOrigoId(referencedEntityOrigoId)
+        .createdBy(createdBy)
+        .dateCreated(dateCreated)
+        .modifiedBy(modifiedBy)
+        .dateReplicated(dateReplicated)
+        .isExpired(isExpired)
+        .build();
   }
 
   @OnSave
@@ -51,21 +66,5 @@ public class OReplicatedEntityRef extends OReplicatedEntity {
 
     referencedEntityId = referencedEntityKey.getRaw().getName();
     referencedEntityOrigoId = referencedEntityKey.getParent().getRaw().getName();
-  }
-
-  @Override
-  public ReplicatedEntityRef fromOfy() {
-    return ReplicatedEntityRef.builder()
-        .entityId(entityId)
-        .origoId(origoId)
-        .entityClass(entityClass)
-        .referencedEntityId(referencedEntityId)
-        .referencedEntityOrigoId(referencedEntityOrigoId)
-        .createdBy(createdBy)
-        .dateCreated(dateCreated)
-        .modifiedBy(modifiedBy)
-        .dateReplicated(dateReplicated)
-        .isExpired(isExpired)
-        .build();
   }
 }

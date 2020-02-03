@@ -80,8 +80,8 @@ public class AuthController {
     final MemberProxy userProxy =
         authService.activateUser(
             DeviceCredentials.builder()
-                .userEmail(basicAuthCredentials.email())
-                .deviceToken(deviceToken)
+                .email(basicAuthCredentials.email())
+                .authToken(deviceToken)
                 .deviceId(deviceId)
                 .deviceType(deviceType)
                 .build(),
@@ -111,8 +111,8 @@ public class AuthController {
     final MemberProxy userProxy =
         authService.loginUser(
             DeviceCredentials.builder()
-                .userEmail(basicAuthCredentials.email())
-                .deviceToken(deviceToken)
+                .email(basicAuthCredentials.email())
+                .authToken(deviceToken)
                 .deviceId(deviceId)
                 .deviceType(deviceType)
                 .build(),

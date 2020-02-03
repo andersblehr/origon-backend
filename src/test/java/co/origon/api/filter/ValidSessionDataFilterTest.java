@@ -83,11 +83,11 @@ class ValidSessionDataFilterTest {
           .thenReturn(
               Optional.of(
                   DeviceCredentials.builder()
-                      .userEmail("some")
+                      .email("some")
                       .deviceId(VALID_DEVICE_ID)
                       .deviceType("some")
-                      .deviceToken(VALID_DEVICE_TOKEN)
-                      .expiresAt(new Date(System.currentTimeMillis() + 1000L))
+                      .authToken(VALID_DEVICE_TOKEN)
+                      .dateExpires(new Date(System.currentTimeMillis() + 1000L))
                       .build()));
 
       // when
