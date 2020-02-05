@@ -32,12 +32,12 @@ public abstract class ReplicatedEntity {
   private final Date dateReplicated;
   private final boolean isExpired;
 
-  public EntityKey key() {
+  public EntityKey entityKey() {
     return EntityKey.from(entityId, origoId);
   }
 
-  public EntityKey parentKey() {
-    return EntityKey.from(origoId);
+  public EntityKey origoKey() {
+    return EntityKey.from(origoId, origoId);
   }
 
   @JsonIgnore

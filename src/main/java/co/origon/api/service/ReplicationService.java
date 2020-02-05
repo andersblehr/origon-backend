@@ -16,7 +16,6 @@ import co.origon.api.repository.Repository;
 import co.origon.api.repository.RepositoryFactory;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -67,11 +66,12 @@ public class ReplicationService {
         processMembers(membersByProxyId, userProxy, mailer);
     processMemberships(memberships, proxiesByMemberId, userProxy, mailer);
 
+    memberProxyRepository.save(proxiesByMemberId.values());
     entityRepository.save(entities);
     entityRepository.deleteByKeys(
         entities.stream()
             .filter(entity -> entity.isEntityRef() && entity.isExpired())
-            .map(ReplicatedEntity::key)
+            .map(ReplicatedEntity::entityKey)
             .collect(Collectors.toList()));
   }
 
@@ -114,15 +114,14 @@ public class ReplicationService {
 
   private Map<String, MemberProxy> processMembers(
       Map<String, Member> membersByProxyId, MemberProxy userProxy, Mailer mailer) {
+
     final Map<String, MemberProxy> proxiesByMemberId =
         memberProxyRepository.getByIds(membersByProxyId.keySet()).stream()
             .map(proxy -> alignedProxyIfUser(membersByProxyId.get(proxy.id()), proxy))
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
-    final List<Pair<Member, Optional<MemberProxy>>> membersWithMaybeProxy =
+    final List<Pair<Member, MemberProxy>> membersWithMaybeProxy =
         membersByProxyId.values().stream()
-            .map(
-                member ->
-                    Pair.of(member, Optional.ofNullable(proxiesByMemberId.get(member.entityId()))))
+            .map(member -> Pair.of(member, proxiesByMemberId.get(member.entityId())))
             .collect(Collectors.toList());
     final Map<String, Member> membersWithEmailChangeByProxyId =
         membersWithMaybeProxy.stream()
@@ -156,28 +155,27 @@ public class ReplicationService {
       Map<String, MemberProxy> proxiesByMemberId,
       MemberProxy userProxy,
       Mailer mailer) {
-    final Set<EntityKey> origoKeys = new HashSet<>();
-    final Map<String, List<Membership>> invitableMembershipsByMemberId =
+
+    final Map<EntityKey, List<Membership>> invitableMembershipsByOrigoKey =
         memberships.stream()
             .peek(
                 membership ->
                     proxiesByMemberId
                         .get(membership.member().entityId())
                         .membershipKeys()
-                        .add(membership.key()))
+                        .add(membership.entityKey()))
             .filter(membership -> !membership.member().entityId().equals(userProxy.id()))
             .filter(Membership::isInvitable)
-            .peek(membership -> origoKeys.add(membership.parentKey()))
-            .collect(Collectors.groupingBy(membership -> membership.member().entityId()));
+            .collect(Collectors.groupingBy(ReplicatedEntity::origoKey));
     final Map<String, Origo> origosById =
-        origoRepository.getByKeys(origoKeys).stream()
+        origoRepository.getByKeys(invitableMembershipsByOrigoKey.keySet()).stream()
             .collect(Collectors.toMap(ReplicatedEntity::entityId, origo -> origo));
 
-    invitableMembershipsByMemberId.values().stream()
+    invitableMembershipsByOrigoKey.values().stream()
         .map(
             invitableMemberships ->
                 invitableMemberships.stream()
-                    .reduce(null, (some, other) -> getPrioritised(some, other, origosById)))
+                    .reduce(null, (some, other) -> whittleDown(some, other, origosById)))
         .forEach(
             membership ->
                 mailer.sendInvitation(userProxy, membership, origosById.get(membership.origoId())));
@@ -215,11 +213,7 @@ public class ReplicationService {
     }
   }
 
-  private Membership getPrioritised(
-      Membership some, Membership other, Map<String, Origo> origosById) {
-    if (some == null && other == null) {
-      return null;
-    }
+  private Membership whittleDown(Membership some, Membership other, Map<String, Origo> origosById) {
     if (some == null || other == null) {
       return some == null ? other : some;
     }
