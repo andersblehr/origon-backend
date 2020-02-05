@@ -134,8 +134,12 @@ public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
           ? ofyEntityFromReplicatedEntity(entity)
           : ofyClass.getDeclaredConstructor(entity.getClass()).newInstance(entity);
     } catch (Exception e) {
-      throw new InternalServerErrorException("Error constructing Ofy class from entity");
+      throw new InternalServerErrorException("Error constructing Ofy class from entity", e);
     }
+  }
+
+  private Collection<U> ofyEntitiesFromEntities(Collection<T> entities) {
+    return entities.stream().map(this::ofyEntityFromEntity).collect(Collectors.toSet());
   }
 
   @SuppressWarnings("unchecked")
@@ -156,9 +160,5 @@ public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
       return (U) new OReplicatedEntityRef((ReplicatedEntityRef) entity);
     }
     throw new InternalServerErrorException("Entity class is not mapped to an Ofy class");
-  }
-
-  private Collection<U> ofyEntitiesFromEntities(Collection<T> entities) {
-    return entities.stream().map(this::ofyEntityFromEntity).collect(Collectors.toSet());
   }
 }
