@@ -31,6 +31,7 @@ public class ReplicationService {
   private final Repository<MemberProxy> memberProxyRepository;
   private final Repository<DeviceCredentials> deviceCredentialsRepository;
   private final Repository<Membership> membershipRepository;
+  private final Repository<Member> memberRepository;
   private final Repository<Origo> origoRepository;
   private final Repository<ReplicatedEntity> entityRepository;
 
@@ -41,6 +42,7 @@ public class ReplicationService {
     memberProxyRepository = repositoryFactory.repositoryFor(MemberProxy.class);
     deviceCredentialsRepository = repositoryFactory.repositoryFor(DeviceCredentials.class);
     membershipRepository = repositoryFactory.repositoryFor(Membership.class);
+    memberRepository = repositoryFactory.repositoryFor(Member.class);
     origoRepository = repositoryFactory.repositoryFor(Origo.class);
     entityRepository = repositoryFactory.repositoryFor(ReplicatedEntity.class);
 
@@ -75,11 +77,11 @@ public class ReplicationService {
             .collect(Collectors.toList()));
   }
 
-  public List<ReplicatedEntity> fetch(String email) {
+  public Optional<List<ReplicatedEntity>> fetch(String email) {
     return fetch(email, null);
   }
 
-  public List<ReplicatedEntity> fetch(String email, Date deviceReplicatedAt) {
+  public Optional<List<ReplicatedEntity>> fetch(String email, Date deviceReplicatedAt) {
     return memberProxyRepository
         .getById(email)
         .map(
@@ -91,8 +93,7 @@ public class ReplicationService {
                                 ? fetchMembershipEntities(membership, deviceReplicatedAt)
                                 : membership.isExpired() ? Stream.of(membership) : Stream.of())
                     .distinct()
-                    .collect(Collectors.toList()))
-        .orElse(null);
+                    .collect(Collectors.toList()));
   }
 
   public Optional<List<ReplicatedEntity>> lookupMember(String email) {
@@ -117,33 +118,43 @@ public class ReplicationService {
 
     final Map<String, MemberProxy> proxiesByMemberId =
         memberProxyRepository.getByIds(membersByProxyId.keySet()).stream()
-            .map(proxy -> alignedProxyIfUser(membersByProxyId.get(proxy.id()), proxy))
+            .map(proxy -> alignProxyIfUser(membersByProxyId.get(proxy.id()), proxy))
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
-    final List<Pair<Member, MemberProxy>> membersWithMaybeProxy =
+    final Set<Pair<Member, MemberProxy>> membersWithMaybeProxy =
         membersByProxyId.values().stream()
             .map(member -> Pair.of(member, proxiesByMemberId.get(member.entityId())))
-            .collect(Collectors.toList());
-    final Map<String, Member> membersWithEmailChangeByProxyId =
+            .collect(Collectors.toSet());
+    final Map<EntityKey, Member> membersWithEmailChangeByKey =
         membersWithMaybeProxy.stream()
-            .filter(pair -> pair.left().hasEmail() && pair.left().isPersisted())
             .filter(pair -> !pair.right().isPresent())
-            .collect(Collectors.toMap(pair -> pair.left().proxyId(), Pair::left));
-    final Map<String, MemberProxy> staleProxiesById =
+            .filter(pair -> pair.left().hasEmail() && pair.left().isPersisted())
+            .collect(Collectors.toMap(pair -> pair.left().entityKey(), Pair::left));
+    final Map<String, Member> membersWithEmailChangeByProxyId =
+        memberRepository.getByKeys(membersWithEmailChangeByKey.keySet()).stream()
+            .collect(
+                Collectors.toMap(
+                    Member::proxyId,
+                    member -> membersWithEmailChangeByKey.get(member.entityKey())));
+    final Map<String, MemberProxy> staleProxiesByMemberId =
         memberProxyRepository.getByIds(membersWithEmailChangeByProxyId.keySet()).stream()
-            .collect(Collectors.toMap(MemberProxy::id, proxy -> proxy));
+            .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
     final Map<String, MemberProxy> updatedProxiesByMemberId =
         membersWithEmailChangeByProxyId.values().stream()
             .peek(
                 member ->
-                    reauthorise(member, staleProxiesById.get(member.proxyId()).deviceTokens()))
+                    reauthorise(
+                        member, staleProxiesByMemberId.get(member.entityId()).deviceTokens()))
             .peek(
                 member ->
                     sendNotification(
-                        member, staleProxiesById.get(member.proxyId()).id(), userProxy, mailer))
-            .map(member -> staleProxiesById.get(member.proxyId()).withId(member.email()))
+                        member,
+                        staleProxiesByMemberId.get(member.entityId()).id(),
+                        userProxy,
+                        mailer))
+            .map(member -> staleProxiesByMemberId.get(member.proxyId()).withId(member.email()))
             .collect(Collectors.toMap(MemberProxy::memberId, proxy -> proxy));
 
-    memberProxyRepository.deleteByIds(staleProxiesById.keySet());
+    memberProxyRepository.deleteByIds(staleProxiesByMemberId.keySet());
 
     return membersWithMaybeProxy.stream()
         .map(pair -> pair.right().orElse(updatedProxiesByMemberId.get(pair.left().entityId())))
@@ -181,7 +192,7 @@ public class ReplicationService {
                 mailer.sendInvitation(userProxy, membership, origosById.get(membership.origoId())));
   }
 
-  private MemberProxy alignedProxyIfUser(Member member, MemberProxy proxy) {
+  private MemberProxy alignProxyIfUser(Member member, MemberProxy proxy) {
     if (!member.proxyId().equals(proxy.id())) {
       return proxy;
     }
@@ -205,9 +216,9 @@ public class ReplicationService {
   }
 
   private void sendNotification(
-      Member member, String oldProxyId, MemberProxy userProxy, Mailer mailer) {
-    if (Matcher.isEmailAddress(oldProxyId)) {
-      mailer.sendEmailChangeNotification(member, oldProxyId, userProxy);
+      Member member, String maybeStaleEmail, MemberProxy userProxy, Mailer mailer) {
+    if (Matcher.isEmailAddress(maybeStaleEmail)) {
+      mailer.sendEmailChangeNotification(member, maybeStaleEmail, userProxy);
     } else {
       mailer.sendInvitation(member.email(), userProxy);
     }

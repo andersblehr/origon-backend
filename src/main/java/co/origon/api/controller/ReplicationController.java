@@ -3,15 +3,12 @@ package co.origon.api.controller;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
-import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
 import co.origon.api.model.client.ReplicatedEntity;
-import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
@@ -45,7 +42,6 @@ public class ReplicationController {
 
   @Inject private ReplicationService replicationService;
   @Inject private AuthService authService;
-  @Inject private Mailer mailer;
 
   private final Supplier<RuntimeException> unknownDeviceTokenThrower =
       () -> new NotAuthorizedException("Unknown device token");
@@ -61,21 +57,26 @@ public class ReplicationController {
       @QueryParam(UrlParams.LANGUAGE) String language) {
 
     checkReplicationDate(replicationDate);
-    final DeviceCredentials deviceCredentials =
-        authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
+    final String userEmail =
+        authService
+            .getDeviceCredentials(deviceToken)
+            .orElseThrow(unknownDeviceTokenThrower)
+            .email();
+    replicationService.replicate(entities, userEmail, Language.fromCode(language));
 
-    replicationService.replicate(entities, deviceCredentials.email(), Language.fromCode(language));
-    final List<ReplicatedEntity> returnableEntities =
-        replicationService.fetch(deviceCredentials.email(), replicationDate).stream()
-            .filter(entity -> !entities.contains(entity))
-            .collect(Collectors.toList());
-
-    Session.log(entities.size() + "+" + returnableEntities.size() + " entities replicated");
-
-    return Response.status(entities.size() > 0 ? Status.CREATED : Status.OK)
-        .entity(returnableEntities.size() > 0 ? returnableEntities : null)
+    return replicationService
+        .fetch(userEmail, replicationDate)
+        .map(
+            fetchedEntities ->
+                fetchedEntities.stream()
+                    .filter(fetchedEntity -> !entities.contains(fetchedEntity))
+                    .collect(Collectors.toList()))
+        .map(Response::ok)
+        .orElse(Response.status(Status.CREATED))
         .lastModified(new Date())
         .build();
+
+    // Session.log(entities.size() + "+" + returnableEntities.size() + " entities replicated");
   }
 
   @GET
@@ -86,16 +87,20 @@ public class ReplicationController {
       @QueryParam(UrlParams.APP_VERSION) String appVersion) {
 
     checkReplicationDate(replicationDate);
-    final DeviceCredentials deviceCredentials =
-        authService.getDeviceCredentials(deviceToken).orElseThrow(unknownDeviceTokenThrower);
+    final String userEmail =
+        authService
+            .getDeviceCredentials(deviceToken)
+            .orElseThrow(unknownDeviceTokenThrower)
+            .email();
 
-    final List<ReplicatedEntity> fetchedEntities =
-        replicationService.fetch(deviceCredentials.email(), replicationDate);
-    Session.log(fetchedEntities.size() + " entities fetched");
-
-    return Response.ok(fetchedEntities.size() > 0 ? fetchedEntities : null)
+    return replicationService
+        .fetch(userEmail, replicationDate)
+        .map(Response::ok)
+        .orElse(Response.ok())
         .lastModified(new Date())
         .build();
+
+    // Session.log(fetchedEntities.size() + " entities fetched");
   }
 
   @GET

@@ -8,13 +8,11 @@ import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidBasicAuthCredentials;
 import co.origon.api.filter.ValidDeviceToken;
 import co.origon.api.filter.ValidSessionData;
-import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
-import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
@@ -85,11 +83,12 @@ public class AuthController {
                 .deviceType(deviceType)
                 .build(),
             basicAuthCredentials.passwordHash());
-    final List<ReplicatedEntity> entityGraph =
-        replicationService.fetch(basicAuthCredentials.email());
 
-    return Response.status(entityGraph.size() > 0 ? Status.OK : Status.NO_CONTENT)
-        .entity(entityGraph.size() > 0 ? entityGraph : null)
+    return replicationService
+        .fetch(basicAuthCredentials.email())
+        .filter(entities -> entities.size() > 0)
+        .map(Response::ok)
+        .orElse(Response.noContent())
         .header(HttpHeaders.LOCATION, userProxy.memberId())
         .lastModified(new Date())
         .build();
@@ -116,10 +115,12 @@ public class AuthController {
                 .deviceType(deviceType)
                 .build(),
             basicAuthCredentials.passwordHash());
-    final List<ReplicatedEntity> entityGraph =
-        replicationService.fetch(basicAuthCredentials.email(), replicationDate);
 
-    return Response.ok(entityGraph.size() > 0 ? entityGraph : null)
+    return replicationService
+        .fetch(basicAuthCredentials.email(), replicationDate)
+        .filter(entities -> entities.size() > 0)
+        .map(Response::ok)
+        .orElse(Response.ok())
         .header(HttpHeaders.LOCATION, userProxy.memberId())
         .lastModified(new Date())
         .build();

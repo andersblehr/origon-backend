@@ -303,7 +303,7 @@ class AuthControllerTest {
     }
 
     private void establishInvited(boolean invited) {
-      lenient().when(replicationService.fetch(USER_EMAIL)).thenReturn(fetchedEntities);
+      lenient().when(replicationService.fetch(USER_EMAIL)).thenReturn(Optional.of(fetchedEntities));
       lenient().when(fetchedEntities.size()).thenReturn(invited ? 10 : 0);
     }
 
