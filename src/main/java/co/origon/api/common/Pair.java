@@ -1,8 +1,6 @@
 package co.origon.api.common;
 
 import java.util.Optional;
-import lombok.Data;
-import lombok.experimental.Accessors;
 
 public class Pair<T, U> {
   private final T left;
