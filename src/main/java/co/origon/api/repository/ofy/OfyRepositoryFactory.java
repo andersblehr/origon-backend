@@ -1,8 +1,10 @@
 package co.origon.api.repository.ofy;
 
+import co.origon.api.model.client.Member;
 import co.origon.api.model.client.Membership;
 import co.origon.api.model.client.Origo;
 import co.origon.api.model.client.ReplicatedEntity;
+import co.origon.api.model.client.ofy.OMember;
 import co.origon.api.model.client.ofy.OMembership;
 import co.origon.api.model.client.ofy.OOrigo;
 import co.origon.api.model.client.ofy.OReplicatedEntity;
@@ -30,6 +32,9 @@ public class OfyRepositoryFactory implements RepositoryFactory {
     }
     if (clazz.equals(OneTimeCredentials.class)) {
       return (Repository<T>) new OfyRepository<>(OAuthInfo.class);
+    }
+    if (clazz.equals(Member.class)) {
+      return (Repository<T>) new OfyRepository<>(OMember.class);
     }
     if (clazz.equals(Membership.class)) {
       return (Repository<T>) new OfyRepository<>(OMembership.class);
