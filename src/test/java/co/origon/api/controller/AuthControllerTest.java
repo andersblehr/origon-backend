@@ -169,46 +169,6 @@ class AuthControllerTest {
   class WhenActivateUser {
 
     @Test
-    @DisplayName("Given missing device token, then return 400 BAD_REQUEST")
-    void givenMissingDeviceToken_thenReturn400BadRequest() {
-      // then
-      WebApplicationException e =
-          assertThrows(
-              BadRequestException.class,
-              () ->
-                  // when
-                  authController.activateUser(AUTHORIZATION_HEADER, null, DEVICE_ID, DEVICE_TYPE));
-      assertEquals("Missing parameter: token", e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Given missing device ID, then return 400 BAD_REQUEST")
-    void givenMissingDeviceID_thenReturn400BadRequest() {
-      // then
-      WebApplicationException e =
-          assertThrows(
-              BadRequestException.class,
-              () ->
-                  // when
-                  authController.activateUser(
-                      AUTHORIZATION_HEADER, DEVICE_TOKEN, null, DEVICE_TYPE));
-      assertEquals("Missing parameter: duid", e.getMessage());
-    }
-
-    @Test
-    @DisplayName("Given missing device type, then return 400 BAD_REQUEST")
-    void givenMissingDeviceType_thenReturn400BadRequest() {
-      // then
-      WebApplicationException e =
-          assertThrows(
-              BadRequestException.class,
-              () ->
-                  // when
-                  authController.activateUser(AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, null));
-      assertEquals("Missing parameter: duid", e.getMessage());
-    }
-
-    @Test
     @DisplayName("Given non-invited user, then activate user and return no user entities")
     void givenNonInvitedUser_thenActivateUserAndReturnNoUserEntities() {
       // given
@@ -321,7 +281,7 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("Given invalid device token, then return 400 BAD_REQUEST")
+    @DisplayName("Given missing or invalid device token, then return 400 BAD_REQUEST")
     void givenInvalidDeviceToken_thenReturn400BadRequest() {
       // given
       establishDidRegister(false);
@@ -329,7 +289,7 @@ class AuthControllerTest {
 
       // then
       assertAll(
-          "Invalid device token",
+          "Missing or invalid device token",
           () -> {
             final Throwable eNull =
                 assertThrows(
@@ -350,6 +310,33 @@ class AuthControllerTest {
                             AUTHORIZATION_HEADER, "Not a token", DEVICE_ID, DEVICE_TYPE));
             assertEquals("Invalid device token format: Not a token", eInvalid.getMessage());
           });
+    }
+
+    @Test
+    @DisplayName("Given missing device ID, then return 400 BAD_REQUEST")
+    void givenMissingDeviceID_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.activateUser(
+                      AUTHORIZATION_HEADER, DEVICE_TOKEN, null, DEVICE_TYPE));
+      assertEquals("Missing parameter: duid", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Given missing device type, then return 400 BAD_REQUEST")
+    void givenMissingDeviceType_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.activateUser(AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, null));
+      assertEquals("Missing parameter: device", e.getMessage());
     }
 
     private void establishInvited(boolean invited) {
