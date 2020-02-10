@@ -13,10 +13,14 @@ import javax.ws.rs.ext.Provider;
 @Priority(2)
 public class ValidBasicAuthCredentialsFilter implements ContainerRequestFilter {
 
+  private static final String BASIC_AUTH_CREDENTIALS = "basic-auth-credentials";
+
   @Override
   public void filter(ContainerRequestContext requestContext) {
     try {
-      BasicAuthCredentials.validate(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION));
+      requestContext.setProperty(
+          BasicAuthCredentials.CONTEXT_KEY,
+          new BasicAuthCredentials(requestContext.getHeaderString(HttpHeaders.AUTHORIZATION)));
     } catch (IllegalArgumentException e) {
       throw new BadRequestException("Invalid basic auth credentials", e);
     }

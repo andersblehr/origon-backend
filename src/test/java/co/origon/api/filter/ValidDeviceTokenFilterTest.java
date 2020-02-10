@@ -21,7 +21,6 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,6 +47,10 @@ class ValidDeviceTokenFilterTest {
   @Mock private UriInfo uriInfo;
   @Mock private MultivaluedMap<String, String> queryParameters;
 
+  private BasicAuthCredentials matchingBasicAuthCredentials =
+      new BasicAuthCredentials(BASIC_AUTH_CREDENTIALS);
+  private BasicAuthCredentials nonMatchingBasicAuthCredentials =
+      new BasicAuthCredentials(NON_MATCHING_CREDENTIALS);
   private ValidDeviceTokenFilter validDeviceTokenFilter;
 
   private final MemberProxy registeredUserProxy =
@@ -86,7 +89,6 @@ class ValidDeviceTokenFilterTest {
 
     @BeforeEach
     void setUp() {
-      BasicAuthCredentials.validate(BASIC_AUTH_CREDENTIALS);
       validDeviceTokenFilter =
           new ValidDeviceTokenFilter(deviceCredentialsRepository, userProxyRepository);
     }
@@ -95,6 +97,8 @@ class ValidDeviceTokenFilterTest {
     @DisplayName("Given valid device token, run to completion")
     void givenValidDeviceToken_thenRunToCompletion() {
       // given
+      when(requestContext.getProperty(BasicAuthCredentials.CONTEXT_KEY))
+          .thenReturn(matchingBasicAuthCredentials);
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
@@ -248,15 +252,14 @@ class ValidDeviceTokenFilterTest {
     @DisplayName("Given non-matching credentials, throw BadRequestException")
     void givenNonMatchingCredentials_thenThrowBadRequestException() {
       // given
+      when(requestContext.getProperty(BasicAuthCredentials.CONTEXT_KEY))
+          .thenReturn(nonMatchingBasicAuthCredentials);
       when(requestContext.getUriInfo()).thenReturn(uriInfo);
       when(uriInfo.getQueryParameters()).thenReturn(queryParameters);
       when(queryParameters.getFirst(UrlParams.DEVICE_TOKEN)).thenReturn(VALID_DEVICE_TOKEN);
       when(deviceCredentialsRepository.getById(VALID_DEVICE_TOKEN))
           .thenReturn(Optional.of(validDeviceCredentials));
       when(userProxyRepository.getById(USER_EMAIL)).thenReturn(Optional.of(registeredUserProxy));
-
-      BasicAuthCredentials.dispose();
-      BasicAuthCredentials.validate(NON_MATCHING_CREDENTIALS);
 
       // then
       final Throwable e =
@@ -267,11 +270,6 @@ class ValidDeviceTokenFilterTest {
                   validDeviceTokenFilter.filter(requestContext));
       assertEquals(
           "Basic auth credentials do not match records for provided device token", e.getMessage());
-    }
-
-    @AfterEach
-    void tearDown() {
-      BasicAuthCredentials.dispose();
     }
   }
 

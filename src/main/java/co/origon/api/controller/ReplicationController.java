@@ -7,13 +7,13 @@ import co.origon.api.common.Mailer.Language;
 import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidDeviceToken;
-import co.origon.api.filter.ValidSessionData;
 import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.service.AuthService;
 import co.origon.api.service.ReplicationService;
 import java.util.Date;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -37,8 +37,9 @@ import javax.ws.rs.core.Response.Status;
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 @ValidDeviceToken
-@ValidSessionData
 public class ReplicationController {
+
+  private static final Logger LOG = Logger.getLogger(ReplicationController.class.getName());
 
   @Inject private ReplicationService replicationService;
   @Inject private AuthService authService;
@@ -53,7 +54,6 @@ public class ReplicationController {
       List<ReplicatedEntity> entities,
       @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
 
     checkReplicationDate(replicationDate);
@@ -71,20 +71,18 @@ public class ReplicationController {
                 fetchedEntities.stream()
                     .filter(fetchedEntity -> !entities.contains(fetchedEntity))
                     .collect(Collectors.toList()))
+        .map(this::logReplicated)
         .map(Response::ok)
         .orElse(Response.status(Status.CREATED))
         .lastModified(new Date())
         .build();
-
-    // Session.log(entities.size() + "+" + returnableEntities.size() + " entities replicated");
   }
 
   @GET
   @Path("fetch")
   public Response fetch(
       @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
-      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken) {
 
     checkReplicationDate(replicationDate);
     final String userEmail =
@@ -95,20 +93,18 @@ public class ReplicationController {
 
     return replicationService
         .fetch(userEmail, replicationDate)
+        .map(this::logReplicated)
         .map(Response::ok)
         .orElse(Response.ok())
         .lastModified(new Date())
         .build();
-
-    // Session.log(fetchedEntities.size() + " entities fetched");
   }
 
   @GET
   @Path("member")
   public Response lookupMember(
       @QueryParam(UrlParams.IDENTIFIER) String email,
-      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken) {
 
     return replicationService
         .lookupMember(email)
@@ -120,8 +116,7 @@ public class ReplicationController {
   @Path("origo")
   public Response lookupOrigo(
       @QueryParam(UrlParams.IDENTIFIER) String internalJoinCode,
-      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken) {
 
     return replicationService
         .lookupOrigo(internalJoinCode)
@@ -136,5 +131,10 @@ public class ReplicationController {
     } catch (IllegalArgumentException | NullPointerException e) {
       throw new BadRequestException(e.getMessage(), e);
     }
+  }
+
+  private List<ReplicatedEntity> logReplicated(List<ReplicatedEntity> entities) {
+    LOG.info("Returning " + entities.size() + " entities");
+    return entities;
   }
 }

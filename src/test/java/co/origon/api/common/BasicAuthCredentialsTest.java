@@ -2,7 +2,6 @@ package co.origon.api.common;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -33,12 +32,11 @@ class BasicAuthCredentialsTest {
     @DisplayName("Given valid credentials, then validate successfully")
     void givenValidCredentials_thenValidateSuccessfully() {
       final BasicAuthCredentials credentials =
-          BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
+          new BasicAuthCredentials(AUTH_HEADER_VALID_CREDENTIALS);
       assertEquals("user@example.com", credentials.email());
       assertEquals("password", credentials.password());
       assertEquals(
           BasicAuthCredentials.generatePasswordHash("password"), credentials.passwordHash());
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -48,17 +46,14 @@ class BasicAuthCredentialsTest {
           "Missing Authorization header",
           () -> {
             Throwable e =
-                assertThrows(
-                    IllegalArgumentException.class, () -> BasicAuthCredentials.validate(null));
+                assertThrows(IllegalArgumentException.class, () -> new BasicAuthCredentials(null));
             assertEquals("Missing Authorization header", e.getMessage());
           },
           () -> {
             Throwable e =
-                assertThrows(
-                    IllegalArgumentException.class, () -> BasicAuthCredentials.validate(""));
+                assertThrows(IllegalArgumentException.class, () -> new BasicAuthCredentials(""));
             assertEquals("Missing Authorization header", e.getMessage());
           });
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -68,9 +63,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_NO_OF_ELEMENTS));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_NO_OF_ELEMENTS));
       assertTrue(e.getMessage().startsWith("Invalid Authorization header"));
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -80,9 +74,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_SCHEME));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_SCHEME));
       assertTrue(e.getMessage().startsWith("Invalid authentication scheme for HTTP basic auth"));
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -91,9 +84,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_BASE64));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_BASE64));
       assertEquals("DeviceCredentials are not base 64 encoded", e.getMessage());
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -102,9 +94,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_CREDENTIALS));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_CREDENTIALS));
       assertTrue(e.getMessage().startsWith("Invalid basic auth credentials"));
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -113,9 +104,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_EMAIL));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_EMAIL));
       assertTrue(e.getMessage().startsWith("Invalid email address"));
-      BasicAuthCredentials.dispose();
     }
 
     @Test
@@ -124,18 +114,8 @@ class BasicAuthCredentialsTest {
       Throwable e =
           assertThrows(
               IllegalArgumentException.class,
-              () -> BasicAuthCredentials.validate(AUTH_HEADER_INVALID_PASSWORD));
+              () -> new BasicAuthCredentials(AUTH_HEADER_INVALID_PASSWORD));
       assertTrue(e.getMessage().startsWith("Password is too short"));
-      BasicAuthCredentials.dispose();
-    }
-
-    @Test
-    @DisplayName("Given already validated credentials, then throw RuntimeException")
-    void givenAlreadyValidatedCredentials_thenThrowRuntimeException() {
-      BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
-      assertThrows(RuntimeException.class, () -> BasicAuthCredentials.validate(null));
-      assertNotNull(BasicAuthCredentials.getCredentials());
-      BasicAuthCredentials.dispose();
     }
   }
 
@@ -146,21 +126,12 @@ class BasicAuthCredentialsTest {
     @Test
     @DisplayName("Given successfully validated credentials, then retrieve credentials successfully")
     void givenSuccessfullyValidatedCredentials_thenRetrieveCredentialsSuccessfully() {
-      BasicAuthCredentials.validate(AUTH_HEADER_VALID_CREDENTIALS);
-      final BasicAuthCredentials credentials = BasicAuthCredentials.getCredentials();
+      final BasicAuthCredentials credentials =
+          new BasicAuthCredentials(AUTH_HEADER_VALID_CREDENTIALS);
       assertEquals("user@example.com", credentials.email());
       assertEquals("password", credentials.password());
       assertEquals(
           BasicAuthCredentials.generatePasswordHash("password"), credentials.passwordHash());
-      BasicAuthCredentials.dispose();
-    }
-
-    @Test
-    @DisplayName("Given unsuccessfully validated credentials, then throw RuntimeException")
-    void givenUnsuccessfullyValidatedCredentials_thenThrowRuntimeException() {
-      assertThrows(IllegalArgumentException.class, () -> BasicAuthCredentials.validate(null));
-      assertThrows(RuntimeException.class, BasicAuthCredentials::getCredentials);
-      BasicAuthCredentials.dispose();
     }
   }
 
