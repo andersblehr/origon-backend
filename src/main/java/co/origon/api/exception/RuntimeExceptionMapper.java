@@ -1,8 +1,6 @@
 package co.origon.api.exception;
 
-import co.origon.api.common.BasicAuthCredentials;
-import co.origon.api.common.Session;
-import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -11,10 +9,10 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
 
+  private static final Logger LOG = Logger.getLogger(RuntimeExceptionMapper.class.getName());
+
   public Response toResponse(RuntimeException e) {
-    Session.dispose();
-    BasicAuthCredentials.dispose();
-    Session.log(Level.SEVERE, "Runtime exception: " + e.getMessage());
+    LOG.severe("Runtime exception: " + e.getMessage());
     e.printStackTrace();
     return Response.status(Status.INTERNAL_SERVER_ERROR).build();
   }

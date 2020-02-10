@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
-import co.origon.api.common.Session;
 import co.origon.api.common.UrlParams;
 import co.origon.api.model.client.ReplicatedEntity;
 import co.origon.api.model.server.DeviceCredentials;
@@ -30,10 +29,10 @@ import java.util.Optional;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -52,9 +51,9 @@ class AuthControllerTest {
   private static final String DEVICE_TOKEN = "96ae6cd160219b214ba8fe816344a478145a2a61";
   private static final String DEVICE_ID = "e53f352b-84c6-4b8a-8065-05b53a54c7a1";
   private static final String DEVICE_TYPE = "Device";
-  private static final String APP_VERSION = "1.0";
   private static final String LANGUAGE = "nb";
 
+  @Mock private ContainerRequestContext requestContext;
   @Mock private Repository<MemberProxy> memberProxyRepository;
   @Mock private Repository<OneTimeCredentials> oneTimeCredentialsRepository;
   @Mock private Repository<DeviceCredentials> deviceCredentialsRepository;
@@ -62,6 +61,7 @@ class AuthControllerTest {
   @Mock private ReplicationService replicationService;
   @Mock private Mailer mailer;
 
+  private BasicAuthCredentials credentials = new BasicAuthCredentials(AUTHORIZATION_HEADER);
   private AuthController authController;
 
   private final MemberProxy invitedUserProxy =
@@ -98,8 +98,6 @@ class AuthControllerTest {
 
   @BeforeEach
   void setUp() {
-    BasicAuthCredentials.validate(AUTHORIZATION_HEADER);
-    Session.create(DEVICE_ID, DEVICE_TYPE, APP_VERSION);
     authController =
         new AuthController(
             new AuthService(
@@ -107,7 +105,8 @@ class AuthControllerTest {
                 oneTimeCredentialsRepository,
                 deviceCredentialsRepository,
                 mailer),
-            replicationService);
+            replicationService,
+            requestContext);
   }
 
   @Nested
@@ -115,18 +114,30 @@ class AuthControllerTest {
   class WhenRegisterUser {
 
     @Test
+    @DisplayName("Given missing device ID, then return 400 BAD_REQUEST")
+    void givenMissingDeviceID_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.registerUser(AUTHORIZATION_HEADER, null, LANGUAGE));
+      assertEquals("Missing parameter: duid", e.getMessage());
+    }
+
+    @Test
     @DisplayName("Given new user, then return one time credentials")
     void givenNewUser_thenReturnOneTimeCredentials() {
       // given
-      lenient()
-          .when(oneTimeCredentialsRepository.save(any(OneTimeCredentials.class)))
+      establishCredentials();
+      when(oneTimeCredentialsRepository.save(any(OneTimeCredentials.class)))
           .thenReturn(validOneTimeCredentials);
       when(mailer.using(Language.fromCode(LANGUAGE))).thenReturn(mailer);
 
       // when
       final Response response =
-          authController.registerUser(
-              AUTHORIZATION_HEADER, DEVICE_ID, DEVICE_TYPE, APP_VERSION, LANGUAGE);
+          authController.registerUser(AUTHORIZATION_HEADER, DEVICE_ID, LANGUAGE);
 
       // then
       verify(mailer).sendRegistrationEmail(eq(USER_EMAIL), anyString());
@@ -138,6 +149,7 @@ class AuthControllerTest {
     @DisplayName("Given existing user, then return 409 CONFLICT")
     void givenExistingUser_thenReturn409Conflict() {
       // given
+      establishCredentials();
       establishDidRegister(true);
 
       // then
@@ -146,8 +158,7 @@ class AuthControllerTest {
               WebApplicationException.class,
               () ->
                   // when
-                  authController.registerUser(
-                      AUTHORIZATION_HEADER, DEVICE_ID, DEVICE_TYPE, APP_VERSION, LANGUAGE));
+                  authController.registerUser(AUTHORIZATION_HEADER, DEVICE_ID, LANGUAGE));
       assertEquals(Status.CONFLICT.getStatusCode(), e.getResponse().getStatus());
       assertEquals("User is already registered and active", e.getMessage());
     }
@@ -158,9 +169,50 @@ class AuthControllerTest {
   class WhenActivateUser {
 
     @Test
+    @DisplayName("Given missing device token, then return 400 BAD_REQUEST")
+    void givenMissingDeviceToken_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.activateUser(AUTHORIZATION_HEADER, null, DEVICE_ID, DEVICE_TYPE));
+      assertEquals("Missing parameter: token", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Given missing device ID, then return 400 BAD_REQUEST")
+    void givenMissingDeviceID_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.activateUser(
+                      AUTHORIZATION_HEADER, DEVICE_TOKEN, null, DEVICE_TYPE));
+      assertEquals("Missing parameter: duid", e.getMessage());
+    }
+
+    @Test
+    @DisplayName("Given missing device type, then return 400 BAD_REQUEST")
+    void givenMissingDeviceType_thenReturn400BadRequest() {
+      // then
+      WebApplicationException e =
+          assertThrows(
+              BadRequestException.class,
+              () ->
+                  // when
+                  authController.activateUser(AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, null));
+      assertEquals("Missing parameter: duid", e.getMessage());
+    }
+
+    @Test
     @DisplayName("Given non-invited user, then activate user and return no user entities")
     void givenNonInvitedUser_thenActivateUserAndReturnNoUserEntities() {
       // given
+      establishCredentials();
       establishInvited(false);
       establishDidRegister(false);
       establishValidOneTimeCredentials(true);
@@ -169,8 +221,7 @@ class AuthControllerTest {
 
       // when
       Response response =
-          authController.activateUser(
-              AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION);
+          authController.activateUser(AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE);
 
       // then
       verify(deviceCredentialsRepository).save(any(DeviceCredentials.class));
@@ -187,6 +238,7 @@ class AuthControllerTest {
     @DisplayName("Given invited user, then activate user and return user entities")
     void givenInvitedUser_thenActivateUserAndReturnUserEntities() {
       // given
+      establishCredentials();
       establishInvited(true);
       establishDidRegister(false);
       establishValidOneTimeCredentials(true);
@@ -195,8 +247,7 @@ class AuthControllerTest {
 
       // when
       Response response =
-          authController.activateUser(
-              AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION);
+          authController.activateUser(AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE);
 
       // then
       verify(deviceCredentialsRepository).save(any(DeviceCredentials.class));
@@ -213,6 +264,7 @@ class AuthControllerTest {
     @DisplayName("Given existing user, then return 409 CONFLICT")
     void givenExistingUser_thenReturn4009Conflict() {
       // given
+      establishCredentials();
       establishDidRegister(true);
 
       // then
@@ -222,7 +274,7 @@ class AuthControllerTest {
               () ->
                   // when
                   authController.activateUser(
-                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
+                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE));
       assertEquals(Status.CONFLICT.getStatusCode(), e.getResponse().getStatus());
       assertEquals("User is already registered and active", e.getMessage());
     }
@@ -231,6 +283,7 @@ class AuthControllerTest {
     @DisplayName("Given no one time credentials, then return 400 BAD_REQUEST")
     void givenNoOneTimeCredentials_thenReturn400BadRequest() {
       // given
+      establishCredentials();
       establishDidRegister(false);
       establishOneTimeCredentialsAvailable(false, false);
 
@@ -241,7 +294,7 @@ class AuthControllerTest {
               () ->
                   // when
                   authController.activateUser(
-                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
+                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE));
       assertEquals("User is not awaiting activation", e.getMessage());
     }
 
@@ -249,6 +302,7 @@ class AuthControllerTest {
     @DisplayName("Given mismatched credentials, then return 401 UNAUTHORIZED")
     void givenMismatchedCredentials_thenReturn401Unauthorized() {
       // given
+      establishCredentials();
       establishDidRegister(false);
       establishValidOneTimeCredentials(false);
 
@@ -259,7 +313,7 @@ class AuthControllerTest {
               () ->
                   // when
                   authController.activateUser(
-                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
+                      AUTHORIZATION_HEADER, DEVICE_TOKEN, DEVICE_ID, DEVICE_TYPE));
       assertEquals("Incorrect password", e.getMessage());
       final String authChallenge =
           e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
@@ -283,7 +337,7 @@ class AuthControllerTest {
                     () ->
                         // when
                         authController.activateUser(
-                            AUTHORIZATION_HEADER, null, DEVICE_ID, DEVICE_TYPE, APP_VERSION));
+                            AUTHORIZATION_HEADER, null, DEVICE_ID, DEVICE_TYPE));
             assertEquals("Missing parameter: " + UrlParams.DEVICE_TOKEN, eNull.getMessage());
           },
           () -> {
@@ -293,11 +347,7 @@ class AuthControllerTest {
                     () ->
                         // when
                         authController.activateUser(
-                            AUTHORIZATION_HEADER,
-                            "Not a token",
-                            DEVICE_ID,
-                            DEVICE_TYPE,
-                            APP_VERSION));
+                            AUTHORIZATION_HEADER, "Not a token", DEVICE_ID, DEVICE_TYPE));
             assertEquals("Invalid device token format: Not a token", eInvalid.getMessage());
           });
     }
@@ -333,16 +383,14 @@ class AuthControllerTest {
     }
   }
 
+  private void establishCredentials() {
+    when(requestContext.getProperty(BasicAuthCredentials.CONTEXT_KEY)).thenReturn(credentials);
+  }
+
   private void establishDidRegister(boolean didRegister) {
     lenient()
         .when(memberProxyRepository.getById(USER_EMAIL))
         .thenReturn(didRegister ? Optional.of(invitedUserProxy) : Optional.empty());
-  }
-
-  @AfterEach
-  void tearDown() {
-    BasicAuthCredentials.dispose();
-    Session.dispose();
   }
 
   private static String getAuthorizationHeader() {

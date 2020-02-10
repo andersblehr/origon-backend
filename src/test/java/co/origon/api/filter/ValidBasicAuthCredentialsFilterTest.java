@@ -5,11 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import co.origon.api.common.BasicAuthCredentials;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.core.HttpHeaders;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -58,11 +56,6 @@ class ValidBasicAuthCredentialsFilterTest {
                   // when
                   validBasicAuthCredentialsFilter.filter(requestContext));
       assertEquals("Invalid basic auth credentials", e.getMessage());
-    }
-
-    @AfterEach
-    void tearDown() {
-      BasicAuthCredentials.dispose();
     }
   }
 

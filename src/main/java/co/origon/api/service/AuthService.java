@@ -3,7 +3,6 @@ package co.origon.api.service;
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.Mailer;
 import co.origon.api.common.Mailer.Language;
-import co.origon.api.common.Session;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.model.server.OneTimeCredentials;
@@ -13,6 +12,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.inject.Inject;
@@ -20,6 +20,8 @@ import javax.inject.Singleton;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
 
 @Singleton
@@ -27,7 +29,10 @@ public class AuthService {
 
   public static final String WWW_AUTH_CHALLENGE_BASIC_AUTH = "login";
 
+  private static final Logger LOG = Logger.getLogger(AuthService.class.getName());
   private static final int ACTIVATION_CODE_LENGTH = 6;
+
+  @Context private ContainerRequestContext requestContext;
 
   private final Repository<MemberProxy> memberProxyRepository;
   private final Repository<OneTimeCredentials> oneTimeCredentialsRepository;
@@ -67,7 +72,7 @@ public class AuthService {
     checkUserStatus(basicAuthCredentials.email(), false);
     final String activationCode = UUID.randomUUID().toString().substring(0, ACTIVATION_CODE_LENGTH);
     mailer.using(language).sendRegistrationEmail(basicAuthCredentials.email(), activationCode);
-    Session.log("Sent user activation code to new user " + basicAuthCredentials.email());
+    LOG.fine("Sent user activation code to new user " + basicAuthCredentials.email());
 
     return oneTimeCredentialsRepository.save(
         OneTimeCredentials.builder()
@@ -95,7 +100,7 @@ public class AuthService {
     }
     deviceCredentialsRepository.save(deviceCredentials);
     oneTimeCredentialsRepository.deleteById(deviceCredentials.email());
-    Session.log("Persisted new device token for user " + deviceCredentials.email());
+    LOG.fine("Persisted new device token for user " + deviceCredentials.email());
 
     return memberProxyRepository.save(userProxy);
   }
@@ -107,7 +112,7 @@ public class AuthService {
       throw new NotAuthorizedException("Invalid password");
     }
     deviceCredentialsRepository.save(deviceCredentials);
-    Session.log("Persisted new device token for user " + deviceCredentials.email());
+    LOG.fine("Persisted new device token for user " + deviceCredentials.email());
 
     return memberProxyRepository.save(
         reauthoriseUserDevice(
@@ -120,7 +125,7 @@ public class AuthService {
             .getById(credentials.email())
             .orElseThrow(userDoesNotExistThrower)
             .withPasswordHash(credentials.passwordHash()));
-    Session.log("Saved new password hash for " + credentials.email());
+    LOG.fine("Saved new password hash for " + credentials.email());
   }
 
   public void resetPassword(BasicAuthCredentials credentials, Language language) {
@@ -130,7 +135,7 @@ public class AuthService {
             .orElseThrow(userDoesNotExistThrower)
             .withPasswordHash(credentials.passwordHash()));
     mailer.using(language).sendPasswordResetEmail(credentials.email(), credentials.password());
-    Session.log("Sent temporary password to " + credentials.email());
+    LOG.fine("Sent temporary password to " + credentials.email());
   }
 
   public OneTimeCredentials sendActivationCode(
@@ -150,7 +155,7 @@ public class AuthService {
     mailer
         .using(language)
         .sendEmailActivationCode(oneTimeCredentials.email(), oneTimeCredentials.activationCode());
-    Session.log("Sent email activation code to " + oneTimeCredentials.email());
+    LOG.fine("Sent email activation code to " + oneTimeCredentials.email());
 
     return oneTimeCredentials;
   }

@@ -7,7 +7,6 @@ import co.origon.api.common.UrlParams;
 import co.origon.api.filter.SupportedLanguage;
 import co.origon.api.filter.ValidBasicAuthCredentials;
 import co.origon.api.filter.ValidDeviceToken;
-import co.origon.api.filter.ValidSessionData;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.service.AuthService;
@@ -21,29 +20,38 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Singleton
 @Path("auth")
 @Produces(MediaType.APPLICATION_JSON)
 @ValidBasicAuthCredentials
-@ValidSessionData
 public class AuthController {
 
   public static final String WWW_AUTH_CHALLENGE_BASIC_AUTH = "login";
 
-  private AuthService authService;
-  private ReplicationService replicationService;
+  @Context private ContainerRequestContext requestContext;
+
+  private final AuthService authService;
+  private final ReplicationService replicationService;
 
   @Inject
   AuthController(AuthService authService, ReplicationService replicationService) {
     this.authService = authService;
     this.replicationService = replicationService;
+  }
+
+  AuthController(
+      AuthService authService,
+      ReplicationService replicationService,
+      ContainerRequestContext requestContext) {
+    this(authService, replicationService);
+    this.requestContext = requestContext;
   }
 
   @GET
@@ -52,14 +60,12 @@ public class AuthController {
   public Response registerUser(
       @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
       @QueryParam(UrlParams.DEVICE_ID) String deviceId,
-      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
 
+    checkDeviceIdParam(deviceId);
+
     return Response.status(Status.CREATED)
-        .entity(
-            authService.registerUser(
-                BasicAuthCredentials.getCredentials(), deviceId, Language.fromCode(language)))
+        .entity(authService.registerUser(getCredentials(), deviceId, Language.fromCode(language)))
         .build();
   }
 
@@ -69,11 +75,10 @@ public class AuthController {
       @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.DEVICE_ID) String deviceId,
-      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType) {
 
-    checkDeviceTokenFormat(deviceToken);
-    final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+    checkDeviceCredentialsParams(deviceToken, deviceId, deviceType);
+    final BasicAuthCredentials basicAuthCredentials = getCredentials();
     final MemberProxy userProxy =
         authService.activateUser(
             DeviceCredentials.builder()
@@ -101,11 +106,10 @@ public class AuthController {
       @HeaderParam(HttpHeaders.IF_MODIFIED_SINCE) Date replicationDate,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
       @QueryParam(UrlParams.DEVICE_ID) String deviceId,
-      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType) {
 
-    checkDeviceTokenFormat(deviceToken);
-    final BasicAuthCredentials basicAuthCredentials = BasicAuthCredentials.getCredentials();
+    checkDeviceCredentialsParams(deviceToken, deviceId, deviceType);
+    final BasicAuthCredentials basicAuthCredentials = getCredentials();
     final MemberProxy userProxy =
         authService.loginUser(
             DeviceCredentials.builder()
@@ -131,12 +135,9 @@ public class AuthController {
   @ValidDeviceToken
   public Response changePassword(
       @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.DEVICE_ID) String deviceId,
-      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion) {
+      @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken) {
 
-    authService.changePassword(BasicAuthCredentials.getCredentials());
+    authService.changePassword(getCredentials());
 
     return Response.status(Status.CREATED).build();
   }
@@ -148,12 +149,9 @@ public class AuthController {
   public Response resetPassword(
       @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.DEVICE_ID) String deviceId,
-      @QueryParam(UrlParams.DEVICE_TYPE) String deviceType,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
 
-    authService.resetPassword(BasicAuthCredentials.getCredentials(), Language.fromCode(language));
+    authService.resetPassword(getCredentials(), Language.fromCode(language));
 
     return Response.status(Status.CREATED).build();
   }
@@ -165,20 +163,37 @@ public class AuthController {
   public Response sendActivationCode(
       @HeaderParam(HttpHeaders.AUTHORIZATION) String authorizationHeader,
       @QueryParam(UrlParams.DEVICE_TOKEN) String deviceToken,
-      @QueryParam(UrlParams.APP_VERSION) String appVersion,
       @QueryParam(UrlParams.LANGUAGE) String language) {
 
     return Response.status(Status.CREATED)
         .entity(
             authService.sendActivationCode(
-                BasicAuthCredentials.getCredentials(), deviceToken, Language.fromCode(language)))
+                getCredentials(), deviceToken, Language.fromCode(language)))
         .build();
   }
 
-  private void checkDeviceTokenFormat(String deviceToken) {
-    if (deviceToken == null || deviceToken.length() == 0)
+  private BasicAuthCredentials getCredentials() {
+    return (BasicAuthCredentials) requestContext.getProperty(BasicAuthCredentials.CONTEXT_KEY);
+  }
+
+  private static void checkDeviceIdParam(String deviceId) {
+    if (deviceId == null || deviceId.length() == 0) {
+      throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_ID);
+    }
+  }
+
+  private static void checkDeviceCredentialsParams(
+      String deviceToken, String deviceId, String deviceType) {
+
+    if (deviceToken == null || deviceToken.length() == 0) {
       throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_TOKEN);
-    if (!Matcher.isDeviceToken(deviceToken))
+    }
+    if (!Matcher.isDeviceToken(deviceToken)) {
       throw new BadRequestException("Invalid device token format: " + deviceToken);
+    }
+    checkDeviceIdParam(deviceId);
+    if (deviceType == null || deviceType.length() == 0) {
+      throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_ID);
+    }
   }
 }

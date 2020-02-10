@@ -65,8 +65,8 @@ public class ValidDeviceTokenFilter implements ContainerRequestFilter {
       throw new BadRequestException("Cannot authenticate inactive user");
     }
 
-    if (BasicAuthCredentials.hasCredentials()
-        && !BasicAuthCredentials.getCredentials().email().equals(deviceCredentials.email()))
+    BasicAuthCredentials authCredentials = BasicAuthCredentials.getCredentials(requestContext);
+    if (authCredentials != null && !authCredentials.email().equals(deviceCredentials.email()))
       throw new BadRequestException(
           "Basic auth credentials do not match records for provided device token");
   }
