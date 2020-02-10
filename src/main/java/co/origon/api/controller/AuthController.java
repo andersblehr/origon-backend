@@ -193,7 +193,7 @@ public class AuthController {
     }
     checkDeviceIdParam(deviceId);
     if (deviceType == null || deviceType.length() == 0) {
-      throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_ID);
+      throw new BadRequestException("Missing parameter: " + UrlParams.DEVICE_TYPE);
     }
   }
 }
