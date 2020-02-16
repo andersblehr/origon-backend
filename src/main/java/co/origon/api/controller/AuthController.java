@@ -33,24 +33,18 @@ import javax.ws.rs.core.Response.Status;
 @ValidBasicAuthCredentials
 public class AuthController {
 
-  public static final String WWW_AUTH_CHALLENGE_BASIC_AUTH = "login";
-
   @Context private ContainerRequestContext requestContext;
 
-  private final AuthService authService;
-  private final ReplicationService replicationService;
-
-  @Inject
-  AuthController(AuthService authService, ReplicationService replicationService) {
-    this.authService = authService;
-    this.replicationService = replicationService;
-  }
+  @Inject private AuthService authService;
+  @Inject private ReplicationService replicationService;
 
   AuthController(
       AuthService authService,
       ReplicationService replicationService,
       ContainerRequestContext requestContext) {
-    this(authService, replicationService);
+
+    this.authService = authService;
+    this.replicationService = replicationService;
     this.requestContext = requestContext;
   }
 

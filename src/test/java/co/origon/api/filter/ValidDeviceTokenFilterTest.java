@@ -203,7 +203,7 @@ class ValidDeviceTokenFilterTest {
       assertEquals("Device token has expired", e.getMessage());
       final String authChallenge =
           e.getResponse().getHeaders().getFirst(HttpHeaders.WWW_AUTHENTICATE).toString();
-      assertEquals(AuthController.WWW_AUTH_CHALLENGE_BASIC_AUTH, authChallenge);
+      assertEquals("login", authChallenge);
     }
 
     @Test
