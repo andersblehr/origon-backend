@@ -2,11 +2,11 @@ package co.origon.api.filter;
 
 import co.origon.api.common.BasicAuthCredentials;
 import co.origon.api.common.UrlParams;
-import co.origon.api.controller.AuthController;
 import co.origon.api.model.server.DeviceCredentials;
 import co.origon.api.model.server.MemberProxy;
 import co.origon.api.repository.Repository;
 import co.origon.api.repository.RepositoryFactory;
+import co.origon.api.service.AuthService;
 import java.util.Date;
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -54,7 +54,7 @@ public class ValidDeviceTokenFilter implements ContainerRequestFilter {
             .orElseThrow(() -> new BadRequestException("Cannot authenticate unknown device token"));
     if (deviceCredentials.dateExpires().before(new Date())) {
       throw new NotAuthorizedException(
-          "Device token has expired", AuthController.WWW_AUTH_CHALLENGE_BASIC_AUTH);
+          "Device token has expired", AuthService.WWW_AUTH_CHALLENGE_BASIC_AUTH);
     }
 
     final MemberProxy userProxy =
