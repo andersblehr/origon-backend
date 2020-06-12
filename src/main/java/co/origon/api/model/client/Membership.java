@@ -26,13 +26,13 @@ import lombok.experimental.SuperBuilder;
     ignoreUnknown = true)
 public class Membership extends ReplicatedEntity {
 
-  private final String type;
-  private final boolean isAdmin;
-  private final String status;
-  private final String affiliations;
-  private final Member member;
-  private final Map<String, String> memberRef;
-  private final Map<String, String> origoRef;
+  String type;
+  boolean isAdmin;
+  String status;
+  String affiliations;
+  Member member;
+  Map<String, String> memberRef;
+  Map<String, String> origoRef;
 
   @Override
   @JsonIgnore

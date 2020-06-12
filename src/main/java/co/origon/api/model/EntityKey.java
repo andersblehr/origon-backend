@@ -1,8 +1,9 @@
 package co.origon.api.model;
 
 public class EntityKey {
-  private String entityId;
-  private String parentId;
+
+  private final String entityId;
+  private final String parentId;
 
   public static EntityKey from(String entityId) {
     return EntityKey.from(entityId, null);

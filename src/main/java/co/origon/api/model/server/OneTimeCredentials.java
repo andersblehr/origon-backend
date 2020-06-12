@@ -14,8 +14,8 @@ import lombok.experimental.Accessors;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class OneTimeCredentials {
 
-  private final String email;
-  private final String deviceId;
-  private final String passwordHash;
-  private final String activationCode;
+  String email;
+  String deviceId;
+  String passwordHash;
+  String activationCode;
 }

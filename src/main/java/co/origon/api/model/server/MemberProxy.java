@@ -17,12 +17,12 @@ import lombok.experimental.Accessors;
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class MemberProxy {
 
-  private final String id;
-  private final String memberId;
-  private final String memberName;
-  private final String passwordHash;
-  @Singular private final Set<String> deviceTokens;
-  @Singular private final Set<EntityKey> membershipKeys;
+  String id;
+  String memberId;
+  String memberName;
+  String passwordHash;
+  @Singular Set<String> deviceTokens;
+  @Singular Set<EntityKey> membershipKeys;
 
   public boolean isRegistered() {
     return passwordHash != null && passwordHash.length() > 0;

@@ -27,7 +27,7 @@ import javax.ws.rs.InternalServerErrorException;
 @Singleton
 public class OfyRepository<T, U extends OfyMapper<T>> implements Repository<T> {
 
-  private Class<U> ofyClass;
+  private final Class<U> ofyClass;
 
   public OfyRepository(Class<U> ofyClass) {
     this.ofyClass = ofyClass;

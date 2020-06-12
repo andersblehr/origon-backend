@@ -25,8 +25,8 @@ import lombok.experimental.SuperBuilder;
     ignoreUnknown = true)
 public class Device extends ReplicatedEntity {
 
-  private final String type;
-  private final String name;
-  private final Date lastSeen;
-  private final Map<String, String> userRef;
+  String type;
+  String name;
+  Date lastSeen;
+  Map<String, String> userRef;
 }
