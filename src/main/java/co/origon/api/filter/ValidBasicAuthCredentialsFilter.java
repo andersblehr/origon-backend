@@ -13,8 +13,6 @@ import javax.ws.rs.ext.Provider;
 @Priority(2)
 public class ValidBasicAuthCredentialsFilter implements ContainerRequestFilter {
 
-  private static final String BASIC_AUTH_CREDENTIALS = "basic-auth-credentials";
-
   @Override
   public void filter(ContainerRequestContext requestContext) {
     try {

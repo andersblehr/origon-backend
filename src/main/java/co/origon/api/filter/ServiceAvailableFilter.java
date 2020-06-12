@@ -12,7 +12,7 @@ import javax.ws.rs.ext.Provider;
 @Priority(1)
 public class ServiceAvailableFilter implements ContainerRequestFilter {
 
-  private Config systemConfig;
+  private final Config systemConfig;
 
   public ServiceAvailableFilter() {
     this.systemConfig = Settings.system();

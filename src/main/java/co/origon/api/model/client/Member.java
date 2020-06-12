@@ -25,17 +25,17 @@ import lombok.experimental.SuperBuilder;
     ignoreUnknown = true)
 public class Member extends ReplicatedEntity {
 
-  private final String name;
-  private final String gender;
-  private final Date dateOfBirth;
-  private final String mobilePhone;
-  private final String email;
-  private final String motherId;
-  private final String fatherId;
-  private final boolean isMinor;
-  private final String createdIn;
-  private final Date activeSince;
-  private final String settings;
+  String name;
+  String gender;
+  Date dateOfBirth;
+  String mobilePhone;
+  String email;
+  String motherId;
+  String fatherId;
+  boolean isMinor;
+  String createdIn;
+  Date activeSince;
+  String settings;
 
   @Override
   @JsonIgnore

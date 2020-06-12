@@ -33,10 +33,10 @@ import javax.ws.rs.core.Response.Status;
 @ValidBasicAuthCredentials
 public class AuthController {
 
-  @Context private ContainerRequestContext requestContext;
+  @Context private final ContainerRequestContext requestContext;
 
-  @Inject private AuthService authService;
-  @Inject private ReplicationService replicationService;
+  @Inject private final AuthService authService;
+  @Inject private final ReplicationService replicationService;
 
   AuthController(
       AuthService authService,

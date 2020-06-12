@@ -24,16 +24,16 @@ import lombok.experimental.SuperBuilder;
     ignoreUnknown = true)
 public class Origo extends ReplicatedEntity {
 
-  private final String name;
-  private final String type;
-  private final String descriptionText;
-  private final String address;
-  private final String location;
-  private final String telephone;
-  private final String permissions;
-  private final boolean isForMinors;
-  private final String joinCode;
-  private final String internalJoinCode;
+  String name;
+  String type;
+  String descriptionText;
+  String address;
+  String location;
+  String telephone;
+  String permissions;
+  boolean isForMinors;
+  String joinCode;
+  String internalJoinCode;
 
   @JsonIgnore
   public boolean isResidence() {

@@ -17,9 +17,9 @@ public class Settings {
   public static final String SYSTEM_STATUS_OK = "ok";
   public static final String SYSTEM_STATUS_DOWN = "down";
 
-  private static Config jwt;
-  private static Config mailer;
-  private static Config system;
+  private static final Config jwt;
+  private static final Config mailer;
+  private static final Config system;
 
   static {
     jwt = ConfigFactory.load().getConfig(JWT_CFG);

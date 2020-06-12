@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class BasicAuthCredentials {
 
-  public static String CONTEXT_KEY = "credentials";
+  public static final String CONTEXT_KEY = "credentials";
 
   // private static final String DEFAULT_SALT = "RKPAAXYFRYDVM3";
   private static final String DEFAULT_SALT = "socroilgao";

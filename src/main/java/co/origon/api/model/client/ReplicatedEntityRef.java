@@ -25,8 +25,8 @@ import lombok.experimental.SuperBuilder;
     ignoreUnknown = true)
 public class ReplicatedEntityRef extends ReplicatedEntity {
 
-  private final String referencedEntityId;
-  private final String referencedEntityOrigoId;
+  String referencedEntityId;
+  String referencedEntityOrigoId;
 
   @Override
   public boolean isEntityRef() {
